@@ -42,58 +42,41 @@
           "unknown": "Unknown"
         }
       },
-      "input_voltage": {
-        "name": "Input voltage"
-      },
-      "input_frequency": {
-        "name": "Input frequency"
-      },
-      "output_voltage": {
-        "name": "Output voltage"
-      },
-      "output_frequency": {
-        "name": "Output frequency"
-      },
-      "output_current": {
-        "name": "Output current"
-      },
-      "output_load": {
-        "name": "Output load"
-      },
-      "battery_voltage": {
-        "name": "Battery voltage"
-      },
-      "battery_capacity": {
-        "name": "Battery capacity"
-      },
-      "data_timestamp": {
-        "name": "UPS data time"
-      },
-      "data_age": {
-        "name": "Data age"
-      },
-      "firmware": {
-        "name": "UPS firmware"
-      },
-      "last_successful_update": {
-        "name": "Last successful update"
-      }
+      "input_voltage": {"name": "Input voltage"},
+      "input_frequency": {"name": "Input frequency"},
+      "output_voltage": {"name": "Output voltage"},
+      "output_frequency": {"name": "Output frequency"},
+      "output_current": {"name": "Output current"},
+      "output_load": {"name": "Output load"},
+      "battery_voltage": {"name": "Battery voltage"},
+      "battery_capacity": {"name": "Battery capacity"},
+      "positive_bus_voltage": {"name": "Positive BUS voltage"},
+      "negative_bus_voltage": {"name": "Negative BUS voltage"},
+      "ups_temperature": {"name": "UPS temperature"},
+      "pfc_temperature": {"name": "PFC temperature"},
+      "ambient_temperature": {"name": "Ambient temperature"},
+      "charger_temperature": {"name": "Charger temperature"},
+      "battery_remain_time": {"name": "Battery remaining time (vendor estimate)"},
+      "battery_piece_number": {"name": "Battery piece count"},
+      "battery_group_number": {"name": "Battery group count"},
+      "protocol_id": {"name": "UPS protocol ID"},
+      "dctodc_status": {"name": "DC-to-DC status"},
+      "pfc_status": {"name": "PFC status"},
+      "inverter_status": {"name": "Inverter status"},
+      "input_relay_status": {"name": "Input relay status"},
+      "output_relay_status": {"name": "Output relay status"},
+      "data_timestamp": {"name": "UPS data time"},
+      "data_age": {"name": "Data age"},
+      "firmware": {"name": "UPS firmware"},
+      "last_successful_update": {"name": "Last successful update"}
     },
     "binary_sensor": {
-      "on_battery": {
-        "name": "On battery"
-      },
-      "cloud_connected": {
-        "name": "Cloud telemetry"
-      },
-      "data_stale": {
-        "name": "Data stale"
-      }
+      "on_battery": {"name": "On battery"},
+      "cloud_connected": {"name": "Cloud telemetry"},
+      "data_stale": {"name": "Data stale"}
     },
     "button": {
-      "refresh_now": {
-        "name": "Refresh all UPS devices"
-      }
+      "refresh_now": {"name": "Refresh all UPS devices"}
     }
   }
 }
