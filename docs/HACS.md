@@ -1,5 +1,16 @@
 # HACS installation
 
-After v1.2.0 is merged to `main`, add `https://github.com/NikaSir/ha-stark-solarpower` to HACS as a custom **Integration** repository.
+The repository is prepared for HACS installation as a custom **Integration** repository.
 
-The integration is then installed and updated through HACS instead of manual ZIP replacement.
+Repository:
+
+`https://github.com/NikaSir/ha-stark-solarpower`
+
+Recommended flow:
+
+1. Merge the validated release branch into `main`.
+2. Add the repository to HACS as a custom Integration repository.
+3. Install **Stark SolarPower** from HACS.
+4. Restart Home Assistant when HACS requests it.
+
+After migration, updates are delivered through HACS instead of manual ZIP replacement.
