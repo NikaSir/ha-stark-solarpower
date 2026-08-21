@@ -2,6 +2,26 @@
 
 All notable project changes are recorded here.
 
+## [1.3.0] - 2026-08-22
+
+### Added
+
+- Detailed `queryDeviceLastData` read-only telemetry sampled every 5 minutes.
+- Positive and negative DC bus voltage sensors.
+- UPS, PFC, ambient and charger temperature sensors.
+- Optional diagnostics for vendor battery runtime estimate, battery piece/group counts, protocol ID, DC-DC/PFC/inverter states and input/output relay states.
+- Full normalized detailed telemetry payload in Home Assistant diagnostics for future field mapping without exposing credentials or API secrets.
+
+### Changed
+
+- Stale-data threshold increased from 5 to 6 minutes (360 seconds).
+- Manual **Refresh all UPS** also forces an immediate detailed-telemetry refresh.
+- Primary cloud polling remains 60 seconds.
+
+### Safety
+
+- Ambiguous vendor fields such as `Fault Kind`, pre-fault snapshots and high/low voltage fields are collected in diagnostics first and are not promoted to active alarm entities until their semantics are verified on real hardware.
+
 ## [1.2.0] - 2026-08-21
 
 ### Added
