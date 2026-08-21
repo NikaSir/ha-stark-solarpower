@@ -16,7 +16,8 @@ APP_VERSION = "1.4.0"
 COMPANY_KEY = "bnrl_frRFjEz8Mkn"
 
 UPDATE_INTERVAL = timedelta(seconds=60)
-STALE_AFTER = timedelta(minutes=5)
+STALE_AFTER = timedelta(minutes=6)
+EXTENDED_UPDATE_INTERVAL = timedelta(minutes=5)
 MANUAL_REFRESH_COOLDOWN_SECONDS = 10
 
 # Numeric `gts` values are encoded by the vendor as local wall time in UTC+8.
