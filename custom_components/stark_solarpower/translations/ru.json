@@ -1,0 +1,99 @@
+{
+  "title": "Stark SolarPower",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Учётная запись Stark SolarPower",
+        "description": "Введите данные учётной записи мобильного приложения SolarPower. Интеграция работает только на чтение и опрашивает облако один раз в 60 секунд.",
+        "data": {
+          "username": "Имя пользователя",
+          "password": "Пароль"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Повторная авторизация Stark SolarPower",
+        "description": "Пароль учётной записи {username} больше не принимается. Введите актуальный пароль SolarPower.",
+        "data": {
+          "password": "Пароль"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Неверное имя пользователя или пароль.",
+      "cannot_connect": "Не удалось подключиться к сервису SolarPower.",
+      "no_devices": "В этой учётной записи не найдены совместимые ИБП.",
+      "unknown": "Непредвиденная ошибка."
+    },
+    "abort": {
+      "already_configured": "Эта учётная запись SolarPower уже настроена."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "mode": {
+        "name": "Режим работы",
+        "state": {
+          "line_mode": "От сети",
+          "battery_mode": "От батареи",
+          "standby_mode": "Ожидание",
+          "bypass_mode": "Байпас",
+          "fault_mode": "Авария",
+          "shutdown_mode": "Выключен",
+          "unknown": "Неизвестно"
+        }
+      },
+      "input_voltage": {
+        "name": "Входное напряжение"
+      },
+      "input_frequency": {
+        "name": "Входная частота"
+      },
+      "output_voltage": {
+        "name": "Выходное напряжение"
+      },
+      "output_frequency": {
+        "name": "Выходная частота"
+      },
+      "output_current": {
+        "name": "Выходной ток"
+      },
+      "output_load": {
+        "name": "Нагрузка"
+      },
+      "battery_voltage": {
+        "name": "Напряжение АКБ"
+      },
+      "battery_capacity": {
+        "name": "Заряд АКБ"
+      },
+      "data_timestamp": {
+        "name": "Время данных ИБП"
+      },
+      "data_age": {
+        "name": "Возраст данных"
+      },
+      "firmware": {
+        "name": "Прошивка ИБП"
+      },
+      "last_successful_update": {
+        "name": "Последнее успешное обновление"
+      }
+    },
+    "binary_sensor": {
+      "on_battery": {
+        "name": "Работа от батареи"
+      },
+      "cloud_connected": {
+        "name": "Облачная телеметрия"
+      },
+      "data_stale": {
+        "name": "Данные устарели"
+      }
+    },
+    "button": {
+      "refresh_now": {
+        "name": "Обновить все ИБП"
+      }
+    }
+  }
+}

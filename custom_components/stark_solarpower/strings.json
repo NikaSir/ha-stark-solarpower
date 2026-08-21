@@ -1,0 +1,99 @@
+{
+  "title": "Stark SolarPower",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Stark SolarPower account",
+        "description": "Enter the credentials from the SolarPower mobile app. The integration is read-only and polls the cloud every 60 seconds.",
+        "data": {
+          "username": "Username",
+          "password": "Password"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Re-authenticate Stark SolarPower",
+        "description": "The password for {username} stopped working. Enter the current SolarPower password.",
+        "data": {
+          "password": "Password"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Invalid username or password.",
+      "cannot_connect": "Cannot connect to the SolarPower service.",
+      "no_devices": "No compatible UPS devices were found in this account.",
+      "unknown": "Unexpected error."
+    },
+    "abort": {
+      "already_configured": "This SolarPower account is already configured."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "mode": {
+        "name": "Operating mode",
+        "state": {
+          "line_mode": "Line mode",
+          "battery_mode": "Battery mode",
+          "standby_mode": "Standby mode",
+          "bypass_mode": "Bypass mode",
+          "fault_mode": "Fault mode",
+          "shutdown_mode": "Shutdown mode",
+          "unknown": "Unknown"
+        }
+      },
+      "input_voltage": {
+        "name": "Input voltage"
+      },
+      "input_frequency": {
+        "name": "Input frequency"
+      },
+      "output_voltage": {
+        "name": "Output voltage"
+      },
+      "output_frequency": {
+        "name": "Output frequency"
+      },
+      "output_current": {
+        "name": "Output current"
+      },
+      "output_load": {
+        "name": "Output load"
+      },
+      "battery_voltage": {
+        "name": "Battery voltage"
+      },
+      "battery_capacity": {
+        "name": "Battery capacity"
+      },
+      "data_timestamp": {
+        "name": "UPS data time"
+      },
+      "data_age": {
+        "name": "Data age"
+      },
+      "firmware": {
+        "name": "UPS firmware"
+      },
+      "last_successful_update": {
+        "name": "Last successful update"
+      }
+    },
+    "binary_sensor": {
+      "on_battery": {
+        "name": "On battery"
+      },
+      "cloud_connected": {
+        "name": "Cloud telemetry"
+      },
+      "data_stale": {
+        "name": "Data stale"
+      }
+    },
+    "button": {
+      "refresh_now": {
+        "name": "Refresh all UPS devices"
+      }
+    }
+  }
+}

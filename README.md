@@ -1,30 +1,56 @@
 # Stark SolarPower for Home Assistant
 
-Custom Home Assistant integration project for **Stark SolarPower** cloud-backed UPS / power-system telemetry.
+Custom Home Assistant integration for **STARK Country Online** UPS devices monitored through the SolarPower / ShineMonitor cloud backend.
 
 ## Status
 
-A working integration exists outside this newly bootstrapped repository and is being migrated to GitHub in a controlled way. The repository bootstrap must not be interpreted as a reset of the project's existing version history.
+Current verified baseline: **v1.2.0 (build b001)**.
 
-## Scope
+The integration has been tested on two STARK Country Online 1000 VA UPS devices with SolarPower Wi-Fi cards.
 
-This repository contains the Home Assistant integration layer: cloud communication, device discovery, telemetry entities, data freshness handling, diagnostics, tests, documentation, HACS packaging, and releases.
+## Features
 
-## Repository policy
+- Cloud polling every 60 seconds.
+- Read-only operation: the integration does not send UPS control or configuration commands.
+- Automatic device discovery from the SolarPower account.
+- Stable device identity based on Wi-Fi module PN.
+- Input/output voltage and frequency.
+- Output current and load.
+- Battery voltage and charge.
+- Operating mode and on-battery state.
+- Cloud telemetry availability.
+- UPS data timestamp and data age.
+- Stale-data protection: operational entities become unavailable when cloud data is too old.
+- Manual **Refresh all UPS** button.
+- HTTPS transport when supported by the SolarPower endpoint.
+- Diagnostics with credentials and tokens excluded.
 
-- Default branch: `main`.
-- Credentials, account secrets, tokens, serial/account identifiers used as secrets, and private diagnostic payloads must never be committed.
-- Existing project version identifiers are preserved during migration.
-- Releases must be traceable to source commits.
-- Shared contribution/security defaults are inherited from `NikaSir/.github` unless overridden here.
+## Installation with HACS
 
-## Target layout
+1. Open HACS in Home Assistant.
+2. Add this repository as a custom repository: `https://github.com/NikaSir/ha-stark-solarpower`.
+3. Category: **Integration**.
+4. Install **Stark SolarPower**.
+5. Restart Home Assistant.
+6. Go to **Settings → Devices & services → Add integration** and search for **Stark SolarPower**.
+7. Enter the SolarPower username and password.
 
-```text
-custom_components/stark_solarpower/
-docs/
-.github/workflows/
-hacs.json
-```
+## Manual installation
 
-Production implementation will be migrated from the verified working build rather than replaced with placeholder code.
+Copy `custom_components/stark_solarpower/` to `/config/custom_components/stark_solarpower/` and restart Home Assistant.
+
+## Data freshness model
+
+SolarPower cloud updates can lag the physical UPS by roughly 2–3 minutes. The integration therefore distinguishes between successful cloud communication, the timestamp of the actual UPS data snapshot, and the calculated age of that snapshot.
+
+The default stale threshold is **300 seconds (5 minutes)**. When data is stale, operational values are intentionally marked unavailable instead of presenting old measurements as current.
+
+## Security
+
+- Passwords, API tokens, account secrets and private diagnostic payloads must never be committed to this repository.
+- The integration is read-only.
+- HTTPS is preferred automatically; compatibility fallback is retained for the SolarPower backend if required.
+
+## License
+
+MIT
