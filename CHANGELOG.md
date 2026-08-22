@@ -2,6 +2,17 @@
 
 All notable project changes are recorded here.
 
+## [1.6.3] - 2026-08-22
+
+### Panel UI 0.3.3 — frontend hardening
+
+- Replace the runtime chain of versioned panel modules with one deterministic self-contained production bundle: `stark-solarpower-panel-bundle.js`.
+- Register Home Assistant `module_url` directly to the autonomous bundle and use the UI version as query-string cache busting.
+- Keep previous versioned frontend files only as build-time source/history; the browser no longer loads them at runtime.
+- Add deterministic bundle generation, JavaScript syntax validation, a CI guard rejecting remaining runtime `import`/`export` statements, and a committed-artifact consistency check.
+- Preserve the accepted UI 0.3.2 layout, device selector, explicit Back contract, full-width bottom Tab Bar, read-only behavior and entity semantics.
+- This is a loading-architecture hardening release; no UPS telemetry/control semantics change.
+
 ## [1.6.2] - 2026-08-22
 
 ### Panel UI 0.3.2
@@ -50,10 +61,11 @@ All notable project changes are recorded here.
 ### Panel UI 0.2.0
 
 - Format UPS data timestamps and last-successful-update timestamps in the Home Assistant configured timezone instead of exposing raw ISO strings.
-- Add relative timestamps to the latest UPS event summary while retaining the absolute local timestamp as detail.
-- Improve the History cards with the current operating mode and clearer event hierarchy.
-- Add explicit labels for extended-telemetry lost/restored events.
-- Tighten diagnostic value layout on iPhone-sized viewports and use tabular numerals for technical values.
+- Add relative timestamps to the latest integration events.
+- Add current operating mode to History cards.
+- Add explicit extended-telemetry event labels.
+- Tighten Diagnostics layout for iPhone-sized viewports.
+- Enable theme-aware color-scheme behavior without adding frontend dependencies.
 - Keep the v0.1 Overview information architecture unchanged after successful iPhone Pro Max field review.
 - Preserve dependency-free frontend delivery, stable `/dashboard-ups` route and existing entity interactions.
 
@@ -93,9 +105,9 @@ All notable project changes are recorded here.
 
 - Home Assistant event entities for UPS state transitions.
 - Battery-mode entered/exited events.
-- Explicit Fault Mode entered/cleared events based only on the validated operating-mode field.
+- Explicit Fault Mode entered/cleared transitions using only the validated operating-mode field.
 - Cloud telemetry lost/restored events.
-- UPS data stale/fresh events using the existing 6-minute freshness model.
+- UPS data stale/fresh events using the existing 6-minute freshness threshold.
 - Optional extended-telemetry lost/restored diagnostic events.
 - English and Russian event names and event-type translations.
 
