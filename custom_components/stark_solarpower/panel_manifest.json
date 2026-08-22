@@ -1,0 +1,15 @@
+{
+  "api_version": "nikas.home-assistant/integration-panel/v1",
+  "id": "ups",
+  "title": "UPS",
+  "path": "/dashboard-ups",
+  "icon": "mdi:battery-charging",
+  "owner": "stark_solarpower",
+  "expose_in_generated_ui": true,
+  "preferred_view": "overview",
+  "ui_version": "0.1.0",
+  "targets": {
+    "primary": "iPhone Pro Max portrait",
+    "secondary": ["iPad", "desktop"]
+  }
+}
