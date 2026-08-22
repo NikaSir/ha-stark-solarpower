@@ -4,7 +4,7 @@ Custom Home Assistant integration for **STARK Country Online** UPS devices monit
 
 ## Status
 
-Current production baseline: **v1.2.0 (build b001)**. Extended telemetry work is staged for **v1.3.0**.
+Current production baseline: **v1.3.0**.
 
 The integration has been field-tested on two STARK Country Online 1000 VA UPS devices with SolarPower Wi-Fi cards.
 
@@ -29,7 +29,7 @@ The integration has been field-tested on two STARK Country Online 1000 VA UPS de
 - Failed detailed telemetry is retried on the next normal 60-second coordinator pass.
 - Diagnostics retain the full normalized detailed field set with credentials and tokens excluded.
 
-## Installation with HACS
+## Installation and updates with HACS
 
 1. Open HACS in Home Assistant.
 2. Add this repository as a custom repository:
@@ -38,7 +38,9 @@ The integration has been field-tested on two STARK Country Online 1000 VA UPS de
 4. Install **Stark SolarPower**.
 5. Restart Home Assistant.
 6. Go to **Settings → Devices & services → Add integration** and search for **Stark SolarPower**.
-7. Enter the SolarPower username and password.
+7. Enter the SolarPower username and password when configuring the integration for the first time.
+
+For routine upgrades, update **Stark SolarPower** from HACS and restart Home Assistant when requested. Do not remove the Home Assistant config entry during normal upgrades. Manual ZIP installation is retained only as an emergency recovery path.
 
 ## Manual installation
 
