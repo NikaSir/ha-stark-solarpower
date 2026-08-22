@@ -2,6 +2,17 @@
 
 All notable project changes are recorded here.
 
+## [1.6.1] - 2026-08-22
+
+### Panel UI 0.3.1
+
+- Add one global UPS device-context selector directly below the Header on Overview, Diagnostics and History.
+- Keep the selected UPS context while switching between primary bottom-navigation sections.
+- On Overview and History, the selected UPS is promoted to the first card while the second UPS remains visible for whole-system comparison.
+- Diagnostics uses the same global selector instead of a page-local duplicate.
+- Add per-UPS health dots to the selector using the existing panel status semantics; `unknown` / `unavailable` are never shown as healthy.
+- Keep the full-width fixed bottom Tab Bar, explicit Back route and all existing read-only safety boundaries unchanged.
+
 ## [1.6.0] - 2026-08-22
 
 ### Panel UI 0.3.0
