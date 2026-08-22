@@ -17,10 +17,18 @@ All notable project changes are recorded here.
 - Stale-data threshold increased from 5 to 6 minutes (360 seconds).
 - Manual **Refresh all UPS** also forces an immediate detailed-telemetry refresh.
 - Primary cloud polling remains 60 seconds.
+- Battery remaining-time value is exposed as a unitless RAW diagnostic until the SolarPower cloud field unit is verified on real hardware.
+
+### Field validation
+
+- UPS protocol ID `PI01` confirmed on real hardware.
+- Battery piece count reported as `2` on UPS Boiler.
+- Battery group count may be absent for this model and correctly remains unavailable.
+- Input/output relay and DC-DC/PFC/inverter fields return vendor `Open`/`Closed` text; semantics remain diagnostic-only pending state-transition verification.
 
 ### Safety
 
-- Ambiguous vendor fields such as `Fault Kind`, pre-fault snapshots and high/low voltage fields are collected in diagnostics first and are not promoted to active alarm entities until their semantics are verified on real hardware.
+- Ambiguous vendor fields such as `Fault Kind`, pre-fault snapshots, high/low voltage fields and vendor runtime units are collected in diagnostics first and are not promoted to active alarm/control semantics until verified on real hardware.
 
 ## [1.2.0] - 2026-08-21
 
