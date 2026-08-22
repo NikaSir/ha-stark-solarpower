@@ -77,6 +77,63 @@
     },
     "button": {
       "refresh_now": {"name": "Refresh all UPS devices"}
+    },
+    "event": {
+      "battery_mode_events": {
+        "name": "Battery mode events",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "battery_mode_entered": "Entered battery mode",
+              "battery_mode_exited": "Exited battery mode"
+            }
+          }
+        }
+      },
+      "fault_mode_events": {
+        "name": "Fault mode events",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "fault_mode_entered": "Entered fault mode",
+              "fault_mode_cleared": "Fault mode cleared"
+            }
+          }
+        }
+      },
+      "cloud_telemetry_events": {
+        "name": "Cloud telemetry events",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "telemetry_restored": "Cloud telemetry restored",
+              "telemetry_lost": "Cloud telemetry lost"
+            }
+          }
+        }
+      },
+      "data_freshness_events": {
+        "name": "Data freshness events",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "data_stale": "UPS data became stale",
+              "data_fresh": "UPS data became fresh"
+            }
+          }
+        }
+      },
+      "extended_telemetry_events": {
+        "name": "Extended telemetry events",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "extended_telemetry_restored": "Extended telemetry restored",
+              "extended_telemetry_lost": "Extended telemetry lost"
+            }
+          }
+        }
+      }
     }
   }
 }
