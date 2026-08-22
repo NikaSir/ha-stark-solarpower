@@ -2,6 +2,15 @@
 
 All notable project changes are recorded here.
 
+## [1.5.2] - 2026-08-22
+
+### Panel UI 0.2.1
+
+- Add a dedicated back button to the Stark SolarPower panel header.
+- Use Home Assistant history semantics when the panel was opened from another HA page, returning to the actual previous screen.
+- Fall back to `/dashboard-infrastructure` when the panel was opened directly and there is no safe HA back destination.
+- Preserve the existing mobile-first header layout, stable `/dashboard-ups` route and read-only behavior.
+
 ## [1.5.1] - 2026-08-22
 
 ### Panel UI 0.2.0
