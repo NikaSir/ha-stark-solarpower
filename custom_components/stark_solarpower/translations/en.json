@@ -56,7 +56,7 @@
       "pfc_temperature": {"name": "PFC temperature"},
       "ambient_temperature": {"name": "Ambient temperature"},
       "charger_temperature": {"name": "Charger temperature"},
-      "battery_remain_time": {"name": "Battery remaining time (vendor estimate)"},
+      "battery_remain_time": {"name": "Battery remaining time (vendor RAW)"},
       "battery_piece_number": {"name": "Battery piece count"},
       "battery_group_number": {"name": "Battery group count"},
       "protocol_id": {"name": "UPS protocol ID"},
