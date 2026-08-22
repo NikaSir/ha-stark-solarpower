@@ -4,7 +4,7 @@ Custom Home Assistant integration for **STARK Country Online** UPS devices monit
 
 ## Status
 
-Current production baseline: **v1.3.0**.
+Current production baseline: **v1.3.0**. Event-entity work is staged for **v1.4.0**.
 
 The integration has been field-tested on two STARK Country Online 1000 VA UPS devices with SolarPower Wi-Fi cards.
 
@@ -23,11 +23,26 @@ The integration has been field-tested on two STARK Country Online 1000 VA UPS de
 - Cloud telemetry availability.
 - UPS data timestamp and data age.
 - Stale-data protection: operational entities become unavailable when cloud data is too old.
+- Transition event entities for battery mode, explicit Fault Mode, cloud telemetry, data freshness and optional extended-telemetry health.
 - Manual **Refresh all UPS** button.
 - HTTPS transport when supported by the SolarPower endpoint.
 - Detailed SolarPower telemetry is sampled every 5 minutes without changing the 60-second primary polling interval.
 - Failed detailed telemetry is retried on the next normal 60-second coordinator pass.
 - Diagnostics retain the full normalized detailed field set with credentials and tokens excluded.
+
+## Event model
+
+The event layer is edge-triggered. It does not synthesize events from vendor RAW alarm-history fields and it does not replay a transition when Home Assistant starts.
+
+Per UPS, the integration exposes event entities for:
+
+- entering and leaving battery mode;
+- entering and clearing the explicit `Fault Mode` operating state;
+- primary cloud telemetry lost/restored;
+- UPS data becoming stale/fresh using the 6-minute freshness threshold;
+- extended telemetry lost/restored as an optional diagnostic event entity.
+
+Home Assistant's current developer guidance favors event entities for integration events. This integration therefore does not add new legacy device-automation trigger APIs.
 
 ## Installation and updates with HACS
 
