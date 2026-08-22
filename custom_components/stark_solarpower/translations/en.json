@@ -58,7 +58,7 @@
       "charger_temperature": {"name": "Charger temperature"},
       "battery_remain_time": {"name": "Battery remaining time (vendor RAW)"},
       "battery_piece_number": {"name": "Battery piece count"},
-      "battery_group_number": {"name": "Battery group count"},
+      "battery_group_number": {"name": "Battery group parameter (vendor RAW)"},
       "protocol_id": {"name": "UPS protocol ID"},
       "dctodc_status": {"name": "DC-to-DC status"},
       "pfc_status": {"name": "PFC status"},
