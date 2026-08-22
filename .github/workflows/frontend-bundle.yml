@@ -1,0 +1,72 @@
+name: Frontend bundle
+
+on:
+  push:
+    branches:
+      - hardening/self-contained-frontend-1.6.3
+    paths:
+      - "custom_components/stark_solarpower/frontend/**"
+      - "scripts/build_frontend_bundle.py"
+      - ".github/workflows/frontend-bundle.yml"
+  pull_request:
+    paths:
+      - "custom_components/stark_solarpower/frontend/**"
+      - "custom_components/stark_solarpower/panel.py"
+      - "scripts/build_frontend_bundle.py"
+      - ".github/workflows/frontend-bundle.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Build deterministic panel bundle
+        run: python scripts/build_frontend_bundle.py
+
+      - name: Verify JavaScript syntax
+        run: node --check custom_components/stark_solarpower/frontend/stark-solarpower-panel-bundle.js
+
+      - name: Reject runtime imports in production bundle
+        shell: bash
+        run: |
+          if grep -nE '^[[:space:]]*(import|export)[[:space:]]' custom_components/stark_solarpower/frontend/stark-solarpower-panel-bundle.js; then
+            echo "Production panel bundle must be self-contained."
+            exit 1
+          fi
+
+      - name: Verify committed bundle on pull request
+        if: github.event_name == 'pull_request'
+        run: git diff --exit-code -- custom_components/stark_solarpower/frontend/stark-solarpower-panel-bundle.js
+
+      - name: Commit generated bundle on hardening branch
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          BUNDLE=custom_components/stark_solarpower/frontend/stark-solarpower-panel-bundle.js
+          if git diff --quiet -- "$BUNDLE"; then
+            echo "Bundle already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$BUNDLE"
+          git commit -m "build: refresh self-contained Stark panel bundle"
+          git push origin HEAD:hardening/self-contained-frontend-1.6.3
