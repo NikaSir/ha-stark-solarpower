@@ -2,6 +2,24 @@
 
 All notable project changes are recorded here.
 
+## [1.4.0] - 2026-08-22
+
+### Added
+
+- Home Assistant event entities for UPS state transitions.
+- Battery-mode entered/exited events.
+- Explicit Fault Mode entered/cleared events based only on the validated operating-mode field.
+- Cloud telemetry lost/restored events.
+- UPS data stale/fresh events using the existing 6-minute freshness model.
+- Optional extended-telemetry lost/restored diagnostic events.
+- English and Russian event names and event-type translations.
+
+### Design
+
+- Event entities are edge-triggered and do not replay an event when Home Assistant starts.
+- No new device-automation trigger API is added. Home Assistant developer guidance currently recommends event entities for integration events, while legacy device automations are being phased away for new integrations.
+- Event reporting remains read-only and does not add any UPS control commands.
+
 ## [1.3.0] - 2026-08-22
 
 ### Added
