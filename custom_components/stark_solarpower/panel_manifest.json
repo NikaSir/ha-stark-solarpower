@@ -8,7 +8,7 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.3.3",
+  "ui_version": "0.3.4",
   "header": {
     "title_alignment": "viewport_center",
     "show_brand_icon": false,
@@ -35,6 +35,13 @@
     "module": "stark-solarpower-panel-bundle.js",
     "cache_busting": "query_ui_version",
     "runtime_previous_version_imports": false
+  },
+  "typography": {
+    "profile": "mobile_readability",
+    "primary_target": "iPhone Pro Max portrait",
+    "minimum_secondary_text_px": 14,
+    "navigation_text_px": 14,
+    "device_selector_text_px": 16
   },
   "targets": {
     "primary": "iPhone Pro Max portrait",
