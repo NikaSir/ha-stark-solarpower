@@ -4,7 +4,7 @@ Custom Home Assistant integration for **STARK Country Online** UPS devices monit
 
 ## Status
 
-Current production baseline: **v1.3.0**. Event-entity work is staged for **v1.4.0**.
+Current production baseline: **v1.4.1**. Integration-owned UPS panel work is staged for **v1.5.0**.
 
 The integration has been field-tested on two STARK Country Online 1000 VA UPS devices with SolarPower Wi-Fi cards.
 
@@ -24,11 +24,37 @@ The integration has been field-tested on two STARK Country Online 1000 VA UPS de
 - UPS data timestamp and data age.
 - Stale-data protection: operational entities become unavailable when cloud data is too old.
 - Transition event entities for battery mode, explicit Fault Mode, cloud telemetry, data freshness and optional extended-telemetry health.
+- Integration-owned mobile-first UPS panel at `/dashboard-ups`.
 - Manual **Refresh all UPS** button.
 - HTTPS transport when supported by the SolarPower endpoint.
 - Detailed SolarPower telemetry is sampled every 5 minutes without changing the 60-second primary polling interval.
 - Failed detailed telemetry is retried on the next normal 60-second coordinator pass.
 - Diagnostics retain the full normalized detailed field set with credentials and tokens excluded.
+
+## Integration-owned UPS panel
+
+Starting with v1.5.0 the integration ships its own dedicated Home Assistant panel.
+
+Navigation contract:
+
+- route: `/dashboard-ups`;
+- owner: `stark_solarpower`;
+- sidebar title: `UPS`;
+- icon: `mdi:battery-charging`;
+- preferred view: `overview`;
+- panel UI version: `0.1.0`.
+
+The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. A third UPS therefore does not require a second dashboard implementation.
+
+Views:
+
+- **Обзор** — health, operating mode, power path, battery, load, cloud source and freshness at a glance;
+- **Диагностика** — primary-vs-extended data source health plus detailed electrical and vendor diagnostics;
+- **История** — compact key measurements and integration event summaries; native Home Assistant more-info/history is used for detailed charts.
+
+The panel never calls the Stark/SolarPower API directly. It reads Home Assistant entities only and uses the existing integration button entity for manual refresh. `unknown` and `unavailable` are never presented as healthy states.
+
+See `docs/PANEL.md` for the UX contract, failure-state matrix and `ha-contract-generated-ui` hand-off metadata.
 
 ## Event model
 
