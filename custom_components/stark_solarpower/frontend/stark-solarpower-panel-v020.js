@@ -22,6 +22,7 @@ if (Panel && !Panel.prototype.__starkUiV020) {
 
   const baseFormat = Panel.prototype._format;
   const baseStyles = Panel.prototype._styles;
+  const baseRender = Panel.prototype._render;
 
   Panel.prototype._formatDateTime = function (value) {
     if (!value) return "Неизвестно";
@@ -170,5 +171,11 @@ if (Panel && !Panel.prototype.__starkUiV020) {
         .diagnostic-row strong { max-width: 46%; }
       }
     `;
+  };
+
+  Panel.prototype._render = function () {
+    baseRender.call(this);
+    const subtitle = this.shadowRoot?.querySelector(".subtitle");
+    if (subtitle) subtitle.textContent = "UPS · UI v0.2.0";
   };
 }
