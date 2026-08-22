@@ -57,6 +57,10 @@ async def async_get_config_entry_diagnostics(
                     if pn in coordinator.extended_fetched_at
                     else None
                 ),
+                "extended_available": (
+                    pn in coordinator.extended_values
+                    and coordinator.extended_errors.get(pn) is None
+                ),
                 "extended_error": coordinator.extended_errors.get(pn),
                 "extended_values": coordinator.extended_values.get(pn, {}),
             }
