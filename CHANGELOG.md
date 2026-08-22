@@ -2,6 +2,13 @@
 
 All notable project changes are recorded here.
 
+## [1.4.1] - 2026-08-22
+
+### Fixed
+
+- Suppress the first coordinator edge after Home Assistant startup or config-entry reload so a synthetic `telemetry_restored` (or other transition event) is not emitted while event entities are settling.
+- Existing event entity unique IDs and event types are unchanged.
+
 ## [1.4.0] - 2026-08-22
 
 ### Added
