@@ -56,7 +56,7 @@
       "pfc_temperature": {"name": "Температура PFC"},
       "ambient_temperature": {"name": "Температура окружающей среды"},
       "charger_temperature": {"name": "Температура зарядного устройства"},
-      "battery_remain_time": {"name": "Остаток времени АКБ (оценка ИБП)"},
+      "battery_remain_time": {"name": "Остаток времени АКБ (RAW ИБП)"},
       "battery_piece_number": {"name": "Количество АКБ"},
       "battery_group_number": {"name": "Количество групп АКБ"},
       "protocol_id": {"name": "Протокол ИБП"},
