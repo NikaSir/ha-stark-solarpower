@@ -16,10 +16,11 @@ PANEL_URL_PATH = "dashboard-ups"
 PANEL_PARENT_ROUTE = "/dashboard-infrastructure/overview"
 PANEL_ICON = "mdi:battery-charging"
 PANEL_WEB_COMPONENT = "stark-solarpower-panel"
-PANEL_UI_VERSION = "0.3.2"
+PANEL_UI_VERSION = "0.3.3"
 PANEL_STATIC_URL = "/stark_solarpower_panel"
 PANEL_STATIC_REGISTERED = "panel_static_registered"
 PANEL_DIRECTORY = Path(__file__).parent / "frontend"
+PANEL_BUNDLE = "stark-solarpower-panel-bundle.js"
 
 PANEL_METADATA = {
     "id": PANEL_ID,
@@ -31,6 +32,7 @@ PANEL_METADATA = {
     "expose_in_generated_ui": True,
     "preferred_view": "overview",
     "ui_version": PANEL_UI_VERSION,
+    "frontend_bundle": PANEL_BUNDLE,
 }
 
 
@@ -59,7 +61,7 @@ async def async_register_ups_panel(hass: HomeAssistant) -> None:
         webcomponent_name=PANEL_WEB_COMPONENT,
         sidebar_title=PANEL_TITLE,
         sidebar_icon=PANEL_ICON,
-        module_url=f"{PANEL_STATIC_URL}/stark-solarpower-panel-v032.js",
+        module_url=f"{PANEL_STATIC_URL}/{PANEL_BUNDLE}?v={PANEL_UI_VERSION}",
         embed_iframe=False,
         require_admin=False,
         config=PANEL_METADATA,
@@ -67,5 +69,5 @@ async def async_register_ups_panel(hass: HomeAssistant) -> None:
 
 
 def async_unregister_ups_panel(hass: HomeAssistant) -> None:
-    """Remove the Stark SolarPower panel during config-entry unload."""
+    """Remove the panel when its owning config entry is unloaded."""
     frontend.async_remove_panel(hass, PANEL_URL_PATH, warn_if_unknown=False)
