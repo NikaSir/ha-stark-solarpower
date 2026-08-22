@@ -16,7 +16,8 @@ PANEL_URL_PATH = "dashboard-ups"
 PANEL_PARENT_ROUTE = "/dashboard-infrastructure/overview"
 PANEL_ICON = "mdi:battery-charging"
 PANEL_WEB_COMPONENT = "stark-solarpower-panel"
-PANEL_UI_VERSION = "0.3.4"
+PANEL_UI_VERSION = "0.3.5"
+PANEL_TEMPLATE_VERSION = "1.0"
 PANEL_STATIC_URL = "/stark_solarpower_panel"
 PANEL_STATIC_REGISTERED = "panel_static_registered"
 PANEL_DIRECTORY = Path(__file__).parent / "frontend"
@@ -32,6 +33,7 @@ PANEL_METADATA = {
     "expose_in_generated_ui": True,
     "preferred_view": "overview",
     "ui_version": PANEL_UI_VERSION,
+    "template_version": PANEL_TEMPLATE_VERSION,
     "frontend_bundle": PANEL_BUNDLE,
 }
 
@@ -64,6 +66,7 @@ async def async_register_ups_panel(hass: HomeAssistant) -> None:
         module_url=f"{PANEL_STATIC_URL}/{PANEL_BUNDLE}?v={PANEL_UI_VERSION}",
         embed_iframe=False,
         require_admin=False,
+        handle_safe_area=True,
         config=PANEL_METADATA,
     )
 
