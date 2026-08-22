@@ -3,7 +3,7 @@ name: Frontend bundle
 on:
   push:
     branches:
-      - hardening/self-contained-frontend-1.6.3
+      - "hardening/self-contained-frontend-*"
     paths:
       - "custom_components/stark_solarpower/frontend/**"
       - "scripts/build_frontend_bundle.py"
@@ -54,14 +54,21 @@ jobs:
 
       - name: Verify committed bundle on pull request
         if: github.event_name == 'pull_request'
-        run: git diff --exit-code -- custom_components/stark_solarpower/frontend/stark-solarpower-panel-bundle.js
+        shell: bash
+        run: |
+          BUNDLE=custom_components/stark_solarpower/frontend/stark-solarpower-panel-bundle.js
+          if git ls-files --error-unmatch "$BUNDLE" >/dev/null 2>&1; then
+            git diff --exit-code -- "$BUNDLE"
+          else
+            echo "Bundle bootstrap: generated artifact will be committed by the hardening-branch push workflow after this build infrastructure reaches main."
+          fi
 
       - name: Commit generated bundle on hardening branch
         if: github.event_name == 'push'
         shell: bash
         run: |
           BUNDLE=custom_components/stark_solarpower/frontend/stark-solarpower-panel-bundle.js
-          if git diff --quiet -- "$BUNDLE"; then
+          if git diff --quiet -- "$BUNDLE" && git ls-files --error-unmatch "$BUNDLE" >/dev/null 2>&1; then
             echo "Bundle already current."
             exit 0
           fi
@@ -69,4 +76,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "$BUNDLE"
           git commit -m "build: refresh self-contained Stark panel bundle"
-          git push origin HEAD:hardening/self-contained-frontend-1.6.3
+          git push origin HEAD:"$GITHUB_REF_NAME"
