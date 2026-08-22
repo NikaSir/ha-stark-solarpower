@@ -58,7 +58,7 @@
       "charger_temperature": {"name": "Температура зарядного устройства"},
       "battery_remain_time": {"name": "Остаток времени АКБ (RAW ИБП)"},
       "battery_piece_number": {"name": "Количество АКБ"},
-      "battery_group_number": {"name": "Количество групп АКБ"},
+      "battery_group_number": {"name": "Параметр группы АКБ (RAW ИБП)"},
       "protocol_id": {"name": "Протокол ИБП"},
       "dctodc_status": {"name": "Состояние DC-DC"},
       "pfc_status": {"name": "Состояние PFC"},
