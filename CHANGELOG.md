@@ -2,6 +2,18 @@
 
 All notable project changes are recorded here.
 
+## [1.5.1] - 2026-08-22
+
+### Panel UI 0.2.0
+
+- Format UPS data timestamps and last-successful-update timestamps in the Home Assistant configured timezone instead of exposing raw ISO strings.
+- Add relative timestamps to the latest UPS event summary while retaining the absolute local timestamp as detail.
+- Improve the History cards with the current operating mode and clearer event hierarchy.
+- Add explicit labels for extended-telemetry lost/restored events.
+- Tighten diagnostic value layout on iPhone-sized viewports and use tabular numerals for technical values.
+- Keep the v0.1 Overview information architecture unchanged after successful iPhone Pro Max field review.
+- Preserve dependency-free frontend delivery, stable `/dashboard-ups` route and existing entity interactions.
+
 ## [1.5.0] - 2026-08-22
 
 ### Added
