@@ -69,11 +69,12 @@ jobs:
               raise SystemExit('panel.py must declare the self-contained production bundle')
           if 'module_url=f"{PANEL_STATIC_URL}/{PANEL_BUNDLE}?v={PANEL_UI_VERSION}"' not in panel:
               raise SystemExit('module_url must point to PANEL_BUNDLE with query-string cache busting')
-          if manifest.get('frontend_delivery', {}).get('mode') != 'self_contained_bundle':
+          delivery = manifest.get('frontend_delivery', {})
+          if delivery.get('mode') != 'self_contained_bundle':
               raise SystemExit('panel_manifest.json must declare self_contained_bundle delivery')
-          if manifest.get('frontend_delivery', {}).get('bundle') != expected:
-              raise SystemExit('panel_manifest.json bundle does not match production registration')
-          if manifest.get('frontend_delivery', {}).get('runtime_previous_version_imports') is not False:
+          if delivery.get('module') != expected:
+              raise SystemExit('panel_manifest.json module does not match production registration')
+          if delivery.get('runtime_previous_version_imports') is not False:
               raise SystemExit('runtime_previous_version_imports must be false')
           print('Production frontend registration contract OK')
           PY
