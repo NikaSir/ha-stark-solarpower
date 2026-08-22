@@ -2,6 +2,37 @@
 
 All notable project changes are recorded here.
 
+## [1.3.0] - 2026-08-22
+
+### Added
+
+- Detailed `queryDeviceLastData` read-only telemetry sampled every 5 minutes.
+- Positive and negative DC bus voltage sensors.
+- UPS, PFC, ambient and charger temperature sensors.
+- Optional diagnostics for vendor battery runtime RAW value, battery piece/group fields, protocol ID, DC-DC/PFC/inverter states and input/output relay states.
+- Full normalized detailed telemetry payload in Home Assistant diagnostics for future field mapping without exposing credentials or API secrets.
+
+### Changed
+
+- Stale-data threshold increased from 5 to 6 minutes (360 seconds).
+- Manual **Refresh all UPS** also forces an immediate detailed-telemetry refresh.
+- Primary cloud polling remains 60 seconds.
+- Battery remaining-time value is exposed as a unitless RAW diagnostic until the SolarPower cloud field unit is verified on real hardware.
+- Extended telemetry is no longer merged into live entities after a failed latest detailed poll; cached values remain available only in diagnostics until a successful retry.
+- Failed detailed telemetry is retried on the next normal 60-second coordinator pass instead of waiting another full 5-minute interval.
+
+### Field validation
+
+- UPS protocol ID `PI01` confirmed on both field UPS devices.
+- Battery piece count reported as `2` on both field UPS devices.
+- The vendor field `Battery Group NNumber` normalizes to `battery_group_nnumber`; a stable internal alias is retained without changing entity unique IDs. Field values differ between the two UPS devices, so it remains a RAW diagnostic rather than a physical group count.
+- Input/output relay and DC-DC/PFC/inverter fields return vendor `Open`/`Closed` text; semantics remain diagnostic-only pending state-transition verification.
+- `Fault Kind = 14` is present while both UPS devices are operating normally, so it is treated as historical/vendor RAW data rather than an active alarm.
+
+### Safety
+
+- Ambiguous vendor fields such as `Fault Kind`, pre-fault snapshots, `battery_voltage_2`, high/low voltage fields, and vendor runtime/group semantics are collected in diagnostics first and are not promoted to active alarm/control semantics until verified on real hardware.
+
 ## [1.2.0] - 2026-08-21
 
 ### Added

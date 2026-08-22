@@ -19,6 +19,7 @@ from homeassistant.const import (
     UnitOfElectricCurrent,
     UnitOfElectricPotential,
     UnitOfFrequency,
+    UnitOfTemperature,
     UnitOfTime,
 )
 from homeassistant.core import HomeAssistant
@@ -54,6 +55,11 @@ def _normalize_mode(value: Any) -> str:
     return mapping.get(text, MODE_UNKNOWN)
 
 
+def _extended_value(snapshot: StarkDeviceSnapshot, key: str) -> Any:
+    """Return one normalized detailed-telemetry value."""
+    return snapshot.values.get(f"ext_{key}")
+
+
 @dataclass(frozen=True, kw_only=True)
 class StarkSolarPowerSensorDescription(SensorEntityDescription):
     """Sensor description with a snapshot value extractor."""
@@ -67,9 +73,7 @@ SENSORS: tuple[StarkSolarPowerSensorDescription, ...] = (
         key="mode",
         translation_key="mode",
         device_class=SensorDeviceClass.ENUM,
-        value_fn=lambda snapshot: _normalize_mode(
-            snapshot.values.get("bt_model")
-        ),
+        value_fn=lambda snapshot: _normalize_mode(snapshot.values.get("bt_model")),
     ),
     StarkSolarPowerSensorDescription(
         key="input_voltage",
@@ -141,6 +145,126 @@ SENSORS: tuple[StarkSolarPowerSensorDescription, ...] = (
         native_unit_of_measurement=PERCENTAGE,
         suggested_display_precision=0,
         value_fn=lambda snapshot: snapshot.values.get("bt_battery_capacity"),
+    ),
+    StarkSolarPowerSensorDescription(
+        key="positive_bus_voltage",
+        translation_key="positive_bus_voltage",
+        device_class=SensorDeviceClass.VOLTAGE,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=UnitOfElectricPotential.VOLT,
+        suggested_display_precision=0,
+        value_fn=lambda snapshot: _extended_value(snapshot, "positive_bus_voltage"),
+    ),
+    StarkSolarPowerSensorDescription(
+        key="negative_bus_voltage",
+        translation_key="negative_bus_voltage",
+        device_class=SensorDeviceClass.VOLTAGE,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=UnitOfElectricPotential.VOLT,
+        suggested_display_precision=0,
+        value_fn=lambda snapshot: _extended_value(snapshot, "negative_bus_voltage"),
+    ),
+    StarkSolarPowerSensorDescription(
+        key="ups_temperature",
+        translation_key="ups_temperature",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        suggested_display_precision=0,
+        value_fn=lambda snapshot: _extended_value(snapshot, "temperature"),
+    ),
+    StarkSolarPowerSensorDescription(
+        key="pfc_temperature",
+        translation_key="pfc_temperature",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        suggested_display_precision=0,
+        value_fn=lambda snapshot: _extended_value(snapshot, "temperature1_pfc_ntc"),
+    ),
+    StarkSolarPowerSensorDescription(
+        key="ambient_temperature",
+        translation_key="ambient_temperature",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        suggested_display_precision=0,
+        value_fn=lambda snapshot: _extended_value(snapshot, "temperature2_ambient_ntc"),
+    ),
+    StarkSolarPowerSensorDescription(
+        key="charger_temperature",
+        translation_key="charger_temperature",
+        device_class=SensorDeviceClass.TEMPERATURE,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=UnitOfTemperature.CELSIUS,
+        suggested_display_precision=0,
+        value_fn=lambda snapshot: _extended_value(snapshot, "temperature3_charger_ntc"),
+    ),
+    StarkSolarPowerSensorDescription(
+        key="battery_remain_time",
+        translation_key="battery_remain_time",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
+        value_fn=lambda snapshot: _extended_value(snapshot, "battery_remain_time"),
+    ),
+    StarkSolarPowerSensorDescription(
+        key="battery_piece_number",
+        translation_key="battery_piece_number",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
+        requires_live_data=False,
+        value_fn=lambda snapshot: _extended_value(snapshot, "battery_piece_number"),
+    ),
+    StarkSolarPowerSensorDescription(
+        key="battery_group_number",
+        translation_key="battery_group_number",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
+        requires_live_data=False,
+        value_fn=lambda snapshot: _extended_value(snapshot, "battery_group_number"),
+    ),
+    StarkSolarPowerSensorDescription(
+        key="protocol_id",
+        translation_key="protocol_id",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
+        requires_live_data=False,
+        value_fn=lambda snapshot: _extended_value(snapshot, "protocol_id"),
+    ),
+    StarkSolarPowerSensorDescription(
+        key="dctodc_status",
+        translation_key="dctodc_status",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
+        value_fn=lambda snapshot: _extended_value(snapshot, "dctodc"),
+    ),
+    StarkSolarPowerSensorDescription(
+        key="pfc_status",
+        translation_key="pfc_status",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
+        value_fn=lambda snapshot: _extended_value(snapshot, "pfc"),
+    ),
+    StarkSolarPowerSensorDescription(
+        key="inverter_status",
+        translation_key="inverter_status",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
+        value_fn=lambda snapshot: _extended_value(snapshot, "inverter"),
+    ),
+    StarkSolarPowerSensorDescription(
+        key="input_relay_status",
+        translation_key="input_relay_status",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
+        value_fn=lambda snapshot: _extended_value(snapshot, "input_relay"),
+    ),
+    StarkSolarPowerSensorDescription(
+        key="output_relay_status",
+        translation_key="output_relay_status",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
+        value_fn=lambda snapshot: _extended_value(snapshot, "o_p_relay"),
     ),
     StarkSolarPowerSensorDescription(
         key="data_timestamp",
@@ -218,6 +342,8 @@ class StarkSolarPowerSensor(StarkSolarPowerEntity, SensorEntity):
         """Keep stored diagnostics visible when the latest poll fails."""
         snapshot = self.snapshot
         if snapshot is None or not self.coordinator.last_update_success:
+            return False
+        if self.entity_description.value_fn(snapshot) is None:
             return False
         if self.entity_description.requires_live_data:
             return snapshot.available and not is_data_stale(snapshot)

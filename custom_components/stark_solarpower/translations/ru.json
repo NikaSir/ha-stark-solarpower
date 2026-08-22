@@ -42,58 +42,41 @@
           "unknown": "Неизвестно"
         }
       },
-      "input_voltage": {
-        "name": "Входное напряжение"
-      },
-      "input_frequency": {
-        "name": "Входная частота"
-      },
-      "output_voltage": {
-        "name": "Выходное напряжение"
-      },
-      "output_frequency": {
-        "name": "Выходная частота"
-      },
-      "output_current": {
-        "name": "Выходной ток"
-      },
-      "output_load": {
-        "name": "Нагрузка"
-      },
-      "battery_voltage": {
-        "name": "Напряжение АКБ"
-      },
-      "battery_capacity": {
-        "name": "Заряд АКБ"
-      },
-      "data_timestamp": {
-        "name": "Время данных ИБП"
-      },
-      "data_age": {
-        "name": "Возраст данных"
-      },
-      "firmware": {
-        "name": "Прошивка ИБП"
-      },
-      "last_successful_update": {
-        "name": "Последнее успешное обновление"
-      }
+      "input_voltage": {"name": "Входное напряжение"},
+      "input_frequency": {"name": "Входная частота"},
+      "output_voltage": {"name": "Выходное напряжение"},
+      "output_frequency": {"name": "Выходная частота"},
+      "output_current": {"name": "Выходной ток"},
+      "output_load": {"name": "Нагрузка"},
+      "battery_voltage": {"name": "Напряжение АКБ"},
+      "battery_capacity": {"name": "Заряд АКБ"},
+      "positive_bus_voltage": {"name": "Положительная шина DC"},
+      "negative_bus_voltage": {"name": "Отрицательная шина DC"},
+      "ups_temperature": {"name": "Температура ИБП"},
+      "pfc_temperature": {"name": "Температура PFC"},
+      "ambient_temperature": {"name": "Температура окружающей среды"},
+      "charger_temperature": {"name": "Температура зарядного устройства"},
+      "battery_remain_time": {"name": "Остаток времени АКБ (RAW ИБП)"},
+      "battery_piece_number": {"name": "Количество АКБ"},
+      "battery_group_number": {"name": "Параметр группы АКБ (RAW ИБП)"},
+      "protocol_id": {"name": "Протокол ИБП"},
+      "dctodc_status": {"name": "Состояние DC-DC"},
+      "pfc_status": {"name": "Состояние PFC"},
+      "inverter_status": {"name": "Состояние инвертора"},
+      "input_relay_status": {"name": "Входное реле"},
+      "output_relay_status": {"name": "Выходное реле"},
+      "data_timestamp": {"name": "Время данных ИБП"},
+      "data_age": {"name": "Возраст данных"},
+      "firmware": {"name": "Прошивка ИБП"},
+      "last_successful_update": {"name": "Последнее успешное обновление"}
     },
     "binary_sensor": {
-      "on_battery": {
-        "name": "Работа от батареи"
-      },
-      "cloud_connected": {
-        "name": "Облачная телеметрия"
-      },
-      "data_stale": {
-        "name": "Данные устарели"
-      }
+      "on_battery": {"name": "Работа от батареи"},
+      "cloud_connected": {"name": "Облачная телеметрия"},
+      "data_stale": {"name": "Данные устарели"}
     },
     "button": {
-      "refresh_now": {
-        "name": "Обновить все ИБП"
-      }
+      "refresh_now": {"name": "Обновить все ИБП"}
     }
   }
 }

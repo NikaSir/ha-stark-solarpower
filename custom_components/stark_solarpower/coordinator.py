@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import asyncio
 from dataclasses import replace
+from datetime import UTC, datetime
 import logging
 import time
+from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -19,7 +21,13 @@ from .api import (
     StarkDeviceSnapshot,
     StarkSolarPowerApi,
 )
-from .const import DOMAIN, MANUAL_REFRESH_COOLDOWN_SECONDS, UPDATE_INTERVAL
+from .const import (
+    DOMAIN,
+    EXTENDED_UPDATE_INTERVAL,
+    MANUAL_REFRESH_COOLDOWN_SECONDS,
+    UPDATE_INTERVAL,
+)
+from .extended import async_get_extended_values
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -48,6 +56,11 @@ class StarkSolarPowerCoordinator(
         self.devices: dict[str, StarkDeviceInfo] = {}
         self._manual_refresh_lock = asyncio.Lock()
         self._last_manual_refresh = 0.0
+        self._last_extended_refresh = 0.0
+        self._force_extended_refresh = True
+        self.extended_values: dict[str, dict[str, Any]] = {}
+        self.extended_fetched_at: dict[str, datetime] = {}
+        self.extended_errors: dict[str, str | None] = {}
 
     async def async_manual_refresh(self) -> bool:
         """Request an immediate account refresh with anti-repeat protection."""
@@ -60,6 +73,7 @@ class StarkSolarPowerCoordinator(
                 _LOGGER.debug("Manual refresh ignored during cooldown")
                 return False
             self._last_manual_refresh = now
+            self._force_extended_refresh = True
 
         await self.async_request_refresh()
         return True
@@ -75,26 +89,88 @@ class StarkSolarPowerCoordinator(
 
         self.devices = {device.pn: device for device in discovered}
 
+    def _extended_refresh_due(self) -> bool:
+        """Return whether slow-changing detailed telemetry should be refreshed."""
+        return self._force_extended_refresh or (
+            time.monotonic() - self._last_extended_refresh
+            >= EXTENDED_UPDATE_INTERVAL.total_seconds()
+        )
+
     async def _async_update_data(self) -> dict[str, StarkDeviceSnapshot]:
         """Fetch current telemetry, retaining stale snapshots per device."""
         if not self.devices:
             raise UpdateFailed("No Stark SolarPower devices were discovered")
 
-        results = await asyncio.gather(
-            *(
-                self.api.async_get_snapshot(device)
-                for device in self.devices.values()
-            ),
-            return_exceptions=True,
-        )
+        devices = list(self.devices.values())
+        refresh_extended = self._extended_refresh_due()
+        requests = [self.api.async_get_snapshot(device) for device in devices]
+        if refresh_extended:
+            requests.extend(
+                async_get_extended_values(self.api, device) for device in devices
+            )
+
+        results = await asyncio.gather(*requests, return_exceptions=True)
+        current_results = results[: len(devices)]
+        extended_results = results[len(devices) :] if refresh_extended else []
+
+        auth_error: SolarPowerAuthError | None = None
+        extended_failed = False
+
+        if refresh_extended:
+            self._last_extended_refresh = time.monotonic()
+            self._force_extended_refresh = False
+            fetched_at = datetime.now(tz=UTC)
+            for device, result in zip(devices, extended_results, strict=True):
+                if isinstance(result, dict):
+                    self.extended_values[device.pn] = result
+                    self.extended_fetched_at[device.pn] = fetched_at
+                    self.extended_errors[device.pn] = None
+                    continue
+
+                extended_failed = True
+                if isinstance(result, SolarPowerAuthError):
+                    auth_error = result
+                error_text = str(result)
+                self.extended_errors[device.pn] = error_text
+                _LOGGER.debug(
+                    "Cannot update extended telemetry for %s: %s",
+                    device.name,
+                    error_text,
+                )
+
+            # A failed detailed request should not leave live extended values
+            # looking current for another full 5-minute cycle. Retry on the
+            # next normal 60-second coordinator pass instead.
+            if extended_failed:
+                retry_delay = UPDATE_INTERVAL.total_seconds()
+                interval = EXTENDED_UPDATE_INTERVAL.total_seconds()
+                self._last_extended_refresh = time.monotonic() - max(
+                    0.0,
+                    interval - retry_delay,
+                )
 
         updated: dict[str, StarkDeviceSnapshot] = {}
         successes = 0
-        auth_error: SolarPowerAuthError | None = None
 
-        for device, result in zip(self.devices.values(), results, strict=True):
+        for device, result in zip(devices, current_results, strict=True):
             if isinstance(result, StarkDeviceSnapshot):
-                updated[device.pn] = result
+                values = dict(result.values)
+
+                # Detailed telemetry is merged only after a successful latest
+                # detailed poll. Cached raw values remain in diagnostics, but
+                # entities become unavailable while the detailed endpoint is
+                # currently failing.
+                if self.extended_errors.get(device.pn) is None:
+                    values.update(
+                        {
+                            f"ext_{key}": value
+                            for key, value in self.extended_values.get(
+                                device.pn, {}
+                            ).items()
+                        }
+                    )
+
+                updated[device.pn] = replace(result, values=values)
                 successes += 1
                 continue
 
@@ -117,7 +193,11 @@ class StarkSolarPowerCoordinator(
 
         if successes == 0 and not updated:
             first_error = next(
-                (str(result) for result in results if isinstance(result, Exception)),
+                (
+                    str(result)
+                    for result in current_results
+                    if isinstance(result, Exception)
+                ),
                 "unknown error",
             )
             raise UpdateFailed(f"All UPS updates failed: {first_error}")
