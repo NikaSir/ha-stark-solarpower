@@ -77,6 +77,63 @@
     },
     "button": {
       "refresh_now": {"name": "Обновить все ИБП"}
+    },
+    "event": {
+      "battery_mode_events": {
+        "name": "События режима АКБ",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "battery_mode_entered": "ИБП перешёл на батарею",
+              "battery_mode_exited": "ИБП вышел из режима работы от батареи"
+            }
+          }
+        }
+      },
+      "fault_mode_events": {
+        "name": "События аварийного режима",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "fault_mode_entered": "ИБП перешёл в аварийный режим",
+              "fault_mode_cleared": "Аварийный режим завершён"
+            }
+          }
+        }
+      },
+      "cloud_telemetry_events": {
+        "name": "События облачной телеметрии",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "telemetry_restored": "Облачная телеметрия восстановлена",
+              "telemetry_lost": "Облачная телеметрия потеряна"
+            }
+          }
+        }
+      },
+      "data_freshness_events": {
+        "name": "События свежести данных",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "data_stale": "Данные ИБП устарели",
+              "data_fresh": "Данные ИБП снова свежие"
+            }
+          }
+        }
+      },
+      "extended_telemetry_events": {
+        "name": "События расширенной телеметрии",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "extended_telemetry_restored": "Расширенная телеметрия восстановлена",
+              "extended_telemetry_lost": "Расширенная телеметрия потеряна"
+            }
+          }
+        }
+      }
     }
   }
 }
