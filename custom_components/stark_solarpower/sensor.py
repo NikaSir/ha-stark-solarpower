@@ -203,8 +203,6 @@ SENSORS: tuple[StarkSolarPowerSensorDescription, ...] = (
     StarkSolarPowerSensorDescription(
         key="battery_remain_time",
         translation_key="battery_remain_time",
-        device_class=SensorDeviceClass.DURATION,
-        native_unit_of_measurement=UnitOfTime.MINUTES,
         entity_category=EntityCategory.DIAGNOSTIC,
         entity_registry_enabled_default=False,
         value_fn=lambda snapshot: _extended_value(snapshot, "battery_remain_time"),
