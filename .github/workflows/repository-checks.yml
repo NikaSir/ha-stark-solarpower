@@ -22,6 +22,11 @@ jobs:
         with:
           python-version: "3.13"
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
       - name: Validate JSON files
         run: |
           python - <<'PY'
@@ -40,6 +45,16 @@ jobs:
         run: |
           if [ -d custom_components ]; then
             python -m compileall -q custom_components
+          fi
+
+      - name: Validate bundled JavaScript syntax
+        shell: bash
+        run: |
+          if [ -d custom_components ]; then
+            while IFS= read -r -d '' file; do
+              echo "Checking $file"
+              node --check "$file"
+            done < <(find custom_components -type f -name '*.js' -print0)
           fi
 
       - name: Reject tracked credential/key files

@@ -2,6 +2,29 @@
 
 All notable project changes are recorded here.
 
+## [1.5.0] - 2026-08-22
+
+### Added
+
+- Integration-owned Stark SolarPower panel at the stable route `/dashboard-ups`.
+- Mobile-first overview designed for iPhone Pro Max portrait orientation.
+- Per-UPS application-style cards with overall health, operating mode, power path, battery, load, cloud source and data freshness.
+- Dedicated diagnostics view separating primary SolarPower telemetry from the intermittent extended endpoint.
+- Compact history view using native Home Assistant more-info/history for input voltage, output voltage, load and battery charge.
+- Dynamic Home Assistant entity/device registry discovery so additional Stark SolarPower UPS devices reuse the same UI template.
+- Long-press more-info behavior for factual entities.
+- Integration-owned navigation metadata in `panel_manifest.json` for `ha-contract-generated-ui` hand-off.
+- Panel UX and failure-state acceptance documentation in `docs/PANEL.md`.
+
+### Design
+
+- The panel reads Home Assistant entities only; JavaScript never calls the Stark/SolarPower cloud API directly.
+- The top refresh action uses the existing integration `Обновить все ИБП` button entity.
+- `unknown` and `unavailable` are never mapped to a healthy status.
+- Primary cloud loss and stale data remain distinct states.
+- Extended BUS/temperature telemetry remains unavailable when the latest detailed poll failed; old values are not presented as current.
+- No additional HACS frontend dependency is required.
+
 ## [1.4.1] - 2026-08-22
 
 ### Fixed

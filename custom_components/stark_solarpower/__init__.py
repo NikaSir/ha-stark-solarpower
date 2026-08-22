@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME, Platform
 from homeassistant.core import HomeAssistant
@@ -10,6 +12,9 @@ from homeassistant.util import dt as dt_util
 
 from .api import StarkSolarPowerApi
 from .coordinator import StarkSolarPowerCoordinator
+from .panel import async_register_ups_panel, async_unregister_ups_panel
+
+_LOGGER = logging.getLogger(__name__)
 
 PLATFORMS: list[Platform] = [
     Platform.SENSOR,
@@ -36,9 +41,20 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     entry.runtime_data = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
+    try:
+        await async_register_ups_panel(hass)
+    except (OSError, RuntimeError, ValueError) as err:
+        # The monitoring integration must stay operational even if the optional
+        # frontend panel cannot be registered on a particular HA frontend build.
+        _LOGGER.warning("Cannot register Stark SolarPower UPS panel: %s", err)
+
     return True
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a Stark SolarPower config entry."""
-    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    unloaded = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    if unloaded:
+        async_unregister_ups_panel(hass)
+    return unloaded
