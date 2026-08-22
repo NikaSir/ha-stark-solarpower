@@ -11,20 +11,38 @@ The Stark SolarPower integration owns a dedicated Home Assistant panel for day-t
 - Sidebar title: `UPS`
 - Icon: `mdi:battery-charging`
 - Preferred view: `overview`
-- Panel UI version: `0.3.0`
-- Primary navigation: fixed bottom bar
+- Panel UI version: `0.3.2`
+- Primary navigation: full-width fixed bottom Tab Bar
 
 The same metadata is shipped in `custom_components/stark_solarpower/panel_manifest.json` for `ha-contract-generated-ui` and other consumers.
 
 ## NikaS application shell
 
-UI v0.3.0 follows the shared Home Assistant NikaS specialized-panel shell:
+UI v0.3.2 follows Home Assistant NikaS Integration Dashboard UI Standard v1.2:
 
-`Header → current UPS screen → fixed bottom navigation`
+`Header → Device Selector → selected-UPS Content → Bottom Tab Bar`
 
-The header is reserved for leaving the specialized panel and for global panel actions. The left Back control performs an explicit Home Assistant navigation to `/dashboard-infrastructure/overview`; it never uses browser history. The existing refresh action remains the single global action on the right.
+The Header is reserved for leaving the specialized panel and global actions. Back explicitly navigates to `/dashboard-infrastructure/overview`; browser history is not the application contract. `Stark SolarPower` is geometrically centered between symmetric Back and Refresh zones. No decorative battery/brand icon is shown in the Header.
 
-The bottom navigation is fixed in the iPhone thumb zone and contains `Обзор`, `Диагностика`, and `История`. It accounts for the iOS bottom safe area and never performs entity-specific actions. Factual entities continue to use long press → native Home Assistant more-info.
+The primary bottom navigation is full-width, fixed to the bottom edge, iOS-safe and contains `Обзор`, `Диагностика`, and `История`. Active state remains inside the common bar. Factual entities keep long press → native Home Assistant more-info.
+
+## Device context
+
+Stark SolarPower is the reference multi-device panel in NikaS.
+
+The Device Selector is persistent directly below the Header on every primary view:
+
+`UPS Интернет | UPS Котёл`
+
+Rules:
+
+- the order is fixed and never changes because of selection;
+- only active styling changes when another UPS is selected;
+- compact health dots may expose the state of both UPS devices;
+- selected UPS context is preserved across Overview / Diagnostics / History;
+- all primary content below the selector belongs only to the selected UPS;
+- the second full UPS card/history block is not duplicated below;
+- a future third peer UPS joins the same selector/template without a new dashboard implementation.
 
 ## Product intent
 
@@ -40,7 +58,7 @@ The integration remains the single source of truth. The panel does not call Star
 
 ### Overview
 
-One card per UPS. The card shows:
+The selected UPS receives one full operating card showing:
 
 - overall status;
 - operating mode and battery-mode state;
@@ -53,11 +71,9 @@ One card per UPS. The card shows:
 
 The status is green only when the primary cloud source is available, data is fresh, the UPS is in line mode, and the required operating measurements are available. `unknown` and `unavailable` are never converted into a healthy status.
 
-The v0.1 Overview information architecture was accepted on a real iPhone Pro Max and remains the baseline rather than being redesigned during shell changes.
-
 ### Diagnostics
 
-A device selector is followed by four groups:
+The same persistent Device Selector remains above the selected UPS diagnostic card. The diagnostic content contains four groups:
 
 1. data quality;
 2. electrical parameters;
@@ -66,30 +82,30 @@ A device selector is followed by four groups:
 
 The view explicitly distinguishes the primary SolarPower telemetry channel from the intermittent extended telemetry endpoint. When extended data is unavailable, BUS voltages and temperatures are shown as unavailable rather than reusing stale values.
 
-UPS data timestamps and last-successful-update timestamps are formatted in the Home Assistant configured timezone instead of exposing raw ISO strings. Technical values use a tighter mobile layout for iPhone-sized viewports.
+UPS data timestamps and last-successful-update timestamps are formatted in the Home Assistant configured timezone instead of exposing raw ISO strings.
 
 ### History
 
-The panel keeps the mobile history view compact. Key measurements are listed with current values and open Home Assistant's native more-info/history on interaction. The same view summarizes the latest integration event entities for battery mode, cloud telemetry, freshness and fault mode.
+History shows measurements and latest events for the selected UPS only. Key measurements open Home Assistant native more-info/history. The same view summarizes the latest integration event entities for battery mode, cloud telemetry, freshness and fault mode.
 
-The current operating mode is shown on each history card and latest integration events carry relative timestamps while preserving the exact local timestamp as detail.
-
-This avoids placing four large charts on the iPhone overview while still using Home Assistant's native recorder/history implementation.
+This avoids duplicating two long history blocks and keeps the iPhone information hierarchy consistent with Diagnostics.
 
 ## Entity discovery
 
 The frontend discovers Stark SolarPower entities dynamically through Home Assistant's entity and device registries. It groups entities by `device_id` and maps them using stable integration `unique_id` suffixes.
 
-This means a third UPS can be added without creating a separate dashboard implementation. The same UI template is applied to every discovered Stark SolarPower device.
+This means another UPS can be added without creating a separate dashboard implementation. The same UI template is applied to every discovered Stark SolarPower device.
 
 ## Interaction rules
 
 - Header Back: explicit navigate to `/dashboard-infrastructure/overview`.
-- Bottom navigation: section switching only.
+- Device Selector: peer-device context only; no device/domain action.
+- Bottom Tab Bar: section switching only.
+- Device order is stable and never follows the active selection.
 - Large touch targets are used for navigation and actions.
 - Long press on factual metrics opens standard Home Assistant more-info.
-- The History view also opens native more-info/history directly for the selected measurement.
-- The top-right refresh action presses the integration's existing `Обновить все ИБП` button entity; it does not call the vendor API from JavaScript.
+- The History view also opens native more-info/history for the selected measurement.
+- The top-right Refresh action presses the integration's existing `Обновить все ИБП` button entity; it does not call the vendor API from JavaScript.
 - No write/control path is introduced.
 
 ## Failure-state acceptance matrix
@@ -104,7 +120,8 @@ The panel must be field-tested on iPhone Pro Max for these cases:
 | Primary cloud unavailable | `Облако недоступно`, live measurements unavailable |
 | Entity `unknown` / `unavailable` | Explicit unknown/unavailable presentation, never healthy |
 | Extended telemetry failure | Main UPS state remains usable; BUS/temperature diagnostics unavailable |
-| Third UPS added | New card/device selector appears automatically |
+| Switch UPS context | Selector positions stay fixed; only active state/content changes |
+| Third UPS added | New selector item/template appears without a separate dashboard |
 
 ## Relationship with `ha-contract-generated-ui`
 

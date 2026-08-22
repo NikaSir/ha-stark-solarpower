@@ -2,6 +2,17 @@
 
 All notable project changes are recorded here.
 
+## [1.6.2] - 2026-08-22
+
+### Panel UI 0.3.2
+
+- Keep `UPS Интернет` and `UPS Котёл` in a fixed selector order; selection never reorders controls or device data.
+- Apply the same persistent Device Selector directly below the Header on Overview, Diagnostics and History.
+- Scope Overview, Diagnostics and History content to the selected UPS only; the second full UPS block is no longer duplicated below.
+- Preserve selected UPS context while switching `Обзор / Диагностика / История`.
+- Remove the decorative battery icon from the Header and geometrically center `Stark SolarPower` between symmetric Back/Refresh zones.
+- Keep the full-width fixed bottom Tab Bar, explicit Back route, health-dot semantics and read-only safety model unchanged.
+
 ## [1.6.1] - 2026-08-22
 
 ### Panel UI 0.3.1

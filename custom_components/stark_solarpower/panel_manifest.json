@@ -8,11 +8,26 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.3.1",
+  "ui_version": "0.3.2",
+  "header": {
+    "title_alignment": "viewport_center",
+    "show_brand_icon": false,
+    "back": {
+      "icon": "mdi:arrow-left",
+      "parent_path": "/dashboard-infrastructure/overview"
+    },
+    "actions": ["refresh"]
+  },
+  "device_context": {
+    "selector": "persistent_below_header",
+    "preserve_across_views": true,
+    "reorder_selected": false,
+    "content_scope": "selected_device_only"
+  },
   "navigation": {
     "header_back": "explicit_parent_route",
-    "primary_navigation": "fixed_bottom_bar",
-    "device_context_selector": "global",
+    "primary_navigation": "full_width_fixed_bottom_tab_bar",
+    "floating": false,
     "views": ["overview", "diagnostics", "history"]
   },
   "targets": {
