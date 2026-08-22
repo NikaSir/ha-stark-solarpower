@@ -2,6 +2,18 @@
 
 All notable project changes are recorded here.
 
+## [1.6.0] - 2026-08-22
+
+### Panel UI 0.3.0
+
+- Adopt the Home Assistant NikaS specialized-panel application shell.
+- Move `Обзор / Диагностика / История` from the top of the screen into a fixed bottom navigation bar with iOS safe-area handling.
+- Keep the accepted UPS Overview information architecture unchanged.
+- Make the header Back action an explicit navigation to `/dashboard-infrastructure/overview`; browser history is no longer used as an application contract.
+- Keep the global refresh action in the header and retain 44 pt-class touch targets.
+- Preserve long press → native Home Assistant more-info for factual entities; header and bottom-navigation controls remain navigation-only.
+- Publish `parent_route` and navigation metadata in `panel_manifest.json`.
+
 ## [1.5.2] - 2026-08-22
 
 ### Panel UI 0.2.1

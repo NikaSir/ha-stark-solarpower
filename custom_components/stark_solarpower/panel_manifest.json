@@ -3,11 +3,17 @@
   "id": "ups",
   "title": "UPS",
   "path": "/dashboard-ups",
+  "parent_route": "/dashboard-infrastructure/overview",
   "icon": "mdi:battery-charging",
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.2.1",
+  "ui_version": "0.3.0",
+  "navigation": {
+    "header_back": "explicit_parent_route",
+    "primary_navigation": "fixed_bottom_bar",
+    "views": ["overview", "diagnostics", "history"]
+  },
   "targets": {
     "primary": "iPhone Pro Max portrait",
     "secondary": ["iPad", "desktop"]
