@@ -10,7 +10,7 @@ The Stark SolarPower integration owns a dedicated Home Assistant panel for day-t
 - Sidebar title: `UPS`
 - Icon: `mdi:battery-charging`
 - Preferred view: `overview`
-- Panel UI version: `0.1.0`
+- Panel UI version: `0.2.0`
 
 The same metadata is shipped in `custom_components/stark_solarpower/panel_manifest.json` for `ha-contract-generated-ui` and other consumers.
 
@@ -41,6 +41,8 @@ One card per UPS. The card shows:
 
 The status is green only when the primary cloud source is available, data is fresh, the UPS is in line mode, and the required operating measurements are available. `unknown` and `unavailable` are never converted into a healthy status.
 
+The v0.1 Overview information architecture was accepted on a real iPhone Pro Max and is retained as the baseline for subsequent versions rather than being redesigned.
+
 ### Diagnostics
 
 A device selector is followed by four groups:
@@ -52,9 +54,13 @@ A device selector is followed by four groups:
 
 The view explicitly distinguishes the primary SolarPower telemetry channel from the intermittent extended telemetry endpoint. When extended data is unavailable, BUS voltages and temperatures are shown as unavailable rather than reusing stale values.
 
+From UI v0.2.0, UPS data timestamps and last-successful-update timestamps are formatted in the Home Assistant configured timezone instead of exposing raw ISO strings. Technical values use a tighter mobile layout for iPhone-sized viewports.
+
 ### History
 
 The panel keeps the mobile history view compact. Key measurements are listed with current values and open Home Assistant's native more-info/history on interaction. The same view summarizes the latest integration event entities for battery mode, cloud telemetry, freshness and fault mode.
+
+UI v0.2.0 adds the current operating mode to each history card and shows a relative timestamp for the latest integration event while preserving the exact local timestamp as detail.
 
 This avoids placing four large charts on the iPhone overview while still using Home Assistant's native recorder/history implementation.
 
