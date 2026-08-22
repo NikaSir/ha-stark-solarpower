@@ -2,6 +2,21 @@
 
 All notable project changes are recorded here.
 
+## [1.6.5] - 2026-08-22
+
+### Panel UI 0.3.5 — NikaS template shell alignment
+
+- Align the Stark SolarPower shell with `NikaS Integration Panel Template v1.0`.
+- Standardize Header geometry to `52px / 1fr / 52px` with a `48px / 1fr / 48px` narrow fallback.
+- Keep Header Back icon-only with a 44×44 px touch target and explicit navigation to `/dashboard-infrastructure/overview`.
+- Keep one global Refresh action in the symmetric right Header zone and center `Stark SolarPower` geometrically on the viewport.
+- Make the Bottom Tab Bar truly full-width and edge-attached on mobile and desktop; remove the previous 620 px desktop cap and rounded floating-card geometry.
+- Preserve fixed safe-area-aware bottom navigation with 58 px-class touch targets, 14 px labels and 24 px icons.
+- Add mobile overflow guards for the Header, UPS selector, status badge, power-flow values, diagnostics and history rows.
+- Verify the primary iPhone Pro Max portrait layout as a single-column, no-horizontal-scroll composition; keep `UPS Интернет` / `UPS Котёл` on one stable selector row.
+- Keep selected-device-only content, 1.6.4 typography, read-only behavior and all UPS telemetry/event semantics unchanged.
+- Continue production delivery through the single self-contained `stark-solarpower-panel-bundle.js` artifact.
+
 ## [1.6.4] - 2026-08-22
 
 ### Panel UI 0.3.4 — mobile typography
@@ -132,7 +147,7 @@ All notable project changes are recorded here.
 ### Added
 
 - Detailed `queryDeviceLastData` read-only telemetry sampled every 5 minutes.
-- Positive and negative DC bus voltage sensors.
+- Positive/negative DC bus voltage sensors.
 - UPS, PFC, ambient and charger temperature sensors.
 - Optional diagnostics for vendor battery runtime RAW value, battery piece/group fields, protocol ID, DC-DC/PFC/inverter states and input/output relay states.
 - Full normalized detailed telemetry payload in Home Assistant diagnostics for future field mapping without exposing credentials or API secrets.
