@@ -8,13 +8,22 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.3.4",
+  "ui_version": "0.3.5",
+  "template": {
+    "name": "NikaS Integration Panel Template",
+    "version": "1.0"
+  },
   "header": {
+    "grid_mobile_px": [52, "minmax(0,1fr)", 52],
+    "grid_narrow_px": [48, "minmax(0,1fr)", 48],
     "title_alignment": "viewport_center",
     "show_brand_icon": false,
     "back": {
       "icon": "mdi:arrow-left",
-      "parent_path": "/dashboard-infrastructure/overview"
+      "label_visible": false,
+      "parent_path": "/dashboard-infrastructure/overview",
+      "touch_target_px": 44,
+      "browser_history": false
     },
     "actions": ["refresh"]
   },
@@ -22,12 +31,17 @@
     "selector": "persistent_below_header",
     "preserve_across_views": true,
     "reorder_selected": false,
-    "content_scope": "selected_device_only"
+    "content_scope": "selected_device_only",
+    "mobile_rows": 1,
+    "touch_target_px": 52
   },
   "navigation": {
     "header_back": "explicit_parent_route",
     "primary_navigation": "full_width_fixed_bottom_tab_bar",
+    "edge_attached": true,
     "floating": false,
+    "safe_area": true,
+    "touch_target_px": 58,
     "views": ["overview", "diagnostics", "history"]
   },
   "frontend_delivery": {
@@ -39,9 +53,18 @@
   "typography": {
     "profile": "mobile_readability",
     "primary_target": "iPhone Pro Max portrait",
+    "header_title_px": 18,
+    "header_subtitle_px": 14,
     "minimum_secondary_text_px": 14,
     "navigation_text_px": 14,
     "device_selector_text_px": 16
+  },
+  "layout": {
+    "mobile_horizontal_scroll": false,
+    "mobile_content_columns": 1,
+    "desktop_content_max_width_px": 1240,
+    "desktop_selected_device_card_max_width_px": 820,
+    "content_clears_bottom_navigation": true
   },
   "targets": {
     "primary": "iPhone Pro Max portrait",
