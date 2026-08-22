@@ -161,6 +161,7 @@ class StarkSolarPowerEvent(StarkSolarPowerEntity, EventEntity):
         self.entity_description = description
         self._attr_event_types = list(description.event_types)
         self._last_transition_state: bool | None = None
+        self._suppress_next_coordinator_edge = True
 
     @property
     def available(self) -> bool:
@@ -181,12 +182,23 @@ class StarkSolarPowerEvent(StarkSolarPowerEntity, EventEntity):
     async def async_added_to_hass(self) -> None:
         """Seed edge detection without replaying an event at startup."""
         self._last_transition_state = self._current_transition_state()
+        self._suppress_next_coordinator_edge = True
         await super().async_added_to_hass()
 
     @callback
     def _handle_coordinator_update(self) -> None:
         """Fire one event only when the underlying state changes."""
         current = self._current_transition_state()
+
+        # Home Assistant can run one coordinator callback while entities are
+        # settling after a restart or config-entry reload. Treat that first
+        # callback as baseline establishment rather than a real UPS edge. This
+        # prevents synthetic "restored" events from appearing at startup.
+        if self._suppress_next_coordinator_edge:
+            self._suppress_next_coordinator_edge = False
+            self._last_transition_state = current
+            return
+
         previous = self._last_transition_state
         self._last_transition_state = current
 
