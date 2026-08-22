@@ -114,6 +114,7 @@ class StarkSolarPowerCoordinator(
         extended_results = results[len(devices) :] if refresh_extended else []
 
         auth_error: SolarPowerAuthError | None = None
+        extended_failed = False
 
         if refresh_extended:
             self._last_extended_refresh = time.monotonic()
@@ -125,6 +126,8 @@ class StarkSolarPowerCoordinator(
                     self.extended_fetched_at[device.pn] = fetched_at
                     self.extended_errors[device.pn] = None
                     continue
+
+                extended_failed = True
                 if isinstance(result, SolarPowerAuthError):
                     auth_error = result
                 error_text = str(result)
@@ -135,20 +138,38 @@ class StarkSolarPowerCoordinator(
                     error_text,
                 )
 
+            # A failed detailed request should not leave live extended values
+            # looking current for another full 5-minute cycle. Retry on the
+            # next normal 60-second coordinator pass instead.
+            if extended_failed:
+                retry_delay = UPDATE_INTERVAL.total_seconds()
+                interval = EXTENDED_UPDATE_INTERVAL.total_seconds()
+                self._last_extended_refresh = time.monotonic() - max(
+                    0.0,
+                    interval - retry_delay,
+                )
+
         updated: dict[str, StarkDeviceSnapshot] = {}
         successes = 0
 
         for device, result in zip(devices, current_results, strict=True):
             if isinstance(result, StarkDeviceSnapshot):
                 values = dict(result.values)
-                values.update(
-                    {
-                        f"ext_{key}": value
-                        for key, value in self.extended_values.get(
-                            device.pn, {}
-                        ).items()
-                    }
-                )
+
+                # Detailed telemetry is merged only after a successful latest
+                # detailed poll. Cached raw values remain in diagnostics, but
+                # entities become unavailable while the detailed endpoint is
+                # currently failing.
+                if self.extended_errors.get(device.pn) is None:
+                    values.update(
+                        {
+                            f"ext_{key}": value
+                            for key, value in self.extended_values.get(
+                                device.pn, {}
+                            ).items()
+                        }
+                    )
+
                 updated[device.pn] = replace(result, values=values)
                 successes += 1
                 continue
