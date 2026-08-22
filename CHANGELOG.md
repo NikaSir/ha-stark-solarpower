@@ -2,6 +2,16 @@
 
 All notable project changes are recorded here.
 
+## [1.6.4] - 2026-08-22
+
+### Panel UI 0.3.4 — mobile typography
+
+- Increase mobile-first text sizes after iPhone Pro Max field review without changing the accepted UI structure.
+- Raise Device Selector labels, power-flow labels and values, battery/load captions, freshness banner text, diagnostic rows, history rows, event timestamps, hints and Bottom Tab Bar labels to a more comfortable reading size.
+- Keep `Stark SolarPower` Header geometry, fixed UPS selector order, selected-device-only content and full-width fixed bottom navigation unchanged.
+- Preserve the self-contained `stark-solarpower-panel-bundle.js` production delivery contract and query-string cache busting.
+- No UPS telemetry, event, cloud, stale-data or control semantics change.
+
 ## [1.6.3] - 2026-08-22
 
 ### Panel UI 0.3.3 — frontend hardening
@@ -52,7 +62,7 @@ All notable project changes are recorded here.
 ### Panel UI 0.2.1
 
 - Add a dedicated back button to the Stark SolarPower panel header.
-- Use Home Assistant history semantics when the panel was opened from another HA page, returning to the actual previous screen.
+- Use Home Assistant history state when the panel was opened from another HA screen, returning to the actual previous screen.
 - Fall back to `/dashboard-infrastructure` when the panel was opened directly and there is no safe HA back destination.
 - Preserve the existing mobile-first header layout, stable `/dashboard-ups` route and read-only behavior.
 
@@ -61,7 +71,7 @@ All notable project changes are recorded here.
 ### Panel UI 0.2.0
 
 - Format UPS data timestamps and last-successful-update timestamps in the Home Assistant configured timezone instead of exposing raw ISO strings.
-- Add relative timestamps to the latest integration events.
+- Add relative timestamps to latest integration events.
 - Add current operating mode to History cards.
 - Add explicit extended-telemetry event labels.
 - Tighten Diagnostics layout for iPhone-sized viewports.
