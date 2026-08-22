@@ -61,6 +61,16 @@ async def async_get_extended_values(
             suffix += 1
         values[key] = _to_number(item.get("val"))
 
+    # The PI01 backend exposes the field with a vendor typo:
+    # "Battery Group NNumber" -> battery_group_nnumber. Keep the raw key in
+    # diagnostics, but provide a stable alias so entity unique IDs never need
+    # to follow the vendor typo.
+    if (
+        "battery_group_nnumber" in values
+        and "battery_group_number" not in values
+    ):
+        values["battery_group_number"] = values["battery_group_nnumber"]
+
     if not values:
         raise SolarPowerConnectionError(
             f"{device.name}: detailed-data response contains no values"
