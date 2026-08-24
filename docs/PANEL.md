@@ -11,18 +11,18 @@ The Stark SolarPower integration owns a dedicated Home Assistant panel for day-t
 - Sidebar title: `UPS`
 - Icon: `mdi:battery-charging`
 - Preferred view: `overview`
-- Panel UI version: `0.3.2`
+- Panel UI version: `0.5.0`
 - Primary navigation: full-width fixed bottom Tab Bar
 
 The same metadata is shipped in `custom_components/stark_solarpower/panel_manifest.json` for `ha-contract-generated-ui` and other consumers.
 
 ## NikaS application shell
 
-UI v0.3.2 follows Home Assistant NikaS Integration Dashboard UI Standard v1.2:
+UI v0.5.0 follows Home Assistant NikaS Integration Dashboard UI Standard v1.2:
 
 `Header → Device Selector → selected-UPS Content → Bottom Tab Bar`
 
-The Header is reserved for leaving the specialized panel and global actions. Back explicitly navigates to `/dashboard-infrastructure/overview`; browser history is not the application contract. `Stark SolarPower` is geometrically centered between symmetric Back and Refresh zones. No decorative battery/brand icon is shown in the Header.
+The Header belongs to the Home Assistant application shell and global actions. The left hamburger dispatches Home Assistant's native `hass-toggle-menu` event. `Stark SolarPower` is geometrically centered between symmetric Menu and Refresh zones. No decorative battery/brand icon is shown in the Header.
 
 The primary bottom navigation is full-width, fixed to the bottom edge, iOS-safe and contains `Обзор`, `Диагностика`, and `История`. Active state remains inside the common bar. Factual entities keep long press → native Home Assistant more-info.
 
@@ -58,16 +58,18 @@ The integration remains the single source of truth. The panel does not call Star
 
 ### Overview
 
-The selected UPS receives one full operating card showing:
+The selected UPS receives one full status-first operating card showing:
 
 - overall status;
 - operating mode and battery-mode state;
-- input → UPS → output power path;
+- the real Stark Country 1000 ONLINE (16A) cabinet;
+- non-disconnectable line → UPS → load power path;
 - battery percentage;
 - output load;
 - primary cloud availability;
 - stale/fresh data status and age;
-- compact input/output/battery/load metrics.
+- compact input/output/load metrics;
+- explicit non-disconnectable-line and battery state rows.
 
 The status is green only when the primary cloud source is available, data is fresh, the UPS is in line mode, and the required operating measurements are available. `unknown` and `unavailable` are never converted into a healthy status.
 
@@ -98,7 +100,7 @@ This means another UPS can be added without creating a separate dashboard implem
 
 ## Interaction rules
 
-- Header Back: explicit navigate to `/dashboard-infrastructure/overview`.
+- Header Menu: open the native Home Assistant sidebar/system menu.
 - Device Selector: peer-device context only; no device/domain action.
 - Bottom Tab Bar: section switching only.
 - Device order is stable and never follows the active selection.
