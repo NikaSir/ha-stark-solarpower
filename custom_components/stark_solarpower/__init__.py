@@ -11,6 +11,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.util import dt as dt_util
 
 from .api import StarkSolarPowerApi
+from .const import DOMAIN
 from .coordinator import StarkSolarPowerCoordinator
 from .panel import async_register_ups_panel, async_unregister_ups_panel
 
@@ -22,6 +23,8 @@ PLATFORMS: list[Platform] = [
     Platform.BUTTON,
     Platform.EVENT,
 ]
+
+PANEL_ENTRY_IDS = "panel_entry_ids"
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -42,6 +45,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     entry.runtime_data = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
+    domain_data = hass.data.setdefault(DOMAIN, {})
+    entry_ids = domain_data.setdefault(PANEL_ENTRY_IDS, set())
+    if isinstance(entry_ids, set):
+        entry_ids.add(entry.entry_id)
+
     try:
         await async_register_ups_panel(hass)
     except (OSError, RuntimeError, ValueError) as err:
@@ -56,5 +64,12 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a Stark SolarPower config entry."""
     unloaded = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unloaded:
-        async_unregister_ups_panel(hass)
+        domain_data = hass.data.setdefault(DOMAIN, {})
+        entry_ids = domain_data.get(PANEL_ENTRY_IDS)
+        if isinstance(entry_ids, set):
+            entry_ids.discard(entry.entry_id)
+            if not entry_ids:
+                async_unregister_ups_panel(hass)
+        else:
+            async_unregister_ups_panel(hass)
     return unloaded
