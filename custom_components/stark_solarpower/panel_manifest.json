@@ -8,7 +8,7 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.4.0",
+  "ui_version": "0.4.1",
   "template": {
     "name": "NikaS Integration Panel Template",
     "version": "1.0"
@@ -18,14 +18,22 @@
     "grid_narrow_px": [48, "minmax(0,1fr)", 48],
     "title_alignment": "viewport_center",
     "show_brand_icon": false,
-    "back": {
-      "icon": "mdi:arrow-left",
+    "left_control": {
+      "type": "application_menu",
+      "icon": "mdi:menu",
       "label_visible": false,
-      "parent_path": "/dashboard-infrastructure/overview",
       "touch_target_px": 44,
-      "browser_history": false
+      "contains_parent_navigation": true
     },
     "actions": ["refresh"]
+  },
+  "application_menu": {
+    "presentation": "left_drawer",
+    "dismiss_on_backdrop": true,
+    "parent_navigation": "/dashboard-infrastructure/overview",
+    "device_selection": true,
+    "refresh_all_ups": true,
+    "browser_history": false
   },
   "device_context": {
     "selector": "persistent_below_header",
@@ -36,7 +44,7 @@
     "touch_target_px": 52
   },
   "navigation": {
-    "header_back": "explicit_parent_route",
+    "exit_via": "application_menu_parent_item",
     "primary_navigation": "full_width_fixed_bottom_tab_bar",
     "edge_attached": true,
     "floating": false,
