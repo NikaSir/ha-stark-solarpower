@@ -4,7 +4,7 @@ Custom Home Assistant integration for **STARK Country Online** UPS devices monit
 
 ## Status
 
-Current production baseline: **v1.4.1**. Integration-owned UPS panel work is staged for **v1.5.0**.
+Current production baseline: **v1.8.0** with the integration-owned UPS panel UI **v0.5.0**.
 
 The integration has been field-tested on two STARK Country Online 1000 VA UPS devices with SolarPower Wi-Fi cards.
 
@@ -33,7 +33,7 @@ The integration has been field-tested on two STARK Country Online 1000 VA UPS de
 
 ## Integration-owned UPS panel
 
-Starting with v1.5.0 the integration ships its own dedicated Home Assistant panel.
+The integration ships its own dedicated Home Assistant panel.
 
 Navigation contract:
 
@@ -42,9 +42,11 @@ Navigation contract:
 - sidebar title: `UPS`;
 - icon: `mdi:battery-charging`;
 - preferred view: `overview`;
-- panel UI version: `0.1.0`.
+- panel UI version: `0.5.0`;
+- persistent device selector: `UPS Интернет / UPS Котёл`;
+- product artwork: `Stark Country 1000 ONLINE (16A)`.
 
-The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. A third UPS therefore does not require a second dashboard implementation.
+The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.5.0 adds a status-first photographic hero, a factual line → UPS → load flow, the real Stark Country cabinet, key electrical metrics, explicit non-disconnectable-line semantics and strict stale/source failure presentation. A third UPS therefore does not require a second dashboard implementation.
 
 Views:
 

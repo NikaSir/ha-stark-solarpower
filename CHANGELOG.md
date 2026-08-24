@@ -2,6 +2,20 @@
 
 All notable project changes are recorded here.
 
+## [1.8.0] - 2026-08-24
+
+### Panel UI 0.5.0 — Stark Country status-first dashboard
+
+- Replace the schematic-only Overview hero with the approved NikaS status-first mobile composition.
+- Add the real Stark Country 1000 ONLINE (16A) product artwork as an optimized transparent local asset; the panel has no external image dependency.
+- Keep the fixed `UPS Интернет / UPS Котёл` selector and selected-device-only content across Overview, Diagnostics and History.
+- Present the live power path around the physical UPS: non-disconnectable line → UPS → load, with the battery branch shown separately.
+- Use only Home Assistant entity values. Runtime, watts and other values are never invented when the integration does not provide a proven entity.
+- Add a compact three-card row for input, output and load plus explicit non-disconnectable-line and battery state summaries.
+- Preserve strict trust semantics: stale/source failure overrides the last reported operating mode and can never appear healthy.
+- Keep the native Home Assistant hamburger menu, refresh feedback, long press → more-info and read-only integration boundary.
+- Continue HACS delivery through the deterministic self-contained frontend bundle with UI-version cache busting.
+
 ## [1.6.5] - 2026-08-22
 
 ### Panel UI 0.3.5 — NikaS template shell alignment
