@@ -8,7 +8,7 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.4.2",
+  "ui_version": "0.4.3",
   "template": {
     "name": "NikaS Integration Panel Template",
     "version": "1.0"
@@ -82,6 +82,12 @@
     "desktop_content_max_width_px": 1240,
     "desktop_selected_device_card_max_width_px": 820,
     "content_clears_bottom_navigation": true
+  },
+  "quality": {
+    "stale_threshold_source": "backend",
+    "refresh_feedback": true,
+    "unrelated_hass_updates_skip_full_render": true,
+    "pfc_status_mapped": true
   },
   "targets": {
     "primary": "iPhone Pro Max portrait",
