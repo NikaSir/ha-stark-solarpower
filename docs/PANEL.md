@@ -11,20 +11,20 @@ The Stark SolarPower integration owns a dedicated Home Assistant panel for day-t
 - Sidebar title: `UPS`
 - Icon: `mdi:battery-charging`
 - Preferred view: `overview`
-- Panel UI version: `0.5.7`
+- Panel UI version: `0.5.8`
 - Primary navigation: full-width fixed bottom Tab Bar
 
 The same metadata is shipped in `custom_components/stark_solarpower/panel_manifest.json` for `ha-contract-generated-ui` and other consumers.
 
 ## NikaS application shell
 
-UI v0.5.7 uses the NikaS specialized-panel shell with a single fixed-layout transform canvas:
+UI v0.5.8 uses the NikaS specialized-panel shell with a single fixed-layout transform canvas:
 
 `Safe Area → Header → Device Selector → zoomable selected-UPS viewport → Bottom Tab Bar`
 
 The Header belongs to the specialized-panel shell and remains at native scale. Its permanent left control opens the native Home Assistant main-system menu; Refresh remains the single right-side shell action. `Stark SolarPower` is geometrically centered between symmetric Menu and Refresh zones. No decorative battery/brand icon is shown in the Header.
 
-Only the selected-UPS work viewport scales. Its complete live DOM is measured once and transformed as one canvas, so no card, SVG path or overlay is independently reflowed during pinch. Two-finger pinch uses the point between the fingers, and enlarged content pans and scrolls. No on-screen zoom buttons are rendered. A two-finger double tap resets the viewport to 100%; a completed pinch between 97% and 103% snaps to exactly 100%. Scale is stored locally for each Stark panel client and selected UPS; responsive mobile/tablet/desktop layout is resolved before the canvas transform and recalculated only on a real viewport resize.
+Only the selected-UPS work viewport scales. Its complete live DOM is measured once and transformed as one canvas, so no card, SVG path or overlay is independently reflowed during pinch. Two-finger pinch uses the point between the fingers; one finger explicitly pans the canvas horizontally and vertically. Gesture completion preserves the current scroll position. Pinch and drag cancel pending entity holds and suppress post-gesture clicks so native more-info graphs open only from an intentional stationary hold. No on-screen zoom buttons are rendered. A two-finger double tap resets the viewport to 100%; a completed pinch between 97% and 103% snaps to exactly 100%.
 
 The primary bottom navigation is full-width, fixed to the bottom edge, iOS-safe and contains `Обзор`, `ИБП`, `История`, `События`, and `Диагн.`. Active state remains inside the common bar. Factual entities keep long press → native Home Assistant more-info.
 

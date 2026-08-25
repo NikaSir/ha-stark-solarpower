@@ -2,6 +2,18 @@
 
 All notable project changes are recorded here.
 
+## [1.8.8] - 2026-08-25
+
+### Panel UI 0.5.8 — stable canvas pan and gesture guard
+
+- Add explicit one-finger horizontal and vertical panning for the transformed work canvas.
+- Keep the existing canvas and scroll coordinates across optimized Home Assistant state updates instead of rebuilding it.
+- Stop observing scrollbar-induced viewport geometry as a responsive resize source.
+- Recalculate base width only for real window/visual-viewport resize events; content-height updates do not reset the origin.
+- Cancel pending entity holds and suppress post-pinch/post-drag clicks to prevent accidental native more-info graphs.
+- Preserve intentional stationary hold → more-info, focal pinch, reset/snap, system menu and all UPS semantics.
+- Continue HACS delivery from `main` without GitHub Releases.
+
 ## [1.8.7] - 2026-08-25
 
 ### Panel UI 0.5.7 — fixed transform canvas
