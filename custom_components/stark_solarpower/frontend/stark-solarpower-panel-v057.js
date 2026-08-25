@@ -45,6 +45,8 @@ if (Panel && !Panel.prototype.__starkUiV057) {
   Panel.prototype._removeZoomShellsV057 = function () {
     this.__starkCanvasResizeObserverV057?.disconnect();
     this.__starkCanvasResizeObserverV057 = null;
+    this.__starkCanvasResizeCleanupV057?.();
+    this.__starkCanvasResizeCleanupV057 = null;
     window.cancelAnimationFrame(this.__starkCanvasFrameV057);
 
     const app = this.shadowRoot?.querySelector("main.app");
@@ -65,6 +67,30 @@ if (Panel && !Panel.prototype.__starkUiV057) {
     });
 
     app.querySelectorAll(".zoom-toolbar-v054").forEach((toolbar) => toolbar.remove());
+  };
+
+  Panel.prototype._retainFixedCanvasV057 = function (canvas) {
+    const app = this.shadowRoot?.querySelector("main.app");
+    if (!app || !canvas) return;
+
+    // Older build-time layers still reconcile their historical wrappers
+    // before this patch runs. Unwrap only those temporary parents while
+    // preserving the mounted v0.5.7 canvas, listeners and scroll position.
+    const temporaryWrappers = Array.from(
+      app.querySelectorAll(".zoom-viewport-v054, .zoom-viewport-v055")
+    ).reverse();
+    temporaryWrappers.forEach((viewport) => {
+      const content = viewport.querySelector(
+        ":scope > .zoom-content-v054, :scope > .zoom-content-v055"
+      );
+      if (content) {
+        while (content.firstChild) viewport.before(content.firstChild);
+      }
+      viewport.remove();
+    });
+    app.querySelectorAll(".zoom-toolbar-v054").forEach((toolbar) => toolbar.remove());
+    const nav = app.querySelector(":scope > .tabs.bottom-nav, :scope > .tabs");
+    if (nav) app.append(nav);
   };
 
   Panel.prototype._installFixedCanvasV057 = function () {
@@ -149,13 +175,13 @@ if (Panel && !Panel.prototype.__starkUiV057) {
     measureBase();
     applyGeometry(false);
 
-    const scheduleMeasure = () => {
+    const scheduleMeasure = (resetOrigin = false) => {
       window.cancelAnimationFrame(this.__starkCanvasFrameV057);
       this.__starkCanvasFrameV057 = window.requestAnimationFrame(() => {
         const previousWidth = baseWidth;
         measureBase();
         applyGeometry(false);
-        if (Math.abs(previousWidth - baseWidth) > 0.5) {
+        if (resetOrigin && Math.abs(previousWidth - baseWidth) > 0.5) {
           viewport.scrollLeft = 0;
           viewport.scrollTop = 0;
         }
@@ -163,13 +189,19 @@ if (Panel && !Panel.prototype.__starkUiV057) {
     };
 
     if (typeof ResizeObserver === "function") {
-      const observer = new ResizeObserver(scheduleMeasure);
-      observer.observe(viewport);
+      const observer = new ResizeObserver(() => scheduleMeasure(false));
       observer.observe(content);
       this.__starkCanvasResizeObserverV057 = observer;
-    } else {
-      window.requestAnimationFrame(scheduleMeasure);
     }
+
+    const handleViewportResize = () => scheduleMeasure(true);
+    window.addEventListener("resize", handleViewportResize, { passive: true });
+    window.visualViewport?.addEventListener("resize", handleViewportResize, { passive: true });
+    this.__starkCanvasResizeCleanupV057 = () => {
+      window.removeEventListener("resize", handleViewportResize);
+      window.visualViewport?.removeEventListener("resize", handleViewportResize);
+    };
+    window.requestAnimationFrame(() => scheduleMeasure(false));
 
     let pinch = null;
     let tapGesture = null;
@@ -306,7 +338,15 @@ if (Panel && !Panel.prototype.__starkUiV057) {
       root.append(style);
     }
 
-    this._removeZoomShellsV057();
-    this._installFixedCanvasV057();
+    // v0.4.3 deliberately skips the base DOM rebuild for unrelated HA state
+    // updates. Keep the existing canvas (and its scroll position/listeners)
+    // in that case; rebuild only after a real domain/view render replaced it.
+    const existingCanvas = root.querySelector(".zoom-viewport-v057");
+    if (existingCanvas) {
+      this._retainFixedCanvasV057(existingCanvas);
+    } else {
+      this._removeZoomShellsV057();
+      this._installFixedCanvasV057();
+    }
   };
 }
