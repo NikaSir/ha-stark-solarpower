@@ -2,6 +2,18 @@
 
 All notable project changes are recorded here.
 
+## [1.8.6] - 2026-08-25
+
+### Panel UI 0.5.6 — HA menu, gesture reset and battery path
+
+- Restore the permanent left Header control as the native Home Assistant main-system menu button.
+- Reset the work viewport to 100% with a two-finger double tap and transient `Масштаб 100%` confirmation.
+- Snap a completed 97–103% pinch to exactly 100% while keeping on-screen zoom controls absent.
+- Extend the battery SVG path beneath the UPS and battery node so responsive geometry cannot expose a disconnected segment.
+- Increase the battery-path stroke and glow for clear visual continuity without changing power-state semantics.
+- Preserve the normalized single work viewport, per-UPS scale persistence and all UPS domain behavior.
+- Continue HACS delivery from `main` without GitHub Releases.
+
 ## [1.8.5] - 2026-08-25
 
 ### Panel UI 0.5.5 — gesture-only zoom hotfix
