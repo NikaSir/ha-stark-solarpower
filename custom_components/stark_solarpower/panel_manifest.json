@@ -8,7 +8,7 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.5.9",
+  "ui_version": "0.6.0",
   "template": {
     "name": "NikaS Integration Panel Template",
     "version": "1.0"
@@ -56,7 +56,7 @@
     "maximum_percent": 200,
     "focal_point": true,
     "pan_when_enlarged": true,
-    "pan_engine": "single_finger_explicit_scroll",
+    "pan_engine": "single_transform_translation",
     "gesture_activation_guard": true,
     "persistence": "local_per_panel_and_device",
     "native_scale": ["header", "device_selector", "bottom_tab_bar"]

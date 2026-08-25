@@ -2,6 +2,17 @@
 
 All notable project changes are recorded here.
 
+## [1.8.10] - 2026-08-25
+
+### Panel UI 0.6.0 — transform-owned zoom and pan
+
+- Replace browser-owned `scrollLeft`/`scrollTop` canvas movement with one persistent `translate3d(x,y,0) scale(s)` transform.
+- Remove iOS overflow rubber-band rollback that returned work content to the top boundary after touch release at both normal and enlarged scale.
+- Clamp translation against the measured scaled canvas so every reachable position remains stable after release.
+- Preserve transform state per selected UPS across telemetry-driven DOM replacement.
+- Keep focal pinch, one-finger pan, two-finger reset/snap and the entity-activation guard.
+- Continue HACS delivery from `main` without GitHub Releases.
+
 ## [1.8.9] - 2026-08-25
 
 ### Panel UI 0.5.9 — focal-point persistence across telemetry rebuilds
