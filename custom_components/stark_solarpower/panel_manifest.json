@@ -8,7 +8,7 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.5.8",
+  "ui_version": "0.5.9",
   "template": {
     "name": "NikaS Integration Panel Template",
     "version": "1.0"

@@ -4,7 +4,7 @@ Custom Home Assistant integration for **STARK Country Online** UPS devices monit
 
 ## Status
 
-Current production baseline: **v1.8.8** with the integration-owned UPS panel UI **v0.5.8**.
+Current production baseline: **v1.8.9** with the integration-owned UPS panel UI **v0.5.9**.
 
 The integration has been field-tested on two STARK Country Online 1000 VA UPS devices with SolarPower Wi-Fi cards.
 
@@ -42,11 +42,11 @@ Navigation contract:
 - sidebar title: `UPS`;
 - icon: `mdi:battery-charging`;
 - preferred view: `overview`;
-- panel UI version: `0.5.8`;
+- panel UI version: `0.5.9`;
 - persistent device selector: `UPS Интернет / UPS Котёл`;
 - product artwork: `Stark Country 1000 ONLINE (16A)`.
 
-The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.5.8 keeps the single fixed-layout transform canvas, adds explicit one-finger horizontal/vertical panning and preserves its scroll position across optimized Home Assistant updates. Pinch and drag gestures suppress entity activation, preventing accidental more-info graphs. Responsive mobile/desktop layout is selected first and recalculated only after a real viewport resize. The system menu, UPS selector and Bottom Tab Bar remain native-sized.
+The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.5.9 keeps the single fixed-layout transform canvas, adds explicit one-finger horizontal/vertical panning and restores the same logical focal point if a selected UPS telemetry update replaces the live DOM. Pinch and drag gestures suppress entity activation, preventing accidental more-info graphs. Responsive mobile/desktop layout is selected first and recalculated only after a real viewport resize. The system menu, UPS selector and Bottom Tab Bar remain native-sized.
 
 Views:
 
