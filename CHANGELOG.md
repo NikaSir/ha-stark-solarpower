@@ -2,6 +2,17 @@
 
 All notable project changes are recorded here.
 
+## [1.8.11] - 2026-08-25
+
+### Panel UI 0.6.1 — one-screen Overview layout
+
+- Remove the repeated Input/Output/Load metric-card row from Overview.
+- Keep those facts in the hero, compact state summary and dedicated UPS view without duplicating a standalone block.
+- Move the battery scene node fully above the reserve strip so the two surfaces no longer touch or overlap.
+- Tighten Overview gaps, hero geometry and state-summary padding so both state rows fit above the fixed Bottom Tab Bar on the target iPhone.
+- Preserve transform-owned pan/zoom, gesture guards, system menu and read-only UPS semantics.
+- Continue HACS delivery from `main` without GitHub Releases.
+
 ## [1.8.10] - 2026-08-25
 
 ### Panel UI 0.6.0 — transform-owned zoom and pan
