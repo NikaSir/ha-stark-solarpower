@@ -2,6 +2,19 @@
 
 All notable project changes are recorded here.
 
+## [1.8.1] - 2026-08-25
+
+### Panel UI 0.5.1 — target-composition alignment
+
+- Rebuild the Overview hero to match the accepted compact photographic target instead of the oversized abstract scene.
+- Add optimized local context backgrounds: a network room for `UPS Интернет` and a boiler room for `UPS Котёл`.
+- Keep the physical Stark Country UPS, active SVG power paths and all live values as independent dynamic layers above the backgrounds.
+- Move data freshness to the top-right status zone and reduce the hero height so the key metrics and state summary enter the first mobile viewport.
+- Use neutral typography for normal measurements; reserve green, amber and red for confirmed state semantics.
+- Replace the three-item Bottom Tab Bar with the target five-item structure: `Обзор / ИБП / История / События / Диагн.`.
+- Keep every view scoped to the selected UPS and move event summaries to the dedicated Events view.
+- Continue to avoid invented runtime: the Overview reports factual battery readiness and does not derive minutes from battery percentage or load.
+
 ## [1.8.0] - 2026-08-24
 
 ### Panel UI 0.5.0 — Stark Country status-first dashboard

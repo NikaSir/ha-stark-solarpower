@@ -11,20 +11,20 @@ The Stark SolarPower integration owns a dedicated Home Assistant panel for day-t
 - Sidebar title: `UPS`
 - Icon: `mdi:battery-charging`
 - Preferred view: `overview`
-- Panel UI version: `0.5.0`
+- Panel UI version: `0.5.1`
 - Primary navigation: full-width fixed bottom Tab Bar
 
 The same metadata is shipped in `custom_components/stark_solarpower/panel_manifest.json` for `ha-contract-generated-ui` and other consumers.
 
 ## NikaS application shell
 
-UI v0.5.0 follows Home Assistant NikaS Integration Dashboard UI Standard v1.2:
+UI v0.5.1 follows Home Assistant NikaS Integration Dashboard UI Standard v1.2:
 
 `Header → Device Selector → selected-UPS Content → Bottom Tab Bar`
 
 The Header belongs to the Home Assistant application shell and global actions. The left hamburger dispatches Home Assistant's native `hass-toggle-menu` event. `Stark SolarPower` is geometrically centered between symmetric Menu and Refresh zones. No decorative battery/brand icon is shown in the Header.
 
-The primary bottom navigation is full-width, fixed to the bottom edge, iOS-safe and contains `Обзор`, `Диагностика`, and `История`. Active state remains inside the common bar. Factual entities keep long press → native Home Assistant more-info.
+The primary bottom navigation is full-width, fixed to the bottom edge, iOS-safe and contains `Обзор`, `ИБП`, `История`, `События`, and `Диагн.`. Active state remains inside the common bar. Factual entities keep long press → native Home Assistant more-info.
 
 ## Device context
 
@@ -38,8 +38,7 @@ Rules:
 
 - the order is fixed and never changes because of selection;
 - only active styling changes when another UPS is selected;
-- compact health dots may expose the state of both UPS devices;
-- selected UPS context is preserved across Overview / Diagnostics / History;
+- selected UPS context is preserved across all five primary views;
 - all primary content below the selector belongs only to the selected UPS;
 - the second full UPS card/history block is not duplicated below;
 - a future third peer UPS joins the same selector/template without a new dashboard implementation.
@@ -71,7 +70,13 @@ The selected UPS receives one full status-first operating card showing:
 - compact input/output/load metrics;
 - explicit non-disconnectable-line and battery state rows.
 
+The hero uses a local context plate selected from the device name: a network room for `UPS Интернет` and a boiler room for `UPS Котёл`. The background is decorative only. The product, power paths, status nodes and values are independent runtime layers and remain factual.
+
 The status is green only when the primary cloud source is available, data is fresh, the UPS is in line mode, and the required operating measurements are available. `unknown` and `unavailable` are never converted into a healthy status.
+
+### UPS
+
+The selected-UPS view keeps device identity, mode, line/battery state and compact working parameters together without duplicating the complete diagnostic registry.
 
 ### Diagnostics
 
@@ -88,9 +93,13 @@ UPS data timestamps and last-successful-update timestamps are formatted in the H
 
 ### History
 
-History shows measurements and latest events for the selected UPS only. Key measurements open Home Assistant native more-info/history. The same view summarizes the latest integration event entities for battery mode, cloud telemetry, freshness and fault mode.
+History shows measurements for the selected UPS only. Key measurements open Home Assistant native more-info/history.
 
-This avoids duplicating two long history blocks and keeps the iPhone information hierarchy consistent with Diagnostics.
+This avoids duplicating long history blocks and keeps the iPhone information hierarchy consistent with Diagnostics.
+
+### Events
+
+Events summarizes the latest selected-device integration event entities for battery mode, cloud telemetry, freshness, fault mode and optional extended telemetry.
 
 ## Entity discovery
 

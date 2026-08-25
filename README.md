@@ -4,7 +4,7 @@ Custom Home Assistant integration for **STARK Country Online** UPS devices monit
 
 ## Status
 
-Current production baseline: **v1.8.0** with the integration-owned UPS panel UI **v0.5.0**.
+Current production baseline: **v1.8.1** with the integration-owned UPS panel UI **v0.5.1**.
 
 The integration has been field-tested on two STARK Country Online 1000 VA UPS devices with SolarPower Wi-Fi cards.
 
@@ -42,17 +42,19 @@ Navigation contract:
 - sidebar title: `UPS`;
 - icon: `mdi:battery-charging`;
 - preferred view: `overview`;
-- panel UI version: `0.5.0`;
+- panel UI version: `0.5.1`;
 - persistent device selector: `UPS Интернет / UPS Котёл`;
 - product artwork: `Stark Country 1000 ONLINE (16A)`.
 
-The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.5.0 adds a status-first photographic hero, a factual line → UPS → load flow, the real Stark Country cabinet, key electrical metrics, explicit non-disconnectable-line semantics and strict stale/source failure presentation. A third UPS therefore does not require a second dashboard implementation.
+The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.5.1 uses a compact contextual photographic hero: a network-room scene for `UPS Интернет` and a boiler-room scene for `UPS Котёл`. The real Stark Country cabinet, factual line → UPS → load flow, key electrical metrics, explicit non-disconnectable-line semantics and strict stale/source failure presentation remain dynamic. A third UPS therefore does not require a separate dashboard implementation.
 
 Views:
 
-- **Обзор** — health, operating mode, power path, battery, load, cloud source and freshness at a glance;
-- **Диагностика** — primary-vs-extended data source health plus detailed electrical and vendor diagnostics;
-- **История** — compact key measurements and integration event summaries; native Home Assistant more-info/history is used for detailed charts.
+- **Обзор** — health, operating mode, power path, battery, load, source freshness and the compact state summary;
+- **ИБП** — selected-device identity, electrical state and working parameters;
+- **История** — compact key measurements opening native Home Assistant history;
+- **События** — latest selected-device integration event entities;
+- **Диагн.** — primary-vs-extended data source health plus detailed electrical and vendor diagnostics.
 
 The panel never calls the Stark/SolarPower API directly. It reads Home Assistant entities only and uses the existing integration button entity for manual refresh. `unknown` and `unavailable` are never presented as healthy states.
 
