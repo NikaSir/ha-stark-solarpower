@@ -2,6 +2,17 @@
 
 All notable project changes are recorded here.
 
+## [1.8.12] - 2026-08-25
+
+### Panel UI 0.6.2 — expanded hero composition
+
+- Expand the photographic room scene into the available one-screen space.
+- Enlarge the Stark UPS and ground it on the room floor.
+- Move the battery charge card above the cabinet and reverse its live connection path accordingly.
+- Move the reserve-ready strip out of the photograph into a separate full-width surface below the hero.
+- Preserve the compact state summary, transform-owned pan/zoom and gesture guards.
+- Continue HACS delivery from `main` without GitHub Releases.
+
 ## [1.8.11] - 2026-08-25
 
 ### Panel UI 0.6.1 — one-screen Overview layout
