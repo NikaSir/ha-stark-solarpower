@@ -4,7 +4,7 @@ Custom Home Assistant integration for **STARK Country Online** UPS devices monit
 
 ## Status
 
-Current production baseline: **v1.8.4** with the integration-owned UPS panel UI **v0.5.4**.
+Current production baseline: **v1.8.5** with the integration-owned UPS panel UI **v0.5.5**.
 
 The integration has been field-tested on two STARK Country Online 1000 VA UPS devices with SolarPower Wi-Fi cards.
 
@@ -42,11 +42,11 @@ Navigation contract:
 - sidebar title: `UPS`;
 - icon: `mdi:battery-charging`;
 - preferred view: `overview`;
-- panel UI version: `0.5.4`;
+- panel UI version: `0.5.5`;
 - persistent device selector: `UPS Интернет / UPS Котёл`;
 - product artwork: `Stark Country 1000 ONLINE (16A)`.
 
-The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.5.4 follows the shared specialized-panel shell: the header clears the iPhone Dynamic Island/notch, Back returns to the canonical infrastructure route, and only the selected-UPS work viewport supports persistent 75–200% pinch and `− / % / +` zoom. The header, UPS selector, zoom controls and Bottom Tab Bar remain native-sized. All live values and stale/source semantics remain dynamic. A third UPS therefore does not require a separate dashboard implementation.
+The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.5.5 keeps the shared specialized-panel shell, removes the on-screen zoom controls and retains persistent 75–200% two-finger pinch zoom inside one normalized selected-UPS work viewport. The header, UPS selector and Bottom Tab Bar remain native-sized. All live values and stale/source semantics remain dynamic. A third UPS therefore does not require a separate dashboard implementation.
 
 Views:
 

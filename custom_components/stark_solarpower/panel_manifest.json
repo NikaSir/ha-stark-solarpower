@@ -8,7 +8,7 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.5.4",
+  "ui_version": "0.5.5",
   "template": {
     "name": "NikaS Integration Panel Template",
     "version": "1.0"
@@ -47,14 +47,13 @@
   "zoom": {
     "scope": "selected_device_work_viewport",
     "pinch": true,
-    "controls": ["decrease", "percentage_reset", "increase"],
+    "controls": [],
     "minimum_percent": 75,
     "maximum_percent": 200,
-    "step_percent": 10,
     "focal_point": true,
     "pan_when_enlarged": true,
     "persistence": "local_per_panel_and_device",
-    "native_scale": ["header", "device_selector", "zoom_controls", "bottom_tab_bar"]
+    "native_scale": ["header", "device_selector", "bottom_tab_bar"]
   },
   "overview": {
     "information_architecture": ["contextual_photographic_hero", "power_flow", "key_metrics", "state_summary"],
