@@ -2,6 +2,19 @@
 
 All notable project changes are recorded here.
 
+## [1.8.2] - 2026-08-25
+
+### Panel UI 0.5.2 — iPhone field geometry
+
+- Remove duplicate top safe-area padding observed in the Home Assistant iOS field capture.
+- Reduce the device selector and fixed Bottom Tab Bar to the accepted target proportions while preserving touch targets.
+- Keep the photographic hero, but increase and ground the Stark Country UPS, separate the battery node from the cabinet and strengthen the active power paths.
+- Reduce the white scene wash so the network/boiler context remains legible behind dynamic elements.
+- Keep freshness on one line on iPhone Pro Max and prevent the normal status sentence from consuming an extra row.
+- Convert the input/output/load metrics back to the compact horizontal target layout.
+- Tighten the state summary so both the non-disconnectable line and battery rows remain visible above navigation.
+- Preserve factual entity values, strict stale/source semantics, five-view navigation and read-only behavior.
+
 ## [1.8.1] - 2026-08-25
 
 ### Panel UI 0.5.1 — target-composition alignment
