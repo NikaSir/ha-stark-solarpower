@@ -2,6 +2,17 @@
 
 All notable project changes are recorded here.
 
+## [1.8.13] - 2026-08-25
+
+### Panel UI 0.6.3 — clean hero composition
+
+- Replace both room backgrounds with clean, edge-safe production plates and add restrained blue/green activity LEDs to the Internet rack.
+- Remove decorative power-flow lines and the repeated reserve-ready strip.
+- Give the recovered height to the photographic scene while keeping the UPS grounded on the floor.
+- Keep the battery card above the UPS and restore enough header clearance to prevent overlap with the status copy.
+- Preserve the compact factual state summary, transform-owned pan/zoom and gesture guards.
+- Continue HACS delivery from `main` without GitHub Releases.
+
 ## [1.8.12] - 2026-08-25
 
 ### Panel UI 0.6.2 — expanded hero composition
