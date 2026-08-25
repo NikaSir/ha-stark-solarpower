@@ -4,7 +4,7 @@ Custom Home Assistant integration for **STARK Country Online** UPS devices monit
 
 ## Status
 
-Current production baseline: **v1.8.6** with the integration-owned UPS panel UI **v0.5.6**.
+Current production baseline: **v1.8.7** with the integration-owned UPS panel UI **v0.5.7**.
 
 The integration has been field-tested on two STARK Country Online 1000 VA UPS devices with SolarPower Wi-Fi cards.
 
@@ -42,11 +42,11 @@ Navigation contract:
 - sidebar title: `UPS`;
 - icon: `mdi:battery-charging`;
 - preferred view: `overview`;
-- panel UI version: `0.5.6`;
+- panel UI version: `0.5.7`;
 - persistent device selector: `UPS Интернет / UPS Котёл`;
 - product artwork: `Stark Country 1000 ONLINE (16A)`.
 
-The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.5.6 restores the permanent Home Assistant system-menu button, retains persistent 75–200% two-finger pinch zoom without on-screen controls, resets to 100% by a two-finger double tap and snaps a 97–103% pinch to exactly 100%. The battery path is extended beneath both endpoint cards and visually strengthened. The header, UPS selector and Bottom Tab Bar remain native-sized. All live values and stale/source semantics remain dynamic.
+The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.5.7 replaces layout-affecting CSS zoom with one fixed-layout `transform: scale()` canvas. During pinch the complete live work area moves like one image: backgrounds, UPS artwork, SVG paths, nodes, metrics and state cards preserve their relative coordinates while remaining interactive. Responsive mobile/desktop layout is selected first and recalculated only after a real viewport resize. The system menu, UPS selector and Bottom Tab Bar remain native-sized.
 
 Views:
 

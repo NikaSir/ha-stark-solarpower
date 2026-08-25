@@ -2,6 +2,18 @@
 
 All notable project changes are recorded here.
 
+## [1.8.7] - 2026-08-25
+
+### Panel UI 0.5.7 — fixed transform canvas
+
+- Replace layout-affecting CSS `zoom` with one fixed-layout `transform: scale()` work canvas.
+- Scale the complete live selected-UPS DOM as a single visual composition without reflowing cards, paths or overlays during pinch.
+- Compensate the transformed canvas dimensions so every enlarged region remains reachable by pan/scroll.
+- Keep focal-point pinch, 75–200% limits, two-finger double-tap reset, 97–103% snap and per-UPS persistence.
+- Recalculate the responsive base geometry only when the actual viewport/content dimensions change.
+- Preserve the native Home Assistant menu, Header, device selector, Bottom Tab Bar and all UPS domain behavior.
+- Continue HACS delivery from `main` without GitHub Releases.
+
 ## [1.8.6] - 2026-08-25
 
 ### Panel UI 0.5.6 — HA menu, gesture reset and battery path
