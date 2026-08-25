@@ -2,6 +2,16 @@
 
 All notable project changes are recorded here.
 
+## [1.8.14] - 2026-08-25
+
+### Panel UI 0.6.4 — final hero spacing
+
+- Use the remaining target-phone viewport reserve to increase the photographic scene height from 290 to 322 CSS pixels.
+- Keep the UPS anchored to the floor so it moves lower with the expanded scene.
+- Keep the battery card at the top of the scene, creating a deliberate clear gap above the UPS cabinet.
+- Preserve the clean backgrounds, compact state summary, transform-owned pan/zoom and one-screen composition.
+- Continue HACS delivery from `main` without GitHub Releases.
+
 ## [1.8.13] - 2026-08-25
 
 ### Panel UI 0.6.3 — clean hero composition
