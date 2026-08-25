@@ -8,7 +8,7 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.6.1",
+  "ui_version": "0.6.2",
   "template": {
     "name": "NikaS Integration Panel Template",
     "version": "1.0"
@@ -70,6 +70,7 @@
       "battery_mode_direction": "battery_to_ups_to_load",
       "invented_power_values": false
     },
+    "reserve_strip_placement": "below_photographic_hero",
     "key_metrics": ["input_voltage", "output_voltage", "battery_capacity", "output_load"],
     "standalone_metric_row": false,
     "state_tiles": ["grid", "battery", "cloud", "freshness"]

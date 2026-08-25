@@ -11,14 +11,14 @@ The Stark SolarPower integration owns a dedicated Home Assistant panel for day-t
 - Sidebar title: `UPS`
 - Icon: `mdi:battery-charging`
 - Preferred view: `overview`
-- Panel UI version: `0.6.1`
+- Panel UI version: `0.6.2`
 - Primary navigation: full-width fixed bottom Tab Bar
 
 The same metadata is shipped in `custom_components/stark_solarpower/panel_manifest.json` for `ha-contract-generated-ui` and other consumers.
 
 ## NikaS application shell
 
-UI v0.6.1 uses the NikaS specialized-panel shell with a single fixed-layout transform canvas:
+UI v0.6.2 uses the NikaS specialized-panel shell with a single fixed-layout transform canvas:
 
 `Safe Area → Header → Device Selector → zoomable selected-UPS viewport → Bottom Tab Bar`
 
@@ -72,7 +72,7 @@ The selected UPS receives one full status-first operating card showing:
 - compact input/output/load metrics;
 - explicit non-disconnectable-line and battery state rows.
 
-The photographic hero is the only standalone Overview presentation of input voltage, load and battery charge. A repeated three-card Input/Output/Load row is not rendered; output voltage and the complete factual set remain available in the compact state summary and the dedicated UPS view. The battery scene node stays fully separated from the reserve strip. The normal target-phone Overview is vertically compacted so both state rows remain visible above the fixed Bottom Tab Bar without an initial scroll.
+The photographic hero is the only standalone Overview presentation of input voltage, load and battery charge. A repeated three-card Input/Output/Load row is not rendered; output voltage and the complete factual set remain available in the compact state summary and the dedicated UPS view. The photographic room uses the available height: the UPS is enlarged and grounded on the floor, while the battery card sits above the cabinet with its own live path. The reserve-ready strip is a separate surface below the photograph rather than an overlay on the room. The normal target-phone Overview remains vertically compacted so both state rows stay visible above the fixed Bottom Tab Bar without an initial scroll.
 
 The hero uses a local context plate selected from the device name: a network room for `UPS Интернет` and a boiler room for `UPS Котёл`. The background is decorative only. The product, power paths, status nodes and values are independent runtime layers and remain factual.
 
