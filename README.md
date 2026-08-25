@@ -4,7 +4,7 @@ Custom Home Assistant integration for **STARK Country Online** UPS devices monit
 
 ## Status
 
-Current production baseline: **v1.8.13** with the integration-owned UPS panel UI **v0.6.3**.
+Current production baseline: **v1.8.14** with the integration-owned UPS panel UI **v0.6.4**.
 
 The integration has been field-tested on two STARK Country Online 1000 VA UPS devices with SolarPower Wi-Fi cards.
 
@@ -42,11 +42,11 @@ Navigation contract:
 - sidebar title: `UPS`;
 - icon: `mdi:battery-charging`;
 - preferred view: `overview`;
-- panel UI version: `0.6.3`;
+- panel UI version: `0.6.4`;
 - persistent device selector: `UPS Интернет / UPS Котёл`;
 - product artwork: `Stark Country 1000 ONLINE (16A)`.
 
-The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.6.3 uses clean edge-safe room photography, removes decorative power-flow lines and the repeated reserve strip, and gives the recovered height to the hero scene. The UPS remains grounded on the room floor while the live battery card stays above it without touching the status copy. Reserve readiness remains available in the factual battery row. The compact one-screen hierarchy and transform-owned zoom/pan remain unchanged. Pinch and drag gestures suppress entity activation, preventing accidental more-info graphs. The system menu, UPS selector and Bottom Tab Bar remain native-sized.
+The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.6.4 spends the remaining mobile viewport reserve on a taller photographic scene. Because the UPS stays anchored to the room floor while the live battery card stays at the top of the scene, the added height creates a deliberate clear gap between them without changing the compact one-screen hierarchy. Clean edge-safe room photography, the factual battery-row reserve state and transform-owned zoom/pan remain unchanged. Pinch and drag gestures suppress entity activation, preventing accidental more-info graphs. The system menu, UPS selector and Bottom Tab Bar remain native-sized.
 
 Views:
 
