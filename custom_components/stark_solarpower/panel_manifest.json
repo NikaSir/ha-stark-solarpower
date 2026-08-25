@@ -8,7 +8,7 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.5.5",
+  "ui_version": "0.5.6",
   "template": {
     "name": "NikaS Integration Panel Template",
     "version": "1.0"
@@ -19,11 +19,11 @@
     "title_alignment": "viewport_center",
     "show_brand_icon": false,
     "left_control": {
-      "type": "canonical_parent_back",
-      "icon": "mdi:arrow-left",
+      "type": "home_assistant_system_menu",
+      "icon": "mdi:menu",
       "label_visible": false,
       "touch_target_px": 44,
-      "route": "/dashboard-infrastructure/overview"
+      "event": "hass-toggle-menu"
     },
     "actions": ["refresh"]
   },
@@ -36,7 +36,7 @@
     "touch_target_px": 44
   },
   "navigation": {
-    "header_menu": false,
+    "header_menu": "home_assistant_system_sidebar",
     "primary_navigation": "full_width_fixed_bottom_tab_bar",
     "edge_attached": true,
     "floating": false,
@@ -48,6 +48,8 @@
     "scope": "selected_device_work_viewport",
     "pinch": true,
     "controls": [],
+    "reset_gesture": "two_finger_double_tap",
+    "snap_to_100_percent_range": [97, 103],
     "minimum_percent": 75,
     "maximum_percent": 200,
     "focal_point": true,
