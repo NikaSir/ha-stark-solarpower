@@ -2,6 +2,16 @@
 
 All notable project changes are recorded here.
 
+## [1.8.9] - 2026-08-25
+
+### Panel UI 0.5.9 — focal-point persistence across telemetry rebuilds
+
+- Capture the logical center point of the transformed canvas before a selected UPS telemetry render replaces its DOM.
+- Restore that logical point after the replacement canvas completes its geometry measurement.
+- Keep scale and pan position stable when live values change or primary telemetry becomes unavailable.
+- Preserve the UI 0.5.8 entity-activation guard; pinch and pan do not open native more-info/history graphs.
+- Continue HACS delivery from `main` without GitHub Releases.
+
 ## [1.8.8] - 2026-08-25
 
 ### Panel UI 0.5.8 — stable canvas pan and gesture guard
