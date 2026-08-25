@@ -8,7 +8,7 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.5.2",
+  "ui_version": "0.5.3",
   "template": {
     "name": "NikaS Integration Panel Template",
     "version": "1.0"
@@ -74,6 +74,8 @@
   "typography": {
     "profile": "mobile_readability",
     "primary_target": "iPhone Pro Max portrait",
+    "safe_area_top": true,
+    "safe_area_owner": "integration_panel_once",
     "header_title_px": 23,
     "header_subtitle_px": 14,
     "minimum_secondary_text_px": 11,
