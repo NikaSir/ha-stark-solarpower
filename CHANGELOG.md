@@ -2,6 +2,17 @@
 
 All notable project changes are recorded here.
 
+## [1.8.5] - 2026-08-25
+
+### Panel UI 0.5.5 — gesture-only zoom hotfix
+
+- Remove the on-screen `− / percentage / +` zoom controls completely.
+- Keep two-finger focal-point pinch zoom, pan/scroll and per-UPS local scale persistence.
+- Normalize previously nested zoom wrappers to exactly one work viewport after every optimized Home Assistant update.
+- Fix the repeated controls and progressive content shrinking visible in UI 0.5.4.
+- Preserve the native Header, UPS selector, fixed Bottom Tab Bar and all UPS domain behavior.
+- Continue HACS delivery from `main` without GitHub Releases.
+
 ## [1.8.4] - 2026-08-25
 
 ### Panel UI 0.5.4 — shared shell and work-area zoom
