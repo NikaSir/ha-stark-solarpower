@@ -4,7 +4,7 @@ Custom Home Assistant integration for **STARK Country Online** UPS devices monit
 
 ## Status
 
-Current production baseline: **v1.8.2** with the integration-owned UPS panel UI **v0.5.2**.
+Current production baseline: **v1.8.3** with the integration-owned UPS panel UI **v0.5.3**.
 
 The integration has been field-tested on two STARK Country Online 1000 VA UPS devices with SolarPower Wi-Fi cards.
 
@@ -42,11 +42,11 @@ Navigation contract:
 - sidebar title: `UPS`;
 - icon: `mdi:battery-charging`;
 - preferred view: `overview`;
-- panel UI version: `0.5.2`;
+- panel UI version: `0.5.3`;
 - persistent device selector: `UPS Интернет / UPS Котёл`;
 - product artwork: `Stark Country 1000 ONLINE (16A)`.
 
-The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.5.2 refines the compact contextual hero and first-viewport geometry after an iPhone field capture: the network/boiler scenes, physical UPS, active paths, horizontal metrics and complete state summary now follow the accepted target proportions. All live values and stale/source semantics remain dynamic. A third UPS therefore does not require a separate dashboard implementation.
+The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.5.3 keeps the compact contextual hero and first-viewport geometry while moving the application header below the iPhone Dynamic Island/notch: the network/boiler scenes, physical UPS, active paths, horizontal metrics and complete state summary now follow the accepted target proportions. All live values and stale/source semantics remain dynamic. A third UPS therefore does not require a separate dashboard implementation.
 
 Views:
 
@@ -85,7 +85,7 @@ Home Assistant's current developer guidance favors event entities for integratio
 6. Go to **Settings → Devices & services → Add integration** and search for **Stark SolarPower**.
 7. Enter the SolarPower username and password when configuring the integration for the first time.
 
-For routine upgrades, update **Stark SolarPower** from HACS and restart Home Assistant when requested. Do not remove the Home Assistant config entry during normal upgrades. Manual ZIP installation is retained only as an emergency recovery path.
+During active panel development, HACS follows the repository's default `main` branch; GitHub Releases are intentionally not used. For routine upgrades, update **Stark SolarPower** from HACS and restart Home Assistant when requested. Do not remove the Home Assistant config entry during normal upgrades. Manual ZIP installation is retained only as an emergency recovery path.
 
 ## Manual installation
 

@@ -2,6 +2,15 @@
 
 All notable project changes are recorded here.
 
+## [1.8.3] - 2026-08-25
+
+### Panel UI 0.5.3 — iOS safe area
+
+- Move the Stark SolarPower application header below the iPhone Dynamic Island/notch.
+- Consume the top safe-area inset exactly once inside the integration-owned panel shell.
+- Preserve the compact UI 0.5.2 geometry, device selector, contextual hero, fixed bottom navigation and read-only telemetry semantics.
+- Keep development delivery on the HACS default branch without GitHub Releases.
+
 ## [1.8.2] - 2026-08-25
 
 ### Panel UI 0.5.2 — iPhone field geometry
