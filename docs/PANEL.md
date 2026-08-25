@@ -11,14 +11,14 @@ The Stark SolarPower integration owns a dedicated Home Assistant panel for day-t
 - Sidebar title: `UPS`
 - Icon: `mdi:battery-charging`
 - Preferred view: `overview`
-- Panel UI version: `0.5.1`
+- Panel UI version: `0.5.2`
 - Primary navigation: full-width fixed bottom Tab Bar
 
 The same metadata is shipped in `custom_components/stark_solarpower/panel_manifest.json` for `ha-contract-generated-ui` and other consumers.
 
 ## NikaS application shell
 
-UI v0.5.1 follows Home Assistant NikaS Integration Dashboard UI Standard v1.2:
+UI v0.5.2 follows Home Assistant NikaS Integration Dashboard UI Standard v1.2:
 
 `Header → Device Selector → selected-UPS Content → Bottom Tab Bar`
 
