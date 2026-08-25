@@ -2,6 +2,18 @@
 
 All notable project changes are recorded here.
 
+## [1.8.4] - 2026-08-25
+
+### Panel UI 0.5.4 — shared shell and work-area zoom
+
+- Adopt the required NikaS specialized-panel shell without changing UPS telemetry, thresholds, states or commands.
+- Keep the Header below the notch/Dynamic Island and restore explicit Back navigation to `/dashboard-infrastructure/overview`.
+- Add native-sized `− / percentage / +` controls with 75–200% range, 10% steps and tap-to-reset at 100%.
+- Add two-finger focal-point pinch zoom plus pan/scroll inside the selected-UPS work viewport only.
+- Keep Header, device selector, zoom controls and fixed Bottom Tab Bar at native scale.
+- Persist the chosen scale locally per Stark panel client and selected UPS.
+- Continue HACS delivery from the default branch without GitHub Releases.
+
 ## [1.8.3] - 2026-08-25
 
 ### Panel UI 0.5.3 — iOS safe area

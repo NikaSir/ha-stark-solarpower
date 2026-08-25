@@ -11,18 +11,20 @@ The Stark SolarPower integration owns a dedicated Home Assistant panel for day-t
 - Sidebar title: `UPS`
 - Icon: `mdi:battery-charging`
 - Preferred view: `overview`
-- Panel UI version: `0.5.2`
+- Panel UI version: `0.5.4`
 - Primary navigation: full-width fixed bottom Tab Bar
 
 The same metadata is shipped in `custom_components/stark_solarpower/panel_manifest.json` for `ha-contract-generated-ui` and other consumers.
 
 ## NikaS application shell
 
-UI v0.5.2 follows Home Assistant NikaS Integration Dashboard UI Standard v1.2:
+UI v0.5.4 follows the NikaS Specialized Panel UI Standard v1.0:
 
-`Header → Device Selector → selected-UPS Content → Bottom Tab Bar`
+`Safe Area → Header → Device Selector → Zoom Controls → zoomable selected-UPS viewport → Bottom Tab Bar`
 
-The Header belongs to the Home Assistant application shell and global actions. The left hamburger dispatches Home Assistant's native `hass-toggle-menu` event. `Stark SolarPower` is geometrically centered between symmetric Menu and Refresh zones. No decorative battery/brand icon is shown in the Header.
+The Header belongs to the specialized-panel shell and remains at native scale. Its explicit Back action opens the canonical parent `/dashboard-infrastructure/overview`; Refresh remains the single right-side shell action. `Stark SolarPower` is geometrically centered between symmetric Back and Refresh zones. No decorative battery/brand icon is shown in the Header.
+
+Only the selected-UPS work viewport scales. Two-finger pinch uses the point between the fingers, enlarged content pans and scrolls, and the native-sized `− / percentage / +` control supports 75–200% zoom in 10% steps. Tapping the percentage resets to 100%. Scale is stored locally for each Stark panel client and selected UPS; responsive mobile/tablet/desktop layout is resolved before zoom.
 
 The primary bottom navigation is full-width, fixed to the bottom edge, iOS-safe and contains `Обзор`, `ИБП`, `История`, `События`, and `Диагн.`. Active state remains inside the common bar. Factual entities keep long press → native Home Assistant more-info.
 

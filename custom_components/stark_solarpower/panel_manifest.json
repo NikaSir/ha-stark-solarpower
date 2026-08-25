@@ -8,7 +8,7 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.5.3",
+  "ui_version": "0.5.4",
   "template": {
     "name": "NikaS Integration Panel Template",
     "version": "1.0"
@@ -19,11 +19,11 @@
     "title_alignment": "viewport_center",
     "show_brand_icon": false,
     "left_control": {
-      "type": "home_assistant_system_menu",
-      "icon": "mdi:menu",
+      "type": "canonical_parent_back",
+      "icon": "mdi:arrow-left",
       "label_visible": false,
       "touch_target_px": 44,
-      "event": "hass-toggle-menu"
+      "route": "/dashboard-infrastructure/overview"
     },
     "actions": ["refresh"]
   },
@@ -36,13 +36,25 @@
     "touch_target_px": 44
   },
   "navigation": {
-    "header_menu": "home_assistant_system_sidebar",
+    "header_menu": false,
     "primary_navigation": "full_width_fixed_bottom_tab_bar",
     "edge_attached": true,
     "floating": false,
     "safe_area": true,
     "touch_target_px": 52,
     "views": ["overview", "ups", "history", "events", "diagnostics"]
+  },
+  "zoom": {
+    "scope": "selected_device_work_viewport",
+    "pinch": true,
+    "controls": ["decrease", "percentage_reset", "increase"],
+    "minimum_percent": 75,
+    "maximum_percent": 200,
+    "step_percent": 10,
+    "focal_point": true,
+    "pan_when_enlarged": true,
+    "persistence": "local_per_panel_and_device",
+    "native_scale": ["header", "device_selector", "zoom_controls", "bottom_tab_bar"]
   },
   "overview": {
     "information_architecture": ["contextual_photographic_hero", "power_flow", "key_metrics", "state_summary"],
