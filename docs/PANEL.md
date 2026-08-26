@@ -11,14 +11,14 @@ The Stark SolarPower integration owns a dedicated Home Assistant panel for day-t
 - Sidebar title: `UPS`
 - Icon: `mdi:battery-charging`
 - Preferred view: `overview`
-- Panel UI version: `0.6.5`
+- Panel UI version: `0.6.6`
 - Primary navigation: full-width fixed bottom Tab Bar
 
 The same metadata is shipped in `custom_components/stark_solarpower/panel_manifest.json` for `ha-contract-generated-ui` and other consumers.
 
 ## NikaS application shell
 
-UI v0.6.5 uses the NIKAS specialized-panel shell with one working viewport:
+UI v0.6.6 uses the NIKAS specialized-panel shell with one working viewport:
 
 `Safe Area → Header → Device Selector → zoomable selected-UPS viewport → Bottom Tab Bar`
 
@@ -68,11 +68,12 @@ The selected UPS receives one full status-first operating card showing:
 - battery percentage;
 - output load;
 - primary cloud availability;
-- stale/fresh data status and age;
-- compact input/output/load metrics;
-- explicit non-disconnectable-line and battery state rows.
+- stale/fresh status independently from the cloud channel;
+- output voltage and frequency in the operating-mode copy.
 
-The photographic hero is the only standalone Overview presentation of input voltage, load and battery charge. A repeated three-card Input/Output/Load row is not rendered; output voltage and the complete factual set remain available in the compact state summary and the dedicated UPS view. The photographic room uses the available height: the UPS is enlarged and grounded on the floor, while the battery card sits above the cabinet without touching the status copy. Decorative flow connectors and the repeated reserve strip are not rendered; reserve readiness remains in the factual battery row. The normal target-phone Overview remains vertically compacted so both state rows stay visible above the fixed Bottom Tab Bar without an initial scroll.
+The photographic hero is the only Overview presentation of input voltage, output voltage/frequency, load and battery charge. The repeated metric row and the repeated `Состояние` summary are not rendered; the complete factual set, battery voltage and line quality remain available in the dedicated UPS view. The photographic room uses the available height: the UPS is enlarged and grounded on the floor, while the battery card sits above the cabinet without touching the status copy. Decorative flow connectors and the repeated reserve strip are not rendered.
+
+The hero connection plaque is calculated for the selected UPS only. Its first line is the current cloud channel (`Облако`, `Нет связи`, `Нет данных`); its second line independently reports freshness (`Данные актуальны`, `Данные устарели`, `Нет данных`). Primary polling runs every 60 seconds and becomes stale after 360 seconds. Extended telemetry is polled separately every five minutes and never changes the primary connection indicator by itself. `Нет связи · Данные актуальны` is valid immediately after a failed cloud poll while the last confirmed snapshot remains inside the freshness window.
 
 The hero uses a local context plate selected from the device name: a network room for `UPS Интернет` and a boiler room for `UPS Котёл`. The network rack includes restrained blue and green equipment-status lights. The background is decorative only. The product, status nodes and values are independent runtime layers and remain factual.
 
@@ -129,10 +130,12 @@ The panel must be field-tested on iPhone Pro Max for these cases:
 
 | Scenario | Expected panel behavior |
 | --- | --- |
-| Normal line mode | Healthy status, current operating measurements visible |
+| Normal line mode | `От сети`; `Облако · Данные актуальны`; current operating measurements visible |
 | Battery mode | Visually prominent `От батареи`, battery/load remain visible |
-| `data_stale = on` | `Данные устарели`, never healthy |
-| Primary cloud unavailable | `Облако недоступно`, live measurements unavailable |
+| `data_stale = on` | Freshness line says `Данные устарели` |
+| Primary cloud unavailable, recent snapshot retained | `Нет связи · Данные актуальны` |
+| Primary cloud unavailable, old snapshot retained | `Нет связи · Данные устарели` |
+| Primary cloud unavailable, no snapshot | `Нет связи · Нет данных` |
 | Entity `unknown` / `unavailable` | Explicit unknown/unavailable presentation, never healthy |
 | Extended telemetry failure | Main UPS state remains usable; BUS/temperature diagnostics unavailable |
 | Switch UPS context | Selector positions stay fixed; only active state/content changes |

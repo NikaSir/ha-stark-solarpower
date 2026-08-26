@@ -6,7 +6,7 @@ Custom Home Assistant integration for **STARK Country Online** UPS devices monit
 
 ## Status
 
-Current production baseline: **v1.8.15** with the integration-owned UPS panel UI **v0.6.5**.
+Current production baseline: **v1.8.16** with the integration-owned UPS panel UI **v0.6.6**.
 
 The integration has been field-tested on two STARK Country Online 1000 VA UPS devices with SolarPower Wi-Fi cards.
 
@@ -44,15 +44,15 @@ Navigation contract:
 - sidebar title: `UPS`;
 - icon: `mdi:battery-charging`;
 - preferred view: `overview`;
-- panel UI version: `0.6.5`;
+- panel UI version: `0.6.6`;
 - persistent device selector: `UPS Интернет / UPS Котёл`;
 - product artwork: `Stark Country 1000 ONLINE (16A)`.
 
-The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.6.5 implements NIKAS UI Standard v1.5: native vertical-only scrolling at 100%, bounded transform panning only above 100%, focal pinch, snap/reset gestures and fixed UPS-reference Header, selector and Bottom Tab Bar.
+The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.6.6 keeps the NIKAS UI Standard v1.5 shell and simplifies Overview to one photographic source of truth. Connection channel and data freshness are shown as an independent two-level indicator for the selected UPS, while the UPS power mode remains separate.
 
 Views:
 
-- **Обзор** — health, operating mode, power path, battery, load, source freshness and the compact state summary;
+- **Обзор** — operating mode, input, load, battery and the selected UPS cloud/freshness indicator in one photographic card;
 - **ИБП** — selected-device identity, electrical state and working parameters;
 - **История** — compact key measurements opening native Home Assistant history;
 - **События** — latest selected-device integration event entities;
