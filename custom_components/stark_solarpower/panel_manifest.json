@@ -8,7 +8,7 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.6.9",
+  "ui_version": "0.7.0",
   "template": {
     "name": "NikaS Integration Panel Template",
     "version": "1.0"
@@ -82,7 +82,7 @@
     "native_scale": ["header", "device_selector", "bottom_tab_bar"]
   },
   "overview": {
-    "information_architecture": ["contextual_photographic_hero", "connection_and_freshness_indicator", "live_hero_metrics", "reserve_readiness"],
+    "information_architecture": ["contextual_photographic_hero", "connection_and_freshness_indicator", "live_hero_metrics", "reserve_readiness", "battery_details"],
     "hero_scope": "selected_device_only",
     "power_flow": {
       "nodes": ["grid", "ups", "load", "battery"],
@@ -90,7 +90,7 @@
       "invented_power_values": false
     },
     "reserve_strip_placement": "below_hero",
-    "key_metrics": ["input_voltage", "output_voltage", "output_frequency", "battery_capacity", "output_load"],
+    "key_metrics": ["input_voltage", "output_voltage", "output_frequency", "battery_capacity", "output_load", "battery_voltage", "battery_piece_number", "charger_temperature", "battery_remain_time"],
     "standalone_metric_row": false,
     "state_tiles": [],
     "connection_indicator": {

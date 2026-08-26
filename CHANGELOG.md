@@ -2,6 +2,16 @@
 
 All notable project changes are recorded here.
 
+## [1.8.20] - 2026-08-26
+
+### Panel UI 0.7.0 — battery detail surface
+
+- Lower the battery-capacity plaque into the clear space above the UPS cabinet.
+- Use the free area below reserve readiness for a compact factual battery card: bank voltage, confirmed battery count, charger temperature and vendor RAW remaining-time value.
+- Enable the confirmed battery-count and vendor RAW remaining-time diagnostic entities by default so their live values can reach the panel.
+- Put Events before History in the fixed Bottom Tab Bar.
+- Do not invent a charge-current value: the current SolarPower entity set exposes output current, not verified battery charge current.
+
 ## [1.8.19] - 2026-08-26
 
 ### Panel UI 0.6.9 — flicker-free telemetry on every view
