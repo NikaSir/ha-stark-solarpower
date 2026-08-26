@@ -1,7 +1,7 @@
 # NikaS specialized-panel compliance — Stark SolarPower
 
 **Audit date:** 2026-08-26
-**Standard:** NikaS Specialized Panel UI Standard v1.4
+**Standard:** NikaS Specialized Panel UI Standard v1.5
 **Audited production path:** `panel.py` → `stark-solarpower-panel-bundle.js?v=0.6.4` → `stark-solarpower-panel`
 **Scope:** audit only; runtime deliberately unchanged in this PR
 
@@ -13,7 +13,7 @@
 | 97–103% snap, two-finger double tap and toast | PASS | `frontend/stark-solarpower-panel-v056.js`, `v060.js`: snap/reset and `Масштаб 100%`. |
 | Native HA menu | PASS | `frontend/stark-solarpower-panel-v056.js`: `mdi:menu`, bubbling/composed `hass-toggle-menu`. |
 | Safe area and fixed Bottom Tab Bar | PASS | `frontend/stark-solarpower-panel-v053.js`, `v052.js`: top and bottom safe-area handling; shell elements remain outside transform. |
-| Header reference geometry | GAP | Final layered CSS does not establish the complete v1.4 contract in one authoritative rule: exact `52/1fr/52` and `48/1fr/48` rails, matched `44×44` plaques with radius `16px`, border/card background/shadow, menu/refresh colours and `25px` icons. `v052.js`, `v055.js`, `v056.js` and bundle overrides compete. |
+| Header reference geometry | GAP | Final layered CSS does not establish the complete v1.5 contract in one authoritative rule: exact `52/1fr/52` and `48/1fr/48` rails, matched `44×44` plaques with radius `16px`, border/card background/shadow, menu/refresh colours and `25px` icons. `v052.js`, `v055.js`, `v056.js` and bundle overrides compete. |
 | Bottom Tab geometry | GAP | `frontend/stark-solarpower-panel-v051.js` sets icons to `24px`; later `v052.js`/bundle sets `22px`, not required `28px`. Narrow `370px` labels fall to `10px`, not `12px`. |
 | Native vertical scroll at 100% | GAP | `frontend/stark-solarpower-panel-v060.js` forces `.zoom-viewport-v060 { overflow:hidden; touch-action:none }` and represents vertical position with transform `state.y`; therefore 100% is not native vertical scrolling. |
 | Origin fixed at 100%; no one-finger pan | GAP | `v060.js` calls `beginPan` for every single touch and changes `state.x/state.y` at scale `1`. This conflicts with strict `x=0,y=0` and immediate native taps/scroll. |
