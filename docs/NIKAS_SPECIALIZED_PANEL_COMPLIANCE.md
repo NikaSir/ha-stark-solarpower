@@ -2,8 +2,8 @@
 
 **Audit date:** 2026-08-26
 **Standard:** NikaS Specialized Panel UI Standard v1.5
-**Audited production path:** `panel.py` → `stark-solarpower-panel-bundle.js?v=0.6.7` → `stark-solarpower-panel`
-**Scope:** implemented in UI v0.6.7; phone field acceptance remains required
+**Audited production path:** `panel.py` → `stark-solarpower-panel-bundle.js?v=0.6.8` → `stark-solarpower-panel`
+**Scope:** implemented in UI v0.6.8; phone field acceptance remains required
 
 | Area | Result | Evidence |
 |---|---|---|
@@ -24,7 +24,8 @@
 | Repository icon | PASS | README displays the approved existing `custom_components/stark_solarpower/brand/icon.png`; no new identity was invented. |
 | Integration icon assets | PASS | `custom_components/stark_solarpower/brand/icon.png` is a valid 512×512 RGBA icon and satisfies the HACS minimum. Add dark/logo variants only if theme legibility requires them. |
 | HACS packaging | PASS | `hacs.json` identifies the integration and the component-local brand icon ships with `custom_components/stark_solarpower`. |
-| Production delivery | PASS | `panel.py` uses one cache-busted autonomous bundle URL and UI version `0.6.7`. |
+| Live telemetry stability | PASS | `frontend/stark-solarpower-panel-v068.js` patches Overview values and status classes in place without replacing the photograph, artwork or zoom canvas. |
+| Production delivery | PASS | `panel.py` uses one cache-busted autonomous bundle URL and UI version `0.6.8`. |
 
 ## Remaining follow-up
 

@@ -2,6 +2,14 @@
 
 All notable project changes are recorded here.
 
+## [1.8.18] - 2026-08-26
+
+### Panel UI 0.6.8 — flicker-free live telemetry
+
+- Update Overview values, power mode, cloud/freshness state and reserve readiness in place without replacing the scene DOM.
+- Keep the loaded room photograph, UPS artwork, zoom transform, pan offsets and scroll position intact during normal telemetry updates.
+- Reserve full panel rendering for view changes, selected-UPS changes and structural registry changes.
+
 ## [1.8.17] - 2026-08-26
 
 ### Panel UI 0.6.7 — stable overview canvas

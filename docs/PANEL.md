@@ -11,14 +11,14 @@ The Stark SolarPower integration owns a dedicated Home Assistant panel for day-t
 - Sidebar title: `UPS`
 - Icon: `mdi:battery-charging`
 - Preferred view: `overview`
-- Panel UI version: `0.6.7`
+- Panel UI version: `0.6.8`
 - Primary navigation: full-width fixed bottom Tab Bar
 
 The same metadata is shipped in `custom_components/stark_solarpower/panel_manifest.json` for `ha-contract-generated-ui` and other consumers.
 
 ## NikaS application shell
 
-UI v0.6.7 uses the NIKAS specialized-panel shell with one working viewport:
+UI v0.6.8 uses the NIKAS specialized-panel shell with one working viewport:
 
 `Safe Area → Header → Device Selector → zoomable selected-UPS viewport → Bottom Tab Bar`
 
@@ -74,6 +74,8 @@ The selected UPS receives one full status-first operating card showing:
 The photographic hero is the only Overview presentation of input voltage, output voltage/frequency, load and battery charge. The repeated metric row and the repeated `Состояние` summary are not rendered; the complete factual set, battery voltage and line quality remain available in the dedicated UPS view. A compact reserve-readiness plaque sits below the hero so removing the summary does not hide battery readiness. The photographic room uses the available height: the UPS is enlarged and grounded on the floor, while the battery card sits above the cabinet without touching the status copy. Decorative flow connectors are not rendered.
 
 The final hero geometry is present before the zoom engine measures the work surface. A transient zero-width iOS layout frame reuses the previous real canvas width instead of collapsing the surface to one pixel.
+
+Normal telemetry refreshes update the existing Overview text, icons and status tones in place. They do not replace the scene DOM, reload either image layer or reset the current zoom, pan and native scroll position. A complete render is reserved for structural context changes such as selecting another UPS or opening another primary view.
 
 The hero connection plaque is calculated for the selected UPS only. Its first line is the current cloud channel (`Облако`, `Нет связи`, `Нет данных`); its second line independently reports freshness (`Данные актуальны`, `Данные устарели`, `Нет данных`). Primary polling runs every 60 seconds and becomes stale after 360 seconds. Extended telemetry is polled separately every five minutes and never changes the primary connection indicator by itself. `Нет связи · Данные актуальны` is valid immediately after a failed cloud poll while the last confirmed snapshot remains inside the freshness window.
 
