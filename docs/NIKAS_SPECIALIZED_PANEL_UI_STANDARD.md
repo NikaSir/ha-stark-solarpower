@@ -1,99 +1,106 @@
-# NikaS Specialized Panel UI Standard v1.3
+# NikaS Specialized Panel UI Standard v1.5
 
 **Status:** REQUIRED  
 **Canonical source:** `NikaSir/ha-contract-generated-ui`  
-**Canonical standards:** Shell v1.3 · Zoom v1.3 · Integration UI v1.4 · Frontend Delivery v1.1  
-**Reference field implementation:** Stark SolarPower UI 0.5.6
+**Reference geometry:** Stark SolarPower / UPS panel
+**Supersedes:** all earlier NikaS specialized-panel shell and zoom rules where they differ from this document
 
-## Ownership
+## Ownership and one-shell rule
 
-This repository owns domain/integration UI, entities, telemetry, commands, cards and diagnostics. Shared NikaS standards own application-shell behavior and release invariants.
+The repository owns its integration UI, telemetry, commands, cards and diagnostics. The shared NikaS standard owns shell geometry, gesture behavior, navigation, visual identity and delivery invariants.
 
-**Migration rule:** do not refactor domain UI during shell-only migration.
+- Header, peer-device selector and Bottom Tab Bar are outside the working viewport and never scale or move with it.
+- There is exactly one zoom viewport and one working surface per panel instance. Nested wrappers, duplicated handlers and repeated shell injection are prohibited.
+- Shell reconciliation after Home Assistant state updates is idempotent.
+- A shell-only migration must not redesign domain content.
 
 ## Header and safe area
 
-- Effective safe area is consumed exactly once.
-- Header stays below Dynamic Island/notch; Bottom Tab Bar stays above Home Indicator.
-- No device-specific safe-area constants.
-- Permanent left Header control is **Home Assistant main-system menu `☰` only**.
-- The control dispatches `hass-toggle-menu` with bubbling/composed semantics.
-- Permanent Back, parent-route arrow, integration drawer or device action in the left rail are prohibited.
-- If parent navigation is required, place it inside the work area.
-- Title is geometrically centered; at most one global action occupies the right rail.
-- Header/menu/right action remain native scale; touch targets are approximately 44×44 pt or larger.
+- Effective top safe area is consumed exactly once. Header content stays below Dynamic Island/notch.
+- Header minimum height is `62px`; narrow-phone minimum height is `60px`.
+- Header grid is `52px 1fr 52px`; narrow-phone grid is `48px 1fr 48px`.
+- The title is geometrically centered independently of rail content.
+- Main title: `21px`, weight `800`. Optional subtitle/version: `12px`, weight approximately `560`, `var(--secondary-text-color)`.
+- The permanent left action is only the Home Assistant system menu. It uses `<ha-icon icon="mdi:menu">` and dispatches `hass-toggle-menu` with `bubbles: true` and `composed: true`.
+- Back arrows, integration drawers and device commands in the left rail are prohibited. Parent navigation belongs inside the work area.
+- At most one global command occupies the right rail. When refresh is present, it uses `<ha-icon icon="mdi:refresh">`.
+- Left and right controls use matching `44px × 44px` plaques: `16px` radius, `var(--card-background-color)` background, `1px` divider-colour border and the restrained UPS shell shadow.
+- Rail icons are `25px`. Menu uses `var(--primary-text-color)`; refresh uses `var(--primary-color)`. Refresh must not appear as an unframed glyph.
+- Empty right rail space remains `52px`/`48px` so title centering does not change.
 
-## Peer Device Selector
+## Peer-device selector
 
-When multiple peer physical devices exist, selector is persistent directly below Header and remains native scale.
+When multiple peer physical devices exist, the selector is persistent immediately below Header, outside the zoom viewport.
 
-- fixed peer order;
-- selected peer never reorders;
+- peer order is stable and selection never reorders it;
 - selected peer survives Bottom Tab changes;
-- compact non-selected health indication is allowed;
-- primary detailed content belongs only to selected peer;
-- subordinate zones/channels/components are not automatically peer devices.
+- selected scale persists independently per panel/client and per peer where applicable;
+- subordinate zones/channels are not automatically peers.
 
 ## Bottom Tab Bar
 
-- 3–5 primary sections use one fixed full-width edge-attached Bottom Tab Bar;
-- not a floating card/pill;
-- safe-area-aware;
-- icon + short readable label;
-- final content scrolls fully above it;
-- remains native scale.
+- Use one fixed, full-width, edge-attached bar outside the zoom viewport; it is not a floating card.
+- The bar uses `var(--card-background-color)`, a thin top divider and the restrained UPS top shadow.
+- Bottom padding includes `env(safe-area-inset-bottom, 0px)` exactly once.
+- All tabs have equal width and a minimum `52px` control height.
+- Icons must be MDI icons rendered by `<ha-icon>` at `28px`; text symbols and emoji are prohibited.
+- Labels are one readable line, approximately `12px`, weight `700`; shorten a label instead of wrapping it.
+- Active tab: icon/text in `var(--primary-color)` and a rounded `13–14px` plaque using approximately 11% primary colour. No extra active-item shadow.
+- Inactive tabs use `var(--secondary-text-color)`.
+- Content bottom clearance must keep the final item fully visible above the bar.
+- Changing tab resets the working area to the page start. Persisted scale may remain, but offsets are reset/clamped for the new content.
 
-## Zoom — gesture-only standard
+## Zoom and scrolling
 
-Only working content scales. Header, Device Selector and Bottom Tab Bar do not.
+Only the working area scales. Recommended range is `75–200%`, default `100%`.
 
-Required:
+Required at every scale:
 
-- exactly **one** zoomable work viewport per panel instance;
-- two-finger focal-point pinch;
-- pan/scroll when enlarged;
-- range **75–200%**, default **100%**;
-- **no permanent `− / % / +` controls**;
-- two-finger double tap resets scale and scroll to 100%/origin;
-- pinch ending at **97–103%** snaps to exactly 100%;
-- reset/snap briefly shows **`Масштаб 100%`**;
-- selected scale persists locally per panel/client and per peer device where applicable;
-- responsive layout is selected before zoom.
+- pinch uses two fingers and keeps the content point below their midpoint stable;
+- permanent `− / % / +` controls are prohibited;
+- pinch ending in `97–103%` snaps to exactly `100%`;
+- a two-finger double tap resets scale and position to `100%`/origin and briefly announces `Масштаб 100%`;
+- scale persists locally for the panel/client and peer device where applicable;
+- after viewport resize, tab change or DOM replacement, offsets are remeasured and clamped to current content bounds;
+- interactions must suppress accidental post-gesture clicks while deliberate stationary hold continues to open native more-info.
 
-Shell reconciliation is idempotent across Home Assistant updates: no nested wrappers, duplicate gesture handlers/reset messages, blank abandoned areas or progressive content shrinking.
+### Exactly 100%
 
-## State and visual semantics
+- Use ordinary native vertical scrolling of the working area.
+- Horizontal scrolling is forbidden; transform position is strictly `x = 0`, `y = 0`.
+- One-finger custom panning is disabled.
+- The surface cannot move sideways, be pulled below its top edge or shifted above it by a transform.
+- Card taps, stationary hold/more-info and native vertical scroll work without artificial delay.
 
-- normal factual measurements use neutral typography;
-- green/amber/red are reserved for confirmed semantic state;
-- `unknown`, `unavailable`, stale or untrusted source never appear healthy;
-- frontend consumes validated backend semantic states/threshold results instead of duplicating backend business logic;
-- do not invent unsupported values;
-- native HA more-info/history is preferred for factual detail when useful.
+### Above 100%
 
-## Local visual assets
+- One-finger panning is enabled only when scale is greater than `100%`.
+- Each axis is enabled independently only if scaled content overflows that viewport axis.
+- If an axis fits, its offset is fixed to origin; otherwise offset is clamped to the actual content edges.
+- Empty field beyond the content can never be exposed.
 
-- critical artwork ships locally with integration;
-- no CDN dependency;
-- no Base64 image payload when normal asset is suitable;
-- background/context art contains no live measurements/statuses;
-- device art, SVG paths, labels, values and status overlays remain separate runtime layers;
-- changed assets use release/build cache busting.
+### Below 100%
 
-## Frontend delivery
+- The reduced surface remains non-pannable and anchored at the page origin; native vertical scroll is used only if content still exceeds the viewport.
+- No horizontal scroll or blank-field dragging is permitted.
 
-- one stable production frontend entry module;
-- historical/versioned source modules are build-time history, not runtime import chain;
-- deterministic bundle rebuild when applicable;
-- production URL cache-busted by UI/build version;
-- panel registration and machine-readable manifest agree on route, UI version, entry module, assets, HA menu event and zoom/reset policy;
-- declared assets exist in shipped package;
-- JavaScript plus HACS/Hassfest/repository checks pass where applicable.
+## State, assets and visual identity
 
-## Field acceptance
+- `unknown`, `unavailable`, stale or untrusted sources never appear healthy.
+- Frontend uses validated backend semantic states and does not invent measurements.
+- Critical panel artwork ships locally; no CDN or Base64 substitute for normal assets.
+- Live labels, paths and statuses remain separate from background/device art.
+- Every repository and integration must have an intentional icon treatment. The repository README displays the approved icon; light/dark variants are supplied when contrast requires them.
+- The mandatory HACS minimum is a packaged `custom_components/<domain>/brand/icon.png`. An arbitrary image elsewhere in the repository is not a substitute.
+- Do not invent or redraw a brand asset without an approved source. Missing variants or upstream publication steps are recorded as compliance gaps.
 
-Primary acceptance is Home Assistant Companion App on iPhone Pro Max portrait.
+## Frontend delivery and acceptance
 
-Verify: safe area not missing/doubled; `☰` opens native HA menu; Header geometry; selector fit; first useful state; Bottom Tab clearance; pinch/pan; two-finger reset; 97–103% snap; `Масштаб 100%` confirmation; no shell duplication after repeated HA state updates; peer context/scale persistence; explicit unreliable states; more-info/global-action behavior.
+- One stable production entry module; historical sources are not an open-ended runtime import chain.
+- Production URL is cache-busted by UI/build version and declared assets exist in the shipped package.
+- Registration and machine-readable metadata agree on route, version, component, menu event and zoom policy.
+- JavaScript syntax, tests, HACS/Hassfest and repository checks pass where applicable.
 
-> Canonical policy remains in `ha-contract-generated-ui`; newer canonical standards override this synchronized snapshot.
+Phone acceptance on Home Assistant Companion App verifies: safe area once; system menu; Header and plaque geometry; fixed selector and tab bar; `28px` tab icons; long-tab vertical scroll at 100%; no horizontal or transform movement at 100%; axis-specific pan only above 100%; bound clamping after release/resize/tab change; focal pinch without snap-back; card tap versus intentional hold; two-finger reset/toast; no duplicate viewport after telemetry rerenders; and final content visible above Home Indicator.
+
+> The canonical policy remains in `ha-contract-generated-ui`; a newer canonical version overrides this synchronized snapshot.
