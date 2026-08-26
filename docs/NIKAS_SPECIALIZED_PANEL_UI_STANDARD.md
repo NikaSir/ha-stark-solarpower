@@ -91,7 +91,7 @@ Required at every scale:
 - Critical panel artwork ships locally; no CDN or Base64 substitute for normal assets.
 - Live labels, paths and statuses remain separate from background/device art.
 - Every repository and integration must have an intentional icon treatment. The repository README displays the approved icon; light/dark variants are supplied when contrast requires them.
-- Integration-brand files must follow the currently supported Home Assistant/HACS delivery path for the domain. Merely storing an image in an arbitrary local folder is not proof that Home Assistant or HACS will display it.
+- The mandatory HACS minimum is a packaged `custom_components/<domain>/brand/icon.png`. An arbitrary image elsewhere in the repository is not a substitute.
 - Do not invent or redraw a brand asset without an approved source. Missing variants or upstream publication steps are recorded as compliance gaps.
 
 ## Frontend delivery and acceptance

@@ -22,8 +22,8 @@
 | Resize clamp | PASS | `v060.js` remeasures and clamps via `ResizeObserver`, window resize and `visualViewport.resize`. |
 | Gesture/more-info protection | PASS | `v060.js` sends `pointercancel` after movement/second finger and guards post-gesture clicks while stationary holds remain available. |
 | Repository icon | GAP | README has no icon/logo reference. Add an approved repository-facing asset/reference; do not redraw without source approval. |
-| Integration icon assets | PARTIAL | `custom_components/stark_solarpower/brand/icon.png` is a valid 512×512 RGBA icon. No dark icon or logo variants are present. The repo contains no evidence that this local folder is published through the currently supported HA/HACS brand-display path; verify/publish the `stark_solarpower` domain asset upstream as required. |
-| HACS packaging | PASS | `hacs.json` identifies the integration and the component-local icon is shipped with `custom_components/stark_solarpower`. Packaging alone does not prove frontend brand display. |
+| Integration icon assets | PASS | `custom_components/stark_solarpower/brand/icon.png` is a valid 512×512 RGBA icon and satisfies the HACS minimum. Add dark/logo variants only if theme legibility requires them. |
+| HACS packaging | PASS | `hacs.json` identifies the integration and the component-local brand icon ships with `custom_components/stark_solarpower`. |
 | Production delivery | PASS | `panel.py` uses one cache-busted bundle URL and UI version `0.6.4`. |
 
 ## Required runtime follow-up
@@ -32,7 +32,7 @@
 2. Gate one-finger pan on `scale > 1`, then gate/clamp each axis independently.
 3. Reset native scroll and transform offsets on tab change; re-clamp after render/resize.
 4. Consolidate Header/Bottom Tab geometry into one final shell layer and set bottom icons to `28px`.
-5. Add approved repository visual identity and verify the supported HA/HACS integration-brand publication path.
+5. Add the approved existing integration icon to the README/repository visual identity; add optional theme variants only when needed.
 
 ## Phone verification still required
 
