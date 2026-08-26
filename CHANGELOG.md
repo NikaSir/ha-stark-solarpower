@@ -2,6 +2,15 @@
 
 All notable project changes are recorded here.
 
+## [1.8.15] - 2026-08-26
+
+### Panel UI 0.6.5 — NIKAS UI Standard v1.5
+
+- Use native vertical-only scrolling at 100% with a fixed transform origin.
+- Enable bounded, axis-specific one-finger panning only above 100%.
+- Align Header and Bottom Tab Bar geometry with the UPS reference shell.
+- Preserve focal pinch, 97–103% snap, two-finger reset, per-UPS scale and gesture guards.
+
 ## [1.8.14] - 2026-08-25
 
 ### Panel UI 0.6.4 — final hero spacing

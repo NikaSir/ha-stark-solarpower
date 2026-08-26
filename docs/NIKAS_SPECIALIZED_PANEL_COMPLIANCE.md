@@ -2,8 +2,8 @@
 
 **Audit date:** 2026-08-26
 **Standard:** NikaS Specialized Panel UI Standard v1.5
-**Audited production path:** `panel.py` → `stark-solarpower-panel-bundle.js?v=0.6.4` → `stark-solarpower-panel`
-**Scope:** audit only; runtime deliberately unchanged in this PR
+**Audited production path:** `panel.py` → `stark-solarpower-panel-bundle.js?v=0.6.5` → `stark-solarpower-panel`
+**Scope:** implemented in UI v0.6.5; phone field acceptance remains required
 
 | Area | Result | Evidence |
 |---|---|---|
@@ -13,26 +13,22 @@
 | 97–103% snap, two-finger double tap and toast | PASS | `frontend/stark-solarpower-panel-v056.js`, `v060.js`: snap/reset and `Масштаб 100%`. |
 | Native HA menu | PASS | `frontend/stark-solarpower-panel-v056.js`: `mdi:menu`, bubbling/composed `hass-toggle-menu`. |
 | Safe area and fixed Bottom Tab Bar | PASS | `frontend/stark-solarpower-panel-v053.js`, `v052.js`: top and bottom safe-area handling; shell elements remain outside transform. |
-| Header reference geometry | GAP | Final layered CSS does not establish the complete v1.5 contract in one authoritative rule: exact `52/1fr/52` and `48/1fr/48` rails, matched `44×44` plaques with radius `16px`, border/card background/shadow, menu/refresh colours and `25px` icons. `v052.js`, `v055.js`, `v056.js` and bundle overrides compete. |
-| Bottom Tab geometry | GAP | `frontend/stark-solarpower-panel-v051.js` sets icons to `24px`; later `v052.js`/bundle sets `22px`, not required `28px`. Narrow `370px` labels fall to `10px`, not `12px`. |
-| Native vertical scroll at 100% | GAP | `frontend/stark-solarpower-panel-v060.js` forces `.zoom-viewport-v060 { overflow:hidden; touch-action:none }` and represents vertical position with transform `state.y`; therefore 100% is not native vertical scrolling. |
-| Origin fixed at 100%; no one-finger pan | GAP | `v060.js` calls `beginPan` for every single touch and changes `state.x/state.y` at scale `1`. This conflicts with strict `x=0,y=0` and immediate native taps/scroll. |
-| Pan only above 100% / overflowing axes | GAP | `v060.js` starts pan at all scales. Bounds are clamped, but the handler still captures one-finger gestures when an axis fits or scale is at/below 100%. Below 100%, a fitting canvas is horizontally centered rather than anchored at origin. |
-| Tab reset to page start | GAP | `frontend/stark-solarpower-panel-v051.js::_installNavigationV051` only changes `this._view` and rerenders. `v059.js`/ `v060.js` preserve canvas position, so the new tab is not guaranteed to start at origin. |
-| Resize clamp | PASS | `v060.js` remeasures and clamps via `ResizeObserver`, window resize and `visualViewport.resize`. |
-| Gesture/more-info protection | PASS | `v060.js` sends `pointercancel` after movement/second finger and guards post-gesture clicks while stationary holds remain available. |
-| Repository icon | GAP | README has no icon/logo reference. Add an approved repository-facing asset/reference; do not redraw without source approval. |
+| Header reference geometry | PASS | Final `frontend/stark-solarpower-panel-v065.js` authoritatively sets 52/48 rails, 62/60 height, matched 44×44 radius-16 plaques, themed colours, 25px icons and 21/12 typography. |
+| Bottom Tab geometry | PASS | Final v065 layer uses fixed full-width safe-area bar, minimum 52px controls, `ha-icon` at 28px, 12/700 labels and 11% primary active fill. |
+| Native vertical scroll at 100% | PASS | v065 switches to `overflow-y:auto`, `overflow-x:hidden`, `touch-action:pan-y` at scale ≤100%; transform offsets are zero. |
+| Origin fixed at 100%; no one-finger pan | PASS | v065 creates a single-finger pan candidate only when `state.scale > 1`; clamp fixes `x=y=0` at or below 100%. |
+| Pan only above 100% / overflowing axes | PASS | v065 independently mutates x/y only when calculated content bounds overflow that axis and clamps both edges. |
+| Tab reset to page start | PASS | v065 capture handler resets native scroll and transform offsets before the existing view render while preserving scale. |
+| Resize clamp | PASS | v065 remeasures and clamps through `ResizeObserver`, window resize and `visualViewport.resize`. |
+| Gesture/more-info protection | PASS | v065 cancels entity hold on second finger/actual pan and guards generated clicks while untouched native scroll and stationary holds remain available. |
+| Repository icon | PASS | README displays the approved existing `custom_components/stark_solarpower/brand/icon.png`; no new identity was invented. |
 | Integration icon assets | PASS | `custom_components/stark_solarpower/brand/icon.png` is a valid 512×512 RGBA icon and satisfies the HACS minimum. Add dark/logo variants only if theme legibility requires them. |
 | HACS packaging | PASS | `hacs.json` identifies the integration and the component-local brand icon ships with `custom_components/stark_solarpower`. |
-| Production delivery | PASS | `panel.py` uses one cache-busted bundle URL and UI version `0.6.4`. |
+| Production delivery | PASS | `panel.py` uses one cache-busted autonomous bundle URL and UI version `0.6.5`. |
 
-## Required runtime follow-up
+## Remaining follow-up
 
-1. Replace transform-owned 100% movement with native vertical scrolling and strict origin.
-2. Gate one-finger pan on `scale > 1`, then gate/clamp each axis independently.
-3. Reset native scroll and transform offsets on tab change; re-clamp after render/resize.
-4. Consolidate Header/Bottom Tab geometry into one final shell layer and set bottom icons to `28px`.
-5. Add the approved existing integration icon to the README/repository visual identity; add optional theme variants only when needed.
+Complete the phone field checks below. Preserve the approved icon and add optional theme/logo variants only if a real surface requires them.
 
 ## Phone verification still required
 

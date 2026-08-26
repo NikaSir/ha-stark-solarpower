@@ -11,20 +11,20 @@ The Stark SolarPower integration owns a dedicated Home Assistant panel for day-t
 - Sidebar title: `UPS`
 - Icon: `mdi:battery-charging`
 - Preferred view: `overview`
-- Panel UI version: `0.6.4`
+- Panel UI version: `0.6.5`
 - Primary navigation: full-width fixed bottom Tab Bar
 
 The same metadata is shipped in `custom_components/stark_solarpower/panel_manifest.json` for `ha-contract-generated-ui` and other consumers.
 
 ## NikaS application shell
 
-UI v0.6.4 uses the NikaS specialized-panel shell with a single fixed-layout transform canvas:
+UI v0.6.5 uses the NIKAS specialized-panel shell with one working viewport:
 
 `Safe Area → Header → Device Selector → zoomable selected-UPS viewport → Bottom Tab Bar`
 
 The Header belongs to the specialized-panel shell and remains at native scale. Its permanent left control opens the native Home Assistant main-system menu; Refresh remains the single right-side shell action. `Stark SolarPower` is geometrically centered between symmetric Menu and Refresh zones. No decorative battery/brand icon is shown in the Header.
 
-Only the selected-UPS work viewport scales. Its complete live DOM is measured once and transformed as one canvas, so no card, SVG path or overlay is independently reflowed during pinch. Zoom and pan are represented by one persistent `translate3d(x,y,0) scale(s)` transform. The viewport does not use native overflow scrolling, so iOS cannot expose a temporary rubber-band position and return it to the origin after touch release. This applies to ordinary vertical movement at 100% as well as panning an enlarged canvas. Two-finger pinch uses the point between the fingers; one finger changes the canvas translation horizontally and vertically. The transform state survives selected-UPS telemetry DOM replacement. Pinch and drag cancel pending entity holds and suppress post-gesture clicks so native more-info graphs open only from an intentional stationary hold. No on-screen zoom buttons are rendered. A two-finger double tap resets scale and translation to 100%/origin; a completed pinch between 97% and 103% snaps to exactly 100%.
+Only the selected-UPS work viewport scales. At 100% it uses native vertical-only scrolling, fixes transform offsets to `x=0,y=0` and does not install one-finger custom pan. Above 100%, one finger pans only axes whose measured scaled content exceeds the viewport; both offsets are clamped to real content edges and recalculated after resize. Two-finger focal pinch uses 75–200%, snaps 97–103% to 100%, persists scale per UPS and supports a two-finger double-tap reset with `Масштаб 100%`. Tab changes reset scroll and offsets before remeasuring. Pinch and actual pan cancel pending entity holds and suppress post-gesture clicks, while untouched native scroll and intentional stationary hold remain available. No on-screen zoom buttons are rendered.
 
 The primary bottom navigation is full-width, fixed to the bottom edge, iOS-safe and contains `Обзор`, `ИБП`, `История`, `События`, and `Диагн.`. Active state remains inside the common bar. Factual entities keep long press → native Home Assistant more-info.
 
