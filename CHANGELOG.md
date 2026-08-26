@@ -2,6 +2,14 @@
 
 All notable project changes are recorded here.
 
+## [1.8.17] - 2026-08-26
+
+### Panel UI 0.6.7 — stable overview canvas
+
+- Prevent a transient zero-width iOS layout frame from collapsing the zoom surface to a one-pixel strip after telemetry updates or UPS switching.
+- Put the final Overview geometry into the initial work-surface markup so the zoom engine measures it once without a late height change or visible flash.
+- Restore the compact factual reserve/battery readiness plaque below the photographic hero without restoring the duplicated `Состояние` summary.
+
 ## [1.8.16] - 2026-08-26
 
 ### Panel UI 0.6.6 — independent cloud/freshness status
