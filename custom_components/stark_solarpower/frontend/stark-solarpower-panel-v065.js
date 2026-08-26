@@ -9,7 +9,7 @@ const PAN_THRESHOLD = 7;
 const TAP_MOVE = 12;
 const TAP_DURATION = 260;
 const DOUBLE_TAP_DELAY = 360;
-const GUARD_MS = 380;
+const GUARD_MS = 700;
 
 const clampScale = (value) => Math.min(MAX_SCALE, Math.max(MIN_SCALE, Number(value) || 1));
 const distance = (a, b) => Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
@@ -41,16 +41,34 @@ if (Panel && !Panel.prototype.__starkUiV065) {
     this.__starkStatesV065 ||= new Map();
     const memory = this.__starkStatesV065.get(key);
     if (memory) return { ...memory };
-    let scale = 1;
-    try { scale = clampScale(localStorage.getItem(`nikas:specialized-panel:stark-solarpower:zoom:${key}`) || 1); }
-    catch (_error) { scale = 1; }
-    return { scale, x:0, y:0 };
+    let state = { scale:1, x:0, y:0 };
+    try {
+      const saved = JSON.parse(localStorage.getItem(`nikas:specialized-panel:stark-solarpower:transform:${key}`) || "null");
+      if (saved && typeof saved === "object") {
+        state = {
+          scale:clampScale(saved.scale),
+          x:Number.isFinite(saved.x) ? saved.x : 0,
+          y:Number.isFinite(saved.y) ? saved.y : 0,
+        };
+      } else {
+        state.scale = clampScale(localStorage.getItem(`nikas:specialized-panel:stark-solarpower:zoom:${key}`) || 1);
+      }
+    } catch (_error) { state = { scale:1, x:0, y:0 }; }
+    if (state.scale <= 1) { state.x = 0; state.y = 0; }
+    return state;
   };
 
   Panel.prototype._saveStateV065 = function (key, state) {
     this.__starkStatesV065 ||= new Map();
     this.__starkStatesV065.set(key, { scale:state.scale, x:state.x, y:state.y });
-    try { localStorage.setItem(`nikas:specialized-panel:stark-solarpower:zoom:${key}`, state.scale.toFixed(3)); }
+    try {
+      localStorage.setItem(`nikas:specialized-panel:stark-solarpower:zoom:${key}`, state.scale.toFixed(3));
+      localStorage.setItem(`nikas:specialized-panel:stark-solarpower:transform:${key}`, JSON.stringify({
+        scale:state.scale,
+        x:state.scale > 1 ? state.x : 0,
+        y:state.scale > 1 ? state.y : 0,
+      }));
+    }
     catch (_error) { /* private WebView */ }
   };
 
@@ -75,7 +93,7 @@ if (Panel && !Panel.prototype.__starkUiV065) {
     viewport.append(stage);
     source.replaceWith(viewport);
 
-    const key = this._stateKeyV065();
+    let key = this._stateKeyV065();
     viewport.dataset.stateKeyV065 = key;
     const state = this._loadStateV065(key);
     // Keep the last real width inherited from the previous canvas layer.
@@ -128,14 +146,22 @@ if (Panel && !Panel.prototype.__starkUiV065) {
       if (remeasure) measure();
       clampPosition();
       const native = state.scale <= 1;
-      viewport.classList.toggle("native-scroll", native);
-      viewport.classList.toggle("zoomed", !native);
-      stage.style.width = `${Math.max(viewport.clientWidth, baseWidth * state.scale)}px`;
-      stage.style.height = `${Math.max(viewport.clientHeight, baseHeight * state.scale)}px`;
-      surface.style.transform = native
+      if (viewport.classList.contains("native-scroll") !== native) {
+        viewport.classList.toggle("native-scroll", native);
+        viewport.classList.toggle("zoomed", !native);
+      }
+      const stageWidth = `${Math.max(viewport.clientWidth, baseWidth * state.scale)}px`;
+      const stageHeight = `${Math.max(viewport.clientHeight, baseHeight * state.scale)}px`;
+      const transform = native
         ? `scale(${state.scale})`
         : `translate3d(${state.x}px,${state.y}px,0) scale(${state.scale})`;
-      if (!native) { viewport.scrollLeft = 0; viewport.scrollTop = 0; }
+      if (stage.style.width !== stageWidth) stage.style.width = stageWidth;
+      if (stage.style.height !== stageHeight) stage.style.height = stageHeight;
+      if (surface.style.transform !== transform) surface.style.transform = transform;
+      if (!native) {
+        if (viewport.scrollLeft) viewport.scrollLeft = 0;
+        if (viewport.scrollTop) viewport.scrollTop = 0;
+      }
       this.__starkZoomV054 = state.scale;
       if (persist) this._saveStateV065(key, state);
     };
@@ -157,6 +183,27 @@ if (Panel && !Panel.prototype.__starkUiV065) {
       viewport.scrollTo({ left:0, top:0, behavior:"auto" });
       apply({ persist:true });
       if (notify) showToast();
+    };
+    const resetPosition = ({ persist=true } = {}) => {
+      state.x = 0; state.y = 0;
+      viewport.scrollTo({ left:0, top:0, behavior:"auto" });
+      apply({ remeasure:true, persist });
+    };
+    const switchContext = (nextKey) => {
+      const normalized = nextKey || "default";
+      if (normalized === key) {
+        resetPosition({ persist:true });
+        return;
+      }
+      this._saveStateV065(key, state);
+      key = normalized;
+      viewport.dataset.stateKeyV065 = key;
+      const next = this._loadStateV065(key);
+      state.scale = next.scale;
+      state.x = next.x;
+      state.y = next.y;
+      viewport.scrollTo({ left:0, top:0, behavior:"auto" });
+      apply({ remeasure:true, persist:true });
     };
     const contentPoint = (focal) => state.scale <= 1
       ? { x:focal.x / state.scale, y:(viewport.scrollTop + focal.y) / state.scale }
@@ -219,7 +266,14 @@ if (Panel && !Panel.prototype.__starkUiV065) {
     }, { passive:false });
 
     viewport.addEventListener("touchend", (event) => {
-      if (multi && event.touches.length === 1) { pinch=null; pan=null; return; }
+      // Keep the original two-finger gesture until the second finger leaves.
+      // Clearing `pinch` on the first lift made a two-finger tap impossible to
+      // complete and therefore broke the two-finger double-tap reset.
+      if (multi && event.touches.length === 1) {
+        pan=null;
+        event.preventDefault();
+        return;
+      }
       if (event.touches.length) return;
       const completed = pinch;
       const wasMulti = multi;
@@ -230,6 +284,7 @@ if (Panel && !Panel.prototype.__starkUiV065) {
       } else apply({persist:true});
       const now=performance.now();
       if (wasMulti) {
+        event.preventDefault();
         this.__starkGuardUntilV065=now+GUARD_MS;
         const isTap=completed && !completed.moved && now-completed.startedAt<=TAP_DURATION;
         if (isTap) {
@@ -237,13 +292,18 @@ if (Panel && !Panel.prototype.__starkUiV065) {
           else twoTap={at:now,midpoint:completed.midpoint};
         } else twoTap=null;
       } else if (moved) this.__starkGuardUntilV065=now+GUARD_MS;
-    }, { passive:true });
+    }, { passive:false });
     viewport.addEventListener("touchcancel", () => { pinch=null;pan=null;multi=false;apply({persist:true});this.__starkGuardUntilV065=performance.now()+GUARD_MS; }, { passive:true });
     viewport.addEventListener("click", (event) => {
       if (this.__starkGuardUntilV065===Infinity || performance.now()<Number(this.__starkGuardUntilV065||0)) { event.preventDefault();event.stopImmediatePropagation(); }
     }, { capture:true });
 
-    root.querySelectorAll(".bottom-nav-v051 [data-view-v051]").forEach((button) => button.addEventListener("click", () => {
+    root.querySelectorAll(".bottom-nav-v051 [data-view-v051]").forEach((button) => button.addEventListener("click", (event) => {
+      if (this.__starkGuardUntilV065===Infinity || performance.now()<Number(this.__starkGuardUntilV065||0)) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        return;
+      }
       state.x=0;state.y=0;viewport.scrollTo({left:0,top:0,behavior:"auto"});this._saveStateV065(key,state);
     }, { capture:true }));
 
@@ -252,6 +312,15 @@ if (Panel && !Panel.prototype.__starkUiV065) {
     window.addEventListener("resize",resize,{passive:true});
     window.visualViewport?.addEventListener("resize",resize,{passive:true});
     this.__starkResizeCleanupV065=()=>{window.removeEventListener("resize",resize);window.visualViewport?.removeEventListener("resize",resize);};
+    this.__starkCanvasControllerV065={
+      viewport,
+      surface,
+      state,
+      refresh:()=>apply({remeasure:true}),
+      resetPosition,
+      switchContext,
+      reset,
+    };
     requestAnimationFrame(() => apply({remeasure:true}));
   };
 

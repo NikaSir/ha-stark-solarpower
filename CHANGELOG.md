@@ -2,6 +2,26 @@
 
 All notable project changes are recorded here.
 
+## [1.8.22] - 2026-08-26
+
+### Panel UI 0.8.0 — NikaS specialized-panel standard v1.6
+
+- Lock the phone application shell to the viewport so Header, peer selector and Bottom Tab Bar remain stationary while only the work viewport scrolls.
+- Mount the shell and zoom canvas once, lazily cache visited UPS/tab views and point-patch routine telemetry without replacing artwork or fixed chrome.
+- Restore the persisted per-UPS transform before a selected view becomes visible and reset/clamp offsets on tab changes.
+- Adopt the v1.6 `23/14 px` Header pair (`21/13 px` narrow) and the `12–25 px` meaningful typography envelope.
+- Tint the requested two-level cloud/freshness plaque with its transport-status color while retaining independent freshness semantics.
+- Preserve focal pinch, 97–103% snap, reliable two-finger reset and protection against accidental History/more-info activation.
+
+## [1.8.21] - 2026-08-26
+
+### Panel UI 0.7.1 — gesture guard and fallback-title fit
+
+- Keep `Не определено` on one line without shrinking normal power-mode headings.
+- Rebalance the battery-capacity plaque with a clear gap above the UPS cabinet.
+- Preserve the two-finger gesture after the first finger lifts so a two-finger double tap reliably resets the work canvas to 100%.
+- Suppress the delayed synthetic click after pinch before it can activate `История` or another fixed bottom-navigation item.
+
 ## [1.8.20] - 2026-08-26
 
 ### Panel UI 0.7.0 — battery detail surface

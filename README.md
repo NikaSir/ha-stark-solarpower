@@ -6,7 +6,7 @@ Custom Home Assistant integration for **STARK Country Online** UPS devices monit
 
 ## Status
 
-Current production baseline: **v1.8.20** with the integration-owned UPS panel UI **v0.7.0**.
+Current production baseline: **v1.8.22** with the integration-owned UPS panel UI **v0.8.0**.
 
 The integration has been field-tested on two STARK Country Online 1000 VA UPS devices with SolarPower Wi-Fi cards.
 
@@ -44,18 +44,18 @@ Navigation contract:
 - sidebar title: `UPS`;
 - icon: `mdi:battery-charging`;
 - preferred view: `overview`;
-- panel UI version: `0.7.0`;
+- panel UI version: `0.8.0`;
 - persistent device selector: `UPS Интернет / UPS Котёл`;
 - product artwork: `Stark Country 1000 ONLINE (16A)`.
 
-The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.7.0 keeps the NIKAS UI Standard v1.5 shell, the independent selected-UPS connection/freshness indicator and the photographic Overview. The battery plaque sits in the clear space above the cabinet, while a compact live battery card uses the free area below reserve readiness. Every primary view reconciles live telemetry in place without replacing its work canvas or disturbing zoom, pan and scroll state.
+The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.8.0 implements NikaS Specialized Panel UI Standard v1.6: a height-locked shell keeps Header, peer selector and Bottom Tab Bar stationary around one permanent work viewport; visited UPS/tab views are lazily cached; routine telemetry point-patches the mounted DOM. The selected-UPS cloud/freshness indicator uses the canonical two-level vocabulary and status-tinted plaque, while all meaningful phone typography stays within 12–25 px. The battery plaque remains above the cabinet and the compact factual battery card remains below reserve readiness. Two-finger reset, near-100% snap and post-pinch navigation protection stay inside the permanent canvas.
 
 Views:
 
 - **Обзор** — operating mode, input, load, battery and the selected UPS cloud/freshness indicator in one photographic card;
 - **ИБП** — selected-device identity, electrical state and working parameters;
-- **История** — compact key measurements opening native Home Assistant history;
 - **События** — latest selected-device integration event entities;
+- **История** — compact key measurements opening native Home Assistant history;
 - **Диагн.** — primary-vs-extended data source health plus detailed electrical and vendor diagnostics.
 
 The panel never calls the Stark/SolarPower API directly. It reads Home Assistant entities only and uses the existing integration button entity for manual refresh. `unknown` and `unavailable` are never presented as healthy states.
