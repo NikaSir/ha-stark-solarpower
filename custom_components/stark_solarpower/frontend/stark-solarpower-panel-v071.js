@@ -6,6 +6,9 @@ const UI_VERSION = "0.7.1";
 if (Panel && !Panel.prototype.__starkUiV071) {
   Panel.prototype.__starkUiV071 = true;
 
+  // Gesture completion and post-pinch navigation suppression are implemented
+  // by the permanent canvas layer in v065; this layer only finalizes layout.
+
   const previousOverview = Panel.prototype._renderOverviewV051;
   const previousRender = Panel.prototype._render;
 
