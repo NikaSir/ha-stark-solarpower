@@ -2,6 +2,15 @@
 
 All notable project changes are recorded here.
 
+## [1.8.16] - 2026-08-26
+
+### Panel UI 0.6.6 — independent cloud/freshness status
+
+- Replace the one-line update-age chip with a selected-UPS two-level `Облако / Нет связи / Нет данных` and `Данные актуальны / Данные устарели / Нет данных` indicator.
+- Keep the UPS power mode separate from connection health and show output voltage/frequency in the hero copy.
+- Remove the duplicated Overview state summary; the full electrical and battery facts remain in the dedicated UPS view.
+- Keep extended-telemetry health diagnostic-only and preserve NIKAS UI Standard v1.5 zoom, shell and navigation behavior.
+
 ## [1.8.15] - 2026-08-26
 
 ### Panel UI 0.6.5 — NIKAS UI Standard v1.5
