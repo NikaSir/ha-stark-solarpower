@@ -48,7 +48,7 @@ Navigation contract:
 - persistent device selector: `UPS Интернет / UPS Котёл`;
 - product artwork: `Stark Country 1000 ONLINE (16A)`.
 
-The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.7.0 keeps the NIKAS UI Standard v1.5 shell, the independent selected-UPS connection/freshness indicator and the photographic Overview. The battery plaque sits in the clear space above the cabinet, while a compact live battery card uses the free area below reserve readiness. Every primary view reconciles live telemetry in place without replacing its work canvas or disturbing zoom, pan and scroll state.
+The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.7.0 keeps the NIKAS UI Standard v1.6 shell, the independent selected-UPS connection/freshness indicator and the photographic Overview. The battery plaque sits in the clear space above the cabinet, while a compact live battery card uses the free area below reserve readiness. Every primary view reconciles live telemetry in place without replacing its work canvas or disturbing zoom, pan and scroll state.
 
 Views:
 
