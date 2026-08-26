@@ -2,6 +2,14 @@
 
 All notable project changes are recorded here.
 
+## [1.8.19] - 2026-08-26
+
+### Panel UI 0.6.9 — flicker-free telemetry on every view
+
+- Extend in-place telemetry reconciliation from Overview to UPS, History, Events and Diagnostics.
+- Build the desired view in a detached template and synchronize only changed text, classes, attributes and icons in the existing work canvas.
+- Preserve view DOM, event handlers, zoom, pan and scroll state while falling back to a complete render only when the view, selected UPS or entity structure changes.
+
 ## [1.8.18] - 2026-08-26
 
 ### Panel UI 0.6.8 — flicker-free live telemetry
