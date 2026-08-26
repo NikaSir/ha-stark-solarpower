@@ -35,3 +35,16 @@ Complete the phone field checks below. Preserve the approved icon and add option
 ## Phone verification still required
 
 Long Diagnostics scrolling at 100%; no horizontal/top-edge displacement; pan axes at >100%; bounds after release/resize/tab change; pinch without snap-back; tap/hold behavior; fixed Header/selector/tab bar; Home Indicator clearance.
+
+
+<!-- v1.6-adoption -->
+## v1.6 adoption delta — 2026-08-26
+
+This section is normative. Earlier PASS evidence was collected against v1.5.
+
+- **Indicator policy:** **ENABLED by explicit request** for the currently selected UPS. The primary channel is derived from the factual integration path and is never hard-coded as `Онлайн`; the secondary line reports freshness.
+- **Indicator surface:** use the LIDER treatment: status-colored primary text/lamp, 8–12% tinted plaque, approximately 30% same-color border, and 15px/12px typography.
+- A failed current poll immediately marks cached UPS values `Данные устарели`.
+- **Stable DOM:** selected-UPS telemetry and indicator changes patch existing nodes only; Header, selector, image, one viewport and Bottom Tab Bar retain identity.
+- **Fixed chrome:** selector and both menus stay at fixed screen coordinates; short UPS/history views may not pull Bottom Tab Bar.
+- **Typography re-audit required:** enforce the LIDER 9–25px role scale and the 12px meaningful-text floor.
