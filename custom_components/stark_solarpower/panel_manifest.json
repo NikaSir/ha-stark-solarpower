@@ -8,7 +8,7 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.6.4",
+  "ui_version": "0.6.5",
   "template": {
     "name": "NikaS Integration Panel Template",
     "version": "1.0"
@@ -17,15 +17,26 @@
     "grid_mobile_px": [52, "minmax(0,1fr)", 52],
     "grid_narrow_px": [48, "minmax(0,1fr)", 48],
     "title_alignment": "viewport_center",
+    "minimum_height_px": 62,
+    "minimum_height_px_narrow": 60,
     "show_brand_icon": false,
     "left_control": {
       "type": "home_assistant_system_menu",
       "icon": "mdi:menu",
       "label_visible": false,
       "touch_target_px": 44,
+      "plaque_radius_px": 16,
+      "icon_px": 25,
       "event": "hass-toggle-menu"
     },
-    "actions": ["refresh"]
+    "actions": ["refresh"],
+    "right_control": {
+      "type": "refresh",
+      "icon": "mdi:refresh",
+      "touch_target_px": 44,
+      "plaque_radius_px": 16,
+      "icon_px": 25
+    }
   },
   "device_context": {
     "selector": "persistent_below_header",
@@ -42,11 +53,15 @@
     "floating": false,
     "safe_area": true,
     "touch_target_px": 52,
+    "icon_px": 28,
+    "label_px": 12,
+    "label_weight": 700,
+    "active_primary_percent": 11,
     "views": ["overview", "ups", "history", "events", "diagnostics"]
   },
   "zoom": {
     "scope": "selected_device_work_viewport",
-    "engine": "single_fixed_layout_transform_canvas",
+    "engine": "native_vertical_at_100_transform_pan_above_100",
     "layout_during_gesture": "frozen",
     "pinch": true,
     "controls": [],
@@ -56,6 +71,11 @@
     "maximum_percent": 200,
     "focal_point": true,
     "pan_when_enlarged": true,
+    "pan_only_above_100_percent": true,
+    "pan_axes": "overflow_only",
+    "native_vertical_scroll_at_100_percent": true,
+    "horizontal_scroll_at_100_percent": false,
+    "origin_at_100_percent": [0, 0],
     "pan_engine": "single_transform_translation",
     "gesture_activation_guard": true,
     "persistence": "local_per_panel_and_device",
@@ -96,8 +116,8 @@
     "primary_target": "iPhone Pro Max portrait",
     "safe_area_top": true,
     "safe_area_owner": "integration_panel_once",
-    "header_title_px": 23,
-    "header_subtitle_px": 14,
+    "header_title_px": 21,
+    "header_subtitle_px": 12,
     "minimum_secondary_text_px": 11,
     "navigation_text_px": 12,
     "device_selector_text_px": 15,

@@ -1,10 +1,12 @@
 # Stark SolarPower for Home Assistant
 
+![Stark SolarPower integration icon](custom_components/stark_solarpower/brand/icon.png)
+
 Custom Home Assistant integration for **STARK Country Online** UPS devices monitored through the SolarPower / ShineMonitor cloud backend.
 
 ## Status
 
-Current production baseline: **v1.8.14** with the integration-owned UPS panel UI **v0.6.4**.
+Current production baseline: **v1.8.15** with the integration-owned UPS panel UI **v0.6.5**.
 
 The integration has been field-tested on two STARK Country Online 1000 VA UPS devices with SolarPower Wi-Fi cards.
 
@@ -42,11 +44,11 @@ Navigation contract:
 - sidebar title: `UPS`;
 - icon: `mdi:battery-charging`;
 - preferred view: `overview`;
-- panel UI version: `0.6.4`;
+- panel UI version: `0.6.5`;
 - persistent device selector: `UPS Интернет / UPS Котёл`;
 - product artwork: `Stark Country 1000 ONLINE (16A)`.
 
-The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.6.4 spends the remaining mobile viewport reserve on a taller photographic scene. Because the UPS stays anchored to the room floor while the live battery card stays at the top of the scene, the added height creates a deliberate clear gap between them without changing the compact one-screen hierarchy. Clean edge-safe room photography, the factual battery-row reserve state and transform-owned zoom/pan remain unchanged. Pinch and drag gestures suppress entity activation, preventing accidental more-info graphs. The system menu, UPS selector and Bottom Tab Bar remain native-sized.
+The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.6.5 implements NIKAS UI Standard v1.5: native vertical-only scrolling at 100%, bounded transform panning only above 100%, focal pinch, snap/reset gestures and fixed UPS-reference Header, selector and Bottom Tab Bar.
 
 Views:
 
