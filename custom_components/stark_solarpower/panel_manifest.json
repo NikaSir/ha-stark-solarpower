@@ -8,10 +8,17 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.7.1",
+  "ui_version": "0.8.0",
   "template": {
     "name": "NikaS Integration Panel Template",
     "version": "1.0"
+  },
+  "shell": {
+    "standard_version": "1.6",
+    "height_locked_phone": true,
+    "safe_area_owner": "integration_panel_once",
+    "outer_page_scroll": false,
+    "work_view_cache": "lazy_per_view_and_peer"
   },
   "header": {
     "grid_mobile_px": [52, "minmax(0,1fr)", 52],
@@ -19,6 +26,10 @@
     "title_alignment": "viewport_center",
     "minimum_height_px": 62,
     "minimum_height_px_narrow": 60,
+    "title_px": 23,
+    "title_px_narrow": 21,
+    "subtitle_px": 14,
+    "subtitle_px_narrow": 13,
     "show_brand_icon": false,
     "left_control": {
       "type": "home_assistant_system_menu",
@@ -124,12 +135,13 @@
     "primary_target": "iPhone Pro Max portrait",
     "safe_area_top": true,
     "safe_area_owner": "integration_panel_once",
-    "header_title_px": 21,
-    "header_subtitle_px": 12,
-    "minimum_secondary_text_px": 11,
+    "header_title_px": 23,
+    "header_subtitle_px": 14,
+    "minimum_meaningful_text_px": 12,
+    "maximum_meaningful_text_px": 25,
     "navigation_text_px": 12,
     "device_selector_text_px": 15,
-    "hero_status_px_min": 34,
+    "hero_status_px": 25,
     "hero_metric_value_px": 19
   },
   "layout": {
@@ -146,6 +158,9 @@
     "refresh_feedback": true,
     "unrelated_hass_updates_skip_full_render": true,
     "all_view_telemetry_updates": "in_place_without_dom_replacement",
+    "shell_mount": "once_per_panel_instance",
+    "visited_views": "lazy_dom_cache",
+    "height_locked_phone_shell": true,
     "pfc_status_mapped": true
   },
   "targets": {

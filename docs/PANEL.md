@@ -11,14 +11,14 @@ The Stark SolarPower integration owns a dedicated Home Assistant panel for day-t
 - Sidebar title: `UPS`
 - Icon: `mdi:battery-charging`
 - Preferred view: `overview`
-- Panel UI version: `0.7.1`
+- Panel UI version: `0.8.0`
 - Primary navigation: full-width fixed bottom Tab Bar
 
 The same metadata is shipped in `custom_components/stark_solarpower/panel_manifest.json` for `ha-contract-generated-ui` and other consumers.
 
 ## NikaS application shell
 
-UI v0.7.1 uses the NIKAS specialized-panel shell with one working viewport:
+UI v0.8.0 uses NikaS Specialized Panel UI Standard v1.6 with one height-locked shell and one working viewport:
 
 `Safe Area → Header → Device Selector → zoomable selected-UPS viewport → Bottom Tab Bar`
 
@@ -75,7 +75,7 @@ The photographic hero is the only Overview presentation of input voltage, output
 
 The final hero geometry is present before the zoom engine measures the work surface. A transient zero-width iOS layout frame reuses the previous real canvas width instead of collapsing the surface to one pixel.
 
-Normal telemetry refreshes update existing text, icons, classes and status tones in place on all five primary views. They do not replace the work canvas, reload image layers or reset the current zoom, pan and native scroll position. A complete render is reserved for structural context changes such as selecting another UPS or opening another primary view.
+Normal telemetry refreshes update existing text, icons, classes and status tones in place on all five primary views. They do not replace the work canvas, reload image layers or reset the current zoom, pan and native scroll position. Visited tab/UPS combinations are cached as stable work-view subtrees; switching context reuses them and restores the selected UPS scale before display. Only a genuine registry/configuration topology change may replace the affected work-view subtree, never the fixed shell.
 
 The hero connection plaque is calculated for the selected UPS only. Its first line is the current cloud channel (`Облако`, `Нет связи`, `Нет данных`); its second line independently reports freshness (`Данные актуальны`, `Данные устарели`, `Нет данных`). Primary polling runs every 60 seconds and becomes stale after 360 seconds. Extended telemetry is polled separately every five minutes and never changes the primary connection indicator by itself. `Нет связи · Данные актуальны` is valid immediately after a failed cloud poll while the last confirmed snapshot remains inside the freshness window.
 

@@ -84,7 +84,7 @@ if (Panel && !Panel.prototype.__starkUiV066) {
             <h2>${esc(power.title)}</h2>
             <p>${esc(power.detail)}</p>
           </div>
-          <div class="freshness-v051 connection-v066 ${esc(connection.channel.tone)}">
+          <div class="freshness-v051 connection-v066 ${esc(connection.channel.tone)}" role="status" aria-live="polite" aria-label="${esc(connection.channel.label)} · ${esc(connection.freshness.label)}">
             <span class="connection-lamp-v066" aria-hidden="true"></span>
             <span class="connection-copy-v066">
               <strong>${esc(connection.channel.label)}</strong>
