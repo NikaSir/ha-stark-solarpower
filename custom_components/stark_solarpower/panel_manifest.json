@@ -8,7 +8,7 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.7.0",
+  "ui_version": "0.7.1",
   "template": {
     "name": "NikaS Integration Panel Template",
     "version": "1.0"
@@ -57,7 +57,7 @@
     "label_px": 12,
     "label_weight": 700,
     "active_primary_percent": 11,
-    "views": ["overview", "ups", "history", "events", "diagnostics"]
+    "views": ["overview", "ups", "events", "history", "diagnostics"]
   },
   "zoom": {
     "scope": "selected_device_work_viewport",

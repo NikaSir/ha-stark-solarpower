@@ -6021,7 +6021,7 @@ const PAN_THRESHOLD = 7;
 const TAP_MOVE = 12;
 const TAP_DURATION = 260;
 const DOUBLE_TAP_DELAY = 360;
-const GUARD_MS = 380;
+const GUARD_MS = 700;
 
 const clampScale = (value) => Math.min(MAX_SCALE, Math.max(MIN_SCALE, Number(value) || 1));
 const distance = (a, b) => Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
@@ -6231,7 +6231,14 @@ if (Panel && !Panel.prototype.__starkUiV065) {
     }, { passive:false });
 
     viewport.addEventListener("touchend", (event) => {
-      if (multi && event.touches.length === 1) { pinch=null; pan=null; return; }
+      // Keep the original two-finger gesture until the second finger leaves.
+      // Clearing `pinch` on the first lift made a two-finger tap impossible to
+      // complete and therefore broke the two-finger double-tap reset.
+      if (multi && event.touches.length === 1) {
+        pan=null;
+        event.preventDefault();
+        return;
+      }
       if (event.touches.length) return;
       const completed = pinch;
       const wasMulti = multi;
@@ -6242,6 +6249,7 @@ if (Panel && !Panel.prototype.__starkUiV065) {
       } else apply({persist:true});
       const now=performance.now();
       if (wasMulti) {
+        event.preventDefault();
         this.__starkGuardUntilV065=now+GUARD_MS;
         const isTap=completed && !completed.moved && now-completed.startedAt<=TAP_DURATION;
         if (isTap) {
@@ -6249,13 +6257,18 @@ if (Panel && !Panel.prototype.__starkUiV065) {
           else twoTap={at:now,midpoint:completed.midpoint};
         } else twoTap=null;
       } else if (moved) this.__starkGuardUntilV065=now+GUARD_MS;
-    }, { passive:true });
+    }, { passive:false });
     viewport.addEventListener("touchcancel", () => { pinch=null;pan=null;multi=false;apply({persist:true});this.__starkGuardUntilV065=performance.now()+GUARD_MS; }, { passive:true });
     viewport.addEventListener("click", (event) => {
       if (this.__starkGuardUntilV065===Infinity || performance.now()<Number(this.__starkGuardUntilV065||0)) { event.preventDefault();event.stopImmediatePropagation(); }
     }, { capture:true });
 
-    root.querySelectorAll(".bottom-nav-v051 [data-view-v051]").forEach((button) => button.addEventListener("click", () => {
+    root.querySelectorAll(".bottom-nav-v051 [data-view-v051]").forEach((button) => button.addEventListener("click", (event) => {
+      if (this.__starkGuardUntilV065===Infinity || performance.now()<Number(this.__starkGuardUntilV065||0)) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        return;
+      }
       state.x=0;state.y=0;viewport.scrollTo({left:0,top:0,behavior:"auto"});this._saveStateV065(key,state);
     }, { capture:true }));
 
@@ -6924,3 +6937,48 @@ if (Panel && !Panel.prototype.__starkUiV070) {
 }
 })();
 // END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v070.js
+
+// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v071.js
+(() => {
+const Panel = customElements.get("stark-solarpower-panel");
+const UI_VERSION = "0.7.1";
+
+if (Panel && !Panel.prototype.__starkUiV071) {
+  Panel.prototype.__starkUiV071 = true;
+
+  const previousOverview = Panel.prototype._renderOverviewV051;
+  const previousRender = Panel.prototype._render;
+
+  Panel.prototype._renderOverviewV051 = function () {
+    const html = previousOverview.call(this);
+    if (!html.includes('class="overview-v051 overview-v066"')) return html;
+
+    return `<style data-stark-overview-v071>
+      /* Keep the capacity plaque visually separate from the cabinet. */
+      section.overview-v066 .scene-node-v051.battery {
+        top:58px !important;
+        bottom:auto !important;
+      }
+      /* The long fallback state is one calm line; normal mode titles keep
+         their established 35–38 px hierarchy. */
+      section.overview-v066 .ups-hero-v051.unknown .hero-copy-v051 h2,
+      section.overview-v066 .ups-hero-v051.bad .hero-copy-v051 h2 {
+        white-space:nowrap;
+        overflow-wrap:normal;
+        font-size:clamp(23px,6.4vw,29px) !important;
+        letter-spacing:-.035em;
+      }
+      @media(max-width:390px) {
+        section.overview-v066 .scene-node-v051.battery { top:54px !important; }
+      }
+    </style>${html}`;
+  };
+
+  Panel.prototype._render = function () {
+    previousRender.call(this);
+    const subtitle = this.shadowRoot?.querySelector(".subtitle");
+    if (subtitle) subtitle.textContent = `UPS Control Center · UI v${UI_VERSION}`;
+  };
+}
+})();
+// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v071.js

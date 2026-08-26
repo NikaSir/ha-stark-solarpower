@@ -2,6 +2,15 @@
 
 All notable project changes are recorded here.
 
+## [1.8.21] - 2026-08-26
+
+### Panel UI 0.7.1 — gesture guard and fallback-title fit
+
+- Keep `Не определено` on one line without shrinking normal power-mode headings.
+- Rebalance the battery-capacity plaque with a clear gap above the UPS cabinet.
+- Preserve the two-finger gesture after the first finger lifts so a two-finger double tap reliably resets the work canvas to 100%.
+- Suppress the delayed synthetic click after pinch before it can activate `История` or another fixed bottom-navigation item.
+
 ## [1.8.20] - 2026-08-26
 
 ### Panel UI 0.7.0 — battery detail surface
