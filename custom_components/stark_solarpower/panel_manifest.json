@@ -8,7 +8,7 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.6.8",
+  "ui_version": "0.6.9",
   "template": {
     "name": "NikaS Integration Panel Template",
     "version": "1.0"
@@ -145,7 +145,7 @@
     "stale_threshold_source": "backend",
     "refresh_feedback": true,
     "unrelated_hass_updates_skip_full_render": true,
-    "overview_telemetry_updates": "in_place_without_dom_replacement",
+    "all_view_telemetry_updates": "in_place_without_dom_replacement",
     "pfc_status_mapped": true
   },
   "targets": {
