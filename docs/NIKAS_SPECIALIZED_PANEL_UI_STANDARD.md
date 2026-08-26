@@ -112,7 +112,7 @@ The retired always-transform-pan-at-100% model must not be restored.
 - Exact telemetry age or an unchanged poll result must not be a structural-render key.
 - Images are preloaded/decoded where practical. An unchanged image must not receive the same `src` again.
 - A full-screen loading state is allowed only during initial mount. Later loss, stale data or recovery updates existing content in place.
-- Tabs are mounted once, or lazily once on first use, then preserved and switched through state/classes, `hidden` and `inert`; a blank intermediate frame is prohibited.
+- Tabs are mounted once, or lazily once on first use, then preserved. Conforming switching uses state/classes with `hidden` and `inert`, or synchronously detaches/reattaches the same cached DOM nodes; a blank intermediate frame or image reload is prohibited.
 - Telemetry updates during upward/downward scroll, inertia, pinch or enlarged pan must not interrupt the gesture, jump the scroll position, reload imagery or move either menu.
 - A semantic indicator change updates only the indicator nodes; it never redraws the surrounding card or panel.
 
@@ -163,7 +163,7 @@ The indicator describes transport and freshness, not device operating mode. For 
 - Use one compact two-line plaque with stable dimensions sized for the longest allowed label.
 - The status lamp is fully inside the plaque: `8–10px` diameter with `10–12px` gap to text.
 - Minimum inner padding is approximately `12px` vertical and `14px` horizontal; radius is approximately `18px`.
-- Primary line is `15px / 700`; secondary line is `12px / 550–600`.
+- Primary line is `16px / 700`; secondary line is `13px / 550–600`.
 - The primary status color controls the primary text, lamp, border and a light plaque tint, following LIDER.
 - Recommended tint: mix the primary status color at approximately `8–12%` into `var(--card-background-color)`.
 - Recommended border: approximately `28–32%` of the same status color.
@@ -178,8 +178,9 @@ Font sizes are defined at Work Viewport scale 100%.
 - Absolute range: `9–25px`.
 - Normal readable interface range: `12–25px`.
 - `9–10px`: redundant, non-interactive annotations inside a visual schematic only.
-- `11px`: short technical schematic designations only.
-- `12px`: minimum for navigation, buttons, units, auxiliary states and the indicator secondary line.
+- `11px`: not used for meaningful text; round it up to the `12px` floor.
+- `12px`: minimum for navigation, buttons, units and auxiliary states.
+- `13px`: minimum for the indicator secondary line.
 - `13–15px`: body copy, card labels and ordinary states.
 - `17–18px`: section headings.
 - `18–20px`: primary measurements and values.
@@ -230,6 +231,6 @@ Unimplemented runtime behavior is recorded as `GAP`, never as an assumed `PASS`.
 - Several live polling cycles during upward scroll produce no white flash, loading screen, image reload, scroll jump or menu movement.
 - At least ten consecutive tab switches produce no blank frame or duplicated viewport.
 - Loss/recovery changes indicator and telemetry in place; cached values are visibly stale.
-- Meaningful text is never below `12px`; indicator is `15px/12px` with LIDER-style tinted surface.
+- Meaningful text is never below `12px`; indicator is `16px/13px` with LIDER-style tinted surface.
 - `Дом сейчас` and StarLine contain no optional connection/freshness indicator.
 - Repository and installed integration identity icons are present and recognizable.

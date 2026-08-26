@@ -44,7 +44,7 @@ class PanelUiStandardV15Tests(unittest.TestCase):
         self.assertIn("min-height:52px", self.source)
 
     def test_manifest_matches_runtime(self) -> None:
-        self.assertEqual(self.manifest["ui_version"], "0.7.0")
+        self.assertEqual(self.manifest["ui_version"], "0.7.1")
         zoom = self.manifest["zoom"]
         self.assertEqual(
             zoom["engine"], "native_vertical_at_100_transform_pan_above_100"

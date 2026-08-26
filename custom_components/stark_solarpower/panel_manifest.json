@@ -8,7 +8,7 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.7.0",
+  "ui_version": "0.7.1",
   "template": {
     "name": "NikaS Integration Panel Template",
     "version": "1.0"
@@ -94,11 +94,17 @@
     "standalone_metric_row": false,
     "state_tiles": [],
     "connection_indicator": {
+      "enabled": true,
+      "activation": "explicit_request",
       "scope": "selected_device_only",
       "channel_states": ["cloud", "disconnected", "unknown"],
       "freshness_states": ["current", "stale", "unknown"],
       "channel_and_freshness_independent": true,
-      "extended_telemetry_affects_primary": false
+      "extended_telemetry_affects_primary": false,
+      "primary_labels": ["Облако", "Нет связи", "Нет данных"],
+      "secondary_labels": ["Данные актуальны", "Данные устарели", "Нет данных"],
+      "online_label_forbidden": true,
+      "visual_treatment": "lider_status_tint"
     },
     "power_mode_separate_from_connection": true
   },
@@ -124,12 +130,16 @@
     "primary_target": "iPhone Pro Max portrait",
     "safe_area_top": true,
     "safe_area_owner": "integration_panel_once",
-    "header_title_px": 21,
-    "header_subtitle_px": 12,
-    "minimum_secondary_text_px": 11,
+    "header_title_px": 23,
+    "header_title_px_narrow": 21,
+    "header_subtitle_px": 14,
+    "header_subtitle_px_narrow": 13,
+    "minimum_meaningful_text_px": 12,
+    "maximum_text_px": 25,
+    "redundant_schematic_annotation_px": [9, 10],
     "navigation_text_px": 12,
     "device_selector_text_px": 15,
-    "hero_status_px_min": 34,
+    "hero_status_px": 25,
     "hero_metric_value_px": 19
   },
   "layout": {
@@ -146,6 +156,9 @@
     "refresh_feedback": true,
     "unrelated_hass_updates_skip_full_render": true,
     "all_view_telemetry_updates": "in_place_without_dom_replacement",
+    "view_transitions": "lazy_cached_view_nodes_keep_shell_nodes",
+    "stationary_shell": ["header", "device_selector", "bottom_tab_bar"],
+    "indicator_updates": "point_patch_without_shell_or_image_recreation",
     "pfc_status_mapped": true
   },
   "targets": {

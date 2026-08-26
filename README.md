@@ -6,7 +6,7 @@ Custom Home Assistant integration for **STARK Country Online** UPS devices monit
 
 ## Status
 
-Current production baseline: **v1.8.20** with the integration-owned UPS panel UI **v0.7.0**.
+Current production baseline: **v1.8.21** with the integration-owned UPS panel UI **v0.7.1**.
 
 The integration has been field-tested on two STARK Country Online 1000 VA UPS devices with SolarPower Wi-Fi cards.
 
@@ -44,11 +44,11 @@ Navigation contract:
 - sidebar title: `UPS`;
 - icon: `mdi:battery-charging`;
 - preferred view: `overview`;
-- panel UI version: `0.7.0`;
+- panel UI version: `0.7.1`;
 - persistent device selector: `UPS Интернет / UPS Котёл`;
 - product artwork: `Stark Country 1000 ONLINE (16A)`.
 
-The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.7.0 keeps the NIKAS UI Standard v1.6 shell, the independent selected-UPS connection/freshness indicator and the photographic Overview. The battery plaque sits in the clear space above the cabinet, while a compact live battery card uses the free area below reserve readiness. Every primary view reconciles live telemetry in place without replacing its work canvas or disturbing zoom, pan and scroll state.
+The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.7.1 keeps the NIKAS UI Standard v1.6 Header, device selector and Bottom Tab Bar stationary while only the work viewport scrolls or scales. The requested selected-UPS connection/freshness indicator uses the same status-tinted plaque language as LIDER. Telemetry patches existing nodes; visited view/device surfaces are lazily cached and reattached as the same DOM nodes instead of rebuilding the shell or reloading an unchanged photograph. The battery plaque sits in the clear space above the cabinet, while a compact live battery card uses the free area below reserve readiness.
 
 Views:
 

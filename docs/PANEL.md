@@ -11,20 +11,20 @@ The Stark SolarPower integration owns a dedicated Home Assistant panel for day-t
 - Sidebar title: `UPS`
 - Icon: `mdi:battery-charging`
 - Preferred view: `overview`
-- Panel UI version: `0.7.0`
+- Panel UI version: `0.7.1`
 - Primary navigation: full-width fixed bottom Tab Bar
 
 The same metadata is shipped in `custom_components/stark_solarpower/panel_manifest.json` for `ha-contract-generated-ui` and other consumers.
 
 ## NikaS application shell
 
-UI v0.7.0 uses the NIKAS specialized-panel shell with one working viewport:
+UI v0.7.1 uses the NIKAS specialized-panel shell with one working viewport:
 
 `Safe Area → Header → Device Selector → zoomable selected-UPS viewport → Bottom Tab Bar`
 
 The Header belongs to the specialized-panel shell and remains at native scale. Its permanent left control opens the native Home Assistant main-system menu; Refresh remains the single right-side shell action. `Stark SolarPower` is geometrically centered between symmetric Menu and Refresh zones. No decorative battery/brand icon is shown in the Header.
 
-Only the selected-UPS work viewport scales. At 100% it uses native vertical-only scrolling, fixes transform offsets to `x=0,y=0` and does not install one-finger custom pan. Above 100%, one finger pans only axes whose measured scaled content exceeds the viewport; both offsets are clamped to real content edges and recalculated after resize. Two-finger focal pinch uses 75–200%, snaps 97–103% to 100%, persists scale per UPS and supports a two-finger double-tap reset with `Масштаб 100%`. Tab changes reset scroll and offsets before remeasuring. Pinch and actual pan cancel pending entity holds and suppress post-gesture clicks, while untouched native scroll and intentional stationary hold remain available. No on-screen zoom buttons are rendered.
+Only the selected-UPS work viewport scales. The host and application shell are height-locked, so outer-page overscroll cannot move Header, selector or Bottom Tab Bar. At 100% the work viewport uses native vertical-only scrolling, fixes transform offsets to `x=0,y=0` and does not install one-finger custom pan. Above 100%, one finger pans only axes whose measured scaled content exceeds the viewport; both offsets are clamped to real content edges and recalculated after resize. Two-finger focal pinch uses 75–200%, snaps 97–103% to 100%, persists scale and position per UPS and supports a two-finger double-tap reset with `Масштаб 100%`. Tab changes reset scroll and offsets before remeasuring. Pinch and actual pan cancel pending entity holds and suppress post-gesture clicks, while untouched native scroll and intentional stationary hold remain available. No on-screen zoom buttons are rendered.
 
 The primary bottom navigation is full-width, fixed to the bottom edge, iOS-safe and contains `Обзор`, `ИБП`, `События`, `История`, and `Диагн.`. Active state remains inside the common bar. Factual entities keep long press → native Home Assistant more-info.
 
@@ -75,9 +75,9 @@ The photographic hero is the only Overview presentation of input voltage, output
 
 The final hero geometry is present before the zoom engine measures the work surface. A transient zero-width iOS layout frame reuses the previous real canvas width instead of collapsing the surface to one pixel.
 
-Normal telemetry refreshes update existing text, icons, classes and status tones in place on all five primary views. They do not replace the work canvas, reload image layers or reset the current zoom, pan and native scroll position. A complete render is reserved for structural context changes such as selecting another UPS or opening another primary view.
+Normal telemetry refreshes update existing text, icons, classes and status tones in place on all five primary views. They do not replace the work canvas, reload image layers or reset the current zoom, pan and native scroll position. Selecting another UPS or opening another primary view detaches the current view into a lazy DOM cache and synchronously reattaches an already visited view as the same nodes; Header, selector, one viewport and Bottom Tab Bar retain DOM identity. A cached view is reconciled with current telemetry before display. A complete shell render is reserved for loading/error or real registry-structure changes.
 
-The hero connection plaque is calculated for the selected UPS only. Its first line is the current cloud channel (`Облако`, `Нет связи`, `Нет данных`); its second line independently reports freshness (`Данные актуальны`, `Данные устарели`, `Нет данных`). Primary polling runs every 60 seconds and becomes stale after 360 seconds. Extended telemetry is polled separately every five minutes and never changes the primary connection indicator by itself. `Нет связи · Данные актуальны` is valid immediately after a failed cloud poll while the last confirmed snapshot remains inside the freshness window.
+The hero connection plaque is enabled here by explicit request and calculated for the selected UPS only. Its first line is the current cloud channel (`Облако`, `Нет связи`, `Нет данных`); its second line independently reports freshness (`Данные актуальны`, `Данные устарели`, `Нет данных`). The word `Онлайн` is not used. The primary channel controls the lamp, 16px/700 main text, 8–12% same-colour background tint and approximately 30% border; freshness uses 13px/600. Primary polling runs every 60 seconds and becomes stale after 360 seconds. Extended telemetry is polled separately every five minutes and never changes the primary connection indicator by itself. `Нет связи · Данные актуальны` is valid immediately after a failed cloud poll while the last confirmed snapshot remains inside the freshness window.
 
 The hero uses a local context plate selected from the device name: a network room for `UPS Интернет` and a boiler room for `UPS Котёл`. The network rack includes restrained blue and green equipment-status lights. The background is decorative only. The product, status nodes and values are independent runtime layers and remain factual.
 

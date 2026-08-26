@@ -41,16 +41,36 @@ if (Panel && !Panel.prototype.__starkUiV065) {
     this.__starkStatesV065 ||= new Map();
     const memory = this.__starkStatesV065.get(key);
     if (memory) return { ...memory };
+    let stored = null;
+    try {
+      const serialized = localStorage.getItem(`nikas:specialized-panel:stark-solarpower:state:${key}`);
+      if (serialized) stored = JSON.parse(serialized);
+    } catch (_error) { stored = null; }
     let scale = 1;
-    try { scale = clampScale(localStorage.getItem(`nikas:specialized-panel:stark-solarpower:zoom:${key}`) || 1); }
-    catch (_error) { scale = 1; }
-    return { scale, x:0, y:0 };
+    try {
+      scale = clampScale(
+        stored?.scale
+        ?? localStorage.getItem(`nikas:specialized-panel:stark-solarpower:zoom:${key}`)
+        ?? 1
+      );
+    } catch (_error) { scale = 1; }
+    return {
+      scale,
+      x:Number.isFinite(stored?.x) ? stored.x : 0,
+      y:Number.isFinite(stored?.y) ? stored.y : 0,
+    };
   };
 
   Panel.prototype._saveStateV065 = function (key, state) {
     this.__starkStatesV065 ||= new Map();
     this.__starkStatesV065.set(key, { scale:state.scale, x:state.x, y:state.y });
-    try { localStorage.setItem(`nikas:specialized-panel:stark-solarpower:zoom:${key}`, state.scale.toFixed(3)); }
+    try {
+      localStorage.setItem(`nikas:specialized-panel:stark-solarpower:zoom:${key}`, state.scale.toFixed(3));
+      localStorage.setItem(
+        `nikas:specialized-panel:stark-solarpower:state:${key}`,
+        JSON.stringify({ scale:state.scale, x:state.x, y:state.y })
+      );
+    }
     catch (_error) { /* private WebView */ }
   };
 
@@ -75,9 +95,9 @@ if (Panel && !Panel.prototype.__starkUiV065) {
     viewport.append(stage);
     source.replaceWith(viewport);
 
-    const key = this._stateKeyV065();
+    let key = this._stateKeyV065();
     viewport.dataset.stateKeyV065 = key;
-    const state = this._loadStateV065(key);
+    let state = this._loadStateV065(key);
     // Keep the last real width inherited from the previous canvas layer.
     // On iOS a freshly replaced element can report clientWidth=0 for one
     // frame; overwriting the surface with 1px makes the whole panel vanish.
@@ -246,6 +266,32 @@ if (Panel && !Panel.prototype.__starkUiV065) {
     root.querySelectorAll(".bottom-nav-v051 [data-view-v051]").forEach((button) => button.addEventListener("click", () => {
       state.x=0;state.y=0;viewport.scrollTo({left:0,top:0,behavior:"auto"});this._saveStateV065(key,state);
     }, { capture:true }));
+
+    // The permanent shell can switch cached work-view nodes when a tab or
+    // selected UPS changes. Expose a small controller so that this one
+    // viewport can adopt the selected device's saved transform without being
+    // recreated together with Header and bottom navigation.
+    this.__starkCanvasControllerV065 = {
+      switchKey:(nextKey) => {
+        const normalized = nextKey || "default";
+        if (normalized === key) {
+          apply({ remeasure:true });
+          return;
+        }
+        this._saveStateV065(key,state);
+        key=normalized;
+        state=this._loadStateV065(key);
+        viewport.dataset.stateKeyV065=key;
+        viewport.scrollTo({left:0,top:0,behavior:"auto"});
+        apply({remeasure:true});
+      },
+      origin:() => {
+        state.x=0;state.y=0;
+        viewport.scrollTo({left:0,top:0,behavior:"auto"});
+        apply({remeasure:true,persist:true});
+      },
+      refresh:() => apply({remeasure:true}),
+    };
 
     const resize = () => requestAnimationFrame(() => apply({remeasure:true}));
     if (typeof ResizeObserver === "function") { this.__starkResizeObserverV065=new ResizeObserver(resize);this.__starkResizeObserverV065.observe(surface); }

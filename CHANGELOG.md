@@ -2,6 +2,16 @@
 
 All notable project changes are recorded here.
 
+## [1.8.21] - 2026-08-26
+
+### Panel UI 0.7.1 — stationary shell and LIDER indicator treatment
+
+- Lock the panel host to the viewport and make the work viewport the only vertically scrolling or scaling region, keeping Header, UPS selector and Bottom Tab Bar stationary.
+- Preserve Header, selector, one zoom viewport and navigation DOM across tab/device transitions; lazily cache visited work-view nodes and reattach them without reloading unchanged imagery.
+- Persist scale and transform position separately per UPS and switch the existing canvas to the selected UPS state without nesting or recreating viewports.
+- Apply the requested LIDER status treatment to the two-level cloud/freshness indicator: same-colour lamp, main label, 8–12% tint and approximately 30% border, with 16px/13px text roles.
+- Enforce the 12–25px meaningful-text range while retaining 23/14 wide and 21/13 narrow Header typography.
+
 ## [1.8.20] - 2026-08-26
 
 ### Panel UI 0.7.0 — battery detail surface
