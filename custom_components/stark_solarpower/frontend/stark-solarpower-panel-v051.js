@@ -12,8 +12,8 @@ const HERO_BOILER =
 const NAV_ITEMS = [
   ["overview", "mdi:home", "Обзор"],
   ["ups", "mdi:battery-charging", "ИБП"],
-  ["history", "mdi:chart-line", "История"],
   ["events", "mdi:bell", "События"],
+  ["history", "mdi:chart-line", "История"],
   ["diagnostics", "mdi:stethoscope", "Диагн."],
 ];
 

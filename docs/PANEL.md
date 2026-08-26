@@ -11,14 +11,14 @@ The Stark SolarPower integration owns a dedicated Home Assistant panel for day-t
 - Sidebar title: `UPS`
 - Icon: `mdi:battery-charging`
 - Preferred view: `overview`
-- Panel UI version: `0.6.9`
+- Panel UI version: `0.7.0`
 - Primary navigation: full-width fixed bottom Tab Bar
 
 The same metadata is shipped in `custom_components/stark_solarpower/panel_manifest.json` for `ha-contract-generated-ui` and other consumers.
 
 ## NikaS application shell
 
-UI v0.6.9 uses the NIKAS specialized-panel shell with one working viewport:
+UI v0.7.0 uses the NIKAS specialized-panel shell with one working viewport:
 
 `Safe Area → Header → Device Selector → zoomable selected-UPS viewport → Bottom Tab Bar`
 
@@ -26,7 +26,7 @@ The Header belongs to the specialized-panel shell and remains at native scale. I
 
 Only the selected-UPS work viewport scales. At 100% it uses native vertical-only scrolling, fixes transform offsets to `x=0,y=0` and does not install one-finger custom pan. Above 100%, one finger pans only axes whose measured scaled content exceeds the viewport; both offsets are clamped to real content edges and recalculated after resize. Two-finger focal pinch uses 75–200%, snaps 97–103% to 100%, persists scale per UPS and supports a two-finger double-tap reset with `Масштаб 100%`. Tab changes reset scroll and offsets before remeasuring. Pinch and actual pan cancel pending entity holds and suppress post-gesture clicks, while untouched native scroll and intentional stationary hold remain available. No on-screen zoom buttons are rendered.
 
-The primary bottom navigation is full-width, fixed to the bottom edge, iOS-safe and contains `Обзор`, `ИБП`, `История`, `События`, and `Диагн.`. Active state remains inside the common bar. Factual entities keep long press → native Home Assistant more-info.
+The primary bottom navigation is full-width, fixed to the bottom edge, iOS-safe and contains `Обзор`, `ИБП`, `События`, `История`, and `Диагн.`. Active state remains inside the common bar. Factual entities keep long press → native Home Assistant more-info.
 
 ## Device context
 
@@ -71,7 +71,7 @@ The selected UPS receives one full status-first operating card showing:
 - stale/fresh status independently from the cloud channel;
 - output voltage and frequency in the operating-mode copy.
 
-The photographic hero is the only Overview presentation of input voltage, output voltage/frequency, load and battery charge. The repeated metric row and the repeated `Состояние` summary are not rendered; the complete factual set, battery voltage and line quality remain available in the dedicated UPS view. A compact reserve-readiness plaque sits below the hero so removing the summary does not hide battery readiness. The photographic room uses the available height: the UPS is enlarged and grounded on the floor, while the battery card sits above the cabinet without touching the status copy. Decorative flow connectors are not rendered.
+The photographic hero is the only Overview presentation of input voltage, output voltage/frequency, load and battery charge. The repeated metric row and the repeated `Состояние` summary are not rendered. A compact reserve-readiness plaque sits below the hero, followed by a battery-detail card containing actual bank voltage, confirmed battery count, charger temperature and the explicitly labelled vendor RAW remaining-time value. The photographic room uses the available height: the UPS is enlarged and grounded on the floor, while the battery-capacity plaque sits lower in the clear space above the cabinet without touching either the status copy or the UPS. Decorative flow connectors are not rendered. Battery charge current is not displayed because the current backend does not expose a verified charge-current entity.
 
 The final hero geometry is present before the zoom engine measures the work surface. A transient zero-width iOS layout frame reuses the previous real canvas width instead of collapsing the surface to one pixel.
 
