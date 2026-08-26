@@ -78,16 +78,37 @@ if (Panel && !Panel.prototype.__starkUiV065) {
     const key = this._stateKeyV065();
     viewport.dataset.stateKeyV065 = key;
     const state = this._loadStateV065(key);
-    let baseWidth = 1;
-    let baseHeight = 1;
+    // Keep the last real width inherited from the previous canvas layer.
+    // On iOS a freshly replaced element can report clientWidth=0 for one
+    // frame; overwriting the surface with 1px makes the whole panel vanish.
+    let baseWidth = Math.max(1, Number.parseFloat(surface.style.width) || 0);
+    let baseHeight = Math.max(1, surface.scrollHeight || 0);
     let pinch = null;
     let pan = null;
     let twoTap = null;
     let multi = false;
 
     const measure = () => {
-      baseWidth = Math.max(1, viewport.clientWidth);
-      surface.style.width = `${baseWidth}px`;
+      const directWidth = Math.max(
+        viewport.clientWidth || 0,
+        viewport.getBoundingClientRect().width || 0,
+      );
+      const selector = root.querySelector(".global-device-context");
+      const selectorWidth = Math.max(
+        selector?.clientWidth || 0,
+        selector?.getBoundingClientRect().width || 0,
+      );
+      const hostWidth = Math.max(
+        root.host?.clientWidth || 0,
+        root.host?.getBoundingClientRect().width || 0,
+      );
+      const measuredWidth = directWidth > 1
+        ? directWidth
+        : selectorWidth > 1
+          ? selectorWidth
+          : hostWidth;
+      if (measuredWidth > 1) baseWidth = measuredWidth;
+      if (baseWidth > 1) surface.style.width = `${baseWidth}px`;
       const rendered = surface.getBoundingClientRect().height / Math.max(state.scale, .01);
       baseHeight = Math.max(1, surface.scrollHeight, Number.isFinite(rendered) ? rendered : 0);
     };

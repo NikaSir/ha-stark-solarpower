@@ -6,7 +6,7 @@ Custom Home Assistant integration for **STARK Country Online** UPS devices monit
 
 ## Status
 
-Current production baseline: **v1.8.16** with the integration-owned UPS panel UI **v0.6.6**.
+Current production baseline: **v1.8.17** with the integration-owned UPS panel UI **v0.6.7**.
 
 The integration has been field-tested on two STARK Country Online 1000 VA UPS devices with SolarPower Wi-Fi cards.
 
@@ -44,11 +44,11 @@ Navigation contract:
 - sidebar title: `UPS`;
 - icon: `mdi:battery-charging`;
 - preferred view: `overview`;
-- panel UI version: `0.6.6`;
+- panel UI version: `0.6.7`;
 - persistent device selector: `UPS Интернет / UPS Котёл`;
 - product artwork: `Stark Country 1000 ONLINE (16A)`.
 
-The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.6.6 keeps the NIKAS UI Standard v1.5 shell and simplifies Overview to one photographic source of truth. Connection channel and data freshness are shown as an independent two-level indicator for the selected UPS, while the UPS power mode remains separate.
+The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.6.7 keeps the NIKAS UI Standard v1.5 shell, the independent selected-UPS connection/freshness indicator and the simplified photographic Overview. Its canvas measurement is hardened against transient zero-width iOS layout frames, and the compact reserve-readiness plaque remains visible below the hero.
 
 Views:
 
