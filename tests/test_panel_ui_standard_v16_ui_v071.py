@@ -19,6 +19,9 @@ class PanelUiStandardV16UiV071Tests(unittest.TestCase):
         cls.canvas = (FRONTEND / "stark-solarpower-panel-v065.js").read_text(
             encoding="utf-8"
         )
+        cls.bundle = (FRONTEND / "stark-solarpower-panel-bundle.js").read_text(
+            encoding="utf-8"
+        )
         cls.panel = (INTEGRATION / "panel.py").read_text(encoding="utf-8")
         cls.manifest = json.loads(
             (INTEGRATION / "panel_manifest.json").read_text(encoding="utf-8")
@@ -62,6 +65,8 @@ class PanelUiStandardV16UiV071Tests(unittest.TestCase):
         self.assertTrue(indicator["enabled"])
         self.assertEqual(indicator["activation"], "explicit_request")
         self.assertTrue(indicator["online_label_forbidden"])
+        self.assertNotIn('label: "Онлайн"', self.bundle)
+        self.assertNotIn('? "Онлайн"', self.bundle)
 
     def test_per_device_transform_includes_scale_and_position(self) -> None:
         self.assertIn("stark-solarpower:state:${key}", self.canvas)

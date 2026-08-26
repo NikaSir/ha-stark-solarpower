@@ -1947,7 +1947,7 @@ if (Panel && !Panel.prototype.__starkUiV040) {
     if (cloud === null) return { label: "Неизвестно", detail: "Источник не подтверждён", tone: "unknown", icon: "mdi:cloud-question-outline" };
     if (stale === true) return { label: "Устарело", detail: `Возраст ${age}`, tone: "warn", icon: "mdi:clock-alert-outline" };
     if (stale === null) return { label: "Неизвестно", detail: "Свежесть не подтверждена", tone: "unknown", icon: "mdi:clock-question-outline" };
-    return { label: "Онлайн", detail: `Данные ${age} назад`, tone: "good", icon: "mdi:cloud-check-outline" };
+    return { label: "Облако", detail: `Данные ${age} назад`, tone: "good", icon: "mdi:cloud-check-outline" };
   };
 
   Panel.prototype._overviewStateTile = function (device, kind) {
@@ -1973,7 +1973,7 @@ if (Panel && !Panel.prototype.__starkUiV040) {
     }
     if (kind === "cloud") {
       const tone = cloud === true ? "good" : cloud === false ? "bad" : "unknown";
-      const primary = cloud === true ? "Онлайн" : cloud === false ? "Недоступно" : "Неизвестно";
+      const primary = cloud === true ? "Доступно" : cloud === false ? "Недоступно" : "Неизвестно";
       const secondary = cloud === true ? "SolarPower" : cloud === false ? "Нет связи" : "Нет данных";
       return { icon: "mdi:cloud", title: "Облако", primary, secondary, tone, entity: this._entityId(device, "cloud_connected") };
     }

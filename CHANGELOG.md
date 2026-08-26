@@ -10,6 +10,7 @@ All notable project changes are recorded here.
 - Preserve Header, selector, one zoom viewport and navigation DOM across tab/device transitions; lazily cache visited work-view nodes and reattach them without reloading unchanged imagery.
 - Persist scale and transform position separately per UPS and switch the existing canvas to the selected UPS state without nesting or recreating viewports.
 - Apply the requested LIDER status treatment to the two-level cloud/freshness indicator: same-colour lamp, main label, 8–12% tint and approximately 30% border, with 16px/13px text roles.
+- Remove the retired generic `Онлайн` label from the autonomous bundle; cloud path and reachability use `Облако` / `Доступно` without changing indicator semantics.
 - Enforce the 12–25px meaningful-text range while retaining 23/14 wide and 21/13 narrow Header typography.
 
 ## [1.8.20] - 2026-08-26
