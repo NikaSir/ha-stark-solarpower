@@ -2,6 +2,17 @@
 
 All notable project changes are recorded here.
 
+## [1.8.23] - 2026-08-27
+
+### Panel UI 0.8.1 — mobile Overview composition
+
+- Raise the battery-capacity plaque into the clear area above the UPS cabinet.
+- Reduce the phone photographic scene from 360 to 336 CSS pixels without shrinking the UPS artwork.
+- Keep the input and load plaques aligned with the cabinet after the scene-height adjustment.
+- Compact the reserve and battery-detail surfaces and use the one-line `АКБ, шт.` label.
+- Reserve 16 CSS pixels below the battery card so its border and values remain fully visible above the fixed Bottom Tab Bar.
+- Emit the final geometry in the initial cached-view markup and preserve the stable-DOM, zoom and gesture contracts from UI 0.8.0.
+
 ## [1.8.22] - 2026-08-26
 
 ### Panel UI 0.8.0 — NikaS specialized-panel standard v1.6

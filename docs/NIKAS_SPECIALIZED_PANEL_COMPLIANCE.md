@@ -1,9 +1,9 @@
 # NikaS specialized-panel compliance — Stark SolarPower
 
-**Audit date:** 2026-08-26
+**Audit date:** 2026-08-27
 **Standard:** NikaS Specialized Panel UI Standard v1.6
-**Audited production path:** `panel.py` → `stark-solarpower-panel-bundle.js?v=0.8.0` → `stark-solarpower-panel`
-**Scope:** implemented in UI v0.8.0; phone field acceptance remains required
+**Audited production path:** `panel.py` → `stark-solarpower-panel-bundle.js?v=0.8.1` → `stark-solarpower-panel`
+**Scope:** implemented in UI v0.8.1; phone field acceptance remains required
 
 | Area | Result | Evidence |
 |---|---|---|
@@ -27,10 +27,11 @@
 | Stable shell and lazy view cache | PASS | `frontend/stark-solarpower-panel-v080.js` mounts the shell/canvas once, caches tab/UPS work subtrees and bypasses the legacy complete renderer after stabilization. |
 | Live telemetry stability | PASS | `v080.js` renders desired markup in a detached template and writes only changed text/attributes/classes into the active cached view; unchanged image `src`, artwork, canvas and fixed chrome remain untouched. |
 | Gesture completion guard | PASS | `frontend/stark-solarpower-panel-v065.js` retains the two-finger tap until both fingers lift and blocks the post-pinch synthetic click before fixed navigation can receive it. |
-| Battery detail surface | PASS | `frontend/stark-solarpower-panel-v070.js` lowers the capacity plaque and adds only verified battery entities; final v1.6 CSS keeps all meaningful labels at 12px or larger. |
+| Battery detail surface | PASS | `frontend/stark-solarpower-panel-v070.js` adds only verified battery entities; final `v081.js` uses the one-line `АКБ, шт.` label and keeps all meaningful labels at 12px or larger. |
+| Mobile Overview composition | PASS | Final `v081.js` uses a 336px phone scene, raises the capacity plaque, preserves the side-metric alignment, compacts the two lower surfaces and reserves 16px above fixed navigation without resizing the UPS artwork. |
 | Typography envelope | PASS | Final `v080.js` enforces the v1.6 12–25px phone envelope, with explicit 23/14 and 21/13 Header pairs and a 25px hero ceiling. |
 | Connection/freshness plaque | PASS | Final `v080.js` keeps the requested selected-UPS two-level semantics and applies 16/13 typography, 10% status tint and 30% status border without animation/remount. |
-| Production delivery | PASS | `panel.py` uses one cache-busted autonomous bundle URL and UI version `0.8.0`. |
+| Production delivery | PASS | `panel.py` uses one cache-busted autonomous bundle URL and UI version `0.8.1`. |
 
 ## Remaining follow-up
 

@@ -8,7 +8,7 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.8.0",
+  "ui_version": "0.8.1",
   "template": {
     "name": "NikaS Integration Panel Template",
     "version": "1.0"
@@ -151,6 +151,8 @@
     "overview_state_tile_columns_desktop": 4,
     "desktop_content_max_width_px": 1240,
     "desktop_selected_device_card_max_width_px": 820,
+    "overview_mobile_hero_scene_px": 336,
+    "overview_mobile_bottom_clearance_px": 16,
     "content_clears_bottom_navigation": true
   },
   "quality": {
