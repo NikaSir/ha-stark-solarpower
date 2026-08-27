@@ -8,7 +8,7 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.8.3",
+  "ui_version": "0.8.4",
   "template": {
     "name": "NikaS Integration Panel Template",
     "version": "1.0"
@@ -108,8 +108,12 @@
       "source": "battery_remain_time",
       "vendor_raw_unit": "minutes",
       "overview_display": "hours_minutes",
-      "diagnostics_preserve_vendor_value": true
+      "diagnostics_preserve_vendor_value": true,
+      "normal_polling_seconds": 300,
+      "battery_mode_polling_seconds": 60
     },
+    "reserve_ready_minimum_percent": 95,
+    "partial_reserve_state": "warning_not_ready",
     "standalone_metric_row": false,
     "state_tiles": [],
     "connection_indicator": {

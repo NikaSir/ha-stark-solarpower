@@ -32,6 +32,14 @@ from .extended import async_get_extended_values
 _LOGGER = logging.getLogger(__name__)
 
 
+def _snapshot_reports_battery_mode(result: object) -> bool:
+    """Return whether a fresh vendor snapshot reports battery operation."""
+    if not isinstance(result, StarkDeviceSnapshot):
+        return False
+    mode = str(result.values.get("bt_model") or "").strip().casefold()
+    return mode == "battery mode"
+
+
 class StarkSolarPowerCoordinator(
     DataUpdateCoordinator[dict[str, StarkDeviceSnapshot]]
 ):
@@ -102,16 +110,27 @@ class StarkSolarPowerCoordinator(
             raise UpdateFailed("No Stark SolarPower devices were discovered")
 
         devices = list(self.devices.values())
-        refresh_extended = self._extended_refresh_due()
-        requests = [self.api.async_get_snapshot(device) for device in devices]
-        if refresh_extended:
-            requests.extend(
-                async_get_extended_values(self.api, device) for device in devices
-            )
+        current_results = await asyncio.gather(
+            *(self.api.async_get_snapshot(device) for device in devices),
+            return_exceptions=True,
+        )
 
-        results = await asyncio.gather(*requests, return_exceptions=True)
-        current_results = results[: len(devices)]
-        extended_results = results[len(devices) :] if refresh_extended else []
+        # Most detailed values change slowly and remain on the five-minute
+        # cadence. Battery remaining time is the exception verified on real
+        # hardware: the UPS display counts it down while battery power is
+        # active. Refresh the detailed endpoint on every normal 60-second
+        # coordinator pass whenever a fresh snapshot reports Battery Mode.
+        refresh_extended = self._extended_refresh_due() or any(
+            _snapshot_reports_battery_mode(result) for result in current_results
+        )
+        extended_results = (
+            await asyncio.gather(
+                *(async_get_extended_values(self.api, device) for device in devices),
+                return_exceptions=True,
+            )
+            if refresh_extended
+            else []
+        )
 
         auth_error: SolarPowerAuthError | None = None
         extended_failed = False
