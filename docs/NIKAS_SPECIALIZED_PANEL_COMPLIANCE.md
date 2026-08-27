@@ -2,8 +2,8 @@
 
 **Audit date:** 2026-08-27
 **Standard:** NikaS Specialized Panel UI Standard v1.6
-**Audited production path:** `panel.py` → `stark-solarpower-panel-bundle.js?v=0.8.1` → `stark-solarpower-panel`
-**Scope:** implemented in UI v0.8.1; phone field acceptance remains required
+**Audited production path:** `panel.py` → `stark-solarpower-panel-bundle.js?v=0.8.2` → `stark-solarpower-panel`
+**Scope:** implemented in UI v0.8.2; phone field acceptance remains required
 
 | Area | Result | Evidence |
 |---|---|---|
@@ -20,7 +20,7 @@
 | Pan only above 100% / overflowing axes | PASS | v065 independently mutates x/y only when calculated content bounds overflow that axis and clamps both edges. |
 | Tab reset to page start | PASS | v065 capture handler resets native scroll and transform offsets before the existing view render while preserving scale. |
 | Resize clamp | PASS | v065 remeasures and clamps through `ResizeObserver`, window resize and `visualViewport.resize`. |
-| Gesture/more-info protection | PASS | v065 cancels entity hold on second finger/actual pan and guards generated clicks while untouched native scroll and stationary holds remain available. |
+| Gesture/more-info protection | PASS | Final `v082.js` cancels every pending entity hold when the second finger arrives and guards the final `_showMoreInfo()` dispatch with both current and legacy intervals; untouched native scroll and stationary one-finger holds remain available. |
 | Repository icon | PASS | README displays the approved existing `custom_components/stark_solarpower/brand/icon.png`; no new identity was invented. |
 | Integration icon assets | PASS | `custom_components/stark_solarpower/brand/icon.png` is a valid 512×512 RGBA icon and satisfies the HACS minimum. Add dark/logo variants only if theme legibility requires them. |
 | HACS packaging | PASS | `hacs.json` identifies the integration and the component-local brand icon ships with `custom_components/stark_solarpower`. |
@@ -31,7 +31,7 @@
 | Mobile Overview composition | PASS | Final `v081.js` uses a 336px phone scene, raises the capacity plaque, preserves the side-metric alignment, compacts the two lower surfaces and reserves 16px above fixed navigation without resizing the UPS artwork. |
 | Typography envelope | PASS | Final `v080.js` enforces the v1.6 12–25px phone envelope, with explicit 23/14 and 21/13 Header pairs and a 25px hero ceiling. |
 | Connection/freshness plaque | PASS | Final `v080.js` keeps the requested selected-UPS two-level semantics and applies 16/13 typography, 10% status tint and 30% status border without animation/remount. |
-| Production delivery | PASS | `panel.py` uses one cache-busted autonomous bundle URL and UI version `0.8.1`. |
+| Production delivery | PASS | `panel.py` uses one cache-busted autonomous bundle URL and UI version `0.8.2`. |
 
 ## Remaining follow-up
 

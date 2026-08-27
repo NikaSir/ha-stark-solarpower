@@ -2,6 +2,16 @@
 
 All notable project changes are recorded here.
 
+## [1.8.24] - 2026-08-27
+
+### Panel UI 0.8.2 — pinch / more-info isolation
+
+- Guard the final `_showMoreInfo()` dispatch with the active v0.6.5 gesture interval instead of relying only on generated-click suppression.
+- Cancel every pending entity hold timer in the permanent work surface as soon as a second finger joins the gesture.
+- Avoid `elementFromPoint` dependence across the iOS Shadow DOM boundary, which could leave the first-finger 520ms timer active over the UPS artwork.
+- Preserve intentional one-finger hold → native Home Assistant more-info outside pinch and post-gesture guard intervals.
+- Add regression coverage for the current/legacy guard bridge, all-entity `pointercancel`, stable DOM and delivery-version parity.
+
 ## [1.8.23] - 2026-08-27
 
 ### Panel UI 0.8.1 — mobile Overview composition

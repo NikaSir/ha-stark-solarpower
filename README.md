@@ -6,7 +6,7 @@ Custom Home Assistant integration for **STARK Country Online** UPS devices monit
 
 ## Status
 
-Current production baseline: **v1.8.23** with the integration-owned UPS panel UI **v0.8.1**.
+Current production baseline: **v1.8.24** with the integration-owned UPS panel UI **v0.8.2**.
 
 The integration has been field-tested on two STARK Country Online 1000 VA UPS devices with SolarPower Wi-Fi cards.
 
@@ -44,11 +44,11 @@ Navigation contract:
 - sidebar title: `UPS`;
 - icon: `mdi:battery-charging`;
 - preferred view: `overview`;
-- panel UI version: `0.8.1`;
+- panel UI version: `0.8.2`;
 - persistent device selector: `UPS Интернет / UPS Котёл`;
 - product artwork: `Stark Country 1000 ONLINE (16A)`.
 
-The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.8.1 implements NikaS Specialized Panel UI Standard v1.6: a height-locked shell keeps Header, peer selector and Bottom Tab Bar stationary around one permanent work viewport; visited UPS/tab views are lazily cached; routine telemetry point-patches the mounted DOM. The selected-UPS cloud/freshness indicator uses the canonical two-level vocabulary and status-tinted plaque, while all meaningful phone typography stays within 12–25 px. The mobile Overview raises the battery plaque, uses a compact 336px photographic scene and leaves explicit clearance between the factual battery card and fixed navigation. Two-finger reset, near-100% snap and post-pinch navigation protection stay inside the permanent canvas.
+The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.8.2 implements NikaS Specialized Panel UI Standard v1.6: a height-locked shell keeps Header, peer selector and Bottom Tab Bar stationary around one permanent work viewport; visited UPS/tab views are lazily cached; routine telemetry point-patches the mounted DOM. The selected-UPS cloud/freshness indicator uses the canonical two-level vocabulary and status-tinted plaque, while all meaningful phone typography stays within 12–25 px. The mobile Overview raises the battery plaque, uses a compact 336px photographic scene and leaves explicit clearance between the factual battery card and fixed navigation. Pinch cancels every pending entity hold and guards the final more-info dispatch, while an intentional stationary one-finger hold remains available.
 
 Views:
 
