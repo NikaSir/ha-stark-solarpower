@@ -2,6 +2,14 @@
 
 All notable project changes are recorded here.
 
+## [1.8.27] - 2026-08-27
+
+### Panel UI 0.8.5 — NikaS Header return contract
+
+- Turns the centered two-line Header title into the persistent source-return plaque required by NikaS UI standard v1.7.
+- Captures only safe `Дом сейчас`, `Действия` or `Инфраструктура` routes through the common session hand-off and never uses browser-history Back.
+- Adds a mandatory CI guard for the exact standard copy and runtime route contract.
+
 ## [1.8.26] - 2026-08-27
 
 ### Panel UI 0.8.4 — field-verified reserve semantics

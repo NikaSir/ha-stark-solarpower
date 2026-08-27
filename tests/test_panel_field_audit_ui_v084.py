@@ -31,9 +31,9 @@ class PanelFieldAuditUiV084Tests(unittest.TestCase):
         )
 
     def test_delivery_versions_agree(self) -> None:
-        self.assertEqual(self.manifest["version"], "1.8.26")
-        self.assertEqual(self.panel_manifest["ui_version"], "0.8.4")
-        self.assertIn('PANEL_UI_VERSION = "0.8.4"', self.registration)
+        self.assertEqual(self.manifest["version"], "1.8.27")
+        self.assertEqual(self.panel_manifest["ui_version"], "0.8.5")
+        self.assertIn('PANEL_UI_VERSION = "0.8.5"', self.registration)
         self.assertIn('FRONTEND / "stark-solarpower-panel-v084.js"', self.builder)
 
     def test_partial_reserve_is_not_reported_ready(self) -> None:

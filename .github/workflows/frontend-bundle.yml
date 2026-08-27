@@ -47,6 +47,9 @@ jobs:
       - name: Verify JavaScript syntax
         run: node --check custom_components/stark_solarpower/frontend/stark-solarpower-panel-bundle.js
 
+      - name: Enforce NikaS UI standard v1.7
+        run: python scripts/check_nikas_ui_standard.py
+
       - name: Reject runtime imports in production bundle
         shell: bash
         run: |
