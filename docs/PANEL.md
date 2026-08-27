@@ -11,14 +11,14 @@ The Stark SolarPower integration owns a dedicated Home Assistant panel for day-t
 - Sidebar title: `UPS`
 - Icon: `mdi:battery-charging`
 - Preferred view: `overview`
-- Panel UI version: `0.8.2`
+- Panel UI version: `0.8.4`
 - Primary navigation: full-width fixed bottom Tab Bar
 
 The same metadata is shipped in `custom_components/stark_solarpower/panel_manifest.json` for `ha-contract-generated-ui` and other consumers.
 
 ## NikaS application shell
 
-UI v0.8.2 uses NikaS Specialized Panel UI Standard v1.6 with one height-locked shell and one working viewport:
+UI v0.8.4 uses NikaS Specialized Panel UI Standard v1.6 with one height-locked shell and one working viewport:
 
 `Safe Area → Header → Device Selector → zoomable selected-UPS viewport → Bottom Tab Bar`
 
@@ -71,7 +71,7 @@ The selected UPS receives one full status-first operating card showing:
 - stale/fresh status independently from the cloud channel;
 - output voltage and frequency in the operating-mode copy.
 
-The photographic hero is the only Overview presentation of input voltage, output voltage/frequency, load and battery charge. The repeated metric row and the repeated `Состояние` summary are not rendered. A compact reserve-readiness plaque sits below the hero, followed by a battery-detail card containing actual bank voltage, confirmed battery count, charger temperature and the explicitly labelled vendor RAW remaining-time value. On the target phone the photographic scene is 336 CSS pixels high: the UPS remains enlarged and grounded on the floor, while the battery-capacity plaque is raised into the clear space above the cabinet. The input and load plaques retain their cabinet alignment, the battery-count label stays on one line, and a 16px bottom inset keeps the complete battery card above the fixed Bottom Tab Bar. Decorative flow connectors are not rendered. Battery charge current is not displayed because the current backend does not expose a verified charge-current entity.
+The photographic hero is the only Overview presentation of input voltage, output voltage/frequency, load and battery charge. The repeated metric row and the repeated `Состояние` summary are not rendered. A compact reserve-readiness plaque sits below the hero, followed by a battery-detail card containing actual bank voltage, confirmed battery count, charger temperature and vendor remaining time converted from minutes to hours/minutes. `Резерв готов` is reserved for Line Mode with at least 95% charge; a lower charge is explicitly `Резерв неполный`. On the target phone the photographic scene is 336 CSS pixels high: the UPS remains enlarged and grounded on the floor, while the battery-capacity plaque is raised into the clear space above the cabinet. The input and load plaques retain their cabinet alignment, the battery-count label stays on one line, and a 16px bottom inset keeps the complete battery card above the fixed Bottom Tab Bar. Decorative flow connectors are not rendered. Battery charge current is not displayed because the current backend does not expose a verified charge-current entity.
 
 The final hero geometry is present before the zoom engine measures the work surface. A transient zero-width iOS layout frame reuses the previous real canvas width instead of collapsing the surface to one pixel.
 

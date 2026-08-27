@@ -2,6 +2,17 @@
 
 All notable project changes are recorded here.
 
+## [1.8.26] - 2026-08-27
+
+### Panel UI 0.8.4 — field-verified reserve semantics
+
+- Refresh detailed telemetry every 60 seconds while a fresh UPS snapshot reports Battery Mode, so `Автономия` follows the physical front-panel countdown instead of waiting up to five minutes.
+- Keep the normal detailed-telemetry interval at five minutes while the UPS is not running from its battery.
+- Treat the vendor remaining-time value as minutes, preserving UI 0.8.3 hours/minutes formatting and the original diagnostic entity value.
+- Show `Резерв неполный` between 21% and 94% after mains return; use `Резерв готов` only from 95% in confirmed Line Mode.
+- Keep unknown/non-Line states conservative and avoid inferring charge current from voltage or load.
+- Preserve the stable DOM, fixed Header/Bottom Tab Bar and pinch/more-info guards.
+
 ## [1.8.24] - 2026-08-27
 
 ### Panel UI 0.8.2 — pinch / more-info isolation
