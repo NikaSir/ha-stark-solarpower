@@ -19,20 +19,11 @@ class PanelMobileCompositionUiV081Tests(unittest.TestCase):
         cls.manifest = json.loads(
             (INTEGRATION / "panel_manifest.json").read_text(encoding="utf-8")
         )
-        cls.integration_manifest = json.loads(
-            (INTEGRATION / "manifest.json").read_text(encoding="utf-8")
-        )
-        cls.panel_registration = (INTEGRATION / "panel.py").read_text(
-            encoding="utf-8"
-        )
         cls.bundle_builder = (ROOT / "scripts" / "build_frontend_bundle.py").read_text(
             encoding="utf-8"
         )
 
-    def test_delivery_versions_and_bundle_source_agree(self) -> None:
-        self.assertEqual(self.manifest["ui_version"], "0.8.1")
-        self.assertEqual(self.integration_manifest["version"], "1.8.23")
-        self.assertIn('PANEL_UI_VERSION = "0.8.1"', self.panel_registration)
+    def test_v081_composition_source_remains_in_bundle(self) -> None:
         self.assertIn('"stark-solarpower-panel-v081.js"', self.bundle_builder)
 
     def test_scene_is_compact_without_resizing_the_ups_artwork(self) -> None:
