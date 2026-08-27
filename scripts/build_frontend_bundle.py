@@ -44,6 +44,7 @@ SOURCES = [
     FRONTEND / "stark-solarpower-panel-v070.js",
     FRONTEND / "stark-solarpower-panel-v071.js",
     FRONTEND / "stark-solarpower-panel-v080.js",
+    FRONTEND / "stark-solarpower-panel-v081.js",
 ]
 IMPORT_RE = re.compile(r"^\s*import\s+[\"']\./[^\"']+[\"'];?\s*$", re.MULTILINE)
 
