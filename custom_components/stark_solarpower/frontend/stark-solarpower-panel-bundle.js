@@ -956,18 +956,12 @@ if (Panel && !Panel.prototype.__starkUiV021) {
   const baseStyles = Panel.prototype._styles;
 
   Panel.prototype._navigateBack = function () {
-    if (window.history.state?.from !== undefined) {
-      window.history.back();
-      return;
-    }
-
-    const fallback = "/dashboard-infrastructure";
-    window.history.replaceState(window.history.state, "", fallback);
+    const fallback = "/dashboard-infrastructure/overview";
+    window.history.pushState(null, "", fallback);
     window.dispatchEvent(
       new CustomEvent("location-changed", {
         bubbles: true,
         composed: true,
-        detail: { replace: true },
       })
     );
   };
@@ -6475,7 +6469,7 @@ if (Panel && !Panel.prototype.__starkUiV066) {
             <ha-icon icon="mdi:monitor-dashboard"></ha-icon>
             <div><span>Нагрузка</span><strong>${load === null ? "—" : `${Math.round(load)} %`}</strong></div>
           </div>
-          <img class="ups-art-v051" src="${UPS_ARTWORK}" alt="Stark Country 1000 ONLINE (16A)" loading="eager" decoding="sync" fetchpriority="high" ${this._entityId(device, "mode") ? `data-entity="${esc(this._entityId(device, "mode"))}"` : ""}>
+          <img class="ups-art-v051" src="${UPS_ARTWORK}" alt="Stark Country 1000 ONLINE (16A)" loading="eager" decoding="async" ${this._entityId(device, "mode") ? `data-entity="${esc(this._entityId(device, "mode"))}"` : ""}>
           <div class="scene-node-v051 battery" ${this._entityId(device, "battery_capacity") ? `data-entity="${esc(this._entityId(device, "battery_capacity"))}"` : ""}>
             <ha-icon icon="mdi:battery"></ha-icon>
             <div><span>АКБ</span><strong>${battery === null ? "—" : `${Math.round(battery)} %`}</strong></div>
@@ -7668,185 +7662,107 @@ if (Panel && !Panel.prototype.__starkUiV084) {
 (() => {
 const Panel = customElements.get("stark-solarpower-panel");
 const UI_VERSION = "0.8.5";
-const STARTUP_ASSETS = [
-  "/stark_solarpower_panel/assets/stark-country-1000-online.png?v=0.6.6",
-  "/stark_solarpower_panel/assets/stark-hero-internet-v063.webp?v=0.6.3",
-  "/stark_solarpower_panel/assets/stark-hero-boiler-v063.webp?v=0.6.3",
-];
+const SOURCE_ROUTE_KEY = "nikas.specialized.source_route.v1";
+const SOURCE_ROUTE_AT_KEY = "nikas.specialized.source_route_at.v1";
+const RETURN_ROUTE_KEY = "nikas.stark_solarpower.return_route.v1";
+const SAFE_DEFAULT_ROUTE = "/dashboard-infrastructure/overview";
 
-function prewarmStartupAssetsV085() {
-  if (globalThis.__starkStartupAssetsV085) {
-    return globalThis.__starkStartupAssetsV085.ready;
+function safeReturnRoute(value) {
+  if (!value) return null;
+  try {
+    const url = new URL(decodeURIComponent(String(value).trim()), window.location.origin);
+    if (url.origin !== window.location.origin) return null;
+    if (url.pathname === "/dashboard-house-v11" || url.pathname.startsWith("/dashboard-house-v11/")) return "/dashboard-house-v11/home";
+    if (url.pathname === "/dashboard-actions" || url.pathname.startsWith("/dashboard-actions/")) return "/dashboard-actions/home";
+    if (url.pathname === "/dashboard-infrastructure" || url.pathname.startsWith("/dashboard-infrastructure/")) return "/dashboard-infrastructure/overview";
+    return null;
+  } catch (_error) {
+    return null;
   }
-
-  const images = STARTUP_ASSETS.map((url) => {
-    const image = new Image();
-    image.loading = "eager";
-    image.decoding = "sync";
-    image.fetchPriority = "high";
-    image.src = url;
-    return image;
-  });
-  const ready = Promise.allSettled(images.map((image) => (
-    typeof image.decode === "function"
-      ? image.decode()
-      : new Promise((resolve) => {
-        if (image.complete) resolve();
-        else {
-          image.addEventListener("load", resolve, { once:true });
-          image.addEventListener("error", resolve, { once:true });
-        }
-      })
-  )));
-
-  // Keep strong references for the lifetime of the HA page. This prevents a
-  // browser from cancelling speculative image work while the registries load.
-  globalThis.__starkStartupAssetsV085 = { images, ready };
-  return ready;
 }
 
-// Start network fetch and bitmap decode as soon as the bundle is evaluated,
-// in parallel with entity/device registry discovery.
-prewarmStartupAssetsV085();
+function resolveReturnRoute(panel) {
+  const current = new URL(window.location.href);
+  const explicit = safeReturnRoute(current.searchParams.get("return_to")) || safeReturnRoute(current.searchParams.get("from"));
+  let handedOff = null;
+  let saved = null;
+  try {
+    const handedOffAtRaw = sessionStorage.getItem(SOURCE_ROUTE_AT_KEY);
+    const handedOffAt = Number(handedOffAtRaw);
+    const handedOffFresh = handedOffAtRaw === null || (Number.isFinite(handedOffAt) && Date.now() - handedOffAt <= 30_000);
+    handedOff = handedOffFresh ? safeReturnRoute(sessionStorage.getItem(SOURCE_ROUTE_KEY)) : null;
+    sessionStorage.removeItem(SOURCE_ROUTE_KEY);
+    sessionStorage.removeItem(SOURCE_ROUTE_AT_KEY);
+    saved = safeReturnRoute(sessionStorage.getItem(RETURN_ROUTE_KEY));
+  } catch (_error) {}
+  const configured = safeReturnRoute(panel?._panel?.config?.parent_route || panel?.panel?.config?.parent_route);
+  const route = explicit || handedOff || saved || safeReturnRoute(document.referrer) || configured || SAFE_DEFAULT_ROUTE;
+  try { sessionStorage.setItem(RETURN_ROUTE_KEY, route); } catch (_error) {}
+  return route;
+}
+
+function navigateToSource(route) {
+  const target = safeReturnRoute(route) || SAFE_DEFAULT_ROUTE;
+  window.history.pushState(null, "", target);
+  window.dispatchEvent(new Event("location-changed"));
+}
 
 if (Panel && !Panel.prototype.__starkUiV085) {
   Panel.prototype.__starkUiV085 = true;
   const previousRender = Panel.prototype._render;
 
+  Panel.prototype._installHeaderReturnV085 = function () {
+    const root = this.shadowRoot;
+    const header = root?.querySelector(".app-header");
+    let plaque = header?.querySelector(".title-return-v085");
+    if (!header) return;
+
+    if (!this.__starkReturnRouteV085) this.__starkReturnRouteV085 = resolveReturnRoute(this);
+    if (!plaque) {
+      const legacy = header.querySelector(".title-wrap");
+      if (!legacy) return;
+      plaque = document.createElement("button");
+      plaque.type = "button";
+      plaque.className = "title-wrap title-return-v085";
+      plaque.setAttribute("aria-label", "Вернуться в базовую панель NikaS");
+      plaque.innerHTML = `<div><h1>Stark SolarPower</h1><div class="subtitle">UI v${UI_VERSION}</div></div>`;
+      plaque.addEventListener("click", () => navigateToSource(this.__starkReturnRouteV085));
+      legacy.replaceWith(plaque);
+      if (this.__starkShellV080) this.__starkShellV080.header = header;
+    }
+    const subtitle = plaque.querySelector(".subtitle");
+    if (subtitle?.textContent !== `UI v${UI_VERSION}`) subtitle.textContent = `UI v${UI_VERSION}`;
+  };
+
   Panel.prototype._render = function () {
     previousRender.call(this);
-    const subtitle = this.shadowRoot?.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center · UI v${UI_VERSION}`;
+    this._installHeaderReturnV085();
+    if (!this.shadowRoot?.querySelector("style[data-stark-v085]")) {
+      const style = document.createElement("style");
+      style.dataset.starkV085 = "true";
+      style.textContent = `
+        .app-header .title-return-v085{
+          grid-column:2!important;justify-self:center!important;
+          width:min(100%,460px)!important;min-width:0!important;min-height:44px!important;
+          margin:0!important;padding:5px 14px!important;
+          display:block!important;text-align:center!important;
+          border:1px solid var(--divider-color)!important;border-radius:16px!important;
+          background:var(--card-background-color)!important;color:var(--primary-text-color)!important;
+          box-shadow:0 4px 14px rgba(23,45,76,.06)!important;
+          appearance:none!important;font:inherit!important;cursor:pointer!important;
+        }
+        .app-header .title-return-v085:focus-visible{outline:2px solid var(--primary-color);outline-offset:2px}
+        .app-header .title-return-v085:active{transform:scale(.985)}
+        .app-header .title-return-v085 h1{font-size:23px!important;font-weight:800!important}
+        .app-header .title-return-v085 .subtitle{font-size:14px!important;font-weight:560!important}
+        @media(max-width:390px){
+          .app-header .title-return-v085 h1{font-size:21px!important}
+          .app-header .title-return-v085 .subtitle{font-size:13px!important}
+        }
+      `;
+      this.shadowRoot.append(style);
+    }
   };
 }
 })();
 // END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v085.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v086.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.8.6";
-const STARTUP_BACKGROUND =
-  "/stark_solarpower_panel/assets/stark-hero-internet-v063.webp?v=0.6.3";
-const STARTUP_ARTWORK =
-  "/stark_solarpower_panel/assets/stark-country-1000-online.png?v=0.6.6";
-
-function startupOverviewV086() {
-  return `<section class="overview-v051 overview-v066 startup-overview-v086" aria-busy="true" aria-label="Получение данных UPS">
-    <article class="ups-hero-v051 card-v051 unknown" style="--hero-background-v051:url('${STARTUP_BACKGROUND}')">
-      <div class="hero-head-v051">
-        <div class="hero-copy-v051">
-          <span>ПИТАНИЕ</span>
-          <h2>Получение данных</h2>
-          <p>Подключение к Home Assistant</p>
-        </div>
-        <div class="freshness-v051 connection-v066 unknown" role="status" aria-label="Подключение · Чтение телеметрии">
-          <span class="connection-lamp-v066" aria-hidden="true"></span>
-          <span class="connection-copy-v066">
-            <strong>Подключение</strong>
-            <small>Чтение телеметрии</small>
-          </span>
-        </div>
-      </div>
-      <div class="hero-scene-v051">
-        <div class="scene-node-v051 grid">
-          <ha-icon icon="mdi:transmission-tower"></ha-icon>
-          <div><span>Сеть</span><strong>—</strong></div>
-        </div>
-        <div class="scene-node-v051 load">
-          <ha-icon icon="mdi:monitor-dashboard"></ha-icon>
-          <div><span>Нагрузка</span><strong>—</strong></div>
-        </div>
-        <img class="ups-art-v051" src="${STARTUP_ARTWORK}" alt="Stark Country 1000 ONLINE (16A)" loading="eager" decoding="sync" fetchpriority="high">
-        <div class="scene-node-v051 battery">
-          <ha-icon icon="mdi:battery"></ha-icon>
-          <div><span>АКБ</span><strong>—</strong></div>
-        </div>
-      </div>
-    </article>
-    <div class="reserve-strip-v067 unknown">
-      <ha-icon icon="mdi:battery-sync"></ha-icon>
-      <strong>Проверка состояния АКБ</strong>
-    </div>
-    <article class="battery-details-v070">
-      <div class="battery-details-head-v070">
-        <ha-icon icon="mdi:battery-heart-variant"></ha-icon>
-        <strong>Батарея</strong>
-        <small>Получение телеметрии</small>
-      </div>
-      <div class="battery-facts-v070">
-        <div class="battery-fact-v070"><span>Напряжение</span><strong>—</strong></div>
-        <div class="battery-fact-v070"><span>АКБ, шт.</span><strong>—</strong></div>
-        <div class="battery-fact-v070"><span>Темп. ЗУ</span><strong>—</strong></div>
-        <div class="battery-fact-v070"><span>Автономия</span><strong>—</strong></div>
-      </div>
-    </article>
-    <style data-stark-startup-v086>
-      section.startup-overview-v086 {
-        gap:8px !important;
-        box-sizing:border-box;
-        padding-bottom:16px;
-      }
-      section.startup-overview-v086 .hero-scene-v051 { height:336px !important; }
-      section.startup-overview-v086 .scene-node-v051.battery {
-        top:38px !important;
-        bottom:auto !important;
-      }
-      section.startup-overview-v086 .scene-node-v051.grid,
-      section.startup-overview-v086 .scene-node-v051.load { top:54% !important; }
-      section.startup-overview-v086 .reserve-strip-v067 {
-        min-height:44px !important;
-        padding:7px 12px !important;
-      }
-      section.startup-overview-v086 .battery-details-v070 { padding:10px 14px 11px; }
-      section.startup-overview-v086 .battery-details-head-v070 { margin-bottom:8px; }
-      section.startup-overview-v086 .battery-fact-v070 span {
-        min-height:15px;
-        white-space:nowrap;
-        overflow-wrap:normal;
-      }
-      @media(max-width:390px) {
-        section.startup-overview-v086 .hero-scene-v051 { height:332px !important; }
-        section.startup-overview-v086 .scene-node-v051.battery { top:36px !important; }
-        section.startup-overview-v086 .battery-details-v070 { padding:10px 12px 11px; }
-      }
-    </style>
-  </section>`;
-}
-
-if (Panel && !Panel.prototype.__starkUiV086) {
-  Panel.prototype.__starkUiV086 = true;
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._installStartupOverviewV086 = function () {
-    if (this._registryLoaded || this._registryError) return;
-    const root = this.shadowRoot;
-    const app = root?.querySelector("main.app");
-    const header = app?.querySelector(":scope > .app-header");
-    const empty = app?.querySelector(".zoom-surface-v065 .empty, .empty");
-    if (!app || !header || !empty) return;
-
-    if (!app.querySelector(":scope > .global-device-context")) {
-      const selector = document.createElement("div");
-      selector.className = "global-device-context startup-selector-v086";
-      selector.setAttribute("aria-label", "Выбор UPS загружается");
-      selector.style.setProperty("--ups-count", "2");
-      selector.innerHTML = `<button type="button" class="active" aria-pressed="true" aria-disabled="true"><span class="device-name">UPS Интернет</span></button>
-        <button type="button" aria-pressed="false" aria-disabled="true"><span class="device-name">UPS Котёл</span></button>`;
-      header.insertAdjacentElement("afterend", selector);
-    }
-
-    const template = document.createElement("template");
-    template.innerHTML = startupOverviewV086();
-    empty.replaceWith(template.content);
-  };
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-    this._installStartupOverviewV086();
-    const subtitle = this.shadowRoot?.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center · UI v${UI_VERSION}`;
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v086.js
