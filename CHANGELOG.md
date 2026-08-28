@@ -2,6 +2,14 @@
 
 All notable project changes are recorded here.
 
+## [Unreleased]
+
+### Panel UI 0.9.1 — strict source hand-off and production truth
+
+- Require both one-shot source-route values and reject invalid, stale or future timestamps before the centered Header plaque captures its destination.
+- Adopt NikaS Specialized Panel UI Standard v1.9, Navigation Contract v1.1 and explicit registry-backed refresh-only data/command metadata.
+- Verify the autonomous production bundle deterministically and keep unknown/unavailable telemetry explicit without optimistic refresh success.
+
 ## [1.9.0] - 2026-08-28
 
 ### Panel UI 0.9.0 — NikaS navigation contract v1.8

@@ -23,6 +23,8 @@ class PanelNavigationUiV090Tests(unittest.TestCase):
         self.assertIn('current.searchParams.get("from")', self.source)
         self.assertIn('sessionStorage.getItem(SOURCE_ROUTE_KEY)', self.source)
         self.assertIn('sessionStorage.removeItem(SOURCE_ROUTE_KEY)', self.source)
+        self.assertIn('rawRoute === null || rawTimestamp === null', self.source)
+        self.assertIn('age < 0', self.source)
         self.assertIn('if (!this.__starkReturnRouteV090)', self.source)
         self.assertIn('document.referrer', self.source)
         self.assertIn('parent_route', self.source)
@@ -48,8 +50,8 @@ class PanelNavigationUiV090Tests(unittest.TestCase):
     def test_explicit_ha_navigation_and_delivery_versions(self) -> None:
         self.assertIn('window.history.pushState(null, "", target)', self.source)
         self.assertIn('new Event("location-changed")', self.source)
-        self.assertEqual(self.panel_manifest["ui_version"], "0.9.0")
-        self.assertEqual(self.panel_manifest["shell"]["standard_version"], "1.8")
+        self.assertEqual(self.panel_manifest["ui_version"], "0.9.1")
+        self.assertEqual(self.panel_manifest["shell"]["standard_version"], "1.9")
         self.assertIn('FRONTEND / "stark-solarpower-panel-v090.js"', self.builder)
 
 

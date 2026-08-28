@@ -41,8 +41,8 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Build deterministic panel bundle
-        run: python scripts/build_frontend_bundle.py
+      - name: Verify deterministic panel bundle
+        run: python scripts/build_frontend_bundle.py --check
 
       - name: Verify JavaScript syntax
         run: node --check custom_components/stark_solarpower/frontend/stark-solarpower-panel-bundle.js
