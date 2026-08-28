@@ -102,7 +102,7 @@ if (Panel && !Panel.prototype.__starkUiV066) {
             <ha-icon icon="mdi:monitor-dashboard"></ha-icon>
             <div><span>Нагрузка</span><strong>${load === null ? "—" : `${Math.round(load)} %`}</strong></div>
           </div>
-          <img class="ups-art-v051" src="${UPS_ARTWORK}" alt="Stark Country 1000 ONLINE (16A)" loading="eager" decoding="async" ${this._entityId(device, "mode") ? `data-entity="${esc(this._entityId(device, "mode"))}"` : ""}>
+          <img class="ups-art-v051" src="${UPS_ARTWORK}" alt="Stark Country 1000 ONLINE (16A)" loading="eager" decoding="sync" fetchpriority="high" ${this._entityId(device, "mode") ? `data-entity="${esc(this._entityId(device, "mode"))}"` : ""}>
           <div class="scene-node-v051 battery" ${this._entityId(device, "battery_capacity") ? `data-entity="${esc(this._entityId(device, "battery_capacity"))}"` : ""}>
             <ha-icon icon="mdi:battery"></ha-icon>
             <div><span>АКБ</span><strong>${battery === null ? "—" : `${Math.round(battery)} %`}</strong></div>

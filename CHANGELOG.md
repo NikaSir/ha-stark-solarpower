@@ -2,6 +2,16 @@
 
 All notable project changes are recorded here.
 
+## [1.8.27] - 2026-08-28
+
+### Panel UI 0.8.5 — parallel cold-start assets
+
+- Start fetching and decoding the UPS artwork and both photographic backgrounds as soon as the frontend bundle is evaluated, in parallel with Home Assistant entity/device registry discovery.
+- Keep strong page-lifetime references to the prewarmed bitmaps so mobile browsers do not cancel speculative work while the registries load.
+- Request the visible UPS artwork eagerly with high priority and synchronous first-paint decoding, preventing the cabinet from appearing after the surrounding Overview.
+- Enable cache headers for versioned integration-owned frontend files so repeat panel openings can reuse the bundle and image assets.
+- Preserve the UI 0.8.4 composition, stable DOM, fixed shell, telemetry point-patching and pinch/more-info guards.
+
 ## [1.8.26] - 2026-08-27
 
 ### Panel UI 0.8.4 — field-verified reserve semantics

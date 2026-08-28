@@ -1,9 +1,9 @@
 # NikaS specialized-panel compliance — Stark SolarPower
 
-**Audit date:** 2026-08-27
+**Audit date:** 2026-08-28
 **Standard:** NikaS Specialized Panel UI Standard v1.6
-**Audited production path:** `panel.py` → `stark-solarpower-panel-bundle.js?v=0.8.4` → `stark-solarpower-panel`
-**Scope:** implemented in UI v0.8.4; phone field acceptance remains required
+**Audited production path:** `panel.py` → `stark-solarpower-panel-bundle.js?v=0.8.5` → `stark-solarpower-panel`
+**Scope:** implemented in UI v0.8.5; phone field acceptance remains required
 
 | Area | Result | Evidence |
 |---|---|---|
@@ -30,10 +30,11 @@
 | Battery detail surface | PASS | `frontend/stark-solarpower-panel-v070.js` adds only verified battery entities; final `v081.js` uses the one-line `АКБ, шт.` label and keeps all meaningful labels at 12px or larger. |
 | Runtime field validation | PASS | `v083.js` treats the vendor value as minutes; the coordinator refreshes detailed telemetry every 60 seconds in Battery Mode, matching the physical countdown cadence. |
 | Reserve readiness semantics | PASS | `v084.js` reserves `Резерв готов` for Line Mode at 95% or more; 21–94% is explicitly `Резерв неполный`. |
+| Cold-start image pipeline | PASS | Final `v085.js` begins fetch/decode for the UPS artwork and both v063 backgrounds during bundle evaluation, parallel to registry discovery; the visible artwork is eager/high-priority and synchronously decoded for its first paint. |
 | Mobile Overview composition | PASS | Final `v081.js` uses a 336px phone scene, raises the capacity plaque, preserves the side-metric alignment, compacts the two lower surfaces and reserves 16px above fixed navigation without resizing the UPS artwork. |
 | Typography envelope | PASS | Final `v080.js` enforces the v1.6 12–25px phone envelope, with explicit 23/14 and 21/13 Header pairs and a 25px hero ceiling. |
 | Connection/freshness plaque | PASS | Final `v080.js` keeps the requested selected-UPS two-level semantics and applies 16/13 typography, 10% status tint and 30% status border without animation/remount. |
-| Production delivery | PASS | `panel.py` uses one cache-busted autonomous bundle URL and UI version `0.8.4`. |
+| Production delivery | PASS | `panel.py` uses one cache-busted autonomous bundle URL, UI version `0.8.5` and cache headers for its versioned static files. |
 
 ## Remaining follow-up
 
