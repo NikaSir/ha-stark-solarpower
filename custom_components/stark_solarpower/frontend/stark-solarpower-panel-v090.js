@@ -123,17 +123,17 @@ if (Panel && !Panel.prototype.__starkUiV090) {
         .app-header .title-return-v090 {
           grid-column:2!important;
           justify-self:center!important;
-          width:min(100%,460px)!important;
-          min-width:0!important;
+          min-width:min(290px,100%)!important;
+          max-width:100%!important;
           min-height:44px!important;
           margin:0!important;
           padding:5px 14px!important;
           display:block!important;
-          border:1px solid var(--divider-color)!important;
+          border:1px solid color-mix(in srgb,var(--primary-color,#03a9d9) 24%,var(--divider-color,#dfe3e8))!important;
           border-radius:16px!important;
-          background:var(--card-background-color)!important;
+          background:color-mix(in srgb,var(--primary-color,#03a9d9) 5%,var(--card-background-color,#fff))!important;
           color:var(--primary-text-color)!important;
-          box-shadow:0 4px 14px rgba(23,45,76,.06)!important;
+          box-shadow:0 5px 16px rgba(23,45,76,.06)!important;
           appearance:none!important;
           font:inherit!important;
           text-align:center!important;
@@ -144,7 +144,7 @@ if (Panel && !Panel.prototype.__starkUiV090) {
           outline:2px solid var(--primary-color)!important;
           outline-offset:2px!important;
         }
-        .app-header .title-return-v090:active { transform:scale(.985); }
+        .app-header .title-return-v090:active { transform:scale(.985); background:color-mix(in srgb,var(--primary-color,#03a9d9) 13%,var(--card-background-color,#fff))!important; border-color:color-mix(in srgb,var(--primary-color,#03a9d9) 42%,var(--divider-color,#dfe3e8))!important; box-shadow:0 2px 7px rgba(23,45,76,.05)!important; }
         .title-return-copy-v090 { display:flex; min-width:0; flex-direction:column; align-items:center; }
         .title-return-name-v090 {
           max-width:100%;
@@ -155,8 +155,9 @@ if (Panel && !Panel.prototype.__starkUiV090) {
           line-height:1.05;
           font-weight:800;
         }
-        .title-return-v090 .subtitle { font-size:14px!important; line-height:1.1; font-weight:560!important; }
+        .title-return-v090 .subtitle { margin-top:3px!important; font-size:14px!important; line-height:1.2; font-weight:560!important; letter-spacing:.01em; }
         @media(max-width:390px) {
+          .app-header .title-return-v090 { min-width:0!important; width:100%!important; padding-inline:8px!important; }
           .title-return-name-v090 { font-size:21px; }
           .title-return-v090 .subtitle { font-size:13px!important; }
         }
