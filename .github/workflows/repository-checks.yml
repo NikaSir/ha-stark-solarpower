@@ -57,6 +57,9 @@ jobs:
             done < <(find custom_components -type f -name '*.js' -print0)
           fi
 
+      - name: Enforce NikaS panel and navigation standard
+        run: python scripts/check_nikas_ui_standard.py
+
       - name: Reject tracked credential/key files
         shell: bash
         run: |

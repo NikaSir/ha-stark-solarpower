@@ -9,13 +9,8 @@ if (Panel && !Panel.prototype.__starkUiV021) {
   const baseStyles = Panel.prototype._styles;
 
   Panel.prototype._navigateBack = function () {
-    if (window.history.state?.from !== undefined) {
-      window.history.back();
-      return;
-    }
-
-    const fallback = "/dashboard-infrastructure";
-    window.history.replaceState(window.history.state, "", fallback);
+    const fallback = "/dashboard-infrastructure/overview";
+    window.history.pushState(window.history.state, "", fallback);
     window.dispatchEvent(
       new CustomEvent("location-changed", {
         bubbles: true,

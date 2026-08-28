@@ -3,18 +3,20 @@
   "id": "ups",
   "title": "UPS",
   "path": "/dashboard-ups",
+  "entry_route": "/dashboard-ups",
   "parent_route": "/dashboard-infrastructure/overview",
+  "safe_return_route": "/dashboard-infrastructure/overview",
   "icon": "mdi:battery-charging",
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.8.6",
+  "ui_version": "0.9.0",
   "template": {
     "name": "NikaS Integration Panel Template",
     "version": "1.0"
   },
   "shell": {
-    "standard_version": "1.6",
+    "standard_version": "1.8",
     "height_locked_phone": true,
     "safe_area_owner": "integration_panel_once",
     "outer_page_scroll": false,
@@ -31,6 +33,14 @@
     "subtitle_px": 14,
     "subtitle_px_narrow": 13,
     "show_brand_icon": false,
+    "center_control": {
+      "type": "source_aware_return",
+      "semantic_element": "button",
+      "minimum_touch_height_px": 44,
+      "second_line": "UI v0.9.0",
+      "source_handoff_key": "nikas.specialized.source_route.v1",
+      "saved_route_key": "nikas.stark_solarpower.return_route.v1"
+    },
     "left_control": {
       "type": "home_assistant_system_menu",
       "icon": "mdi:menu",
@@ -143,7 +153,8 @@
     "cache_headers": "enabled_for_versioned_static_assets",
     "startup_assets": "preloaded_and_decoded_parallel_to_registry",
     "startup_surface": "immediate_neutral_overview_before_registry",
-    "runtime_previous_version_imports": false
+    "runtime_previous_version_imports": false,
+    "production_entrypoints": 1
   },
   "typography": {
     "profile": "mobile_readability",
