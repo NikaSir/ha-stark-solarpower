@@ -87,7 +87,7 @@ if (Panel && !Panel.prototype.__starkUiV043) {
     const label = state === "busy"
       ? "Обновление UPS…"
       : state === "ok"
-        ? "UPS обновлены"
+        ? "Запрос обновления принят"
         : state === "error"
           ? "Ошибка обновления UPS"
           : "Обновить все ИБП";
@@ -113,8 +113,18 @@ if (Panel && !Panel.prototype.__starkUiV043) {
       if (this._refreshFeedbackV043 === "busy" || !this._hass) return;
       const entityId = this._devices
         .map((device) => this._entityId(device, "refresh_now"))
-        .find(Boolean);
-      if (!entityId) return;
+        .find((candidate) => {
+          const state = candidate ? this._hass.states?.[candidate] : null;
+          return state && !["unknown", "unavailable"].includes(String(state.state).toLowerCase());
+        });
+      if (!entityId) {
+        this._setRefreshFeedbackV043("error");
+        window.setTimeout(() => {
+          if (this._refreshFeedbackV043 !== "error") return;
+          this._setRefreshFeedbackV043(null);
+        }, 1400);
+        return;
+      }
 
       this._setRefreshFeedbackV043("busy");
       try {

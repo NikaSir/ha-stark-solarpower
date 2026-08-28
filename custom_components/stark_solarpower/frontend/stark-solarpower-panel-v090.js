@@ -1,7 +1,7 @@
 import "./stark-solarpower-panel-v086.js";
 
 const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.9.0";
+const UI_VERSION = "0.9.1";
 const SOURCE_ROUTE_KEY = "nikas.specialized.source_route.v1";
 const SOURCE_ROUTE_AT_KEY = "nikas.specialized.source_route_at.v1";
 const RETURN_ROUTE_KEY = "nikas.stark_solarpower.return_route.v1";
@@ -33,10 +33,10 @@ function readOneShotSourceV090() {
     const rawTimestamp = sessionStorage.getItem(SOURCE_ROUTE_AT_KEY);
     sessionStorage.removeItem(SOURCE_ROUTE_KEY);
     sessionStorage.removeItem(SOURCE_ROUTE_AT_KEY);
-    if (rawTimestamp !== null) {
-      const timestamp = Number(rawTimestamp);
-      if (!Number.isFinite(timestamp) || Date.now() - timestamp > 30_000) return null;
-    }
+    if (rawRoute === null || rawTimestamp === null) return null;
+    const timestamp = Number(rawTimestamp);
+    const age = Date.now() - timestamp;
+    if (!Number.isFinite(timestamp) || age < 0 || age > 30_000) return null;
     return normalizeBaseRouteV090(rawRoute);
   } catch (_error) {
     return null;
@@ -119,7 +119,7 @@ if (Panel && !Panel.prototype.__starkUiV090) {
       const style = document.createElement("style");
       style.dataset.starkUiV090 = "true";
       style.textContent = `
-        /* NikaS Specialized Panel UI + Navigation Standard v1.8. */
+        /* NikaS Specialized Panel UI + Navigation Standard v1.9. */
         .app-header .title-return-v090 {
           grid-column:2!important;
           justify-self:center!important;

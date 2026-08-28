@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 INTEGRATION = ROOT / "custom_components" / "stark_solarpower"
 GESTURES = INTEGRATION / "frontend" / "stark-solarpower-panel-v065.js"
 STANDARD = INTEGRATION / "frontend" / "stark-solarpower-panel-v080.js"
+REFRESH = INTEGRATION / "frontend" / "stark-solarpower-panel-v043.js"
 
 
 class PanelUiStandardV16Tests(unittest.TestCase):
@@ -16,6 +17,7 @@ class PanelUiStandardV16Tests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.gestures = GESTURES.read_text(encoding="utf-8")
         cls.standard = STANDARD.read_text(encoding="utf-8")
+        cls.refresh = REFRESH.read_text(encoding="utf-8")
         cls.manifest = json.loads(
             (INTEGRATION / "panel_manifest.json").read_text(encoding="utf-8")
         )
@@ -73,7 +75,8 @@ class PanelUiStandardV16Tests(unittest.TestCase):
         self.assertIn(".metric-copy-v051 span,.metric-copy-v051 small", self.standard)
 
     def test_manifest_matches_runtime(self) -> None:
-        self.assertEqual(self.manifest["ui_version"], "0.9.0")
+        self.assertEqual(self.manifest["ui_version"], "0.9.1")
+        self.assertEqual(self.manifest["template"]["version"], "1.9")
         self.assertEqual(
             self.manifest["navigation"]["views"],
             ["overview", "ups", "events", "history", "diagnostics"],
@@ -90,6 +93,11 @@ class PanelUiStandardV16Tests(unittest.TestCase):
         self.assertEqual(
             self.manifest["quality"]["visited_views"], "lazy_dom_cache"
         )
+
+    def test_refresh_fails_closed_without_optimistic_success(self) -> None:
+        self.assertIn('["unknown", "unavailable"].includes', self.refresh)
+        self.assertIn("Запрос обновления принят", self.refresh)
+        self.assertNotIn("UPS обновлены", self.refresh)
 
 
 if __name__ == "__main__":

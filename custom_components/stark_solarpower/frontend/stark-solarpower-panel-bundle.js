@@ -2712,7 +2712,7 @@ if (Panel && !Panel.prototype.__starkUiV043) {
     const label = state === "busy"
       ? "Обновление UPS…"
       : state === "ok"
-        ? "UPS обновлены"
+        ? "Запрос обновления принят"
         : state === "error"
           ? "Ошибка обновления UPS"
           : "Обновить все ИБП";
@@ -2738,8 +2738,18 @@ if (Panel && !Panel.prototype.__starkUiV043) {
       if (this._refreshFeedbackV043 === "busy" || !this._hass) return;
       const entityId = this._devices
         .map((device) => this._entityId(device, "refresh_now"))
-        .find(Boolean);
-      if (!entityId) return;
+        .find((candidate) => {
+          const state = candidate ? this._hass.states?.[candidate] : null;
+          return state && !["unknown", "unavailable"].includes(String(state.state).toLowerCase());
+        });
+      if (!entityId) {
+        this._setRefreshFeedbackV043("error");
+        window.setTimeout(() => {
+          if (this._refreshFeedbackV043 !== "error") return;
+          this._setRefreshFeedbackV043(null);
+        }, 1400);
+        return;
+      }
 
       this._setRefreshFeedbackV043("busy");
       try {
@@ -7843,7 +7853,7 @@ if (Panel && !Panel.prototype.__starkUiV086) {
 // BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v090.js
 (() => {
 const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.9.0";
+const UI_VERSION = "0.9.1";
 const SOURCE_ROUTE_KEY = "nikas.specialized.source_route.v1";
 const SOURCE_ROUTE_AT_KEY = "nikas.specialized.source_route_at.v1";
 const RETURN_ROUTE_KEY = "nikas.stark_solarpower.return_route.v1";
@@ -7875,10 +7885,10 @@ function readOneShotSourceV090() {
     const rawTimestamp = sessionStorage.getItem(SOURCE_ROUTE_AT_KEY);
     sessionStorage.removeItem(SOURCE_ROUTE_KEY);
     sessionStorage.removeItem(SOURCE_ROUTE_AT_KEY);
-    if (rawTimestamp !== null) {
-      const timestamp = Number(rawTimestamp);
-      if (!Number.isFinite(timestamp) || Date.now() - timestamp > 30_000) return null;
-    }
+    if (rawRoute === null || rawTimestamp === null) return null;
+    const timestamp = Number(rawTimestamp);
+    const age = Date.now() - timestamp;
+    if (!Number.isFinite(timestamp) || age < 0 || age > 30_000) return null;
     return normalizeBaseRouteV090(rawRoute);
   } catch (_error) {
     return null;
@@ -7961,7 +7971,7 @@ if (Panel && !Panel.prototype.__starkUiV090) {
       const style = document.createElement("style");
       style.dataset.starkUiV090 = "true";
       style.textContent = `
-        /* NikaS Specialized Panel UI + Navigation Standard v1.8. */
+        /* NikaS Specialized Panel UI + Navigation Standard v1.9. */
         .app-header .title-return-v090 {
           grid-column:2!important;
           justify-self:center!important;

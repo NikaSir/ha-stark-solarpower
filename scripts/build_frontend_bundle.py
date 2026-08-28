@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import re
 from pathlib import Path
 
@@ -88,6 +89,13 @@ def build() -> str:
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--check", action="store_true")
+    args = parser.parse_args()
     content = build()
+    if args.check:
+        if not OUTPUT.exists() or OUTPUT.read_text(encoding="utf-8") != content:
+            raise SystemExit("Frontend production bundle is missing or stale")
+        raise SystemExit(0)
     OUTPUT.write_text(content, encoding="utf-8")
     print(f"Wrote {OUTPUT.relative_to(ROOT)} ({len(content)} bytes)")
