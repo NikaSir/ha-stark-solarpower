@@ -42,7 +42,7 @@ class PanelStartupUiV085Tests(unittest.TestCase):
 
     def test_delivery_cache_and_bundle_are_current(self) -> None:
         self.assertIn("cache_headers=True", self.registration)
-        self.assertIn('PANEL_UI_VERSION = "0.9.1"', self.registration)
+        self.assertIn('PANEL_UI_VERSION = "0.9.2"', self.registration)
         self.assertIn('FRONTEND / "stark-solarpower-panel-v085.js"', self.builder)
         self.assertEqual(
             self.manifest["frontend_delivery"]["startup_assets"],

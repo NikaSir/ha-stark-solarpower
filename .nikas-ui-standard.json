@@ -59,7 +59,7 @@
     "custom_components/stark_solarpower/frontend/stark-solarpower-panel-v086.js",
     "custom_components/stark_solarpower/frontend/stark-solarpower-panel-v090.js"
   ],
-  "ui_version": "0.9.1",
+  "ui_version": "0.9.2",
   "web_component": "stark-solarpower-panel",
   "bundle_contract": {
     "autonomous": true,
@@ -94,5 +94,13 @@
     "primary_background_mix_percent": 5,
     "primary_border_mix_percent": 24,
     "shadow": "0 5px 16px rgba(23,45,76,.06)"
+  },
+  "panel_identity": {
+    "title": "ИБП Stark"
+  },
+  "shell_scroll_guard": {
+    "strategy": "native_viewport_boundary_guard",
+    "scroll_chaining": false,
+    "multitouch_passthrough": true
   }
 }

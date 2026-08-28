@@ -7853,7 +7853,7 @@ if (Panel && !Panel.prototype.__starkUiV086) {
 // BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v090.js
 (() => {
 const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.9.1";
+const UI_VERSION = "0.9.2";
 const SOURCE_ROUTE_KEY = "nikas.specialized.source_route.v1";
 const SOURCE_ROUTE_AT_KEY = "nikas.specialized.source_route_at.v1";
 const RETURN_ROUTE_KEY = "nikas.stark_solarpower.return_route.v1";
@@ -7954,7 +7954,7 @@ if (Panel && !Panel.prototype.__starkUiV090) {
       content.className = "title-return-copy-v090";
       const title = document.createElement("span");
       title.className = "title-return-name-v090";
-      title.textContent = "Stark SolarPower";
+      title.textContent = "ИБП Stark";
       const version = document.createElement("span");
       version.className = "subtitle";
       version.textContent = `UI v${UI_VERSION}`;
@@ -8018,14 +8018,72 @@ if (Panel && !Panel.prototype.__starkUiV090) {
     }
   };
 
+  Panel.prototype._installScrollBoundaryGuardV090 = function () {
+    const viewport = this.__starkShellV080?.viewport
+      || this.shadowRoot?.querySelector(".zoom-viewport-v065");
+    if (!viewport || this.__starkScrollGuardViewportV090 === viewport) return;
+
+    this.__starkScrollGuardCleanupV090?.();
+    let lastTouchY = null;
+
+    const isNativeScroll = () => viewport.classList.contains("native-scroll");
+    const atTop = () => viewport.scrollTop <= 0;
+    const atBottom = () => (
+      Math.ceil(viewport.scrollTop + viewport.clientHeight) >= viewport.scrollHeight
+    );
+    const onTouchStart = (event) => {
+      lastTouchY = event.touches.length === 1 ? event.touches[0].clientY : null;
+    };
+    const onTouchMove = (event) => {
+      if (!isNativeScroll() || event.touches.length !== 1 || lastTouchY === null) {
+        lastTouchY = null;
+        return;
+      }
+      const nextY = event.touches[0].clientY;
+      const deltaY = nextY - lastTouchY;
+      lastTouchY = nextY;
+      if ((atTop() && deltaY > 0) || (atBottom() && deltaY < 0)) {
+        event.preventDefault();
+      }
+    };
+    const onTouchEnd = (event) => {
+      lastTouchY = event.touches.length === 1 ? event.touches[0].clientY : null;
+    };
+    const onWheel = (event) => {
+      if (!isNativeScroll()) return;
+      if ((atTop() && event.deltaY < 0) || (atBottom() && event.deltaY > 0)) {
+        event.preventDefault();
+      }
+    };
+
+    viewport.addEventListener("touchstart", onTouchStart, { passive:true });
+    viewport.addEventListener("touchmove", onTouchMove, { passive:false });
+    viewport.addEventListener("touchend", onTouchEnd, { passive:true });
+    viewport.addEventListener("touchcancel", onTouchEnd, { passive:true });
+    viewport.addEventListener("wheel", onWheel, { passive:false });
+    this.__starkScrollGuardViewportV090 = viewport;
+    this.__starkScrollGuardCleanupV090 = () => {
+      viewport.removeEventListener("touchstart", onTouchStart);
+      viewport.removeEventListener("touchmove", onTouchMove);
+      viewport.removeEventListener("touchend", onTouchEnd);
+      viewport.removeEventListener("touchcancel", onTouchEnd);
+      viewport.removeEventListener("wheel", onWheel);
+      if (this.__starkScrollGuardViewportV090 === viewport) {
+        this.__starkScrollGuardViewportV090 = null;
+      }
+    };
+  };
+
   Panel.prototype._syncShellControlsV080 = function () {
     previousSyncControls?.call(this);
     this._installHeaderReturnV090();
+    this._installScrollBoundaryGuardV090();
   };
 
   Panel.prototype._render = function () {
     previousRender.call(this);
     this._installHeaderReturnV090();
+    this._installScrollBoundaryGuardV090();
   };
 }
 })();

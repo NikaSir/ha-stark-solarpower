@@ -1,7 +1,7 @@
 {
   "api_version": "nikas.home-assistant/integration-panel/v1",
   "id": "ups",
-  "title": "UPS",
+  "title": "ИБП Stark",
   "path": "/dashboard-ups",
   "entry_route": "/dashboard-ups",
   "parent_route": "/dashboard-infrastructure/overview",
@@ -10,7 +10,7 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.9.1",
+  "ui_version": "0.9.2",
   "template": {
     "name": "NikaS Integration Panel Template",
     "version": "1.9"
@@ -20,7 +20,9 @@
     "height_locked_phone": true,
     "safe_area_owner": "integration_panel_once",
     "outer_page_scroll": false,
-    "work_view_cache": "lazy_per_view_and_peer"
+    "work_view_cache": "lazy_per_view_and_peer",
+    "scroll_chaining": false,
+    "ios_scroll_boundary_guard": true
   },
   "header": {
     "grid_mobile_px": [52, "minmax(0,1fr)", 52],
@@ -37,7 +39,7 @@
       "type": "source_aware_return",
       "semantic_element": "button",
       "minimum_touch_height_px": 44,
-      "second_line": "UI v0.9.1",
+      "second_line": "UI v0.9.2",
       "source_handoff_key": "nikas.specialized.source_route.v1",
       "saved_route_key": "nikas.stark_solarpower.return_route.v1"
     },

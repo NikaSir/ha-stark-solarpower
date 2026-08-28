@@ -45,12 +45,26 @@ class PanelNavigationUiV090Tests(unittest.TestCase):
         self.assertIn('version.textContent = `UI v${UI_VERSION}`', self.source)
         self.assertIn('.title-return-v090:focus-visible', self.source)
         self.assertIn('.title-return-v090:active', self.source)
+        self.assertIn('title.textContent = "ИБП Stark"', self.source)
         self.assertNotIn("shadowRoot.innerHTML", self.source)
+
+    def test_native_scroll_boundary_does_not_chain_into_fixed_shell(self) -> None:
+        self.assertIn("_installScrollBoundaryGuardV090", self.source)
+        self.assertIn('viewport.classList.contains("native-scroll")', self.source)
+        self.assertIn('event.touches.length !== 1', self.source)
+        self.assertIn('(atTop() && deltaY > 0)', self.source)
+        self.assertIn('(atBottom() && deltaY < 0)', self.source)
+        self.assertIn('event.preventDefault()', self.source)
+        self.assertIn('addEventListener("touchmove", onTouchMove, { passive:false })', self.source)
+        self.assertIn('addEventListener("wheel", onWheel, { passive:false })', self.source)
 
     def test_explicit_ha_navigation_and_delivery_versions(self) -> None:
         self.assertIn('window.history.pushState(null, "", target)', self.source)
         self.assertIn('new Event("location-changed")', self.source)
-        self.assertEqual(self.panel_manifest["ui_version"], "0.9.1")
+        self.assertEqual(self.panel_manifest["ui_version"], "0.9.2")
+        self.assertEqual(self.panel_manifest["title"], "ИБП Stark")
+        self.assertFalse(self.panel_manifest["shell"]["scroll_chaining"])
+        self.assertTrue(self.panel_manifest["shell"]["ios_scroll_boundary_guard"])
         self.assertEqual(self.panel_manifest["shell"]["standard_version"], "1.9")
         self.assertIn('FRONTEND / "stark-solarpower-panel-v090.js"', self.builder)
 
