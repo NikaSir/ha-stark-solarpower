@@ -1,7 +1,16 @@
 {
   "version": "1.7",
   "standard_path": "docs/NIKAS_SPECIALIZED_PANEL_UI_STANDARD.md",
-  "standard_sha256": "22c0cec7fa61b8210fc40e3f053242335f8e502984cbb8a4fb93c33a93bd3706",
+  "standard_sha256": "17afc8ea93b07a4362c45e5e9d5f6504158e70a9c19328a545403a92f1e08a8c",
   "role": "specialized",
-  "runtime_files": ["custom_components/stark_solarpower/frontend/stark-solarpower-panel-bundle.js"]
+  "runtime_files": ["custom_components/stark_solarpower/frontend/stark-solarpower-panel-bundle.js"],
+  "production_entrypoint": "custom_components/stark_solarpower/frontend/stark-solarpower-panel-bundle.js",
+  "header_return": {
+    "button_marker": "title-return-v085",
+    "version_marker": "<div class=\"subtitle\">UI v${UI_VERSION}</div>",
+    "focus_marker": ".title-return-v085:focus-visible",
+    "pressed_marker": ".title-return-v085:active",
+    "explicit_precedence_marker": "[\"return_to\", \"from\"]",
+    "capture_once_marker": "if (!this.__starkReturnRouteV085) this.__starkReturnRouteV085 = resolveReturnRoute(this)"
+  }
 }

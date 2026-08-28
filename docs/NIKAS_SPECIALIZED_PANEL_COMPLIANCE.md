@@ -1,9 +1,9 @@
 # NikaS specialized-panel compliance — Stark SolarPower
 
 **Audit date:** 2026-08-27
-**Standard:** NikaS Specialized Panel UI Standard v1.6
-**Audited production path:** `panel.py` → `stark-solarpower-panel-bundle.js?v=0.8.4` → `stark-solarpower-panel`
-**Scope:** implemented in UI v0.8.4; phone field acceptance remains required
+**Standard:** NikaS Specialized Panel UI Standard v1.7
+**Audited production path:** `panel.py` → `stark-solarpower-panel-bundle.js?v=0.8.5` → `stark-solarpower-panel`
+**Scope:** implemented in UI v0.8.5; phone field acceptance remains required
 
 | Area | Result | Evidence |
 |---|---|---|
@@ -12,8 +12,9 @@
 | Scale 75–200%, focal pinch, per-UPS persistence | PASS | `frontend/stark-solarpower-panel-v054.js`, `v060.js`: clamp, focal content coordinates and device-keyed local storage/state. |
 | 97–103% snap, two-finger double tap and toast | PASS | `frontend/stark-solarpower-panel-v056.js`, `v060.js`: snap/reset and `Масштаб 100%`. |
 | Native HA menu | PASS | `frontend/stark-solarpower-panel-v056.js`: `mdi:menu`, bubbling/composed `hass-toggle-menu`. |
+| Center title source return | PASS | Final `v085.js` installs one semantic title button with the exact version-only `UI v0.8.5` second line, focus/pressed states, validated source-route precedence and explicit HA navigation without `history.back()`. The checked runtime is the production bundle. |
 | Safe area and fixed Bottom Tab Bar | PASS | `frontend/stark-solarpower-panel-v053.js`, `v052.js`: top and bottom safe-area handling; shell elements remain outside transform. |
-| Header reference geometry | PASS | `v065.js` provides 52/48 rails, 62/60 height, matched 44×44 radius-16 plaques and 25px icons; final `v080.js` applies v1.6 typography at 23/14 px and 21/13 px narrow. |
+| Header reference geometry | PASS | `v065.js` provides 52/48 rails, 62/60 height, matched 44×44 radius-16 plaques and 25px icons; final layers apply v1.7 typography at 23/14 px and 21/13 px narrow. |
 | Bottom Tab geometry | PASS | Final v065 layer uses fixed full-width safe-area bar, minimum 52px controls, `ha-icon` at 28px, 12/700 labels and 11% primary active fill. |
 | Native vertical scroll at 100% | PASS | v065 switches to `overflow-y:auto`, `overflow-x:hidden`, `touch-action:pan-y` at scale ≤100%; transform offsets are zero. |
 | Origin fixed at 100%; no one-finger pan | PASS | v065 creates a single-finger pan candidate only when `state.scale > 1`; clamp fixes `x=y=0` at or below 100%. |
@@ -31,9 +32,9 @@
 | Runtime field validation | PASS | `v083.js` treats the vendor value as minutes; the coordinator refreshes detailed telemetry every 60 seconds in Battery Mode, matching the physical countdown cadence. |
 | Reserve readiness semantics | PASS | `v084.js` reserves `Резерв готов` for Line Mode at 95% or more; 21–94% is explicitly `Резерв неполный`. |
 | Mobile Overview composition | PASS | Final `v081.js` uses a 336px phone scene, raises the capacity plaque, preserves the side-metric alignment, compacts the two lower surfaces and reserves 16px above fixed navigation without resizing the UPS artwork. |
-| Typography envelope | PASS | Final `v080.js` enforces the v1.6 12–25px phone envelope, with explicit 23/14 and 21/13 Header pairs and a 25px hero ceiling. |
+| Typography envelope | PASS | Final `v080.js` enforces the v1.7 12–25px phone envelope, with explicit 23/14 and 21/13 Header pairs and a 25px hero ceiling. |
 | Connection/freshness plaque | PASS | Final `v080.js` keeps the requested selected-UPS two-level semantics and applies 16/13 typography, 10% status tint and 30% status border without animation/remount. |
-| Production delivery | PASS | `panel.py` uses one cache-busted autonomous bundle URL and UI version `0.8.4`. |
+| Production delivery | PASS | `panel.py` uses one cache-busted autonomous bundle URL and UI version `0.8.5`. |
 
 ## Remaining follow-up
 

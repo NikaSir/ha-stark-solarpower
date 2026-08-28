@@ -21,7 +21,9 @@ function safeReturnRoute(value) {
 
 function resolveReturnRoute(panel) {
   const current = new URL(window.location.href);
-  const explicit = safeReturnRoute(current.searchParams.get("return_to") || current.searchParams.get("from"));
+  const explicit = ["return_to", "from"]
+    .map((key) => safeReturnRoute(current.searchParams.get(key)))
+    .find(Boolean) || null;
   let handedOff = null;
   let saved = null;
   try {
@@ -86,6 +88,7 @@ if (Panel && !Panel.prototype.__starkUiV085) {
           appearance:none!important;font:inherit!important;cursor:pointer!important;
         }
         .app-header .title-return-v085:active{transform:scale(.985)}
+        .app-header .title-return-v085:focus-visible{outline:2px solid var(--primary-color);outline-offset:2px}
         .app-header .title-return-v085 h1{font-size:23px!important;font-weight:800!important}
         .app-header .title-return-v085 .subtitle{font-size:14px!important;font-weight:560!important}
         @media(max-width:390px){

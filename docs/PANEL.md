@@ -18,7 +18,7 @@ The same metadata is shipped in `custom_components/stark_solarpower/panel_manife
 
 ## NikaS application shell
 
-UI v0.8.4 uses NikaS Specialized Panel UI Standard v1.6 with one height-locked shell and one working viewport:
+UI v0.8.5 uses NikaS Specialized Panel UI Standard v1.7 with source-aware title return, one height-locked shell and one working viewport:
 
 `Safe Area → Header → Device Selector → zoomable selected-UPS viewport → Bottom Tab Bar`
 
