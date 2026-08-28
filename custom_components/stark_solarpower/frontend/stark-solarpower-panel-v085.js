@@ -9,9 +9,7 @@ const STARTUP_ASSETS = [
 ];
 
 function prewarmStartupAssetsV085() {
-  if (globalThis.__starkStartupAssetsV085) {
-    return globalThis.__starkStartupAssetsV085.ready;
-  }
+  if (globalThis.__starkStartupAssetsV085) return globalThis.__starkStartupAssetsV085.ready;
 
   const images = STARTUP_ASSETS.map((url) => {
     const image = new Image();
@@ -33,14 +31,10 @@ function prewarmStartupAssetsV085() {
       })
   )));
 
-  // Keep strong references for the lifetime of the HA page. This prevents a
-  // browser from cancelling speculative image work while the registries load.
   globalThis.__starkStartupAssetsV085 = { images, ready };
   return ready;
 }
 
-// Start network fetch and bitmap decode as soon as the bundle is evaluated,
-// in parallel with entity/device registry discovery.
 prewarmStartupAssetsV085();
 
 if (Panel && !Panel.prototype.__starkUiV085) {

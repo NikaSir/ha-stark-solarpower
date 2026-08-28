@@ -2,6 +2,16 @@
 
 All notable project changes are recorded here.
 
+## [1.9.0] - 2026-08-28
+
+### Panel UI 0.9.0 — NikaS navigation contract v1.8
+
+- Preserve every field-tested UPS view, RAW-runtime interpretation, startup scene, image prewarming, stable DOM and gesture guard from UI 0.8.6.
+- Make the geometrically centered two-line Header plaque the semantic return control; its second line is exactly `UI v0.9.0`.
+- Capture and validate the originating NikaS base route once, consume the one-shot session hand-off and fall back safely to Infrastructure without using browser history depth.
+- Add the strict canonical v1.8 standard/navigation marker and CI guard, plus machine-readable route ownership in the panel manifest.
+- Keep one cache-busted autonomous production bundle and add the final v0.9.0 contract layer to the deterministic build.
+
 ## [1.8.28] - 2026-08-28
 
 ### Panel UI 0.8.6 — immediate startup Overview
