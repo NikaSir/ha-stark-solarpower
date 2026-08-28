@@ -8,7 +8,7 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.8.4",
+  "ui_version": "0.8.5",
   "template": {
     "name": "NikaS Integration Panel Template",
     "version": "1.0"
@@ -140,6 +140,8 @@
       "assets/stark-hero-boiler-v063.webp"
     ],
     "cache_busting": "query_ui_version",
+    "cache_headers": "enabled_for_versioned_static_assets",
+    "startup_assets": "preloaded_and_decoded_parallel_to_registry",
     "runtime_previous_version_imports": false
   },
   "typography": {

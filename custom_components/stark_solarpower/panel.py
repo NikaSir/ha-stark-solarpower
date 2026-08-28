@@ -16,7 +16,7 @@ PANEL_URL_PATH = "dashboard-ups"
 PANEL_PARENT_ROUTE = "/dashboard-infrastructure/overview"
 PANEL_ICON = "mdi:battery-charging"
 PANEL_WEB_COMPONENT = "stark-solarpower-panel"
-PANEL_UI_VERSION = "0.8.4"
+PANEL_UI_VERSION = "0.8.5"
 PANEL_TEMPLATE_VERSION = "1.0"
 PANEL_STATIC_URL = "/stark_solarpower_panel"
 PANEL_STATIC_REGISTERED = "panel_static_registered"
@@ -48,7 +48,7 @@ async def async_register_ups_panel(hass: HomeAssistant) -> None:
                 StaticPathConfig(
                     PANEL_STATIC_URL,
                     str(PANEL_DIRECTORY),
-                    cache_headers=False,
+                    cache_headers=True,
                 )
             ]
         )
