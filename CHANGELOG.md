@@ -2,6 +2,15 @@
 
 All notable project changes are recorded here.
 
+## [1.8.28] - 2026-08-28
+
+### Panel UI 0.8.6 — immediate startup Overview
+
+- Mount a complete neutral Overview during Home Assistant registry discovery instead of showing an empty viewport followed by a standalone `Загрузка UPS…` state.
+- Display the real selected-device background, UPS artwork, device selector, reserve row and battery-detail geometry immediately, using `—` for values that are not yet known.
+- Keep startup text explicitly factual (`Получение данных`, `Проверка состояния АКБ`) and replace it with live entity values only after registry discovery.
+- Preserve UI 0.8.5 image prewarming/cache behavior and the permanent runtime shell, telemetry point-patching and gesture guards after initialization.
+
 ## [1.8.27] - 2026-08-28
 
 ### Panel UI 0.8.5 — parallel cold-start assets
