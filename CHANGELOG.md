@@ -4,13 +4,22 @@ All notable project changes are recorded here.
 
 ## [Unreleased]
 
+## [1.9.1] - 2026-08-28
+
+### Panel UI 0.9.2 — fixed shell boundary and unified identity
+
+- Use `ИБП Stark` as the visible Header title and Home Assistant sidebar title.
+- Stop native phone scrolling from chaining beyond the work viewport at its top and bottom boundaries, keeping Header and Bottom Tab Bar stationary on iOS.
+- Preserve one-finger native content scrolling, focal pinch, two-finger reset and the post-pinch navigation guard.
+- Keep the immediate neutral Overview, parallel image prewarming, stable DOM and point-patched telemetry from UI 0.9.1.
+
+## [1.9.0] - 2026-08-28
+
 ### Panel UI 0.9.1 — strict source hand-off and production truth
 
 - Require both one-shot source-route values and reject invalid, stale or future timestamps before the centered Header plaque captures its destination.
 - Adopt NikaS Specialized Panel UI Standard v1.9, Navigation Contract v1.1 and explicit registry-backed refresh-only data/command metadata.
 - Verify the autonomous production bundle deterministically and keep unknown/unavailable telemetry explicit without optimistic refresh success.
-
-## [1.9.0] - 2026-08-28
 
 ### Panel UI 0.9.0 — NikaS navigation contract v1.8
 

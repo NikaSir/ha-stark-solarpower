@@ -11,12 +11,12 @@ from homeassistant.core import HomeAssistant
 from .const import DOMAIN
 
 PANEL_ID = "ups"
-PANEL_TITLE = "UPS"
+PANEL_TITLE = "ИБП Stark"
 PANEL_URL_PATH = "dashboard-ups"
 PANEL_PARENT_ROUTE = "/dashboard-infrastructure/overview"
 PANEL_ICON = "mdi:battery-charging"
 PANEL_WEB_COMPONENT = "stark-solarpower-panel"
-PANEL_UI_VERSION = "0.9.1"
+PANEL_UI_VERSION = "0.9.2"
 PANEL_TEMPLATE_VERSION = "1.0"
 PANEL_STATIC_URL = "/stark_solarpower_panel"
 PANEL_STATIC_REGISTERED = "panel_static_registered"

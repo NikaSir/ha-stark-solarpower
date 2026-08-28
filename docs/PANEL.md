@@ -8,23 +8,23 @@ The Stark SolarPower integration owns a dedicated Home Assistant panel for day-t
 - Owner: `stark_solarpower`
 - Stable route: `/dashboard-ups`
 - Explicit parent route: `/dashboard-infrastructure/overview`
-- Sidebar title: `UPS`
+- Sidebar title: `ИБП Stark`
 - Icon: `mdi:battery-charging`
 - Preferred view: `overview`
-- Panel UI version: `0.9.1`
+- Panel UI version: `0.9.2`
 - Primary navigation: full-width fixed bottom Tab Bar
 
 The same metadata is shipped in `custom_components/stark_solarpower/panel_manifest.json` for `ha-contract-generated-ui` and other consumers.
 
 ## NikaS application shell
 
-UI v0.9.1 uses NikaS Specialized Panel UI and Navigation Standard v1.9 with one height-locked shell and one working viewport. Its persistent centered title plaque returns to the validated originating NikaS base panel. A neutral photographic Overview is mounted immediately with unknown values shown as `—`; UPS artwork and both selected-device backgrounds fetch and decode in parallel with Home Assistant registry discovery, while versioned static files remain browser-cacheable:
+UI v0.9.2 uses NikaS Specialized Panel UI and Navigation Standard v1.9 with one height-locked shell and one working viewport. Its persistent centered title plaque returns to the validated originating NikaS base panel. A neutral photographic Overview is mounted immediately with unknown values shown as `—`; UPS artwork and both selected-device backgrounds fetch and decode in parallel with Home Assistant registry discovery, while versioned static files remain browser-cacheable:
 
 `Safe Area → Header → Device Selector → zoomable selected-UPS viewport → Bottom Tab Bar`
 
-The Header belongs to the specialized-panel shell and remains at native scale. Its permanent left control opens the native Home Assistant main-system menu; Refresh remains the single right-side shell action. `Stark SolarPower` is geometrically centered between symmetric Menu and Refresh zones. No decorative battery/brand icon is shown in the Header.
+The Header belongs to the specialized-panel shell and remains at native scale. Its permanent left control opens the native Home Assistant main-system menu; Refresh remains the single right-side shell action. `ИБП Stark` is geometrically centered between symmetric Menu and Refresh zones. No decorative battery/brand icon is shown in the Header.
 
-Only the selected-UPS work viewport scales. At 100% it uses native vertical-only scrolling, fixes transform offsets to `x=0,y=0` and does not install one-finger custom pan. Above 100%, one finger pans only axes whose measured scaled content exceeds the viewport; both offsets are clamped to real content edges and recalculated after resize. Two-finger focal pinch uses 75–200%, snaps 97–103% to 100%, persists scale per UPS and supports a two-finger double-tap reset with `Масштаб 100%`. Tab changes reset scroll and offsets before remeasuring. When the second finger arrives, every pending entity hold in the permanent work surface receives `pointercancel`; the same gesture interval also guards the final `_showMoreInfo()` dispatch, not only generated clicks. Untouched native scroll and intentional stationary one-finger hold remain available. No on-screen zoom buttons are rendered.
+Only the selected-UPS work viewport scales. At 100% it uses native vertical-only scrolling, fixes transform offsets to `x=0,y=0` and does not install one-finger custom pan. A boundary listener prevents upward/downward gestures from chaining outside that viewport once its real content edge is reached, so the fixed shell cannot be dragged; multitouch passes through to the zoom engine. Above 100%, one finger pans only axes whose measured scaled content exceeds the viewport; both offsets are clamped to real content edges and recalculated after resize. Two-finger focal pinch uses 75–200%, snaps 97–103% to 100%, persists scale per UPS and supports a two-finger double-tap reset with `Масштаб 100%`. Tab changes reset scroll and offsets before remeasuring. When the second finger arrives, every pending entity hold in the permanent work surface receives `pointercancel`; the same gesture interval also guards the final `_showMoreInfo()` dispatch, not only generated clicks. Untouched native scroll and intentional stationary one-finger hold remain available. No on-screen zoom buttons are rendered.
 
 The primary bottom navigation is full-width, fixed to the bottom edge, iOS-safe and contains `Обзор`, `ИБП`, `События`, `История`, and `Диагн.`. Active state remains inside the common bar. Factual entities keep long press → native Home Assistant more-info.
 
