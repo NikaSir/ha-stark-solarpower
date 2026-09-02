@@ -4,6 +4,11 @@ All notable project changes are recorded here.
 
 ## [Unreleased]
 
+## [1.9.2] - 2026-09-02
+
+- Prefix the Home Assistant and HACS integration name with `NikaS`.
+- Publish a standards-compliant 256×256 `icon.png` plus 512×512 `icon@2x.png`.
+
 ## [1.9.1] - 2026-08-28
 
 ### Panel UI 0.9.2 — fixed shell boundary and unified identity

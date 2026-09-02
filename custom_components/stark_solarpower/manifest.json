@@ -1,6 +1,6 @@
 {
   "domain": "stark_solarpower",
-  "name": "Stark SolarPower",
+  "name": "NikaS Stark SolarPower",
   "codeowners": ["@NikaSir"],
   "config_flow": true,
   "dependencies": ["http", "panel_custom"],
@@ -9,5 +9,5 @@
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/NikaSir/ha-stark-solarpower/issues",
   "requirements": [],
-  "version": "1.9.1"
+  "version": "1.9.2"
 }
