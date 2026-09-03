@@ -4,6 +4,14 @@ All notable project changes are recorded here.
 
 ## [Unreleased]
 
+## [1.9.4] - 2026-09-03
+
+### Panel UI 0.9.4 — peer-device status lamps
+
+- Restore the compact status lamp inside every `UPS Интернет / UPS Котёл` selector button, matching the approved StarLine peer-selector pattern.
+- Keep four factual tones: green for normal operation, orange for battery/warning/stale data, red for faults or lost connectivity, and neutral gray for an unknown state.
+- Point-patch lamp tone and accessible status text without rebuilding the permanent selector or changing its accepted geometry.
+
 ## [1.9.3] - 2026-09-03
 
 ### Panel UI 0.9.3 — confirmed Shell v2.1 boundary guard
