@@ -1,13 +1,18 @@
 {
   "domain": "stark_solarpower",
   "name": "NikaS Stark SolarPower",
-  "codeowners": ["@NikaSir"],
+  "codeowners": [
+    "@NikaSir"
+  ],
   "config_flow": true,
-  "dependencies": ["http", "panel_custom"],
+  "dependencies": [
+    "http",
+    "panel_custom"
+  ],
   "documentation": "https://github.com/NikaSir/ha-stark-solarpower",
   "integration_type": "hub",
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/NikaSir/ha-stark-solarpower/issues",
   "requirements": [],
-  "version": "1.9.4"
+  "version": "1.9.5"
 }

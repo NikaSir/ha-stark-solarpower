@@ -61,7 +61,7 @@
     "custom_components/stark_solarpower/frontend/stark-solarpower-panel-v091.js",
     "custom_components/stark_solarpower/frontend/stark-solarpower-panel-v092.js"
   ],
-  "ui_version": "0.9.4",
+  "ui_version": "0.9.5",
   "web_component": "stark-solarpower-panel",
   "bundle_contract": {
     "autonomous": true,
@@ -75,7 +75,9 @@
     "invented_entity_ids": false,
     "fixed_entity_ids": "none",
     "command_policy": "refresh_only",
-    "command_markers": ["await this._hass.callService(\"button\", \"press\""]
+    "command_markers": [
+      "await this._hass.callService(\"button\", \"press\""
+    ]
   },
   "header_return": {
     "button_marker": "title-return-v090",
@@ -107,5 +109,21 @@
     "multitouch_passthrough": true,
     "movement_threshold_px": 4,
     "cleanup_on_disconnect": true
+  },
+  "peer_device_selector_reference": {
+    "implementation": "StarLine",
+    "source": "NikaSir/ha-starline-telemetry",
+    "ui_version": "0.6.8",
+    "row_height_px": 52,
+    "button_height_px": 44,
+    "gap_px": 8,
+    "horizontal_padding_px": 12,
+    "button_radius_px": 15,
+    "status_lamp_px": 9,
+    "status_halo_px": 3,
+    "label_alignment": "start",
+    "selected_surface": "primary_10_percent",
+    "selected_border": "primary_65_percent",
+    "selection_is_independent_from_health": true
   }
 }

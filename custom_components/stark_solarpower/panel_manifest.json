@@ -10,7 +10,7 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.9.4",
+  "ui_version": "0.9.5",
   "nikas_ui_standard": "2.1",
   "template": {
     "name": "NikaS Integration Panel Template",
@@ -26,8 +26,16 @@
     "ios_scroll_boundary_guard": true
   },
   "header": {
-    "grid_mobile_px": [52, "minmax(0,1fr)", 52],
-    "grid_narrow_px": [48, "minmax(0,1fr)", 48],
+    "grid_mobile_px": [
+      52,
+      "minmax(0,1fr)",
+      52
+    ],
+    "grid_narrow_px": [
+      48,
+      "minmax(0,1fr)",
+      48
+    ],
     "title_alignment": "viewport_center",
     "minimum_height_px": 62,
     "minimum_height_px_narrow": 60,
@@ -40,7 +48,7 @@
       "type": "source_aware_return",
       "semantic_element": "button",
       "minimum_touch_height_px": 44,
-      "second_line": "UI v0.9.4",
+      "second_line": "UI v0.9.5",
       "source_handoff_key": "nikas.specialized.source_route.v1",
       "saved_route_key": "nikas.stark_solarpower.return_route.v1"
     },
@@ -53,7 +61,9 @@
       "icon_px": 25,
       "event": "hass-toggle-menu"
     },
-    "actions": ["refresh"],
+    "actions": [
+      "refresh"
+    ],
     "right_control": {
       "type": "refresh",
       "icon": "mdi:refresh",
@@ -72,9 +82,22 @@
     "status_lamp": {
       "placement": "inside_each_selector_button",
       "diameter_px": 9,
-      "tones": ["good", "warn", "bad", "unknown"],
+      "tones": [
+        "good",
+        "warn",
+        "bad",
+        "unknown"
+      ],
       "update": "point_patch"
-    }
+    },
+    "visual_reference": "StarLine UI 0.6.8",
+    "row_height_px": 52,
+    "gap_px": 8,
+    "horizontal_padding_px": 12,
+    "button_radius_px": 15,
+    "label_alignment": "start",
+    "selected_surface_primary_percent": 10,
+    "selected_border_primary_percent": 65
   },
   "navigation": {
     "header_menu": "home_assistant_system_sidebar",
@@ -87,7 +110,13 @@
     "label_px": 12,
     "label_weight": 700,
     "active_primary_percent": 11,
-    "views": ["overview", "ups", "events", "history", "diagnostics"]
+    "views": [
+      "overview",
+      "ups",
+      "events",
+      "history",
+      "diagnostics"
+    ]
   },
   "zoom": {
     "scope": "selected_device_work_viewport",
@@ -96,7 +125,10 @@
     "pinch": true,
     "controls": [],
     "reset_gesture": "two_finger_double_tap",
-    "snap_to_100_percent_range": [97, 103],
+    "snap_to_100_percent_range": [
+      97,
+      103
+    ],
     "minimum_percent": 75,
     "maximum_percent": 200,
     "focal_point": true,
@@ -105,24 +137,52 @@
     "pan_axes": "overflow_only",
     "native_vertical_scroll_at_100_percent": true,
     "horizontal_scroll_at_100_percent": false,
-    "origin_at_100_percent": [0, 0],
+    "origin_at_100_percent": [
+      0,
+      0
+    ],
     "pan_engine": "single_transform_translation",
     "gesture_activation_guard": true,
     "more_info_guard": "unified_at_dispatch_boundary",
     "multitouch_hold_cancel": "all_entities_in_work_surface",
     "persistence": "local_per_panel_and_device",
-    "native_scale": ["header", "device_selector", "bottom_tab_bar"]
+    "native_scale": [
+      "header",
+      "device_selector",
+      "bottom_tab_bar"
+    ]
   },
   "overview": {
-    "information_architecture": ["contextual_photographic_hero", "connection_and_freshness_indicator", "live_hero_metrics", "reserve_readiness", "battery_details"],
+    "information_architecture": [
+      "contextual_photographic_hero",
+      "connection_and_freshness_indicator",
+      "live_hero_metrics",
+      "reserve_readiness",
+      "battery_details"
+    ],
     "hero_scope": "selected_device_only",
     "power_flow": {
-      "nodes": ["grid", "ups", "load", "battery"],
+      "nodes": [
+        "grid",
+        "ups",
+        "load",
+        "battery"
+      ],
       "connectors": "none",
       "invented_power_values": false
     },
     "reserve_strip_placement": "below_hero",
-    "key_metrics": ["input_voltage", "output_voltage", "output_frequency", "battery_capacity", "output_load", "battery_voltage", "battery_piece_number", "charger_temperature", "battery_remain_time"],
+    "key_metrics": [
+      "input_voltage",
+      "output_voltage",
+      "output_frequency",
+      "battery_capacity",
+      "output_load",
+      "battery_voltage",
+      "battery_piece_number",
+      "charger_temperature",
+      "battery_remain_time"
+    ],
     "battery_runtime": {
       "source": "battery_remain_time",
       "vendor_raw_unit": "minutes",
@@ -137,8 +197,16 @@
     "state_tiles": [],
     "connection_indicator": {
       "scope": "selected_device_only",
-      "channel_states": ["cloud", "disconnected", "unknown"],
-      "freshness_states": ["current", "stale", "unknown"],
+      "channel_states": [
+        "cloud",
+        "disconnected",
+        "unknown"
+      ],
+      "freshness_states": [
+        "current",
+        "stale",
+        "unknown"
+      ],
       "channel_and_freshness_independent": true,
       "extended_telemetry_affects_primary": false
     },
@@ -146,7 +214,13 @@
   },
   "events": {
     "scope": "selected_device_only",
-    "entities": ["battery_mode", "cloud_telemetry", "data_freshness", "fault_mode", "extended_telemetry"]
+    "entities": [
+      "battery_mode",
+      "cloud_telemetry",
+      "data_freshness",
+      "fault_mode",
+      "extended_telemetry"
+    ]
   },
   "frontend_delivery": {
     "mode": "self_contained_bundle",
@@ -202,6 +276,9 @@
   },
   "targets": {
     "primary": "iPhone Pro Max portrait",
-    "secondary": ["iPad", "desktop"]
+    "secondary": [
+      "iPad",
+      "desktop"
+    ]
   }
 }

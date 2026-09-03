@@ -1,7 +1,7 @@
 import "./stark-solarpower-panel-v086.js";
 
 const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.9.4";
+const UI_VERSION = "0.9.5";
 const SOURCE_ROUTE_KEY = "nikas.specialized.source_route.v1";
 const SOURCE_ROUTE_AT_KEY = "nikas.specialized.source_route_at.v1";
 const RETURN_ROUTE_KEY = "nikas.stark_solarpower.return_route.v1";
