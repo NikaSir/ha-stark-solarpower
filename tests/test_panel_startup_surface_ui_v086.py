@@ -43,7 +43,7 @@ class PanelStartupSurfaceUiV086Tests(unittest.TestCase):
 
     def test_final_layer_preserves_permanent_runtime_shell(self) -> None:
         self.assertNotIn("shadowRoot.innerHTML", self.source)
-        self.assertEqual(self.manifest["ui_version"], "0.9.4")
+        self.assertEqual(self.manifest["ui_version"], "0.9.5")
         self.assertEqual(
             self.manifest["frontend_delivery"]["startup_surface"],
             "immediate_neutral_overview_before_registry",
