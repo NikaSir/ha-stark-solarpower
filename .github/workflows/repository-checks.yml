@@ -60,6 +60,12 @@ jobs:
       - name: Enforce NikaS panel and navigation standard
         run: python scripts/check_nikas_ui_standard.py
 
+      - name: Run panel regression tests
+        run: python -m unittest discover -s tests -p 'test_*.py'
+
+      - name: Verify Shell v2.1 scroll boundary behavior
+        run: node tests/stark_scroll_boundary_harness.mjs
+
       - name: Reject tracked credential/key files
         shell: bash
         run: |

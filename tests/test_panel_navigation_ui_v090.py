@@ -61,11 +61,11 @@ class PanelNavigationUiV090Tests(unittest.TestCase):
     def test_explicit_ha_navigation_and_delivery_versions(self) -> None:
         self.assertIn('window.history.pushState(null, "", target)', self.source)
         self.assertIn('new Event("location-changed")', self.source)
-        self.assertEqual(self.panel_manifest["ui_version"], "0.9.2")
+        self.assertEqual(self.panel_manifest["ui_version"], "0.9.3")
         self.assertEqual(self.panel_manifest["title"], "ИБП Stark")
         self.assertFalse(self.panel_manifest["shell"]["scroll_chaining"])
         self.assertTrue(self.panel_manifest["shell"]["ios_scroll_boundary_guard"])
-        self.assertEqual(self.panel_manifest["shell"]["standard_version"], "1.9")
+        self.assertEqual(self.panel_manifest["shell"]["standard_version"], "2.1")
         self.assertIn('FRONTEND / "stark-solarpower-panel-v090.js"', self.builder)
 
 
