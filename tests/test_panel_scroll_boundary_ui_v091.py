@@ -42,11 +42,11 @@ class PanelScrollBoundaryUiV091Tests(unittest.TestCase):
         self.assertIn('host.removeEventListener("touchmove", moveTouch, true)', self.source)
 
     def test_delivery_versions_and_standard_are_coherent(self) -> None:
-        self.assertEqual(self.integration_manifest["version"], "1.9.3")
-        self.assertEqual(self.panel_manifest["ui_version"], "0.9.3")
+        self.assertEqual(self.integration_manifest["version"], "1.9.4")
+        self.assertEqual(self.panel_manifest["ui_version"], "0.9.4")
         self.assertEqual(self.panel_manifest["shell"]["standard_version"], "2.1")
         self.assertEqual(self.panel_manifest["nikas_ui_standard"], "2.1")
-        self.assertIn('PANEL_UI_VERSION = "0.9.3"', self.registration)
+        self.assertIn('PANEL_UI_VERSION = "0.9.4"', self.registration)
         self.assertIn("BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v091.js", self.bundle)
 
 

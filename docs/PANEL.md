@@ -11,14 +11,14 @@ The Stark SolarPower integration owns a dedicated Home Assistant panel for day-t
 - Sidebar title: `ИБП Stark`
 - Icon: `mdi:battery-charging`
 - Preferred view: `overview`
-- Panel UI version: `0.9.3`
+- Panel UI version: `0.9.4`
 - Primary navigation: full-width fixed bottom Tab Bar
 
 The same metadata is shipped in `custom_components/stark_solarpower/panel_manifest.json` for `ha-contract-generated-ui` and other consumers.
 
 ## NikaS application shell
 
-UI v0.9.3 uses the field-confirmed NikaS Shell v2.1 boundary guard with one height-locked shell and one working viewport. Its persistent centered title plaque returns to the validated originating NikaS base panel. A neutral photographic Overview is mounted immediately with unknown values shown as `—`; UPS artwork and both selected-device backgrounds fetch and decode in parallel with Home Assistant registry discovery, while versioned static files remain browser-cacheable:
+UI v0.9.4 uses the field-confirmed NikaS Shell v2.1 boundary guard with one height-locked shell and one working viewport. Its peer-device selector includes a point-updated status lamp for every UPS. Its persistent centered title plaque returns to the validated originating NikaS base panel. A neutral photographic Overview is mounted immediately with unknown values shown as `—`; UPS artwork and both selected-device backgrounds fetch and decode in parallel with Home Assistant registry discovery, while versioned static files remain browser-cacheable:
 
 `Safe Area → Header → Device Selector → zoomable selected-UPS viewport → Bottom Tab Bar`
 
@@ -39,6 +39,7 @@ The Device Selector is persistent directly below the Header on every primary vie
 Rules:
 
 - the order is fixed and never changes because of selection;
+- every button includes a green/orange/red/gray factual status lamp;
 - only active styling changes when another UPS is selected;
 - selected UPS context is preserved across all five primary views;
 - all primary content below the selector belongs only to the selected UPS;

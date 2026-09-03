@@ -10,7 +10,7 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.9.3",
+  "ui_version": "0.9.4",
   "nikas_ui_standard": "2.1",
   "template": {
     "name": "NikaS Integration Panel Template",
@@ -40,7 +40,7 @@
       "type": "source_aware_return",
       "semantic_element": "button",
       "minimum_touch_height_px": 44,
-      "second_line": "UI v0.9.3",
+      "second_line": "UI v0.9.4",
       "source_handoff_key": "nikas.specialized.source_route.v1",
       "saved_route_key": "nikas.stark_solarpower.return_route.v1"
     },
@@ -68,7 +68,13 @@
     "reorder_selected": false,
     "content_scope": "selected_device_only",
     "mobile_rows": 1,
-    "touch_target_px": 44
+    "touch_target_px": 44,
+    "status_lamp": {
+      "placement": "inside_each_selector_button",
+      "diameter_px": 9,
+      "tones": ["good", "warn", "bad", "unknown"],
+      "update": "point_patch"
+    }
   },
   "navigation": {
     "header_menu": "home_assistant_system_sidebar",

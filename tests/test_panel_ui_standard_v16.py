@@ -75,7 +75,7 @@ class PanelUiStandardV16Tests(unittest.TestCase):
         self.assertIn(".metric-copy-v051 span,.metric-copy-v051 small", self.standard)
 
     def test_manifest_matches_runtime(self) -> None:
-        self.assertEqual(self.manifest["ui_version"], "0.9.3")
+        self.assertEqual(self.manifest["ui_version"], "0.9.4")
         self.assertEqual(self.manifest["template"]["version"], "1.9")
         self.assertEqual(
             self.manifest["navigation"]["views"],
