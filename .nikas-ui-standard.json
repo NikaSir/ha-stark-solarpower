@@ -59,7 +59,8 @@
     "custom_components/stark_solarpower/frontend/stark-solarpower-panel-v086.js",
     "custom_components/stark_solarpower/frontend/stark-solarpower-panel-v090.js",
     "custom_components/stark_solarpower/frontend/stark-solarpower-panel-v091.js",
-    "custom_components/stark_solarpower/frontend/stark-solarpower-panel-v092.js"
+    "custom_components/stark_solarpower/frontend/stark-solarpower-panel-v092.js",
+    "custom_components/stark_solarpower/frontend/stark-solarpower-panel-v095.js"
   ],
   "ui_version": "0.9.5",
   "web_component": "stark-solarpower-panel",
