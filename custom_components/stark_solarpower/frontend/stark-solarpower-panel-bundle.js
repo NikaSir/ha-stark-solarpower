@@ -1,8090 +1,3305 @@
-// GENERATED FILE. DO NOT EDIT DIRECTLY.
-// Stark SolarPower self-contained Home Assistant panel bundle.
-// Source history is composed at build time; no previous UI file is loaded at runtime.
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel.js
-(() => {
-const DOMAIN = "stark_solarpower";
-const UI_VERSION = "0.1.0";
-
-const ENTITY_KEYS = [
-  "extended_telemetry_events",
-  "cloud_telemetry_events",
-  "data_freshness_events",
-  "battery_mode_events",
-  "fault_mode_events",
-  "last_successful_update",
-  "positive_bus_voltage",
-  "negative_bus_voltage",
-  "ambient_temperature",
-  "charger_temperature",
-  "battery_piece_number",
-  "battery_group_number",
-  "battery_remain_time",
-  "input_relay_status",
-  "output_relay_status",
-  "dctodc_status",
-  "inverter_status",
-  "pfc_temperature",
-  "ups_temperature",
-  "protocol_id",
-  "battery_capacity",
-  "battery_voltage",
-  "input_frequency",
-  "output_frequency",
-  "output_current",
-  "input_voltage",
-  "output_voltage",
-  "output_load",
-  "cloud_connected",
-  "data_stale",
-  "on_battery",
-  "data_timestamp",
-  "data_age",
-  "firmware",
-  "refresh_now",
-  "mode",
-];
-
-const MODE_LABELS = {
-  line_mode: "ÐžÑ‚ ÑÐµÑ‚Ð¸",
-  battery_mode: "ÐžÑ‚ Ð±Ð°Ñ‚Ð°Ñ€ÐµÐ¸",
-  standby_mode: "ÐžÐ¶Ð¸Ð´Ð°Ð½Ð¸Ðµ",
-  bypass_mode: "Ð‘Ð°Ð¹Ð¿Ð°Ñ",
-  fault_mode: "ÐÐ²Ð°Ñ€Ð¸Ñ",
-  shutdown_mode: "Ð’Ñ‹ÐºÐ»ÑŽÑ‡ÐµÐ½",
-  unknown: "ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾",
-};
-
-const DIAGNOSTIC_GROUPS = [
-  {
-    title: "ÐšÐ°Ñ‡ÐµÑÑ‚Ð²Ð¾ Ð´Ð°Ð½Ð½Ñ‹Ñ…",
-    items: [
-      ["cloud_connected", "ÐžÐ±Ð»Ð°Ñ‡Ð½Ð°Ñ Ñ‚ÐµÐ»ÐµÐ¼ÐµÑ‚Ñ€Ð¸Ñ"],
-      ["data_stale", "Ð”Ð°Ð½Ð½Ñ‹Ðµ ÑƒÑÑ‚Ð°Ñ€ÐµÐ»Ð¸"],
-      ["data_age", "Ð’Ð¾Ð·Ñ€Ð°ÑÑ‚ Ð´Ð°Ð½Ð½Ñ‹Ñ…"],
-      ["data_timestamp", "Ð’Ñ€ÐµÐ¼Ñ Ð´Ð°Ð½Ð½Ñ‹Ñ… Ð˜Ð‘ÐŸ"],
-      ["last_successful_update", "ÐŸÐ¾ÑÐ»ÐµÐ´Ð½ÐµÐµ ÑƒÑÐ¿ÐµÑˆÐ½Ð¾Ðµ Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ðµ"],
-    ],
-  },
-  {
-    title: "Ð­Ð»ÐµÐºÑ‚Ñ€Ð¸Ñ‡ÐµÑÐºÐ¸Ðµ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹",
-    items: [
-      ["input_voltage", "Ð’Ñ…Ð¾Ð´Ð½Ð¾Ðµ Ð½Ð°Ð¿Ñ€ÑÐ¶ÐµÐ½Ð¸Ðµ"],
-      ["input_frequency", "Ð’Ñ…Ð¾Ð´Ð½Ð°Ñ Ñ‡Ð°ÑÑ‚Ð¾Ñ‚Ð°"],
-      ["output_voltage", "Ð’Ñ‹Ñ…Ð¾Ð´Ð½Ð¾Ðµ Ð½Ð°Ð¿Ñ€ÑÐ¶ÐµÐ½Ð¸Ðµ"],
-      ["output_frequency", "Ð’Ñ‹Ñ…Ð¾Ð´Ð½Ð°Ñ Ñ‡Ð°ÑÑ‚Ð¾Ñ‚Ð°"],
-      ["output_current", "Ð’Ñ‹Ñ…Ð¾Ð´Ð½Ð¾Ð¹ Ñ‚Ð¾Ðº"],
-      ["output_load", "ÐÐ°Ð³Ñ€ÑƒÐ·ÐºÐ°"],
-      ["battery_capacity", "Ð—Ð°Ñ€ÑÐ´ ÐÐšÐ‘"],
-      ["battery_voltage", "ÐÐ°Ð¿Ñ€ÑÐ¶ÐµÐ½Ð¸Ðµ ÐÐšÐ‘"],
-    ],
-  },
-  {
-    title: "Ð Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð½Ð°Ñ Ñ‚ÐµÐ»ÐµÐ¼ÐµÑ‚Ñ€Ð¸Ñ",
-    items: [
-      ["positive_bus_voltage", "ÐŸÐ¾Ð»Ð¾Ð¶Ð¸Ñ‚ÐµÐ»ÑŒÐ½Ð°Ñ ÑˆÐ¸Ð½Ð° DC"],
-      ["negative_bus_voltage", "ÐžÑ‚Ñ€Ð¸Ñ†Ð°Ñ‚ÐµÐ»ÑŒÐ½Ð°Ñ ÑˆÐ¸Ð½Ð° DC"],
-      ["ups_temperature", "Ð¢ÐµÐ¼Ð¿ÐµÑ€Ð°Ñ‚ÑƒÑ€Ð° Ð˜Ð‘ÐŸ"],
-      ["pfc_temperature", "Ð¢ÐµÐ¼Ð¿ÐµÑ€Ð°Ñ‚ÑƒÑ€Ð° PFC"],
-      ["ambient_temperature", "Ð¢ÐµÐ¼Ð¿ÐµÑ€Ð°Ñ‚ÑƒÑ€Ð° Ð¾ÐºÑ€ÑƒÐ¶Ð°ÑŽÑ‰ÐµÐ¹ ÑÑ€ÐµÐ´Ñ‹"],
-      ["charger_temperature", "Ð¢ÐµÐ¼Ð¿ÐµÑ€Ð°Ñ‚ÑƒÑ€Ð° Ð·Ð°Ñ€ÑÐ´Ð½Ð¾Ð³Ð¾ ÑƒÑÑ‚Ñ€Ð¾Ð¹ÑÑ‚Ð²Ð°"],
-    ],
-  },
-  {
-    title: "Ð¡ÐµÑ€Ð²Ð¸ÑÐ½Ñ‹Ðµ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹",
-    items: [
-      ["protocol_id", "ÐŸÑ€Ð¾Ñ‚Ð¾ÐºÐ¾Ð» Ð˜Ð‘ÐŸ"],
-      ["firmware", "ÐŸÑ€Ð¾ÑˆÐ¸Ð²ÐºÐ° Ð˜Ð‘ÐŸ"],
-      ["battery_piece_number", "ÐšÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ ÐÐšÐ‘"],
-      ["battery_remain_time", "ÐžÑÑ‚Ð°Ñ‚Ð¾Ðº Ð²Ñ€ÐµÐ¼ÐµÐ½Ð¸ ÐÐšÐ‘ (RAW Ð˜Ð‘ÐŸ)"],
-      ["battery_group_number", "ÐŸÐ°Ñ€Ð°Ð¼ÐµÑ‚Ñ€ Ð³Ñ€ÑƒÐ¿Ð¿Ñ‹ ÐÐšÐ‘ (RAW Ð˜Ð‘ÐŸ)"],
-      ["input_relay_status", "Ð’Ñ…Ð¾Ð´Ð½Ð¾Ðµ Ñ€ÐµÐ»Ðµ"],
-      ["output_relay_status", "Ð’Ñ‹Ñ…Ð¾Ð´Ð½Ð¾Ðµ Ñ€ÐµÐ»Ðµ"],
-      ["inverter_status", "Ð¡Ð¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ Ð¸Ð½Ð²ÐµÑ€Ñ‚Ð¾Ñ€Ð°"],
-      ["dctodc_status", "Ð¡Ð¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ DC-DC"],
-      ["pfc_status", "Ð¡Ð¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ PFC"],
-    ],
-  },
-];
-
-const HISTORY_ITEMS = [
-  ["input_voltage", "Ð’Ñ…Ð¾Ð´Ð½Ð¾Ðµ Ð½Ð°Ð¿Ñ€ÑÐ¶ÐµÐ½Ð¸Ðµ", "mdi:flash"],
-  ["output_voltage", "Ð’Ñ‹Ñ…Ð¾Ð´Ð½Ð¾Ðµ Ð½Ð°Ð¿Ñ€ÑÐ¶ÐµÐ½Ð¸Ðµ", "mdi:power-plug"],
-  ["output_load", "ÐÐ°Ð³Ñ€ÑƒÐ·ÐºÐ°", "mdi:gauge"],
-  ["battery_capacity", "Ð—Ð°Ñ€ÑÐ´ ÐÐšÐ‘", "mdi:battery"],
-];
-
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-class StarkSolarPowerPanel extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: "open" });
-    this._hass = null;
-    this._panel = null;
-    this._devices = [];
-    this._loadingRegistry = false;
-    this._registryLoaded = false;
-    this._registryError = null;
-    this._view = "overview";
-    this._diagnosticDeviceId = null;
-    this._renderQueued = false;
-  }
-
-  set hass(value) {
-    this._hass = value;
-    if (!this._registryLoaded && !this._loadingRegistry) {
-      this._loadRegistry();
-    }
-    this._queueRender();
-  }
-
-  get hass() {
-    return this._hass;
-  }
-
-  set panel(value) {
-    this._panel = value;
-    this._queueRender();
-  }
-
-  connectedCallback() {
-    this._queueRender();
-  }
-
-  _queueRender() {
-    if (this._renderQueued) return;
-    this._renderQueued = true;
-    requestAnimationFrame(() => {
-      this._renderQueued = false;
-      this._render();
-    });
-  }
-
-  async _loadRegistry() {
-    if (!this._hass) return;
-    this._loadingRegistry = true;
-    this._registryError = null;
-    try {
-      const [entities, devices] = await Promise.all([
-        this._hass.callWS({ type: "config/entity_registry/list" }),
-        this._hass.callWS({ type: "config/device_registry/list" }),
-      ]);
-
-      const deviceMap = new Map(devices.map((device) => [device.id, device]));
-      const groups = new Map();
-
-      for (const entry of entities) {
-        if (entry.platform !== DOMAIN || !entry.device_id) continue;
-        const key = this._keyFromUniqueId(entry.unique_id);
-        if (!key) continue;
-
-        if (!groups.has(entry.device_id)) {
-          const device = deviceMap.get(entry.device_id) || {};
-          groups.set(entry.device_id, {
-            id: entry.device_id,
-            name: device.name_by_user || device.name || "UPS",
-            manufacturer: device.manufacturer || "STARK Country",
-            model: device.model || "Country Online",
-            entities: {},
-          });
-        }
-        groups.get(entry.device_id).entities[key] = entry.entity_id;
-      }
-
-      this._devices = [...groups.values()].sort((a, b) => {
-        const rank = (name) => {
-          if (name.includes("Ð˜Ð½Ñ‚ÐµÑ€Ð½ÐµÑ‚")) return 0;
-          if (name.includes("ÐšÐ¾Ñ‚")) return 1;
-          return 10;
-        };
-        return rank(a.name) - rank(b.name) || a.name.localeCompare(b.name, "ru");
-      });
-      this._diagnosticDeviceId ||= this._devices[0]?.id || null;
-      this._registryLoaded = true;
-    } catch (err) {
-      this._registryError = String(err);
-    } finally {
-      this._loadingRegistry = false;
-      this._queueRender();
-    }
-  }
-
-  _keyFromUniqueId(uniqueId) {
-    if (!uniqueId) return null;
-    return ENTITY_KEYS.find((key) => uniqueId.endsWith(`_${key}`)) || null;
-  }
-
-  _state(device, key) {
-    const entityId = device?.entities?.[key];
-    return entityId && this._hass ? this._hass.states[entityId] : null;
-  }
-
-  _entityId(device, key) {
-    return device?.entities?.[key] || null;
-  }
-
-  _available(stateObj) {
-    return Boolean(
-      stateObj &&
-        stateObj.state !== "unavailable" &&
-        stateObj.state !== "unknown" &&
-        stateObj.state !== "none"
-    );
-  }
-
-  _isOn(device, key) {
-    const stateObj = this._state(device, key);
-    return this._available(stateObj) ? stateObj.state === "on" : null;
-  }
-
-  _numeric(device, key) {
-    const stateObj = this._state(device, key);
-    if (!this._available(stateObj)) return null;
-    const value = Number(stateObj.state);
-    return Number.isFinite(value) ? value : null;
-  }
-
-  _mode(device) {
-    const stateObj = this._state(device, "mode");
-    return this._available(stateObj) ? stateObj.state : null;
-  }
-
-  _modeLabel(device) {
-    const mode = this._mode(device);
-    return mode ? MODE_LABELS[mode] || mode : "ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾";
-  }
-
-  _status(device) {
-    const cloud = this._isOn(device, "cloud_connected");
-    const stale = this._isOn(device, "data_stale");
-    const onBattery = this._isOn(device, "on_battery");
-    const mode = this._mode(device);
-
-    if (cloud === false) {
-      return { label: "ÐžÐ±Ð»Ð°ÐºÐ¾ Ð½ÐµÐ´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð¾", tone: "bad", icon: "mdi:cloud-off-outline" };
-    }
-    if (cloud === null) {
-      return { label: "Ð˜ÑÑ‚Ð¾Ñ‡Ð½Ð¸Ðº Ð½ÐµÐ¸Ð·Ð²ÐµÑÑ‚ÐµÐ½", tone: "bad", icon: "mdi:cloud-question-outline" };
-    }
-    if (stale === true) {
-      return { label: "Ð”Ð°Ð½Ð½Ñ‹Ðµ ÑƒÑÑ‚Ð°Ñ€ÐµÐ»Ð¸", tone: "warn", icon: "mdi:clock-alert-outline" };
-    }
-    if (stale === null) {
-      return { label: "Ð¡Ð²ÐµÐ¶ÐµÑÑ‚ÑŒ Ð½ÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð°", tone: "bad", icon: "mdi:clock-question-outline" };
-    }
-    if (mode === "fault_mode") {
-      return { label: "ÐÐ²Ð°Ñ€Ð¸Ñ", tone: "bad", icon: "mdi:alert-octagon-outline" };
-    }
-    if (onBattery === true || mode === "battery_mode") {
-      return { label: "ÐžÑ‚ Ð±Ð°Ñ‚Ð°Ñ€ÐµÐ¸", tone: "warn", icon: "mdi:battery-arrow-down-outline" };
-    }
-    if (mode === "line_mode") {
-      const required = ["input_voltage", "output_voltage", "battery_capacity", "output_load"];
-      if (required.every((key) => this._available(this._state(device, key)))) {
-        return { label: "ÐÐ¾Ñ€Ð¼Ð°Ð»ÑŒÐ½Ð¾", tone: "good", icon: "mdi:check-circle-outline" };
-      }
-      return { label: "Ð§Ð°ÑÑ‚ÑŒ Ð´Ð°Ð½Ð½Ñ‹Ñ… Ð½ÐµÐ´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð°", tone: "warn", icon: "mdi:alert-circle-outline" };
-    }
-    if (mode) {
-      return { label: this._modeLabel(device), tone: "warn", icon: "mdi:information-outline" };
-    }
-    return { label: "Ð¡Ð¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ Ð½ÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾", tone: "bad", icon: "mdi:help-circle-outline" };
-  }
-
-  _format(device, key, fallback = "â€”") {
-    const stateObj = this._state(device, key);
-    if (!stateObj) return fallback;
-    if (stateObj.state === "unavailable") return "ÐÐµÐ´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð¾";
-    if (stateObj.state === "unknown") return "ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾";
-
-    if (key === "mode") return this._modeLabel(device);
-    if (key === "cloud_connected") return stateObj.state === "on" ? "ÐŸÐ¾Ð´ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¾" : "ÐžÑ‚ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¾";
-    if (key === "data_stale") return stateObj.state === "on" ? "Ð”Ð°" : "ÐÐµÑ‚";
-    if (key === "on_battery") return stateObj.state === "on" ? "Ð”Ð°" : "ÐÐµÑ‚";
-    if (key === "data_age") return this._formatDuration(Number(stateObj.state));
-    if (key.endsWith("_events")) {
-      return stateObj.attributes?.event_type || stateObj.state || fallback;
-    }
-
-    const unit = stateObj.attributes?.unit_of_measurement;
-    return unit ? `${stateObj.state} ${unit}` : stateObj.state;
-  }
-
-  _formatDuration(seconds) {
-    if (!Number.isFinite(seconds)) return "ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾";
-    if (seconds < 60) return `${Math.round(seconds)} Ñ`;
-    const minutes = Math.floor(seconds / 60);
-    const rest = Math.round(seconds % 60);
-    return rest ? `${minutes} Ð¼Ð¸Ð½ ${rest} Ñ` : `${minutes} Ð¼Ð¸Ð½`;
-  }
-
-  _extendedAvailable(device) {
-    return ["positive_bus_voltage", "negative_bus_voltage", "ups_temperature"].some((key) =>
-      this._available(this._state(device, key))
-    );
-  }
-
-  _metric(device, key, label, icon) {
-    const entityId = this._entityId(device, key);
-    const value = this._format(device, key);
-    const available = this._available(this._state(device, key));
-    return `
-      <div class="metric ${available ? "" : "metric-unavailable"}" ${entityId ? `data-entity="${escapeHtml(entityId)}"` : ""}>
-        <ha-icon icon="${icon}"></ha-icon>
-        <div class="metric-copy">
-          <span class="metric-label">${escapeHtml(label)}</span>
-          <strong>${escapeHtml(value)}</strong>
-        </div>
-      </div>`;
-  }
-
-  _renderOverviewCard(device) {
-    const status = this._status(device);
-    const inputVoltage = this._format(device, "input_voltage");
-    const outputVoltage = this._format(device, "output_voltage");
-    const battery = this._numeric(device, "battery_capacity");
-    const load = this._numeric(device, "output_load");
-    const onBattery = this._isOn(device, "on_battery") === true || this._mode(device) === "battery_mode";
-    const dataAge = this._format(device, "data_age");
-    const cloud = this._isOn(device, "cloud_connected");
-    const stale = this._isOn(device, "data_stale");
-
-    let trustText = "ÐšÐ°Ñ‡ÐµÑÑ‚Ð²Ð¾ Ð´Ð°Ð½Ð½Ñ‹Ñ… Ð½ÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾";
-    let trustTone = "bad";
-    if (cloud === false) {
-      trustText = "Ð˜ÑÑ‚Ð¾Ñ‡Ð½Ð¸Ðº SolarPower Ð½ÐµÐ´Ð¾ÑÑ‚ÑƒÐ¿ÐµÐ½";
-    } else if (stale === true) {
-      trustText = `Ð”Ð°Ð½Ð½Ñ‹Ðµ ÑƒÑÑ‚Ð°Ñ€ÐµÐ»Ð¸ Â· ${dataAge}`;
-      trustTone = "warn";
-    } else if (cloud === true && stale === false) {
-      trustText = `Ð”Ð°Ð½Ð½Ñ‹Ðµ Ð°ÐºÑ‚ÑƒÐ°Ð»ÑŒÐ½Ñ‹ Â· Ð²Ð¾Ð·Ñ€Ð°ÑÑ‚ ${dataAge}`;
-      trustTone = "good";
-    }
-
-    const batteryWidth = battery === null ? 0 : Math.max(0, Math.min(100, battery));
-    const loadWidth = load === null ? 0 : Math.max(0, Math.min(100, load));
-    const sourceIcon = onBattery ? "mdi:battery-high" : "mdi:transmission-tower";
-    const sourceLabel = onBattery ? "ÐÐšÐ‘" : "Ð¡ÐµÑ‚ÑŒ";
-
-    return `
-      <article class="ups-card">
-        <div class="card-head">
-          <div>
-            <div class="eyebrow">${escapeHtml(device.model)}</div>
-            <h2>${escapeHtml(device.name)}</h2>
-          </div>
-          <div class="status ${status.tone}">
-            <ha-icon icon="${status.icon}"></ha-icon>
-            <span>${escapeHtml(status.label)}</span>
-          </div>
-        </div>
-
-        <div class="power-flow">
-          <div class="flow-node ${onBattery ? "source-battery" : ""}" ${this._entityId(device, onBattery ? "battery_capacity" : "input_voltage") ? `data-entity="${escapeHtml(this._entityId(device, onBattery ? "battery_capacity" : "input_voltage"))}"` : ""}>
-            <ha-icon icon="${sourceIcon}"></ha-icon>
-            <span>${sourceLabel}</span>
-            <strong>${onBattery ? (battery === null ? "â€”" : `${Math.round(battery)}%`) : inputVoltage}</strong>
-          </div>
-          <div class="flow-line"><span></span><ha-icon icon="mdi:chevron-right"></ha-icon></div>
-          <div class="flow-ups" ${this._entityId(device, "mode") ? `data-entity="${escapeHtml(this._entityId(device, "mode"))}"` : ""}>
-            <ha-icon icon="mdi:battery-charging"></ha-icon>
-            <strong>UPS</strong>
-            <span>${escapeHtml(this._modeLabel(device))}</span>
-          </div>
-          <div class="flow-line"><span></span><ha-icon icon="mdi:chevron-right"></ha-icon></div>
-          <div class="flow-node" ${this._entityId(device, "output_voltage") ? `data-entity="${escapeHtml(this._entityId(device, "output_voltage"))}"` : ""}>
-            <ha-icon icon="mdi:power-plug"></ha-icon>
-            <span>ÐÐ°Ð³Ñ€ÑƒÐ·ÐºÐ°</span>
-            <strong>${escapeHtml(outputVoltage)}</strong>
-          </div>
-        </div>
-
-        <div class="bars">
-          <div class="bar-row" ${this._entityId(device, "battery_capacity") ? `data-entity="${escapeHtml(this._entityId(device, "battery_capacity"))}"` : ""}>
-            <div class="bar-title"><span>ÐÐšÐ‘</span><strong>${battery === null ? "â€”" : `${Math.round(battery)}%`}</strong></div>
-            <div class="bar"><i style="width:${batteryWidth}%"></i></div>
-          </div>
-          <div class="bar-row" ${this._entityId(device, "output_load") ? `data-entity="${escapeHtml(this._entityId(device, "output_load"))}"` : ""}>
-            <div class="bar-title"><span>ÐÐ°Ð³Ñ€ÑƒÐ·ÐºÐ°</span><strong>${load === null ? "â€”" : `${Math.round(load)}%`}</strong></div>
-            <div class="bar"><i style="width:${loadWidth}%"></i></div>
-          </div>
-        </div>
-
-        <div class="trust ${trustTone}">
-          <ha-icon icon="${cloud === false ? "mdi:cloud-off-outline" : stale === true ? "mdi:clock-alert-outline" : "mdi:shield-check-outline"}"></ha-icon>
-          <span>${escapeHtml(trustText)}</span>
-        </div>
-
-        <div class="quick-grid">
-          ${this._metric(device, "input_voltage", "Ð’Ñ…Ð¾Ð´", "mdi:flash")}
-          ${this._metric(device, "output_voltage", "Ð’Ñ‹Ñ…Ð¾Ð´", "mdi:power-plug")}
-          ${this._metric(device, "battery_capacity", "ÐÐšÐ‘", "mdi:battery")}
-          ${this._metric(device, "output_load", "ÐÐ°Ð³Ñ€ÑƒÐ·ÐºÐ°", "mdi:gauge")}
-        </div>
-      </article>`;
-  }
-
-  _renderOverview() {
-    return `
-      <section class="overview-grid">
-        ${this._devices.map((device) => this._renderOverviewCard(device)).join("")}
-      </section>
-      <p class="hint">ÐÐ°Ð¶Ð¼Ð¸Ñ‚Ðµ Ð¸ ÑƒÐ´ÐµÑ€Ð¶Ð¸Ð²Ð°Ð¹Ñ‚Ðµ Ñ„Ð°ÐºÑ‚Ð¸Ñ‡ÐµÑÐºÐ¸Ð¹ Ð¿Ð¾ÐºÐ°Ð·Ð°Ñ‚ÐµÐ»ÑŒ, Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð¾Ñ‚ÐºÑ€Ñ‹Ñ‚ÑŒ ÑˆÑ‚Ð°Ñ‚Ð½Ñ‹Ð¹ more-info Home Assistant.</p>`;
-  }
-
-  _renderDiagnosticSummary(device) {
-    const cloud = this._isOn(device, "cloud_connected");
-    const stale = this._isOn(device, "data_stale");
-    const extended = this._extendedAvailable(device);
-    const rows = [
-      ["ÐžÑÐ½Ð¾Ð²Ð½Ð¾Ð¹ ÐºÐ°Ð½Ð°Ð» SolarPower", cloud === true ? "Ð Ð°Ð±Ð¾Ñ‚Ð°ÐµÑ‚" : cloud === false ? "ÐÐµÐ´Ð¾ÑÑ‚ÑƒÐ¿ÐµÐ½" : "ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾", cloud === true ? "good" : "bad"],
-      ["Ð¡Ð²ÐµÐ¶ÐµÑÑ‚ÑŒ snapshot", stale === false ? "ÐÐºÑ‚ÑƒÐ°Ð»ÑŒÐ½Ð¾" : stale === true ? "Ð£ÑÑ‚Ð°Ñ€ÐµÐ»Ð¾" : "ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾", stale === false ? "good" : stale === true ? "warn" : "bad"],
-      ["Ð Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð½Ð°Ñ Ñ‚ÐµÐ»ÐµÐ¼ÐµÑ‚Ñ€Ð¸Ñ", extended ? "Ð”Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð°" : "ÐÐµÐ´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð°", extended ? "good" : "warn"],
-    ];
-    return `
-      <div class="source-summary">
-        ${rows.map(([label, value, tone]) => `<div><span>${label}</span><strong class="text-${tone}">${value}</strong></div>`).join("")}
-      </div>`;
-  }
-
-  _renderDiagnostics() {
-    const device = this._devices.find((item) => item.id === this._diagnosticDeviceId) || this._devices[0];
-    if (!device) return this._empty("UPS Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½Ñ‹");
-
-    return `
-      <div class="device-switcher">
-        ${this._devices.map((item) => `<button class="device-chip ${item.id === device.id ? "active" : ""}" data-device="${escapeHtml(item.id)}">${escapeHtml(item.name)}</button>`).join("")}
-      </div>
-      <section class="diagnostic-card">
-        <div class="card-head compact">
-          <div><div class="eyebrow">Ð”Ð¸Ð°Ð³Ð½Ð¾ÑÑ‚Ð¸ÐºÐ°</div><h2>${escapeHtml(device.name)}</h2></div>
-          <span class="mini-version">${escapeHtml(this._format(device, "firmware"))}</span>
-        </div>
-        ${this._renderDiagnosticSummary(device)}
-        ${DIAGNOSTIC_GROUPS.map((group) => this._renderDiagnosticGroup(device, group)).join("")}
-      </section>
-      <p class="hint">ÐÐµÐ´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð¾ Ð½Ðµ ÑÑ‡Ð¸Ñ‚Ð°ÐµÑ‚ÑÑ Ð½Ð¾Ñ€Ð¼Ð¾Ð¹. ÐžÑÐ½Ð¾Ð²Ð½Ð¾Ð¹ Ð¸ Ñ€Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð½Ñ‹Ð¹ Ð¾Ð±Ð»Ð°Ñ‡Ð½Ñ‹Ðµ ÐºÐ°Ð½Ð°Ð»Ñ‹ Ð¾Ñ†ÐµÐ½Ð¸Ð²Ð°ÑŽÑ‚ÑÑ Ñ€Ð°Ð·Ð´ÐµÐ»ÑŒÐ½Ð¾.</p>`;
-  }
-
-  _renderDiagnosticGroup(device, group) {
-    const items = group.items.filter(([key]) => this._entityId(device, key));
-    if (!items.length) return "";
-    return `
-      <div class="diagnostic-group">
-        <h3>${escapeHtml(group.title)}</h3>
-        ${items.map(([key, label]) => {
-          const entityId = this._entityId(device, key);
-          const stateObj = this._state(device, key);
-          const unavailable = !this._available(stateObj);
-          return `<div class="diagnostic-row ${unavailable ? "is-unavailable" : ""}" data-entity="${escapeHtml(entityId)}">
-            <span>${escapeHtml(label)}</span>
-            <strong>${escapeHtml(this._format(device, key))}</strong>
-          </div>`;
-        }).join("")}
-      </div>`;
-  }
-
-  _renderHistory() {
-    return `
-      <section class="history-grid">
-        ${this._devices.map((device) => `
-          <article class="history-card">
-            <div class="card-head compact"><div><div class="eyebrow">Ð˜ÑÑ‚Ð¾Ñ€Ð¸Ñ</div><h2>${escapeHtml(device.name)}</h2></div></div>
-            <div class="history-metrics">
-              ${HISTORY_ITEMS.map(([key, label, icon]) => {
-                const entityId = this._entityId(device, key);
-                if (!entityId) return "";
-                return `<button class="history-link" data-entity="${escapeHtml(entityId)}">
-                  <ha-icon icon="${icon}"></ha-icon><span>${escapeHtml(label)}</span><strong>${escapeHtml(this._format(device, key))}</strong><ha-icon icon="mdi:chart-line"></ha-icon>
-                </button>`;
-              }).join("")}
-            </div>
-            <div class="event-summary">
-              <h3>ÐŸÐ¾ÑÐ»ÐµÐ´Ð½Ð¸Ðµ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ñ</h3>
-              ${this._eventRow(device, "battery_mode_events", "Ð ÐµÐ¶Ð¸Ð¼ ÐÐšÐ‘")}
-              ${this._eventRow(device, "cloud_telemetry_events", "ÐžÐ±Ð»Ð°ÐºÐ¾")}
-              ${this._eventRow(device, "data_freshness_events", "Ð¡Ð²ÐµÐ¶ÐµÑÑ‚ÑŒ Ð´Ð°Ð½Ð½Ñ‹Ñ…")}
-              ${this._eventRow(device, "fault_mode_events", "ÐÐ²Ð°Ñ€Ð¸Ð¹Ð½Ñ‹Ð¹ Ñ€ÐµÐ¶Ð¸Ð¼")}
-            </div>
-          </article>`).join("")}
-      </section>
-      <p class="hint">ÐÐ° iPhone Ð³Ñ€Ð°Ñ„Ð¸ÐºÐ¸ Ð¾Ñ‚ÐºÑ€Ñ‹Ð²Ð°ÑŽÑ‚ÑÑ ÑˆÑ‚Ð°Ñ‚Ð½Ñ‹Ð¼ more-info: Ð½Ð°Ð¶Ð¼Ð¸Ñ‚Ðµ Ð¸ ÑƒÐ´ÐµÑ€Ð¶Ð¸Ð²Ð°Ð¹Ñ‚Ðµ Ð¿Ð¾ÐºÐ°Ð·Ð°Ñ‚ÐµÐ»ÑŒ. Ð¢Ð°Ðº Ð¸ÑÑ‚Ð¾Ñ€Ð¸Ñ Ð¾ÑÑ‚Ð°Ñ‘Ñ‚ÑÑ ÐºÐ¾Ð¼Ð¿Ð°ÐºÑ‚Ð½Ð¾Ð¹ Ð¸ Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÐµÑ‚ Ð½Ð°Ñ‚Ð¸Ð²Ð½ÑƒÑŽ Ð¸ÑÑ‚Ð¾Ñ€Ð¸ÑŽ Home Assistant.</p>`;
-  }
-
-  _eventRow(device, key, label) {
-    const entityId = this._entityId(device, key);
-    if (!entityId) return "";
-    const stateObj = this._state(device, key);
-    const raw = stateObj?.attributes?.event_type || (this._available(stateObj) ? stateObj.state : "ÐÐµ Ð±Ñ‹Ð»Ð¾ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ð¹");
-    const labels = {
-      battery_mode_entered: "ÐŸÐµÑ€ÐµÑˆÑ‘Ð» Ð½Ð° Ð±Ð°Ñ‚Ð°Ñ€ÐµÑŽ",
-      battery_mode_exited: "Ð’Ñ‹ÑˆÐµÐ» Ð¸Ð· Ñ€ÐµÐ¶Ð¸Ð¼Ð° ÐÐšÐ‘",
-      telemetry_lost: "Ð¢ÐµÐ»ÐµÐ¼ÐµÑ‚Ñ€Ð¸Ñ Ð¿Ð¾Ñ‚ÐµÑ€ÑÐ½Ð°",
-      telemetry_restored: "Ð¢ÐµÐ»ÐµÐ¼ÐµÑ‚Ñ€Ð¸Ñ Ð²Ð¾ÑÑÑ‚Ð°Ð½Ð¾Ð²Ð»ÐµÐ½Ð°",
-      data_stale: "Ð”Ð°Ð½Ð½Ñ‹Ðµ ÑƒÑÑ‚Ð°Ñ€ÐµÐ»Ð¸",
-      data_fresh: "Ð”Ð°Ð½Ð½Ñ‹Ðµ ÑÐ½Ð¾Ð²Ð° ÑÐ²ÐµÐ¶Ð¸Ðµ",
-      fault_mode_entered: "ÐÐ²Ð°Ñ€Ð¸Ð¹Ð½Ñ‹Ð¹ Ñ€ÐµÐ¶Ð¸Ð¼",
-      fault_mode_cleared: "ÐÐ²Ð°Ñ€Ð¸Ð¹Ð½Ñ‹Ð¹ Ñ€ÐµÐ¶Ð¸Ð¼ ÑÐ½ÑÑ‚",
-    };
-    return `<div class="event-row" data-entity="${escapeHtml(entityId)}"><span>${escapeHtml(label)}</span><strong>${escapeHtml(labels[raw] || raw)}</strong></div>`;
-  }
-
-  _empty(message) {
-    return `<div class="empty"><ha-icon icon="mdi:battery-alert-variant-outline"></ha-icon><strong>${escapeHtml(message)}</strong><span>ÐŸÑ€Ð¾Ð²ÐµÑ€ÑŒÑ‚Ðµ Ð·Ð°Ð³Ñ€ÑƒÐ·ÐºÑƒ Ð¸Ð½Ñ‚ÐµÐ³Ñ€Ð°Ñ†Ð¸Ð¸ Stark SolarPower.</span></div>`;
-  }
-
-  _styles() {
-    return `
-      :host {
-        display:block;
-        min-height:100%;
-        background:var(--primary-background-color);
-        color:var(--primary-text-color);
-        font-family:var(--paper-font-body1_-_font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
-        overflow-x:hidden;
-      }
-      * { box-sizing:border-box; }
-      .app { max-width:1100px; margin:0 auto; padding:14px 12px 36px; }
-      .app-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:2px 2px 14px; }
-      .title-wrap { display:flex; align-items:center; gap:12px; min-width:0; }
-      .title-icon { width:46px; height:46px; border-radius:15px; display:grid; place-items:center; background:color-mix(in srgb, var(--primary-color) 14%, transparent); color:var(--primary-color); }
-      .title-icon ha-icon { --mdc-icon-size:27px; }
-      h1,h2,h3,p { margin:0; }
-      h1 { font-size:26px; line-height:1.05; letter-spacing:-.02em; }
-      h2 { font-size:22px; line-height:1.15; letter-spacing:-.01em; }
-      h3 { font-size:15px; }
-      .subtitle,.eyebrow,.hint,.mini-version { color:var(--secondary-text-color); }
-      .subtitle { margin-top:4px; font-size:12px; }
-      .eyebrow { font-size:11px; text-transform:uppercase; letter-spacing:.08em; margin-bottom:5px; }
-      .refresh { min-width:44px; height:44px; border:0; border-radius:14px; background:var(--card-background-color); color:var(--primary-color); display:grid; place-items:center; box-shadow:var(--ha-card-box-shadow, 0 1px 3px rgba(0,0,0,.15)); }
-      .tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; padding:5px; border-radius:15px; background:color-mix(in srgb, var(--secondary-text-color) 10%, transparent); margin-bottom:12px; }
-      .tab { height:42px; border:0; border-radius:11px; background:transparent; color:var(--secondary-text-color); font:inherit; font-weight:600; }
-      .tab.active { background:var(--card-background-color); color:var(--primary-text-color); box-shadow:0 1px 3px rgba(0,0,0,.12); }
-      .overview-grid,.history-grid { display:grid; grid-template-columns:1fr; gap:12px; }
-      .ups-card,.diagnostic-card,.history-card { background:var(--card-background-color); border:1px solid var(--divider-color); border-radius:22px; padding:16px; box-shadow:var(--ha-card-box-shadow, none); overflow:hidden; }
-      .card-head { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:16px; }
-      .card-head.compact { margin-bottom:12px; align-items:center; }
-      .status { display:flex; align-items:center; gap:6px; padding:8px 10px; border-radius:999px; font-size:12px; font-weight:700; white-space:nowrap; }
-      .status ha-icon { --mdc-icon-size:18px; }
-      .good,.text-good { color:var(--success-color, #2e7d32); }
-      .warn,.text-warn { color:var(--warning-color, #ed6c02); }
-      .bad,.text-bad { color:var(--error-color, #d32f2f); }
-      .status.good,.trust.good { background:color-mix(in srgb, var(--success-color, #2e7d32) 12%, transparent); }
-      .status.warn,.trust.warn { background:color-mix(in srgb, var(--warning-color, #ed6c02) 13%, transparent); }
-      .status.bad,.trust.bad { background:color-mix(in srgb, var(--error-color, #d32f2f) 12%, transparent); }
-      .power-flow { display:grid; grid-template-columns:minmax(74px,1fr) 28px minmax(82px,1fr) 28px minmax(74px,1fr); align-items:center; gap:3px; margin:2px 0 17px; }
-      .flow-node,.flow-ups { min-width:0; min-height:92px; border-radius:17px; background:color-mix(in srgb, var(--secondary-text-color) 7%, transparent); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-align:center; padding:8px 5px; }
-      .flow-node ha-icon,.flow-ups ha-icon { color:var(--primary-color); --mdc-icon-size:24px; }
-      .flow-node span,.flow-ups span { font-size:11px; color:var(--secondary-text-color); }
-      .flow-node strong,.flow-ups strong { font-size:13px; max-width:100%; overflow:hidden; text-overflow:ellipsis; }
-      .source-battery { background:color-mix(in srgb, var(--warning-color, #ed6c02) 12%, transparent); }
-      .source-battery ha-icon { color:var(--warning-color, #ed6c02); }
-      .flow-line { display:flex; align-items:center; color:var(--secondary-text-color); }
-      .flow-line span { height:2px; background:currentColor; flex:1; opacity:.45; }
-      .flow-line ha-icon { --mdc-icon-size:18px; margin-left:-4px; }
-      .bars { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:13px; }
-      .bar-row { min-width:0; }
-      .bar-title { display:flex; justify-content:space-between; gap:8px; font-size:12px; margin-bottom:6px; }
-      .bar-title span { color:var(--secondary-text-color); }
-      .bar { height:7px; border-radius:999px; overflow:hidden; background:color-mix(in srgb, var(--secondary-text-color) 13%, transparent); }
-      .bar i { display:block; height:100%; border-radius:inherit; background:var(--primary-color); }
-      .trust { min-height:42px; display:flex; align-items:center; gap:8px; padding:9px 11px; border-radius:13px; margin-bottom:12px; font-size:12px; font-weight:600; }
-      .trust ha-icon { --mdc-icon-size:19px; flex:0 0 auto; }
-      .quick-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-      .metric { min-height:55px; display:flex; align-items:center; gap:9px; padding:9px; border:1px solid var(--divider-color); border-radius:14px; min-width:0; }
-      .metric ha-icon { color:var(--primary-color); --mdc-icon-size:21px; flex:0 0 auto; }
-      .metric-copy { min-width:0; display:flex; flex-direction:column; gap:2px; }
-      .metric-label { font-size:10px; color:var(--secondary-text-color); }
-      .metric strong { font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-      .metric-unavailable { opacity:.65; }
-      .hint { font-size:11px; line-height:1.45; padding:10px 5px 0; }
-      .device-switcher { display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; margin:0 0 10px; padding:1px; }
-      .device-switcher::-webkit-scrollbar { display:none; }
-      .device-chip { flex:0 0 auto; min-height:40px; border:1px solid var(--divider-color); border-radius:999px; background:var(--card-background-color); color:var(--primary-text-color); padding:0 14px; font:inherit; font-size:13px; }
-      .device-chip.active { border-color:var(--primary-color); color:var(--primary-color); font-weight:700; }
-      .source-summary { display:grid; gap:1px; overflow:hidden; border:1px solid var(--divider-color); border-radius:15px; margin-bottom:16px; }
-      .source-summary div { min-height:42px; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:8px 11px; background:color-mix(in srgb, var(--secondary-text-color) 4%, transparent); }
-      .source-summary span { font-size:12px; color:var(--secondary-text-color); }
-      .source-summary strong { font-size:12px; text-align:right; }
-      .diagnostic-group { margin-top:17px; }
-      .diagnostic-group h3 { margin-bottom:7px; color:var(--secondary-text-color); }
-      .diagnostic-row { min-height:44px; display:flex; align-items:center; justify-content:space-between; gap:12px; border-top:1px solid var(--divider-color); padding:8px 2px; }
-      .diagnostic-row span { font-size:13px; min-width:0; }
-      .diagnostic-row strong { font-size:13px; text-align:right; max-width:52%; overflow-wrap:anywhere; }
-      .diagnostic-row.is-unavailable strong { color:var(--error-color, #d32f2f); }
-      .history-metrics { display:grid; gap:7px; }
-      .history-link { min-height:52px; width:100%; border:1px solid var(--divider-color); border-radius:14px; background:transparent; color:var(--primary-text-color); display:grid; grid-template-columns:28px 1fr auto 22px; align-items:center; gap:7px; padding:8px 10px; text-align:left; font:inherit; }
-      .history-link > ha-icon:first-child { color:var(--primary-color); }
-      .history-link > ha-icon:last-child { color:var(--secondary-text-color); --mdc-icon-size:18px; }
-      .history-link span { font-size:12px; }
-      .history-link strong { font-size:12px; text-align:right; }
-      .event-summary { margin-top:16px; }
-      .event-summary h3 { color:var(--secondary-text-color); margin-bottom:7px; }
-      .event-row { min-height:44px; display:flex; align-items:center; justify-content:space-between; gap:10px; border-top:1px solid var(--divider-color); padding:8px 2px; }
-      .event-row span { font-size:12px; color:var(--secondary-text-color); }
-      .event-row strong { font-size:12px; text-align:right; max-width:60%; }
-      .empty { min-height:240px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:9px; text-align:center; color:var(--secondary-text-color); }
-      .empty ha-icon { --mdc-icon-size:42px; color:var(--warning-color, #ed6c02); }
-      .empty strong { color:var(--primary-text-color); }
-      button { -webkit-tap-highlight-color:transparent; cursor:pointer; }
-      [data-entity] { touch-action:manipulation; }
-      @media (min-width:760px) {
-        .app { padding:20px 20px 48px; }
-        .overview-grid,.history-grid { grid-template-columns:1fr 1fr; }
-        .tabs { max-width:520px; }
-        .diagnostic-card { max-width:760px; }
-      }
-      @media (max-width:380px) {
-        .app { padding-left:9px; padding-right:9px; }
-        h1 { font-size:23px; }
-        h2 { font-size:20px; }
-        .ups-card,.diagnostic-card,.history-card { padding:13px; border-radius:19px; }
-        .status { padding:7px 8px; font-size:11px; }
-        .power-flow { grid-template-columns:minmax(68px,1fr) 22px minmax(76px,1fr) 22px minmax(68px,1fr); }
-        .flow-node,.flow-ups { min-height:86px; }
-      }
-    `;
-  }
-
-  _render() {
-    if (!this.shadowRoot) return;
-    let body = "";
-    if (!this._hass || this._loadingRegistry) {
-      body = `<div class="empty"><ha-icon icon="mdi:loading"></ha-icon><strong>Ð—Ð°Ð³Ñ€ÑƒÐ·ÐºÐ° UPSâ€¦</strong></div>`;
-    } else if (this._registryError) {
-      body = this._empty("ÐÐµ ÑƒÐ´Ð°Ð»Ð¾ÑÑŒ Ð¿Ñ€Ð¾Ñ‡Ð¸Ñ‚Ð°Ñ‚ÑŒ Ñ€ÐµÐµÑÑ‚Ñ€ ÑÑƒÑ‰Ð½Ð¾ÑÑ‚ÐµÐ¹");
-    } else if (!this._devices.length) {
-      body = this._empty("Ð£ÑÑ‚Ñ€Ð¾Ð¹ÑÑ‚Ð²Ð° Stark SolarPower Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½Ñ‹");
-    } else if (this._view === "diagnostics") {
-      body = this._renderDiagnostics();
-    } else if (this._view === "history") {
-      body = this._renderHistory();
-    } else {
-      body = this._renderOverview();
-    }
-
-    this.shadowRoot.innerHTML = `
-      <style>${this._styles()}</style>
-      <main class="app">
-        <header class="app-header">
-          <div class="title-wrap">
-            <div class="title-icon"><ha-icon icon="mdi:battery-charging"></ha-icon></div>
-            <div><h1>Stark SolarPower</h1><div class="subtitle">UPS Â· UI v${UI_VERSION}</div></div>
-          </div>
-          <button class="refresh" aria-label="ÐžÐ±Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð²ÑÐµ Ð˜Ð‘ÐŸ" title="ÐžÐ±Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð²ÑÐµ Ð˜Ð‘ÐŸ"><ha-icon icon="mdi:refresh"></ha-icon></button>
-        </header>
-        <nav class="tabs" aria-label="Ð Ð°Ð·Ð´ÐµÐ»Ñ‹ UPS">
-          <button class="tab ${this._view === "overview" ? "active" : ""}" data-view="overview">ÐžÐ±Ð·Ð¾Ñ€</button>
-          <button class="tab ${this._view === "diagnostics" ? "active" : ""}" data-view="diagnostics">Ð”Ð¸Ð°Ð³Ð½Ð¾ÑÑ‚Ð¸ÐºÐ°</button>
-          <button class="tab ${this._view === "history" ? "active" : ""}" data-view="history">Ð˜ÑÑ‚Ð¾Ñ€Ð¸Ñ</button>
-        </nav>
-        ${body}
-      </main>`;
-
-    this._bindEvents();
-  }
-
-  _bindEvents() {
-    this.shadowRoot.querySelectorAll("[data-view]").forEach((button) => {
-      button.addEventListener("click", () => {
-        this._view = button.dataset.view;
-        this._queueRender();
-      });
-    });
-
-    this.shadowRoot.querySelectorAll("[data-device]").forEach((button) => {
-      button.addEventListener("click", () => {
-        this._diagnosticDeviceId = button.dataset.device;
-        this._queueRender();
-      });
-    });
-
-    this.shadowRoot.querySelector(".refresh")?.addEventListener("click", async () => {
-      const entityId = this._devices.map((device) => this._entityId(device, "refresh_now")).find(Boolean);
-      if (!entityId || !this._hass) return;
-      try {
-        await this._hass.callService("button", "press", { entity_id: entityId });
-      } catch (err) {
-        console.warn("Stark SolarPower refresh failed", err);
-      }
-    });
-
-    this.shadowRoot.querySelectorAll("[data-entity]").forEach((element) => {
-      const entityId = element.dataset.entity;
-      if (!entityId) return;
-      let timer = null;
-      let fired = false;
-      const clear = () => {
-        if (timer) clearTimeout(timer);
-        timer = null;
-      };
-      element.addEventListener("pointerdown", () => {
-        fired = false;
-        timer = setTimeout(() => {
-          fired = true;
-          this._showMoreInfo(entityId);
-        }, 520);
-      });
-      element.addEventListener("pointerup", clear);
-      element.addEventListener("pointercancel", clear);
-      element.addEventListener("pointerleave", clear);
-      if (element.classList.contains("history-link")) {
-        element.addEventListener("click", (event) => {
-          if (!fired) this._showMoreInfo(entityId);
-          event.preventDefault();
-        });
-      }
-    });
-  }
-
-  _showMoreInfo(entityId) {
-    this.dispatchEvent(
-      new CustomEvent("hass-more-info", {
-        bubbles: true,
-        composed: true,
-        detail: { entityId },
-      })
-    );
-  }
-}
-
-customElements.define("stark-solarpower-panel", StarkSolarPowerPanel);
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v020.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const HISTORY_ITEMS_V020 = [
-  ["input_voltage", "Ð’Ñ…Ð¾Ð´Ð½Ð¾Ðµ Ð½Ð°Ð¿Ñ€ÑÐ¶ÐµÐ½Ð¸Ðµ", "mdi:flash"],
-  ["output_voltage", "Ð’Ñ‹Ñ…Ð¾Ð´Ð½Ð¾Ðµ Ð½Ð°Ð¿Ñ€ÑÐ¶ÐµÐ½Ð¸Ðµ", "mdi:power-plug"],
-  ["output_load", "ÐÐ°Ð³Ñ€ÑƒÐ·ÐºÐ°", "mdi:gauge"],
-  ["battery_capacity", "Ð—Ð°Ñ€ÑÐ´ ÐÐšÐ‘", "mdi:battery"],
-];
-
-function esc(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-if (Panel && !Panel.prototype.__starkUiV020) {
-  Panel.prototype.__starkUiV020 = true;
-
-  const baseFormat = Panel.prototype._format;
-  const baseStyles = Panel.prototype._styles;
-  const baseRender = Panel.prototype._render;
-
-  Panel.prototype._formatDateTime = function (value) {
-    if (!value) return "ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾";
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return String(value);
-
-    const timeZone = this._hass?.config?.time_zone || undefined;
-    try {
-      return new Intl.DateTimeFormat("ru-RU", {
-        timeZone,
-        day: "2-digit",
-        month: "2-digit",
-        year: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-      }).format(date);
-    } catch (_) {
-      return date.toLocaleString("ru-RU");
-    }
-  };
-
-  Panel.prototype._formatRelative = function (value) {
-    if (!value) return "";
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return "";
-    const delta = Math.max(0, Math.round((Date.now() - date.getTime()) / 1000));
-    if (delta < 60) return `${delta} Ñ Ð½Ð°Ð·Ð°Ð´`;
-    if (delta < 3600) return `${Math.floor(delta / 60)} Ð¼Ð¸Ð½ Ð½Ð°Ð·Ð°Ð´`;
-    if (delta < 86400) return `${Math.floor(delta / 3600)} Ñ‡ Ð½Ð°Ð·Ð°Ð´`;
-    return `${Math.floor(delta / 86400)} Ð´Ð½ Ð½Ð°Ð·Ð°Ð´`;
-  };
-
-  Panel.prototype._format = function (device, key, fallback = "â€”") {
-    const stateObj = this._state(device, key);
-    if (
-      stateObj &&
-      stateObj.state !== "unavailable" &&
-      stateObj.state !== "unknown" &&
-      (key === "data_timestamp" || key === "last_successful_update")
-    ) {
-      return this._formatDateTime(stateObj.state);
-    }
-    return baseFormat.call(this, device, key, fallback);
-  };
-
-  Panel.prototype._eventLabel = function (raw) {
-    const labels = {
-      battery_mode_entered: "ÐŸÐµÑ€ÐµÑˆÑ‘Ð» Ð½Ð° Ð±Ð°Ñ‚Ð°Ñ€ÐµÑŽ",
-      battery_mode_exited: "Ð’Ñ‹ÑˆÐµÐ» Ð¸Ð· Ñ€ÐµÐ¶Ð¸Ð¼Ð° ÐÐšÐ‘",
-      telemetry_lost: "Ð¢ÐµÐ»ÐµÐ¼ÐµÑ‚Ñ€Ð¸Ñ Ð¿Ð¾Ñ‚ÐµÑ€ÑÐ½Ð°",
-      telemetry_restored: "Ð¢ÐµÐ»ÐµÐ¼ÐµÑ‚Ñ€Ð¸Ñ Ð²Ð¾ÑÑÑ‚Ð°Ð½Ð¾Ð²Ð»ÐµÐ½Ð°",
-      extended_telemetry_lost: "Ð Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð½Ð°Ñ Ñ‚ÐµÐ»ÐµÐ¼ÐµÑ‚Ñ€Ð¸Ñ Ð¿Ð¾Ñ‚ÐµÑ€ÑÐ½Ð°",
-      extended_telemetry_restored: "Ð Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð½Ð°Ñ Ñ‚ÐµÐ»ÐµÐ¼ÐµÑ‚Ñ€Ð¸Ñ Ð²Ð¾ÑÑÑ‚Ð°Ð½Ð¾Ð²Ð»ÐµÐ½Ð°",
-      data_stale: "Ð”Ð°Ð½Ð½Ñ‹Ðµ ÑƒÑÑ‚Ð°Ñ€ÐµÐ»Ð¸",
-      data_fresh: "Ð”Ð°Ð½Ð½Ñ‹Ðµ ÑÐ½Ð¾Ð²Ð° ÑÐ²ÐµÐ¶Ð¸Ðµ",
-      fault_mode_entered: "ÐÐ²Ð°Ñ€Ð¸Ð¹Ð½Ñ‹Ð¹ Ñ€ÐµÐ¶Ð¸Ð¼",
-      fault_mode_cleared: "ÐÐ²Ð°Ñ€Ð¸Ð¹Ð½Ñ‹Ð¹ Ñ€ÐµÐ¶Ð¸Ð¼ ÑÐ½ÑÑ‚",
-    };
-    return labels[raw] || raw;
-  };
-
-  Panel.prototype._eventRow = function (device, key, label) {
-    const entityId = this._entityId(device, key);
-    if (!entityId) return "";
-    const stateObj = this._state(device, key);
-    const available = this._available(stateObj);
-    const raw = stateObj?.attributes?.event_type || (available ? stateObj.state : "ÐÐµ Ð±Ñ‹Ð»Ð¾ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ð¹");
-    const relative = available ? this._formatRelative(stateObj.last_changed) : "";
-    const absolute = available ? this._formatDateTime(stateObj.last_changed) : "";
-    return `<div class="event-row event-row-v2" data-entity="${esc(entityId)}">
-      <span>${esc(label)}</span>
-      <div class="event-copy">
-        <strong>${esc(this._eventLabel(raw))}</strong>
-        ${relative ? `<small title="${esc(absolute)}">${esc(relative)}</small>` : ""}
-      </div>
-    </div>`;
-  };
-
-  Panel.prototype._renderHistory = function () {
-    return `
-      <section class="history-grid">
-        ${this._devices.map((device) => `
-          <article class="history-card">
-            <div class="card-head compact">
-              <div><div class="eyebrow">Ð˜ÑÑ‚Ð¾Ñ€Ð¸Ñ</div><h2>${esc(device.name)}</h2></div>
-              <span class="history-state">${esc(this._modeLabel(device))}</span>
-            </div>
-            <div class="history-metrics">
-              ${HISTORY_ITEMS_V020.map(([key, label, icon]) => {
-                const entityId = this._entityId(device, key);
-                if (!entityId) return "";
-                return `<button class="history-link" data-entity="${esc(entityId)}">
-                  <ha-icon icon="${icon}"></ha-icon>
-                  <span>${esc(label)}</span>
-                  <strong>${esc(this._format(device, key))}</strong>
-                  <ha-icon icon="mdi:chart-line"></ha-icon>
-                </button>`;
-              }).join("")}
-            </div>
-            <div class="event-summary">
-              <h3>ÐŸÐ¾ÑÐ»ÐµÐ´Ð½Ð¸Ðµ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ñ</h3>
-              ${this._eventRow(device, "battery_mode_events", "Ð ÐµÐ¶Ð¸Ð¼ ÐÐšÐ‘")}
-              ${this._eventRow(device, "cloud_telemetry_events", "ÐžÐ±Ð»Ð°ÐºÐ¾")}
-              ${this._eventRow(device, "data_freshness_events", "Ð¡Ð²ÐµÐ¶ÐµÑÑ‚ÑŒ Ð´Ð°Ð½Ð½Ñ‹Ñ…")}
-              ${this._eventRow(device, "fault_mode_events", "ÐÐ²Ð°Ñ€Ð¸Ð¹Ð½Ñ‹Ð¹ Ñ€ÐµÐ¶Ð¸Ð¼")}
-            </div>
-          </article>`).join("")}
-      </section>
-      <p class="hint">ÐŸÐ¾ÐºÐ°Ð·Ð°Ñ‚ÐµÐ»Ð¸ Ð¾Ñ‚ÐºÑ€Ñ‹Ð²Ð°ÑŽÑ‚ ÑˆÑ‚Ð°Ñ‚Ð½ÑƒÑŽ Ð¸ÑÑ‚Ð¾Ñ€Ð¸ÑŽ Home Assistant. Ð”Ð»Ñ Ñ„Ð°ÐºÑ‚Ð¸Ñ‡ÐµÑÐºÐ¸Ñ… ÑÑƒÑ‰Ð½Ð¾ÑÑ‚ÐµÐ¹ ÑÐ¾Ñ…Ñ€Ð°Ð½ÑÐµÑ‚ÑÑ long press â†’ more-info.</p>`;
-  };
-
-  Panel.prototype._styles = function () {
-    return `${baseStyles.call(this)}
-      :host { color-scheme: light dark; }
-      .diagnostic-row strong { font-variant-numeric: tabular-nums; }
-      .history-state {
-        color: var(--secondary-text-color);
-        font-size: 12px;
-        font-weight: 600;
-        white-space: nowrap;
-      }
-      .event-row-v2 { align-items: center; }
-      .event-copy {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-        gap: 3px;
-        max-width: 64%;
-        min-width: 0;
-      }
-      .event-copy strong {
-        max-width: 100%;
-        text-align: right;
-        overflow-wrap: anywhere;
-      }
-      .event-copy small {
-        color: var(--secondary-text-color);
-        font-size: 10px;
-        font-weight: 500;
-        white-space: nowrap;
-      }
-      @media (max-width: 430px) {
-        .diagnostic-row { gap: 8px; }
-        .diagnostic-row span { max-width: 54%; }
-        .diagnostic-row strong { max-width: 46%; }
-      }
-    `;
-  };
-
-  Panel.prototype._render = function () {
-    baseRender.call(this);
-    const subtitle = this.shadowRoot?.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = "UPS Â· UI v0.2.0";
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v020.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v021.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-
-if (Panel && !Panel.prototype.__starkUiV021) {
-  Panel.prototype.__starkUiV021 = true;
-
-  const baseRender = Panel.prototype._render;
-  const baseStyles = Panel.prototype._styles;
-
-  Panel.prototype._navigateBack = function () {
-    const fallback = "/dashboard-infrastructure/overview";
-    window.history.pushState(window.history.state, "", fallback);
-    window.dispatchEvent(
-      new CustomEvent("location-changed", {
-        bubbles: true,
-        composed: true,
-        detail: { replace: true },
-      })
-    );
-  };
-
-  Panel.prototype._styles = function () {
-    return `${baseStyles.call(this)}
-      .header-main {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        min-width: 0;
-      }
-      .back {
-        width: 44px;
-        min-width: 44px;
-        height: 44px;
-        border: 0;
-        border-radius: 14px;
-        background: var(--card-background-color);
-        color: var(--primary-text-color);
-        display: grid;
-        place-items: center;
-        box-shadow: var(--ha-card-box-shadow, 0 1px 3px rgba(0,0,0,.15));
-      }
-      .back ha-icon { --mdc-icon-size: 25px; }
-      @media (max-width: 430px) {
-        .header-main { gap: 7px; }
-        .back { width: 42px; min-width: 42px; height: 42px; border-radius: 13px; }
-        .app-header .title-icon { width: 42px; height: 42px; border-radius: 14px; }
-        .app-header .title-wrap { gap: 9px; }
-        .app-header h1 { font-size: 24px; }
-      }
-    `;
-  };
-
-  Panel.prototype._render = function () {
-    baseRender.call(this);
-
-    const root = this.shadowRoot;
-    const header = root?.querySelector(".app-header");
-    const titleWrap = header?.querySelector(".title-wrap");
-    if (!header || !titleWrap) return;
-
-    const subtitle = titleWrap.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = "UPS Â· UI v0.2.1";
-
-    if (header.querySelector(".header-main")) return;
-
-    const group = document.createElement("div");
-    group.className = "header-main";
-    header.insertBefore(group, titleWrap);
-
-    const button = document.createElement("button");
-    button.className = "back";
-    button.type = "button";
-    button.setAttribute("aria-label", "ÐÐ°Ð·Ð°Ð´");
-    button.setAttribute("title", "ÐÐ°Ð·Ð°Ð´");
-    button.innerHTML = '<ha-icon icon="mdi:arrow-left"></ha-icon>';
-    button.addEventListener("click", () => this._navigateBack());
-
-    group.append(button, titleWrap);
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v021.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v030.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.3.0";
-const PARENT_ROUTE = "/dashboard-infrastructure/overview";
-
-const NAV_ITEMS = {
-  overview: ["mdi:view-dashboard-outline", "ÐžÐ±Ð·Ð¾Ñ€"],
-  diagnostics: ["mdi:stethoscope", "Ð”Ð¸Ð°Ð³Ð½Ð¾ÑÑ‚Ð¸ÐºÐ°"],
-  history: ["mdi:chart-line", "Ð˜ÑÑ‚Ð¾Ñ€Ð¸Ñ"],
-};
-
-if (Panel && !Panel.prototype.__starkUiV030) {
-  Panel.prototype.__starkUiV030 = true;
-
-  const baseRender = Panel.prototype._render;
-  const baseStyles = Panel.prototype._styles;
-
-  Panel.prototype._navigateTo = function (path) {
-    const from = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-    window.history.pushState({ from }, "", path);
-    window.dispatchEvent(
-      new CustomEvent("location-changed", {
-        bubbles: true,
-        composed: true,
-        detail: { replace: false },
-      })
-    );
-  };
-
-  // NikaS application contract: Back is an explicit parent navigation action,
-  // never browser-history traversal.
-  Panel.prototype._navigateBack = function () {
-    this._navigateTo(PARENT_ROUTE);
-  };
-
-  Panel.prototype._styles = function () {
-    return `${baseStyles.call(this)}
-      .app {
-        padding-bottom: calc(96px + env(safe-area-inset-bottom));
-      }
-      .tabs.bottom-nav {
-        position: fixed;
-        left: 50%;
-        right: auto;
-        bottom: 0;
-        z-index: 50;
-        width: min(100%, 620px);
-        transform: translateX(-50%);
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 4px;
-        margin: 0;
-        padding: 7px max(8px, env(safe-area-inset-right)) calc(7px + env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
-        border-radius: 18px 18px 0 0;
-        border: 1px solid color-mix(in srgb, var(--divider-color) 70%, transparent);
-        border-bottom: 0;
-        background: color-mix(in srgb, var(--card-background-color) 94%, transparent);
-        box-shadow: 0 -6px 24px rgba(0,0,0,.08);
-        backdrop-filter: blur(20px) saturate(145%);
-        -webkit-backdrop-filter: blur(20px) saturate(145%);
-      }
-      .bottom-nav .tab {
-        min-width: 0;
-        height: auto;
-        min-height: 58px;
-        border-radius: 14px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 3px;
-        padding: 6px 4px;
-        font-size: 10px;
-        line-height: 1.05;
-      }
-      .bottom-nav .tab ha-icon { --mdc-icon-size: 22px; }
-      .bottom-nav .tab.active {
-        color: var(--primary-color);
-        background: color-mix(in srgb, var(--primary-color) 10%, var(--card-background-color));
-        box-shadow: none;
-      }
-      .bottom-nav .tab:active { transform: scale(.97); }
-      @media (min-width: 760px) {
-        .tabs.bottom-nav { width: min(620px, calc(100% - 32px)); }
-      }
-      @media (max-width: 430px) {
-        .app-header { margin-bottom: 12px; }
-        .bottom-nav .tab { min-height: 56px; }
-      }
-    `;
-  };
-
-  Panel.prototype._render = function () {
-    baseRender.call(this);
-
-    const root = this.shadowRoot;
-    const main = root?.querySelector("main.app");
-    const nav = root?.querySelector(".tabs");
-    if (!root || !main || !nav) return;
-
-    const subtitle = root.querySelector(".app-header .subtitle");
-    if (subtitle) subtitle.textContent = `UPS Â· UI v${UI_VERSION}`;
-
-    nav.classList.add("bottom-nav");
-    nav.setAttribute("aria-label", "Ð Ð°Ð·Ð´ÐµÐ»Ñ‹ Stark SolarPower");
-
-    nav.querySelectorAll("button[data-view]").forEach((button) => {
-      const item = NAV_ITEMS[button.dataset.view];
-      if (!item) return;
-      const [icon, label] = item;
-      button.innerHTML = `<ha-icon icon="${icon}"></ha-icon><span>${label}</span>`;
-      button.setAttribute("aria-label", label);
-      if (button.classList.contains("active")) button.setAttribute("aria-current", "page");
-      else button.removeAttribute("aria-current");
-    });
-
-    // Moving the already-bound navigation keeps its click handlers and places
-    // the primary section switcher in the thumb zone, below all page content.
-    main.append(nav);
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v030.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v031.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.3.1";
-
-function esc(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-if (Panel && !Panel.prototype.__starkUiV031) {
-  Panel.prototype.__starkUiV031 = true;
-
-  const baseRender = Panel.prototype._render;
-
-  Panel.prototype._selectedUpsId = function () {
-    return this._diagnosticDeviceId || this._devices?.[0]?.id || null;
-  };
-
-  Panel.prototype._prioritizeSelectedUps = function () {
-    const selectedId = this._selectedUpsId();
-    if (!selectedId || !Array.isArray(this._devices) || this._devices.length < 2) return;
-    const index = this._devices.findIndex((device) => device.id === selectedId);
-    if (index <= 0) return;
-    const selected = this._devices[index];
-    this._devices = [selected, ...this._devices.filter((device) => device.id !== selectedId)];
-  };
-
-  Panel.prototype._installDeviceContext = function () {
-    const root = this.shadowRoot;
-    const header = root?.querySelector(".app-header");
-    if (!root || !header || !this._devices?.length) return;
-
-    // Diagnostics had its own local switcher in the first UI revisions.
-    // The NikaS app shell now owns one device-context selector shared by all views.
-    root.querySelectorAll(".device-switcher").forEach((node) => node.remove());
-    root.querySelector(".global-device-context")?.remove();
-
-    if (!root.querySelector("style[data-stark-device-context]")) {
-      const style = document.createElement("style");
-      style.dataset.starkDeviceContext = "true";
-      style.textContent = `
-        .global-device-context {
-          display: grid;
-          grid-template-columns: repeat(var(--ups-count), minmax(0, 1fr));
-          gap: 8px;
-          margin: 0 2px 12px;
-        }
-        .global-device-context button {
-          min-width: 0;
-          min-height: 48px;
-          border: 1px solid var(--divider-color);
-          border-radius: 15px;
-          padding: 7px 9px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 7px;
-          background: var(--card-background-color);
-          color: var(--primary-text-color);
-          font: inherit;
-          font-size: 12px;
-          font-weight: 650;
-          line-height: 1.15;
-          text-align: center;
-          -webkit-tap-highlight-color: transparent;
-        }
-        .global-device-context button.active {
-          border-color: var(--primary-color);
-          color: var(--primary-color);
-          background: color-mix(in srgb, var(--primary-color) 7%, var(--card-background-color));
-          font-weight: 750;
-        }
-        .global-device-context button:active { transform: scale(.98); }
-        .device-health-dot {
-          width: 8px;
-          height: 8px;
-          flex: 0 0 8px;
-          border-radius: 50%;
-          background: var(--secondary-text-color);
-        }
-        .device-health-dot.good { background: var(--success-color, #2e7d32); }
-        .device-health-dot.warn { background: var(--warning-color, #ed6c02); }
-        .device-health-dot.bad { background: var(--error-color, #d32f2f); }
-        .global-device-context .device-name {
-          min-width: 0;
-          overflow-wrap: anywhere;
-        }
-        @media (max-width: 380px) {
-          .global-device-context { gap: 6px; margin-left: 0; margin-right: 0; }
-          .global-device-context button { padding: 6px; font-size: 11px; }
-        }
-      `;
-      root.append(style);
-    }
-
-    const selectedId = this._selectedUpsId();
-    const selector = document.createElement("div");
-    selector.className = "global-device-context";
-    selector.setAttribute("aria-label", "Ð’Ñ‹Ð±Ð¾Ñ€ UPS");
-    selector.style.setProperty("--ups-count", String(Math.max(1, this._devices.length)));
-    selector.innerHTML = this._devices
-      .map((device) => {
-        const tone = this._status?.(device)?.tone || "bad";
-        const active = device.id === selectedId;
-        return `<button type="button" data-ups-device="${esc(device.id)}" class="${active ? "active" : ""}" aria-pressed="${active ? "true" : "false"}">
-          <span class="device-health-dot ${esc(tone)}" aria-hidden="true"></span>
-          <span class="device-name">${esc(device.name)}</span>
-        </button>`;
-      })
-      .join("");
-
-    header.insertAdjacentElement("afterend", selector);
-
-    selector.querySelectorAll("button[data-ups-device]").forEach((button) => {
-      button.addEventListener("click", () => {
-        const deviceId = button.dataset.upsDevice;
-        if (!deviceId || deviceId === this._selectedUpsId()) return;
-        this._diagnosticDeviceId = deviceId;
-        this._prioritizeSelectedUps();
-        this._queueRender();
-      });
-    });
-  };
-
-  Panel.prototype._render = function () {
-    this._prioritizeSelectedUps();
-    baseRender.call(this);
-
-    const subtitle = this.shadowRoot?.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Â· UI v${UI_VERSION}`;
-
-    this._installDeviceContext();
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v031.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v032.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.3.2";
-
-if (Panel && !Panel.prototype.__starkUiV032) {
-  Panel.prototype.__starkUiV032 = true;
-
-  // Device order is a stable UI contract: UPS Internet stays first, UPS Boiler second.
-  // Selection changes only active state and content context; it never reorders controls.
-  Panel.prototype._prioritizeSelectedUps = function () {};
-
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    const subtitle = root.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Â· UI v${UI_VERSION}`;
-
-    // UI Standard v1.2: no decorative brand/device icon in the Header and
-    // title is geometrically centered against symmetric Back/Refresh zones.
-    root.querySelector(".title-icon")?.remove();
-
-    if (!root.querySelector("style[data-stark-ui-v032]")) {
-      const style = document.createElement("style");
-      style.dataset.starkUiV032 = "true";
-      style.textContent = `
-        .app-header {
-          display: grid !important;
-          grid-template-columns: 52px minmax(0, 1fr) 52px !important;
-          align-items: center !important;
-          gap: 0 !important;
-        }
-        .header-main { display: contents !important; }
-        .back {
-          grid-column: 1 !important;
-          justify-self: start !important;
-          width: 44px !important;
-          min-width: 44px !important;
-          height: 44px !important;
-        }
-        .title-wrap {
-          grid-column: 2 !important;
-          min-width: 0 !important;
-          display: block !important;
-          text-align: center !important;
-        }
-        .title-wrap > div { min-width: 0 !important; }
-        .app-header h1 {
-          margin: 0 !important;
-          overflow: hidden !important;
-          text-overflow: ellipsis !important;
-          white-space: nowrap !important;
-          text-align: center !important;
-        }
-        .subtitle { text-align: center !important; }
-        .refresh {
-          grid-column: 3 !important;
-          justify-self: end !important;
-          width: 44px !important;
-          min-width: 44px !important;
-        }
-
-        .global-device-context {
-          grid-template-columns: repeat(var(--ups-count), minmax(0, 1fr)) !important;
-        }
-        .global-device-context button {
-          min-height: 48px !important;
-        }
-
-        @media (max-width: 430px) {
-          .app-header {
-            grid-template-columns: 48px minmax(0, 1fr) 48px !important;
-          }
-          .app-header h1 { font-size: 23px !important; }
-        }
-      `;
-      root.append(style);
-    }
-
-    // Multi-device content follows Diagnostics: one selected physical UPS only.
-    // The selector stays in its fixed order above; only the active content changes.
-    const selectedId = this._selectedUpsId?.();
-    const selectedIndex = Array.isArray(this._devices)
-      ? this._devices.findIndex((device) => device.id === selectedId)
-      : -1;
-
-    if (selectedIndex >= 0) {
-      if (this._view === "overview") {
-        root.querySelectorAll(".overview-grid > .ups-card").forEach((card, index) => {
-          if (index !== selectedIndex) card.remove();
-        });
-      }
-      if (this._view === "history") {
-        root.querySelectorAll(".history-grid > .history-card").forEach((card, index) => {
-          if (index !== selectedIndex) card.remove();
-        });
-      }
-    }
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v032.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v033.js
-(() => {
-const PanelV033 = customElements.get("stark-solarpower-panel");
-const UI_VERSION_V033 = "0.3.3";
-
-if (PanelV033 && !PanelV033.prototype.__starkUiV033) {
-  PanelV033.prototype.__starkUiV033 = true;
-  const previousRenderV033 = PanelV033.prototype._render;
-
-  PanelV033.prototype._render = function () {
-    previousRenderV033.call(this);
-    const subtitle = this.shadowRoot?.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Â· UI v${UI_VERSION_V033}`;
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v033.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v034.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.3.4";
-
-if (Panel && !Panel.prototype.__starkUiV034) {
-  Panel.prototype.__starkUiV034 = true;
-
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    const subtitle = root.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Â· UI v${UI_VERSION}`;
-
-    if (root.querySelector("style[data-stark-ui-v034]")) return;
-
-    const style = document.createElement("style");
-    style.dataset.starkUiV034 = "true";
-    style.textContent = `
-      /* Mobile-first typography pass for iPhone Pro Max. Layout is unchanged. */
-      .subtitle {
-        font-size: 14px !important;
-        line-height: 1.25 !important;
-      }
-      .global-device-context button {
-        font-size: 16px !important;
-        line-height: 1.2 !important;
-        font-weight: 650 !important;
-      }
-      .global-device-context button.active {
-        font-weight: 750 !important;
-      }
-      .device-health-dot {
-        width: 9px !important;
-        height: 9px !important;
-        flex-basis: 9px !important;
-      }
-      .eyebrow {
-        font-size: 13px !important;
-        line-height: 1.25 !important;
-      }
-      .status {
-        font-size: 15px !important;
-        line-height: 1.2 !important;
-      }
-      .flow-node span,
-      .flow-ups span {
-        font-size: 14px !important;
-        line-height: 1.2 !important;
-      }
-      .flow-node strong,
-      .flow-ups strong {
-        font-size: 17px !important;
-        line-height: 1.2 !important;
-      }
-      .bar-title {
-        font-size: 15px !important;
-        line-height: 1.25 !important;
-      }
-      .trust {
-        font-size: 15px !important;
-        line-height: 1.35 !important;
-      }
-      .metric-label {
-        font-size: 14px !important;
-        line-height: 1.2 !important;
-      }
-      .metric strong {
-        font-size: 16px !important;
-        line-height: 1.25 !important;
-      }
-      .source-summary span,
-      .source-summary strong {
-        font-size: 15px !important;
-        line-height: 1.3 !important;
-      }
-      .diagnostic-group h3,
-      .event-summary h3 {
-        font-size: 18px !important;
-        line-height: 1.25 !important;
-      }
-      .diagnostic-row span,
-      .diagnostic-row strong {
-        font-size: 16px !important;
-        line-height: 1.35 !important;
-      }
-      .history-state {
-        font-size: 15px !important;
-      }
-      .history-link span {
-        font-size: 15px !important;
-        line-height: 1.25 !important;
-      }
-      .history-link strong {
-        font-size: 16px !important;
-        line-height: 1.25 !important;
-      }
-      .event-row > span {
-        font-size: 15px !important;
-        line-height: 1.25 !important;
-      }
-      .event-copy strong {
-        font-size: 16px !important;
-        line-height: 1.3 !important;
-      }
-      .event-copy small {
-        font-size: 14px !important;
-        line-height: 1.2 !important;
-      }
-      .hint {
-        font-size: 14px !important;
-        line-height: 1.5 !important;
-      }
-      .bottom-nav .tab {
-        font-size: 14px !important;
-        line-height: 1.1 !important;
-        font-weight: 650 !important;
-      }
-      .bottom-nav .tab ha-icon {
-        --mdc-icon-size: 24px !important;
-      }
-
-      @media (max-width: 430px) {
-        .global-device-context button {
-          min-height: 52px !important;
-          padding: 8px 10px !important;
-        }
-        .power-flow {
-          margin-bottom: 18px !important;
-        }
-        .flow-node,
-        .flow-ups {
-          min-height: 96px !important;
-        }
-        .metric {
-          min-height: 60px !important;
-        }
-        .diagnostic-row {
-          min-height: 48px !important;
-        }
-        .history-link {
-          min-height: 58px !important;
-        }
-        .event-row {
-          min-height: 50px !important;
-        }
-      }
-    `;
-    root.append(style);
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v034.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v035.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.3.5";
-
-if (Panel && !Panel.prototype.__starkUiV035) {
-  Panel.prototype.__starkUiV035 = true;
-
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    const subtitle = root.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Â· UI v${UI_VERSION}`;
-
-    // NikaS Integration Panel Template v1.0: Header Back is icon-only.
-    root.querySelectorAll(".back span").forEach((node) => node.remove());
-    const back = root.querySelector(".back");
-    if (back) {
-      back.setAttribute("aria-label", "ÐÐ°Ð·Ð°Ð´");
-      back.setAttribute("title", "ÐÐ°Ð·Ð°Ð´");
-    }
-
-    if (root.querySelector("style[data-stark-ui-v035]")) return;
-
-    const style = document.createElement("style");
-    style.dataset.starkUiV035 = "true";
-    style.textContent = `
-      /* NikaS Integration Panel Template v1.0 shell alignment. */
-      :host {
-        width: 100%;
-        max-width: 100%;
-        overflow-x: hidden !important;
-      }
-      .app {
-        width: 100% !important;
-        max-width: 1240px !important;
-        margin: 0 auto !important;
-        padding: 8px max(12px, env(safe-area-inset-right)) calc(98px + env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)) !important;
-        overflow-x: hidden !important;
-      }
-
-      /* Header: 52 / 1fr / 52, centered title, icon-only Back, one Refresh action. */
-      .app-header {
-        display: grid !important;
-        grid-template-columns: 52px minmax(0, 1fr) 52px !important;
-        align-items: center !important;
-        min-height: 62px !important;
-        gap: 0 !important;
-        margin: 0 0 12px !important;
-        padding: max(5px, env(safe-area-inset-top)) 0 5px !important;
-      }
-      .header-main { display: contents !important; }
-      .back,
-      .refresh {
-        width: 44px !important;
-        min-width: 44px !important;
-        height: 44px !important;
-        min-height: 44px !important;
-        border: 0 !important;
-        border-radius: 14px !important;
-        background: transparent !important;
-        box-shadow: none !important;
-        display: grid !important;
-        place-items: center !important;
-        padding: 0 !important;
-      }
-      .back {
-        grid-column: 1 !important;
-        justify-self: start !important;
-        color: var(--primary-text-color) !important;
-      }
-      .refresh {
-        grid-column: 3 !important;
-        justify-self: end !important;
-        color: var(--primary-color) !important;
-      }
-      .back ha-icon,
-      .refresh ha-icon { --mdc-icon-size: 25px !important; }
-      .title-wrap {
-        grid-column: 2 !important;
-        min-width: 0 !important;
-        display: block !important;
-        text-align: center !important;
-      }
-      .title-wrap > div { min-width: 0 !important; }
-      .app-header h1 {
-        margin: 0 !important;
-        font-size: 18px !important;
-        line-height: 1.12 !important;
-        font-weight: 760 !important;
-        letter-spacing: 0 !important;
-        text-align: center !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-        white-space: nowrap !important;
-      }
-      .subtitle {
-        margin-top: 3px !important;
-        font-size: 14px !important;
-        line-height: 1.2 !important;
-        text-align: center !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-        white-space: nowrap !important;
-      }
-
-      /* Device context remains stable and must fit one iPhone row. */
-      .global-device-context {
-        width: 100% !important;
-        min-width: 0 !important;
-        grid-template-columns: repeat(var(--ups-count), minmax(0, 1fr)) !important;
-        gap: 10px !important;
-        margin: 0 0 12px !important;
-      }
-      .global-device-context button {
-        min-width: 0 !important;
-        min-height: 52px !important;
-        border-radius: 20px !important;
-        padding: 8px 10px !important;
-        font-size: 16px !important;
-        line-height: 1.2 !important;
-      }
-      .global-device-context .device-name {
-        min-width: 0 !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-        white-space: nowrap !important;
-      }
-
-      /* Prevent long mobile values/statuses from widening the viewport. */
-      .overview-grid,
-      .history-grid,
-      .ups-card,
-      .diagnostic-card,
-      .history-card,
-      .card-head,
-      .quick-grid,
-      .source-summary,
-      .diagnostic-row,
-      .history-link,
-      .event-row {
-        min-width: 0 !important;
-        max-width: 100% !important;
-      }
-      .overview-grid,
-      .history-grid {
-        grid-template-columns: minmax(0, 1fr) !important;
-      }
-      .card-head > div:first-child { min-width: 0 !important; }
-      .card-head h2 {
-        max-width: 100% !important;
-        overflow-wrap: anywhere !important;
-      }
-      .status {
-        flex: 0 1 auto !important;
-        min-width: 0 !important;
-        max-width: 48% !important;
-        white-space: normal !important;
-        text-align: right !important;
-        justify-content: flex-end !important;
-      }
-      .status span { overflow-wrap: anywhere !important; }
-      .power-flow { min-width: 0 !important; }
-      .flow-node strong,
-      .flow-ups strong {
-        font-size: clamp(15px, 4vw, 17px) !important;
-        white-space: normal !important;
-        overflow-wrap: anywhere !important;
-        text-overflow: clip !important;
-      }
-      .metric-copy,
-      .metric strong,
-      .source-summary span,
-      .source-summary strong,
-      .diagnostic-row span,
-      .diagnostic-row strong,
-      .history-link span,
-      .history-link strong,
-      .event-row span,
-      .event-copy,
-      .event-copy strong {
-        min-width: 0 !important;
-      }
-      .diagnostic-row strong,
-      .event-copy strong,
-      .history-link strong {
-        overflow-wrap: anywhere !important;
-      }
-      .history-link {
-        grid-template-columns: 28px minmax(0, 1fr) minmax(0, auto) 22px !important;
-      }
-
-      /* Bottom navigation: full-width, fixed, edge-attached, never a floating pill. */
-      .tabs.bottom-nav {
-        position: fixed !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        transform: none !important;
-        width: 100% !important;
-        max-width: none !important;
-        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-        gap: 2px !important;
-        margin: 0 !important;
-        padding: 6px max(6px, env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-left)) !important;
-        border: 0 !important;
-        border-top: 1px solid var(--divider-color) !important;
-        border-radius: 0 !important;
-        background: var(--card-background-color) !important;
-        box-shadow: 0 -3px 14px color-mix(in srgb, #000 7%, transparent) !important;
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-        z-index: 50 !important;
-      }
-      .bottom-nav .tab {
-        min-width: 0 !important;
-        min-height: 58px !important;
-        height: auto !important;
-        border-radius: 14px !important;
-        padding: 4px 2px !important;
-        gap: 2px !important;
-        font-size: 14px !important;
-        line-height: 1.1 !important;
-        font-weight: 700 !important;
-        overflow: hidden !important;
-      }
-      .bottom-nav .tab span {
-        display: block !important;
-        max-width: 100% !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-        white-space: nowrap !important;
-      }
-      .bottom-nav .tab ha-icon { --mdc-icon-size: 24px !important; }
-      .bottom-nav .tab.active {
-        color: var(--primary-color) !important;
-        background: color-mix(in srgb, var(--primary-color) 11%, transparent) !important;
-        box-shadow: none !important;
-      }
-
-      @media (max-width: 430px) {
-        .app-header {
-          grid-template-columns: 52px minmax(0, 1fr) 52px !important;
-        }
-        .ups-card,
-        .diagnostic-card,
-        .history-card {
-          width: 100% !important;
-          padding: 16px !important;
-        }
-        .quick-grid,
-        .bars { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
-        .power-flow {
-          grid-template-columns: minmax(74px, 1fr) 24px minmax(82px, 1fr) 24px minmax(74px, 1fr) !important;
-          gap: 2px !important;
-        }
-        .flow-line ha-icon { --mdc-icon-size: 17px !important; }
-      }
-
-      @media (max-width: 390px) {
-        .app {
-          padding-left: max(10px, env(safe-area-inset-left)) !important;
-          padding-right: max(10px, env(safe-area-inset-right)) !important;
-        }
-        .app-header {
-          grid-template-columns: 48px minmax(0, 1fr) 48px !important;
-        }
-        .global-device-context { gap: 8px !important; }
-        .global-device-context button {
-          min-height: 50px !important;
-          padding: 7px 8px !important;
-          font-size: 15px !important;
-        }
-        .power-flow {
-          grid-template-columns: minmax(68px, 1fr) 20px minmax(76px, 1fr) 20px minmax(68px, 1fr) !important;
-        }
-        .bottom-nav .tab { min-height: 56px !important; }
-      }
-
-      @media (min-width: 760px) {
-        .app { padding-left: 20px !important; padding-right: 20px !important; }
-        .tabs.bottom-nav { width: 100% !important; max-width: none !important; }
-        .overview-grid,
-        .history-grid,
-        .diagnostic-card {
-          width: min(100%, 820px) !important;
-          margin-left: auto !important;
-          margin-right: auto !important;
-        }
-      }
-    `;
-    root.append(style);
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v035.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v040.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.4.0";
-
-function esc(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-if (Panel && !Panel.prototype.__starkUiV040) {
-  Panel.prototype.__starkUiV040 = true;
-
-  Panel.prototype._overviewHeadline = function (device) {
-    const status = this._status(device);
-    const mode = this._mode(device);
-    const cloud = this._isOn(device, "cloud_connected");
-    const stale = this._isOn(device, "data_stale");
-
-    if (cloud === false) {
-      return { title: "ÐÐµÑ‚ Ñ‚ÐµÐ»ÐµÐ¼ÐµÑ‚Ñ€Ð¸Ð¸", detail: "SolarPower Ð½ÐµÐ´Ð¾ÑÑ‚ÑƒÐ¿ÐµÐ½", tone: "bad" };
-    }
-    if (cloud === null) {
-      return { title: "Ð¡Ð¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ Ð½ÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾", detail: "ÐÐµÑ‚ Ð´Ð¾ÑÑ‚Ð¾Ð²ÐµÑ€Ð½Ð¾Ð³Ð¾ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ñ Ð¾Ð±Ð»Ð°Ñ‡Ð½Ð¾Ð³Ð¾ ÐºÐ°Ð½Ð°Ð»Ð°", tone: "unknown" };
-    }
-    if (stale === true) {
-      return { title: "Ð”Ð°Ð½Ð½Ñ‹Ðµ ÑƒÑÑ‚Ð°Ñ€ÐµÐ»Ð¸", detail: "ÐŸÐ¾ÑÐ»ÐµÐ´Ð½Ð¸Ð¹ Ð´Ð¾ÑÑ‚Ð¾Ð²ÐµÑ€Ð½Ñ‹Ð¹ snapshot ÑÑ‚Ð°Ñ€ÑˆÐµ 6 Ð¼Ð¸Ð½ÑƒÑ‚", tone: "warn" };
-    }
-    if (stale === null) {
-      return { title: "Ð¡Ð²ÐµÐ¶ÐµÑÑ‚ÑŒ Ð½ÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð°", detail: "Ð’Ð¾Ð·Ñ€Ð°ÑÑ‚ Ñ„Ð°ÐºÑ‚Ð¸Ñ‡ÐµÑÐºÐ¸Ñ… Ð´Ð°Ð½Ð½Ñ‹Ñ… Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»Ð¸Ñ‚ÑŒ Ð½ÐµÐ»ÑŒÐ·Ñ", tone: "unknown" };
-    }
-    if (mode === "battery_mode") {
-      return { title: "ÐžÑ‚ Ð±Ð°Ñ‚Ð°Ñ€ÐµÐ¸", detail: "ÐÐ°Ð³Ñ€ÑƒÐ·ÐºÐ° Ð¿Ð¸Ñ‚Ð°ÐµÑ‚ÑÑ Ð¾Ñ‚ ÐÐšÐ‘", tone: "warn" };
-    }
-    if (mode === "fault_mode") {
-      return { title: "ÐÐ²Ð°Ñ€Ð¸Ð¹Ð½Ñ‹Ð¹ Ñ€ÐµÐ¶Ð¸Ð¼", detail: "UPS ÑÐ¾Ð¾Ð±Ñ‰Ð°ÐµÑ‚ Ð¿Ð¾Ð´Ñ‚Ð²ÐµÑ€Ð¶Ð´Ñ‘Ð½Ð½Ñ‹Ð¹ Fault Mode", tone: "bad" };
-    }
-    if (mode === "line_mode" && status.tone === "good") {
-      return { title: "ÐžÑ‚ ÑÐµÑ‚Ð¸ Â· ÐÐ¾Ñ€Ð¼Ð°Ð»ÑŒÐ½Ð¾", detail: "UPS Ð¿Ð¸Ñ‚Ð°ÐµÑ‚ Ð½Ð°Ð³Ñ€ÑƒÐ·ÐºÑƒ", tone: "good" };
-    }
-    return {
-      title: status.label,
-      detail: `Ð¢ÐµÐºÑƒÑ‰Ð¸Ð¹ Ñ€ÐµÐ¶Ð¸Ð¼: ${this._modeLabel(device)}`,
-      tone: status.tone === "good" ? "good" : status.tone === "warn" ? "warn" : "unknown",
-    };
-  };
-
-  Panel.prototype._overviewOnlineBadge = function (device) {
-    const cloud = this._isOn(device, "cloud_connected");
-    const stale = this._isOn(device, "data_stale");
-    const age = this._format(device, "data_age", "ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾");
-
-    if (cloud === false) return { label: "ÐÐµÑ‚ Ð¾Ð±Ð»Ð°ÐºÐ°", detail: "ÐÐµÑ‚ ÑÐ²ÐµÐ¶Ð¸Ñ… Ð´Ð°Ð½Ð½Ñ‹Ñ…", tone: "bad", icon: "mdi:cloud-off-outline" };
-    if (cloud === null) return { label: "ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾", detail: "Ð˜ÑÑ‚Ð¾Ñ‡Ð½Ð¸Ðº Ð½Ðµ Ð¿Ð¾Ð´Ñ‚Ð²ÐµÑ€Ð¶Ð´Ñ‘Ð½", tone: "unknown", icon: "mdi:cloud-question-outline" };
-    if (stale === true) return { label: "Ð£ÑÑ‚Ð°Ñ€ÐµÐ»Ð¾", detail: `Ð’Ð¾Ð·Ñ€Ð°ÑÑ‚ ${age}`, tone: "warn", icon: "mdi:clock-alert-outline" };
-    if (stale === null) return { label: "ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾", detail: "Ð¡Ð²ÐµÐ¶ÐµÑÑ‚ÑŒ Ð½Ðµ Ð¿Ð¾Ð´Ñ‚Ð²ÐµÑ€Ð¶Ð´ÐµÐ½Ð°", tone: "unknown", icon: "mdi:clock-question-outline" };
-    return { label: "ÐžÐ½Ð»Ð°Ð¹Ð½", detail: `Ð”Ð°Ð½Ð½Ñ‹Ðµ ${age} Ð½Ð°Ð·Ð°Ð´`, tone: "good", icon: "mdi:cloud-check-outline" };
-  };
-
-  Panel.prototype._overviewStateTile = function (device, kind) {
-    const cloud = this._isOn(device, "cloud_connected");
-    const stale = this._isOn(device, "data_stale");
-    const mode = this._mode(device);
-    const battery = this._numeric(device, "battery_capacity");
-    const inputVoltage = this._numeric(device, "input_voltage");
-    const age = this._format(device, "data_age", "ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾");
-
-    if (kind === "grid") {
-      const available = inputVoltage !== null;
-      const tone = available ? "good" : mode === "battery_mode" ? "warn" : "unknown";
-      const primary = available ? "Ð•ÑÑ‚ÑŒ Ð¿Ð¸Ñ‚Ð°Ð½Ð¸Ðµ" : mode === "battery_mode" ? "ÐÐµÑ‚ Ð²Ñ…Ð¾Ð´Ð°" : "ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾";
-      const secondary = available ? this._format(device, "input_voltage") : mode === "battery_mode" ? "Ð Ð°Ð±Ð¾Ñ‚Ð° Ð¾Ñ‚ ÐÐšÐ‘" : "ÐÐµÑ‚ Ð´Ð°Ð½Ð½Ñ‹Ñ…";
-      return { icon: "mdi:transmission-tower", title: "Ð¡ÐµÑ‚ÑŒ", primary, secondary, tone, entity: this._entityId(device, "input_voltage") };
-    }
-    if (kind === "battery") {
-      const tone = battery === null ? "unknown" : battery <= 20 ? "bad" : battery <= 40 ? "warn" : "good";
-      const primary = battery === null ? "ÐÐµÑ‚ Ð´Ð°Ð½Ð½Ñ‹Ñ…" : `${Math.round(battery)} %`;
-      const secondary = mode === "battery_mode" ? "ÐŸÐ¸Ñ‚Ð°ÐµÑ‚ Ð½Ð°Ð³Ñ€ÑƒÐ·ÐºÑƒ" : battery === null ? "Ð¡Ð¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ Ð½ÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾" : "Ð—Ð°Ñ€ÑÐ¶ÐµÐ½";
-      return { icon: "mdi:battery", title: "ÐÐšÐ‘", primary, secondary, tone, entity: this._entityId(device, "battery_capacity") };
-    }
-    if (kind === "cloud") {
-      const tone = cloud === true ? "good" : cloud === false ? "bad" : "unknown";
-      const primary = cloud === true ? "ÐžÐ½Ð»Ð°Ð¹Ð½" : cloud === false ? "ÐÐµÐ´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð¾" : "ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾";
-      const secondary = cloud === true ? "SolarPower" : cloud === false ? "ÐÐµÑ‚ ÑÐ²ÑÐ·Ð¸" : "ÐÐµÑ‚ Ð´Ð°Ð½Ð½Ñ‹Ñ…";
-      return { icon: "mdi:cloud", title: "ÐžÐ±Ð»Ð°ÐºÐ¾", primary, secondary, tone, entity: this._entityId(device, "cloud_connected") };
-    }
-
-    const tone = stale === false ? "good" : stale === true ? "warn" : "unknown";
-    const primary = stale === false ? "Ð¡Ð²ÐµÐ¶Ð¸Ðµ" : stale === true ? "Ð£ÑÑ‚Ð°Ñ€ÐµÐ»Ð¸" : "ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾";
-    const secondary = stale === null ? "ÐÐµÑ‚ Ð²Ð¾Ð·Ñ€Ð°ÑÑ‚Ð°" : age;
-    return { icon: "mdi:clock-outline", title: "Ð”Ð°Ð½Ð½Ñ‹Ðµ", primary, secondary, tone, entity: this._entityId(device, "data_age") };
-  };
-
-  Panel.prototype._renderOverviewStateTile = function (tile) {
-    const entity = tile.entity ? ` data-entity="${esc(tile.entity)}"` : "";
-    return `<div class="overview-state-tile ${esc(tile.tone)}"${entity}>
-      <ha-icon icon="${esc(tile.icon)}"></ha-icon>
-      <div class="overview-state-copy">
-        <strong>${esc(tile.title)}</strong>
-        <span>${esc(tile.primary)}</span>
-        <small>${esc(tile.secondary)}</small>
-      </div>
-    </div>`;
-  };
-
-  Panel.prototype._renderOverviewHero = function (device) {
-    const headline = this._overviewHeadline(device);
-    const badge = this._overviewOnlineBadge(device);
-    const mode = this._mode(device);
-    const onBattery = mode === "battery_mode" || this._isOn(device, "on_battery") === true;
-    const input = this._format(device, "input_voltage");
-    const output = this._format(device, "output_voltage");
-    const battery = this._numeric(device, "battery_capacity");
-    const load = this._numeric(device, "output_load");
-
-    const inputEntity = this._entityId(device, "input_voltage");
-    const outputEntity = this._entityId(device, "output_voltage");
-    const batteryEntity = this._entityId(device, "battery_capacity");
-    const loadEntity = this._entityId(device, "output_load");
-    const modeEntity = this._entityId(device, "mode");
-
-    const flowClass = onBattery ? "battery-flow" : "line-flow";
-
-    return `<article class="ups-hero-v040 card-v040 ${esc(headline.tone)}">
-      <div class="hero-v040-head">
-        <div class="hero-v040-copy">
-          <div class="hero-v040-kicker">Ð¡ÐžÐ¡Ð¢ÐžÐ¯ÐÐ˜Ð• Ð¡Ð˜Ð¡Ð¢Ð•ÐœÐ«</div>
-          <h2>${esc(headline.title)}</h2>
-          <p>${esc(headline.detail)}</p>
-        </div>
-        <div class="hero-online-badge ${esc(badge.tone)}">
-          <span><ha-icon icon="${esc(badge.icon)}"></ha-icon>${esc(badge.label)}</span>
-          <small>${esc(badge.detail)}</small>
-        </div>
-      </div>
-
-      <div class="ups-power-diagram ${flowClass}" aria-label="Ð¡Ñ…ÐµÐ¼Ð° Ð¿Ð¸Ñ‚Ð°Ð½Ð¸Ñ UPS">
-        <div class="diagram-node grid-node ${onBattery ? "inactive" : "active"}" ${inputEntity ? `data-entity="${esc(inputEntity)}"` : ""}>
-          <ha-icon icon="mdi:transmission-tower"></ha-icon>
-          <span>Ð¡ÐµÑ‚ÑŒ</span>
-          <strong>${esc(input)}</strong>
-        </div>
-        <div class="diagram-link grid-link"><span></span><ha-icon icon="mdi:chevron-right"></ha-icon></div>
-        <div class="diagram-node ups-node active" ${modeEntity ? `data-entity="${esc(modeEntity)}"` : ""}>
-          <ha-icon icon="mdi:battery-charging"></ha-icon>
-          <strong>UPS</strong>
-          <span>${esc(this._modeLabel(device))}</span>
-        </div>
-        <div class="diagram-link output-link"><span></span><ha-icon icon="mdi:chevron-right"></ha-icon></div>
-        <div class="diagram-node load-node active" ${outputEntity ? `data-entity="${esc(outputEntity)}"` : ""}>
-          <ha-icon icon="mdi:power-plug"></ha-icon>
-          <span>ÐÐ°Ð³Ñ€ÑƒÐ·ÐºÐ°</span>
-          <strong>${esc(output)}</strong>
-        </div>
-        <div class="battery-branch ${onBattery ? "active" : "ready"}">
-          <div class="battery-link"><span></span>${onBattery ? '<ha-icon icon="mdi:chevron-up"></ha-icon>' : ""}</div>
-          <div class="battery-node" ${batteryEntity ? `data-entity="${esc(batteryEntity)}"` : ""}>
-            <ha-icon icon="mdi:battery"></ha-icon>
-            <div><span>ÐÐšÐ‘</span><strong>${battery === null ? "â€”" : `${Math.round(battery)} %`}</strong><small>${onBattery ? "ÐŸÐ¸Ñ‚Ð°ÐµÑ‚ Ð½Ð°Ð³Ñ€ÑƒÐ·ÐºÑƒ" : "Ð—Ð°Ñ€ÑÐ¶ÐµÐ½"}</small></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="hero-metrics-v040">
-        <div class="hero-metric-v040" ${inputEntity ? `data-entity="${esc(inputEntity)}"` : ""}><ha-icon icon="mdi:flash"></ha-icon><div><span>Ð’Ñ…Ð¾Ð´Ð½Ð¾Ðµ Ð½Ð°Ð¿Ñ€ÑÐ¶ÐµÐ½Ð¸Ðµ</span><strong>${esc(input)}</strong></div></div>
-        <div class="hero-metric-v040" ${outputEntity ? `data-entity="${esc(outputEntity)}"` : ""}><ha-icon icon="mdi:power-plug"></ha-icon><div><span>Ð’Ñ‹Ñ…Ð¾Ð´Ð½Ð¾Ðµ Ð½Ð°Ð¿Ñ€ÑÐ¶ÐµÐ½Ð¸Ðµ</span><strong>${esc(output)}</strong></div></div>
-        <div class="hero-metric-v040" ${batteryEntity ? `data-entity="${esc(batteryEntity)}"` : ""}><ha-icon icon="mdi:battery"></ha-icon><div><span>Ð—Ð°Ñ€ÑÐ´ ÐÐšÐ‘</span><strong>${battery === null ? "â€”" : `${Math.round(battery)} %`}</strong></div></div>
-        <div class="hero-metric-v040" ${loadEntity ? `data-entity="${esc(loadEntity)}"` : ""}><ha-icon icon="mdi:gauge"></ha-icon><div><span>ÐÐ°Ð³Ñ€ÑƒÐ·ÐºÐ°</span><strong>${load === null ? "â€”" : `${Math.round(load)} %`}</strong></div></div>
-      </div>
-    </article>`;
-  };
-
-  Panel.prototype._renderOverviewEvents = function (device) {
-    return `<article class="overview-events-v040 card-v040">
-      <div class="section-title-v040">ÐŸÐžÐ¡Ð›Ð•Ð”ÐÐ˜Ð• Ð¡ÐžÐ‘Ð«Ð¢Ð˜Ð¯</div>
-      <div class="overview-events-list">
-        ${this._eventRow(device, "battery_mode_events", "Ð ÐµÐ¶Ð¸Ð¼ ÐÐšÐ‘")}
-        ${this._eventRow(device, "cloud_telemetry_events", "ÐžÐ±Ð»Ð°ÐºÐ¾")}
-        ${this._eventRow(device, "data_freshness_events", "Ð¡Ð²ÐµÐ¶ÐµÑÑ‚ÑŒ Ð´Ð°Ð½Ð½Ñ‹Ñ…")}
-        ${this._eventRow(device, "fault_mode_events", "ÐÐ²Ð°Ñ€Ð¸Ð¹Ð½Ñ‹Ð¹ Ñ€ÐµÐ¶Ð¸Ð¼")}
-      </div>
-    </article>`;
-  };
-
-  Panel.prototype._renderOverview = function () {
-    const selectedId = this._selectedUpsId?.();
-    const device = this._devices.find((item) => item.id === selectedId) || this._devices[0];
-    if (!device) return this._empty("UPS Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½Ñ‹");
-
-    const tiles = ["grid", "battery", "cloud", "freshness"].map((kind) => this._overviewStateTile(device, kind));
-
-    return `<section class="overview-v040">
-      ${this._renderOverviewHero(device)}
-      <article class="overview-states-v040 card-v040">
-        <div class="section-title-v040">Ð¡ÐžÐ¡Ð¢ÐžÐ¯ÐÐ˜Ð¯</div>
-        <div class="overview-state-grid-v040">${tiles.map((tile) => this._renderOverviewStateTile(tile)).join("")}</div>
-      </article>
-      ${this._renderOverviewEvents(device)}
-    </section>
-    <p class="hint hint-v040">ÐÐ°Ð¶Ð¼Ð¸Ñ‚Ðµ Ð¸ ÑƒÐ´ÐµÑ€Ð¶Ð¸Ð²Ð°Ð¹Ñ‚Ðµ Ñ„Ð°ÐºÑ‚Ð¸Ñ‡ÐµÑÐºÐ¸Ð¹ Ð¿Ð¾ÐºÐ°Ð·Ð°Ñ‚ÐµÐ»ÑŒ, Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð¾Ñ‚ÐºÑ€Ñ‹Ñ‚ÑŒ ÑˆÑ‚Ð°Ñ‚Ð½Ñ‹Ð¹ more-info Home Assistant.</p>`;
-  };
-
-  const previousRender = Panel.prototype._render;
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    const subtitle = root.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Â· UI v${UI_VERSION}`;
-
-    if (root.querySelector("style[data-stark-ui-v040]")) return;
-    const style = document.createElement("style");
-    style.dataset.starkUiV040 = "true";
-    style.textContent = `
-      .overview-v040 { width:min(100%,820px); margin:0 auto; display:grid; gap:14px; }
-      .card-v040 { min-width:0; border:1px solid var(--divider-color); border-radius:22px; background:var(--card-background-color); box-shadow:var(--ha-card-box-shadow,none); }
-      .ups-hero-v040 { padding:18px; overflow:hidden; }
-      .hero-v040-head { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:14px; align-items:start; }
-      .hero-v040-copy { min-width:0; }
-      .hero-v040-kicker,.section-title-v040 { color:var(--secondary-text-color); font-size:14px; line-height:1.2; font-weight:750; letter-spacing:.055em; }
-      .hero-v040-copy h2 { margin:8px 0 0; font-size:clamp(26px,7vw,34px); line-height:1.05; letter-spacing:-.02em; overflow-wrap:anywhere; }
-      .hero-v040-copy p { margin:8px 0 0; color:var(--secondary-text-color); font-size:16px; line-height:1.35; }
-      .hero-online-badge { min-width:118px; max-width:150px; text-align:right; }
-      .hero-online-badge>span { min-height:44px; display:inline-flex; align-items:center; justify-content:center; gap:7px; border-radius:999px; padding:8px 13px; font-size:16px; font-weight:750; white-space:nowrap; }
-      .hero-online-badge>span ha-icon { --mdc-icon-size:18px; }
-      .hero-online-badge small { display:block; margin-top:6px; color:var(--secondary-text-color); font-size:14px; line-height:1.2; white-space:normal; }
-      .hero-online-badge.good>span { color:var(--success-color,#2e7d32); background:color-mix(in srgb,var(--success-color,#2e7d32) 11%,transparent); }
-      .hero-online-badge.warn>span { color:var(--warning-color,#ed6c02); background:color-mix(in srgb,var(--warning-color,#ed6c02) 12%,transparent); }
-      .hero-online-badge.bad>span { color:var(--error-color,#d32f2f); background:color-mix(in srgb,var(--error-color,#d32f2f) 11%,transparent); }
-      .hero-online-badge.unknown>span { color:var(--secondary-text-color); background:color-mix(in srgb,var(--secondary-text-color) 10%,transparent); }
-
-      .ups-power-diagram { position:relative; margin:28px 0 22px; display:grid; grid-template-columns:minmax(88px,1fr) 38px minmax(96px,1fr) 38px minmax(88px,1fr); grid-template-rows:auto auto; align-items:center; gap:0 3px; }
-      .diagram-node { min-width:0; min-height:112px; border-radius:20px; background:color-mix(in srgb,var(--primary-color) 7%,var(--card-background-color)); display:flex; flex-direction:column; justify-content:center; align-items:center; gap:5px; padding:10px 6px; text-align:center; }
-      .diagram-node ha-icon { --mdc-icon-size:31px; color:var(--primary-color); }
-      .diagram-node span { color:var(--secondary-text-color); font-size:15px; line-height:1.15; }
-      .diagram-node strong { max-width:100%; font-size:18px; line-height:1.15; overflow-wrap:anywhere; }
-      .diagram-link { min-width:0; display:flex; align-items:center; color:var(--primary-color); }
-      .diagram-link span { height:3px; flex:1; border-radius:999px; background:currentColor; }
-      .diagram-link ha-icon { --mdc-icon-size:21px; margin-left:-5px; }
-      .battery-branch { grid-column:3; grid-row:2; justify-self:center; width:min(100%,150px); display:grid; justify-items:center; margin-top:0; }
-      .battery-link { width:26px; height:38px; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; color:var(--secondary-text-color); }
-      .battery-link span { width:3px; height:100%; border-radius:999px; background:currentColor; opacity:.45; }
-      .battery-link ha-icon { --mdc-icon-size:20px; margin-top:-9px; }
-      .battery-node { width:100%; min-height:104px; display:flex; align-items:center; justify-content:center; gap:10px; border-radius:20px; padding:10px; background:color-mix(in srgb,var(--warning-color,#ed6c02) 9%,var(--card-background-color)); }
-      .battery-node ha-icon { --mdc-icon-size:30px; color:var(--warning-color,#ed6c02); }
-      .battery-node span,.battery-node strong,.battery-node small { display:block; }
-      .battery-node span { color:var(--secondary-text-color); font-size:15px; }
-      .battery-node strong { font-size:20px; line-height:1.1; }
-      .battery-node small { margin-top:4px; color:var(--secondary-text-color); font-size:13px; }
-      .battery-branch.active .battery-link { color:var(--warning-color,#ed6c02); }
-      .battery-flow .grid-node { opacity:.58; }
-      .battery-flow .grid-link { color:var(--secondary-text-color); opacity:.4; }
-      .battery-flow .output-link { color:var(--warning-color,#ed6c02); }
-      .battery-flow .ups-node ha-icon,.battery-flow .load-node ha-icon { color:var(--warning-color,#ed6c02); }
-
-      .hero-metrics-v040 { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); border:1px solid var(--divider-color); border-radius:18px; overflow:hidden; }
-      .hero-metric-v040 { min-width:0; min-height:76px; display:flex; align-items:center; gap:11px; padding:12px 14px; border-right:1px solid var(--divider-color); border-bottom:1px solid var(--divider-color); }
-      .hero-metric-v040:nth-child(2n) { border-right:0; }
-      .hero-metric-v040:nth-last-child(-n+2) { border-bottom:0; }
-      .hero-metric-v040 ha-icon { --mdc-icon-size:25px; color:var(--primary-color); flex:0 0 auto; }
-      .hero-metric-v040:nth-child(3) ha-icon,.hero-metric-v040:nth-child(4) ha-icon { color:var(--warning-color,#ed6c02); }
-      .hero-metric-v040>div { min-width:0; }
-      .hero-metric-v040 span,.hero-metric-v040 strong { display:block; }
-      .hero-metric-v040 span { color:var(--secondary-text-color); font-size:15px; line-height:1.2; }
-      .hero-metric-v040 strong { margin-top:3px; font-size:19px; line-height:1.15; overflow-wrap:anywhere; }
-
-      .overview-states-v040,.overview-events-v040 { padding:18px; }
-      .overview-state-grid-v040 { margin-top:14px; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-      .overview-state-tile { min-width:0; min-height:100px; display:flex; align-items:center; gap:12px; border:1px solid var(--divider-color); border-radius:18px; padding:13px; }
-      .overview-state-tile ha-icon { --mdc-icon-size:29px; flex:0 0 auto; }
-      .overview-state-tile.good ha-icon { color:var(--success-color,#2e7d32); }
-      .overview-state-tile.warn ha-icon { color:var(--warning-color,#ed6c02); }
-      .overview-state-tile.bad ha-icon { color:var(--error-color,#d32f2f); }
-      .overview-state-tile.unknown ha-icon { color:var(--secondary-text-color); }
-      .overview-state-copy { min-width:0; }
-      .overview-state-copy strong,.overview-state-copy span,.overview-state-copy small { display:block; }
-      .overview-state-copy strong { font-size:16px; }
-      .overview-state-copy span { margin-top:4px; font-size:16px; font-weight:700; overflow-wrap:anywhere; }
-      .overview-state-copy small { margin-top:3px; color:var(--secondary-text-color); font-size:14px; line-height:1.2; overflow-wrap:anywhere; }
-
-      .overview-events-list { margin-top:10px; }
-      .overview-events-v040 .event-row { min-height:58px !important; padding:10px 2px !important; }
-      .overview-events-v040 .event-row>span { font-size:15px !important; }
-      .overview-events-v040 .event-copy strong { font-size:16px !important; }
-      .overview-events-v040 .event-copy small { font-size:14px !important; }
-      .hint-v040 { width:min(100%,820px); margin:0 auto; padding-bottom:4px; }
-
-      @media (max-width:430px) {
-        .ups-hero-v040,.overview-states-v040,.overview-events-v040 { padding:16px; }
-        .hero-v040-head { grid-template-columns:minmax(0,1fr) 124px; gap:10px; }
-        .hero-online-badge { min-width:0; max-width:124px; }
-        .hero-online-badge>span { min-height:42px; padding:7px 10px; font-size:15px; }
-        .hero-online-badge small { font-size:13px; }
-        .ups-power-diagram { grid-template-columns:minmax(82px,1fr) 24px minmax(92px,1fr) 24px minmax(82px,1fr); margin-top:24px; }
-        .diagram-node { min-height:108px; padding:9px 5px; }
-        .diagram-node span { font-size:14px; }
-        .diagram-node strong { font-size:17px; }
-        .diagram-link ha-icon { --mdc-icon-size:18px; }
-        .battery-branch { width:min(100%,136px); }
-        .battery-node { min-height:98px; padding:9px; }
-      }
-      @media (max-width:390px) {
-        .hero-v040-head { grid-template-columns:minmax(0,1fr) 112px; }
-        .hero-v040-copy h2 { font-size:25px; }
-        .hero-v040-copy p { font-size:15px; }
-        .hero-online-badge>span { font-size:14px; padding-left:8px; padding-right:8px; }
-        .ups-power-diagram { grid-template-columns:minmax(70px,1fr) 18px minmax(82px,1fr) 18px minmax(70px,1fr); }
-        .diagram-node { min-height:102px; border-radius:17px; }
-        .diagram-node ha-icon { --mdc-icon-size:27px; }
-        .diagram-node strong { font-size:16px; }
-        .battery-branch { width:min(100%,126px); }
-        .hero-metric-v040 { padding:11px 10px; gap:8px; }
-        .hero-metric-v040 span { font-size:14px; }
-        .hero-metric-v040 strong { font-size:18px; }
-        .overview-state-tile { padding:11px; gap:9px; }
-        .overview-state-tile ha-icon { --mdc-icon-size:25px; }
-      }
-      @media (min-width:760px) {
-        .hero-v040-copy h2 { font-size:34px; }
-        .overview-state-grid-v040 { grid-template-columns:repeat(4,minmax(0,1fr)); }
-      }
-    `;
-    root.append(style);
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v040.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v040-semantics.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-
-if (Panel && !Panel.prototype.__starkUiV040Semantics) {
-  Panel.prototype.__starkUiV040Semantics = true;
-
-  const previousStateTile = Panel.prototype._overviewStateTile;
-
-  Panel.prototype._overviewStateTile = function (device, kind) {
-    if (kind === "grid") {
-      const mode = this._mode(device);
-      const inputVoltage = this._numeric(device, "input_voltage");
-      if (mode === "battery_mode") {
-        return {
-          icon: "mdi:transmission-tower-off",
-          title: "Ð¡ÐµÑ‚ÑŒ",
-          primary: "ÐÐµÑ‚ Ð²Ñ…Ð¾Ð´Ð°",
-          secondary: this._format(device, "input_voltage", "0 V"),
-          tone: "warn",
-          entity: this._entityId(device, "input_voltage"),
-        };
-      }
-      if (inputVoltage !== null && inputVoltage > 0) {
-        return {
-          icon: "mdi:transmission-tower",
-          title: "Ð¡ÐµÑ‚ÑŒ",
-          primary: "Ð•ÑÑ‚ÑŒ Ð¿Ð¸Ñ‚Ð°Ð½Ð¸Ðµ",
-          secondary: this._format(device, "input_voltage"),
-          tone: "good",
-          entity: this._entityId(device, "input_voltage"),
-        };
-      }
-      return {
-        icon: "mdi:transmission-tower",
-        title: "Ð¡ÐµÑ‚ÑŒ",
-        primary: "ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾",
-        secondary: "ÐÐµÑ‚ Ð´Ð¾ÑÑ‚Ð¾Ð²ÐµÑ€Ð½Ñ‹Ñ… Ð´Ð°Ð½Ð½Ñ‹Ñ…",
-        tone: "unknown",
-        entity: this._entityId(device, "input_voltage"),
-      };
-    }
-
-    if (kind === "battery") {
-      const tile = previousStateTile.call(this, device, kind);
-      const battery = this._numeric(device, "battery_capacity");
-      const mode = this._mode(device);
-      if (mode !== "battery_mode" && battery !== null) {
-        tile.secondary = battery >= 95 ? "Ð—Ð°Ñ€ÑÐ¶ÐµÐ½" : "Ð”Ð¾ÑÑ‚ÑƒÐ¿ÐµÐ½";
-      }
-      return tile;
-    }
-
-    return previousStateTile.call(this, device, kind);
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v040-semantics.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v041.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.4.1";
-const PARENT_ROUTE = "/dashboard-infrastructure/overview";
-
-function esc(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-if (Panel && !Panel.prototype.__starkUiV041) {
-  Panel.prototype.__starkUiV041 = true;
-
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._menuOpen = false;
-
-  Panel.prototype._menuNavigateParent = function () {
-    if (typeof this._navigateTo === "function") {
-      this._navigateTo(PARENT_ROUTE);
-      return;
-    }
-    history.pushState(null, "", PARENT_ROUTE);
-    window.dispatchEvent(new Event("location-changed"));
-  };
-
-  Panel.prototype._menuMarkupV041 = function () {
-    const selectedId = this._selectedUpsId?.() || this._devices?.[0]?.id || null;
-    const devices = Array.isArray(this._devices) ? this._devices : [];
-
-    return `
-      <div class="menu-backdrop-v041 ${this._menuOpen ? "open" : ""}" data-menu-close aria-hidden="${this._menuOpen ? "false" : "true"}"></div>
-      <aside class="menu-drawer-v041 ${this._menuOpen ? "open" : ""}" aria-hidden="${this._menuOpen ? "false" : "true"}" aria-label="ÐœÐµÐ½ÑŽ Stark SolarPower">
-        <div class="menu-head-v041">
-          <strong>ÐœÐµÐ½ÑŽ</strong>
-          <button type="button" class="menu-close-v041" data-menu-close aria-label="Ð—Ð°ÐºÑ€Ñ‹Ñ‚ÑŒ Ð¼ÐµÐ½ÑŽ"><ha-icon icon="mdi:close"></ha-icon></button>
-        </div>
-
-        <button type="button" class="menu-row-v041 parent" data-menu-parent>
-          <ha-icon icon="mdi:home-outline"></ha-icon>
-          <span>Ð˜Ð½Ñ„Ñ€Ð°ÑÑ‚Ñ€ÑƒÐºÑ‚ÑƒÑ€Ð°</span>
-          <ha-icon class="chevron" icon="mdi:chevron-right"></ha-icon>
-        </button>
-
-        <div class="menu-divider-v041"></div>
-        <div class="menu-section-label-v041">Ð˜Ð‘ÐŸ</div>
-
-        ${devices.map((device) => {
-          const active = device.id === selectedId;
-          const tone = this._status?.(device)?.tone || "bad";
-          return `<button type="button" class="menu-row-v041 device ${active ? "active" : ""}" data-menu-device="${esc(device.id)}">
-            <ha-icon icon="mdi:battery-charging"></ha-icon>
-            <span class="menu-device-name-v041"><i class="menu-dot-v041 ${esc(tone)}"></i>${esc(device.name)}</span>
-            <ha-icon class="chevron" icon="mdi:chevron-right"></ha-icon>
-          </button>`;
-        }).join("")}
-
-        <div class="menu-divider-v041"></div>
-
-        <button type="button" class="menu-row-v041" data-menu-refresh>
-          <ha-icon icon="mdi:refresh"></ha-icon>
-          <span>ÐžÐ±Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð²ÑÐµ Ð˜Ð‘ÐŸ</span>
-        </button>
-
-        <div class="menu-footer-v041">
-          <strong>Stark SolarPower</strong>
-          <span>UI v${UI_VERSION} Â· Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ñ‡Ñ‚ÐµÐ½Ð¸Ðµ</span>
-        </div>
-      </aside>`;
-  };
-
-  Panel.prototype._installMenuV041 = function () {
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    const oldBack = root.querySelector(".back");
-    if (oldBack) {
-      const trigger = oldBack.cloneNode(true);
-      trigger.classList.add("menu-trigger-v041");
-      trigger.setAttribute("aria-label", "ÐœÐµÐ½ÑŽ");
-      trigger.setAttribute("title", "ÐœÐµÐ½ÑŽ");
-      trigger.setAttribute("aria-expanded", this._menuOpen ? "true" : "false");
-      trigger.innerHTML = '<ha-icon icon="mdi:menu"></ha-icon>';
-      oldBack.replaceWith(trigger);
-      trigger.addEventListener("click", () => {
-        this._menuOpen = true;
-        this._queueRender();
-      });
-    }
-
-    root.querySelectorAll(".menu-backdrop-v041,.menu-drawer-v041").forEach((node) => node.remove());
-    root.insertAdjacentHTML("beforeend", this._menuMarkupV041());
-
-    root.querySelectorAll("[data-menu-close]").forEach((element) => {
-      element.addEventListener("click", () => {
-        this._menuOpen = false;
-        this._queueRender();
-      });
-    });
-
-    root.querySelector("[data-menu-parent]")?.addEventListener("click", () => {
-      this._menuOpen = false;
-      this._menuNavigateParent();
-    });
-
-    root.querySelectorAll("[data-menu-device]").forEach((button) => {
-      button.addEventListener("click", () => {
-        const deviceId = button.dataset.menuDevice;
-        if (deviceId) this._diagnosticDeviceId = deviceId;
-        this._menuOpen = false;
-        this._queueRender();
-      });
-    });
-
-    root.querySelector("[data-menu-refresh]")?.addEventListener("click", () => {
-      this._menuOpen = false;
-      root.querySelector(".refresh")?.click();
-      this._queueRender();
-    });
-  };
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    const subtitle = root.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Â· UI v${UI_VERSION}`;
-
-    if (!root.querySelector("style[data-stark-ui-v041]")) {
-      const style = document.createElement("style");
-      style.dataset.starkUiV041 = "true";
-      style.textContent = `
-        .menu-trigger-v041 {
-          color: var(--primary-text-color) !important;
-        }
-        .menu-backdrop-v041 {
-          position: fixed;
-          inset: 0;
-          z-index: 80;
-          background: rgba(0,0,0,.22);
-          opacity: 0;
-          pointer-events: none;
-          transition: opacity .18s ease;
-        }
-        .menu-backdrop-v041.open {
-          opacity: 1;
-          pointer-events: auto;
-        }
-        .menu-drawer-v041 {
-          position: fixed;
-          z-index: 81;
-          top: 0;
-          bottom: 0;
-          left: 0;
-          width: min(84vw, 340px);
-          padding: calc(18px + env(safe-area-inset-top)) 14px calc(18px + env(safe-area-inset-bottom));
-          background: var(--card-background-color);
-          color: var(--primary-text-color);
-          border-right: 1px solid var(--divider-color);
-          box-shadow: 12px 0 32px rgba(0,0,0,.15);
-          transform: translateX(-102%);
-          transition: transform .2s ease;
-          overflow-y: auto;
-          overscroll-behavior: contain;
-        }
-        .menu-drawer-v041.open {
-          transform: translateX(0);
-        }
-        .menu-head-v041 {
-          min-height: 54px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 12px;
-          padding: 0 4px 8px 10px;
-        }
-        .menu-head-v041 > strong {
-          font-size: 22px;
-          line-height: 1.2;
-        }
-        .menu-close-v041 {
-          width: 44px;
-          height: 44px;
-          min-width: 44px;
-          border: 1px solid var(--divider-color);
-          border-radius: 50%;
-          background: transparent;
-          color: var(--secondary-text-color);
-          display: grid;
-          place-items: center;
-        }
-        .menu-close-v041 ha-icon { --mdc-icon-size: 23px; }
-        .menu-section-label-v041 {
-          padding: 2px 12px 6px;
-          color: var(--secondary-text-color);
-          font-size: 12px;
-          font-weight: 700;
-          letter-spacing: .06em;
-          text-transform: uppercase;
-        }
-        .menu-row-v041 {
-          width: 100%;
-          min-height: 56px;
-          border: 0;
-          border-radius: 16px;
-          background: transparent;
-          color: var(--primary-text-color);
-          display: grid;
-          grid-template-columns: 30px minmax(0, 1fr) 22px;
-          align-items: center;
-          gap: 9px;
-          padding: 8px 10px;
-          text-align: left;
-          font: inherit;
-          font-size: 16px;
-        }
-        .menu-row-v041 > ha-icon:first-child {
-          color: var(--primary-color);
-          --mdc-icon-size: 24px;
-        }
-        .menu-row-v041 .chevron {
-          color: var(--secondary-text-color);
-          --mdc-icon-size: 20px;
-        }
-        .menu-row-v041:not(.parent):not(.device) .chevron { visibility: hidden; }
-        .menu-row-v041.active {
-          color: var(--primary-color);
-          background: color-mix(in srgb, var(--primary-color) 10%, transparent);
-          font-weight: 750;
-        }
-        .menu-device-name-v041 {
-          min-width: 0;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-        .menu-dot-v041 {
-          width: 8px;
-          height: 8px;
-          flex: 0 0 8px;
-          border-radius: 50%;
-          background: var(--secondary-text-color);
-        }
-        .menu-dot-v041.good { background: var(--success-color, #2e7d32); }
-        .menu-dot-v041.warn { background: var(--warning-color, #ed6c02); }
-        .menu-dot-v041.bad { background: var(--error-color, #d32f2f); }
-        .menu-divider-v041 {
-          height: 1px;
-          margin: 10px 8px;
-          background: var(--divider-color);
-        }
-        .menu-footer-v041 {
-          margin-top: 18px;
-          padding: 12px;
-          color: var(--secondary-text-color);
-          font-size: 13px;
-          line-height: 1.4;
-        }
-        .menu-footer-v041 strong,
-        .menu-footer-v041 span { display: block; }
-        .menu-footer-v041 strong {
-          color: var(--primary-text-color);
-          font-size: 14px;
-          margin-bottom: 2px;
-        }
-        @media (max-width: 390px) {
-          .menu-drawer-v041 { width: min(88vw, 328px); }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .menu-backdrop-v041,
-          .menu-drawer-v041 { transition: none; }
-        }
-      `;
-      root.append(style);
-    }
-
-    this._installMenuV041();
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v041.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v042.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.4.2";
-
-if (Panel && !Panel.prototype.__starkUiV042) {
-  Panel.prototype.__starkUiV042 = true;
-
-  // Home Assistant owns the top-left menu. The panel must request the native
-  // HA sidebar/system menu instead of rendering its own application drawer.
-  Panel.prototype._installMenuV041 = function () {
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    root.querySelectorAll(".menu-backdrop-v041,.menu-drawer-v041").forEach((node) => node.remove());
-    this._menuOpen = false;
-
-    const oldTrigger = root.querySelector(".back,.menu-trigger-v041,.ha-menu-trigger-v042");
-    if (!oldTrigger) return;
-
-    const trigger = oldTrigger.cloneNode(true);
-    trigger.classList.remove("menu-trigger-v041");
-    trigger.classList.add("ha-menu-trigger-v042");
-    trigger.setAttribute("aria-label", "ÐœÐµÐ½ÑŽ Home Assistant");
-    trigger.setAttribute("title", "ÐœÐµÐ½ÑŽ Home Assistant");
-    trigger.removeAttribute("aria-expanded");
-    trigger.innerHTML = '<ha-icon icon="mdi:menu"></ha-icon>';
-    oldTrigger.replaceWith(trigger);
-
-    trigger.addEventListener("click", () => {
-      this.dispatchEvent(
-        new CustomEvent("hass-toggle-menu", {
-          bubbles: true,
-          composed: true,
-        })
-      );
-    });
-  };
-
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    const subtitle = root.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Â· UI v${UI_VERSION}`;
-
-    // Defensive cleanup for an in-place frontend update from UI 0.4.1.
-    root.querySelectorAll(".menu-backdrop-v041,.menu-drawer-v041").forEach((node) => node.remove());
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v042.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v043.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.4.3";
-
-if (Panel && !Panel.prototype.__starkUiV043) {
-  Panel.prototype.__starkUiV043 = true;
-
-  const previousKeyFromUniqueId = Panel.prototype._keyFromUniqueId;
-  const previousExtendedAvailable = Panel.prototype._extendedAvailable;
-  const previousHeadline = Panel.prototype._overviewHeadline;
-  const previousBindEvents = Panel.prototype._bindEvents;
-  const previousRender = Panel.prototype._render;
-
-  // UI 0.4.3 hardening: PFC status is a real backend diagnostic entity and
-  // must participate in the frontend entity map even though older bundles did
-  // not include it in ENTITY_KEYS.
-  Panel.prototype._keyFromUniqueId = function (uniqueId) {
-    if (uniqueId?.endsWith("_pfc_status")) return "pfc_status";
-    return previousKeyFromUniqueId.call(this, uniqueId);
-  };
-
-  // Do not infer extended-channel health from only three values. Treat the
-  // detailed telemetry surface as available when any confirmed extended field
-  // is live for the selected UPS.
-  Panel.prototype._extendedAvailable = function (device) {
-    const keys = [
-      "positive_bus_voltage",
-      "negative_bus_voltage",
-      "ups_temperature",
-      "pfc_temperature",
-      "ambient_temperature",
-      "charger_temperature",
-      "battery_piece_number",
-      "battery_group_number",
-      "battery_remain_time",
-      "protocol_id",
-      "dctodc_status",
-      "pfc_status",
-      "inverter_status",
-      "input_relay_status",
-      "output_relay_status",
-    ];
-    if (keys.some((key) => this._available(this._state(device, key)))) return true;
-    return previousExtendedAvailable.call(this, device);
-  };
-
-  // The backend owns the stale threshold. The UI only reports the current
-  // stale state and observed age, so a future threshold change cannot make the
-  // explanatory text lie.
-  Panel.prototype._overviewHeadline = function (device) {
-    const headline = previousHeadline.call(this, device);
-    if (this._isOn(device, "data_stale") === true) {
-      const age = this._format(device, "data_age", "ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾");
-      headline.detail = age === "ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾"
-        ? "Ð’Ð¾Ð·Ñ€Ð°ÑÑ‚ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½ÐµÐ³Ð¾ snapshot Ð½ÐµÐ¸Ð·Ð²ÐµÑÑ‚ÐµÐ½"
-        : `ÐŸÐ¾ÑÐ»ÐµÐ´Ð½Ð¸Ð¹ snapshot: ${age} Ð½Ð°Ð·Ð°Ð´`;
-    }
-    return headline;
-  };
-
-  Panel.prototype._setRefreshFeedbackV043 = function (state) {
-    this._refreshFeedbackV043 = state;
-    const button = this.shadowRoot?.querySelector(".refresh");
-    if (!button) return;
-
-    button.classList.toggle("is-refreshing-v043", state === "busy");
-    button.classList.toggle("is-ok-v043", state === "ok");
-    button.classList.toggle("is-error-v043", state === "error");
-    button.disabled = state === "busy";
-    button.setAttribute("aria-busy", state === "busy" ? "true" : "false");
-
-    const icon = button.querySelector("ha-icon");
-    if (icon) {
-      icon.setAttribute(
-        "icon",
-        state === "busy"
-          ? "mdi:loading"
-          : state === "ok"
-            ? "mdi:check"
-            : state === "error"
-              ? "mdi:alert-circle-outline"
-              : "mdi:refresh"
-      );
-    }
-
-    const label = state === "busy"
-      ? "ÐžÐ±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ðµ UPSâ€¦"
-      : state === "ok"
-        ? "Ð—Ð°Ð¿Ñ€Ð¾Ñ Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ Ð¿Ñ€Ð¸Ð½ÑÑ‚"
-        : state === "error"
-          ? "ÐžÑˆÐ¸Ð±ÐºÐ° Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ UPS"
-          : "ÐžÐ±Ð½Ð¾Ð²Ð¸Ñ‚ÑŒ Ð²ÑÐµ Ð˜Ð‘ÐŸ";
-    button.setAttribute("aria-label", label);
-    button.setAttribute("title", label);
-  };
-
-  // Replace the old fire-and-forget refresh listener with a single listener
-  // that provides visual progress/success/error feedback and prevents repeated
-  // taps while the coordinator refresh is in flight.
-  Panel.prototype._bindEvents = function () {
-    previousBindEvents.call(this);
-
-    const root = this.shadowRoot;
-    const oldButton = root?.querySelector(".refresh");
-    if (!root || !oldButton) return;
-
-    const button = oldButton.cloneNode(true);
-    oldButton.replaceWith(button);
-    this._setRefreshFeedbackV043(this._refreshFeedbackV043 || null);
-
-    button.addEventListener("click", async () => {
-      if (this._refreshFeedbackV043 === "busy" || !this._hass) return;
-      const entityId = this._devices
-        .map((device) => this._entityId(device, "refresh_now"))
-        .find((candidate) => {
-          const state = candidate ? this._hass.states?.[candidate] : null;
-          return state && !["unknown", "unavailable"].includes(String(state.state).toLowerCase());
-        });
-      if (!entityId) {
-        this._setRefreshFeedbackV043("error");
-        window.setTimeout(() => {
-          if (this._refreshFeedbackV043 !== "error") return;
-          this._setRefreshFeedbackV043(null);
-        }, 1400);
-        return;
-      }
-
-      this._setRefreshFeedbackV043("busy");
-      try {
-        await this._hass.callService("button", "press", { entity_id: entityId });
-        this._setRefreshFeedbackV043("ok");
-        window.setTimeout(() => {
-          if (this._refreshFeedbackV043 !== "ok") return;
-          this._setRefreshFeedbackV043(null);
-        }, 850);
-      } catch (err) {
-        console.warn("Stark SolarPower refresh failed", err);
-        this._setRefreshFeedbackV043("error");
-        window.setTimeout(() => {
-          if (this._refreshFeedbackV043 !== "error") return;
-          this._setRefreshFeedbackV043(null);
-        }, 1400);
-      }
-    });
-  };
-
-  Panel.prototype._renderFingerprintV043 = function () {
-    const devices = Array.isArray(this._devices) ? this._devices : [];
-    const states = [];
-    for (const device of devices) {
-      const entities = device?.entities || {};
-      for (const [key, entityId] of Object.entries(entities)) {
-        const stateObj = this._hass?.states?.[entityId];
-        states.push([
-          device.id,
-          key,
-          entityId,
-          stateObj?.state ?? null,
-          stateObj?.last_updated ?? null,
-          stateObj?.attributes?.event_type ?? null,
-          stateObj?.attributes?.unit_of_measurement ?? null,
-        ]);
-      }
-    }
-    return JSON.stringify([
-      this._view,
-      this._diagnosticDeviceId,
-      this._loadingRegistry,
-      this._registryLoaded,
-      this._registryError,
-      devices.map((device) => [device.id, device.name, device.model]),
-      states,
-    ]);
-  };
-
-  Panel.prototype._render = function () {
-    // Home Assistant may update hundreds of unrelated entities while this
-    // panel is open. Avoid rebuilding the complete Shadow DOM unless the
-    // selected view/device or a Stark entity actually changed.
-    const fingerprint = this._renderFingerprintV043();
-    if (this._renderFingerprintCacheV043 === fingerprint && this.shadowRoot?.childElementCount) {
-      return;
-    }
-    this._renderFingerprintCacheV043 = fingerprint;
-
-    previousRender.call(this);
-
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    const subtitle = root.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Â· UI v${UI_VERSION}`;
-
-    // Battery copy must describe the observed capacity, not label every
-    // non-battery-mode state as fully charged.
-    if (this._view === "overview") {
-      const selectedId = this._selectedUpsId?.();
-      const device = this._devices.find((item) => item.id === selectedId) || this._devices[0];
-      const battery = device ? this._numeric(device, "battery_capacity") : null;
-      const mode = device ? this._mode(device) : null;
-      const copy = root.querySelector(".overview-v040 .battery-node small");
-      if (copy) {
-        copy.textContent = mode === "battery_mode"
-          ? "ÐŸÐ¸Ñ‚Ð°ÐµÑ‚ Ð½Ð°Ð³Ñ€ÑƒÐ·ÐºÑƒ"
-          : battery === null
-            ? "Ð¡Ð¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ Ð½ÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾"
-            : battery >= 95
-              ? "Ð—Ð°Ñ€ÑÐ¶ÐµÐ½"
-              : "Ð”Ð¾ÑÑ‚ÑƒÐ¿ÐµÐ½";
-      }
-    }
-
-    if (!root.querySelector("style[data-stark-ui-v043]")) {
-      const style = document.createElement("style");
-      style.dataset.starkUiV043 = "true";
-      style.textContent = `
-        /* Normal data stays neutral. Semantic colors are reserved for status. */
-        .ups-hero-v040.good,
-        .overview-state-tile.good {
-          color: var(--primary-text-color) !important;
-        }
-        .hero-metric-v040:nth-child(3) ha-icon,
-        .hero-metric-v040:nth-child(4) ha-icon {
-          color: var(--primary-color) !important;
-        }
-        .battery-node {
-          background: color-mix(in srgb, var(--primary-color) 7%, var(--card-background-color)) !important;
-        }
-        .battery-node ha-icon {
-          color: var(--primary-color) !important;
-        }
-        .battery-flow .battery-node {
-          background: color-mix(in srgb, var(--warning-color,#ed6c02) 9%, var(--card-background-color)) !important;
-        }
-        .battery-flow .battery-node ha-icon {
-          color: var(--warning-color,#ed6c02) !important;
-        }
-
-        /* Compact the hero without reducing mobile-readable typography. */
-        .ups-power-diagram { margin-top: 22px !important; margin-bottom: 18px !important; }
-        .diagram-node { min-height: 102px !important; }
-        .battery-link { height: 30px !important; }
-        .battery-node { min-height: 94px !important; }
-        .hero-metric-v040 { min-height: 70px !important; }
-
-        .refresh.is-refreshing-v043 ha-icon {
-          animation: stark-refresh-spin-v043 .8s linear infinite;
-        }
-        .refresh.is-ok-v043 { color: var(--success-color,#2e7d32) !important; }
-        .refresh.is-error-v043 { color: var(--error-color,#d32f2f) !important; }
-        @keyframes stark-refresh-spin-v043 { to { transform: rotate(360deg); } }
-
-        @media (max-width:430px) {
-          .diagram-node { min-height: 98px !important; }
-          .battery-node { min-height: 90px !important; }
-          .hero-metric-v040 { min-height: 68px !important; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .refresh.is-refreshing-v043 ha-icon { animation: none !important; }
-        }
-      `;
-      root.append(style);
-    }
-
-    this._setRefreshFeedbackV043(this._refreshFeedbackV043 || null);
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v043.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v050.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.5.0";
-const UPS_ARTWORK =
-  "/stark_solarpower_panel/assets/stark-country-1000-online.png?v=0.5.0";
-
-function esc(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-if (Panel && !Panel.prototype.__starkUiV050) {
-  Panel.prototype.__starkUiV050 = true;
-
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._lineQualityV050 = function (voltage, trusted) {
-    if (!trusted || voltage === null) {
-      return { label: "ÐÐµ Ð¿Ð¾Ð´Ñ‚Ð²ÐµÑ€Ð¶Ð´ÐµÐ½Ð¾", tone: "unknown" };
-    }
-    if (voltage >= 210 && voltage <= 230) {
-      return { label: "ÐÐ¾Ñ€Ð¼Ð°", tone: "good" };
-    }
-    if ((voltage >= 205 && voltage < 210) || (voltage > 230 && voltage <= 235)) {
-      return { label: "Ð’Ð½Ð¸Ð¼Ð°Ð½Ð¸Ðµ", tone: "warn" };
-    }
-    if ((voltage >= 198 && voltage < 205) || (voltage > 235 && voltage <= 242)) {
-      return { label: "ÐžÑ‚ÐºÐ»Ð¾Ð½ÐµÐ½Ð¸Ðµ", tone: "warn" };
-    }
-    return { label: "ÐÐ²Ð°Ñ€Ð¸Ñ", tone: "bad" };
-  };
-
-  Panel.prototype._freshnessV050 = function (device) {
-    const cloud = this._isOn(device, "cloud_connected");
-    const stale = this._isOn(device, "data_stale");
-    const age = this._format(device, "data_age", "ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾");
-
-    if (cloud === false) {
-      return {
-        label: "Ð˜ÑÑ‚Ð¾Ñ‡Ð½Ð¸Ðº Ð½ÐµÐ´Ð¾ÑÑ‚ÑƒÐ¿ÐµÐ½",
-        tone: "bad",
-        icon: "mdi:cloud-off-outline",
-      };
-    }
-    if (cloud === null) {
-      return {
-        label: "Ð˜ÑÑ‚Ð¾Ñ‡Ð½Ð¸Ðº Ð½ÐµÐ¸Ð·Ð²ÐµÑÑ‚ÐµÐ½",
-        tone: "unknown",
-        icon: "mdi:cloud-question-outline",
-      };
-    }
-    if (stale === true) {
-      return {
-        label: "Ð”Ð°Ð½Ð½Ñ‹Ðµ ÑƒÑÑ‚Ð°Ñ€ÐµÐ»Ð¸",
-        tone: "warn",
-        icon: "mdi:clock-alert-outline",
-      };
-    }
-    if (stale === null) {
-      return {
-        label: "Ð¡Ð²ÐµÐ¶ÐµÑÑ‚ÑŒ Ð½ÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð°",
-        tone: "unknown",
-        icon: "mdi:clock-question-outline",
-      };
-    }
-    return {
-      label: age === "ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾" ? "Ð”Ð°Ð½Ð½Ñ‹Ðµ Ð°ÐºÑ‚ÑƒÐ°Ð»ÑŒÐ½Ñ‹" : `ÐžÐ±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¾ ${age} Ð½Ð°Ð·Ð°Ð´`,
-      tone: "good",
-      icon: "mdi:clock-check-outline",
-    };
-  };
-
-  Panel.prototype._heroCopyV050 = function (device) {
-    const headline = this._overviewHeadline(device);
-    const mode = this._mode(device);
-    const battery = this._numeric(device, "battery_capacity");
-
-    if (mode === "line_mode" && headline.tone === "good") {
-      const batteryCopy =
-        battery === null
-          ? "Ð¡Ð¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ ÐÐšÐ‘ Ð½ÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾"
-          : battery >= 95
-            ? "ÐÐšÐ‘ Ð·Ð°Ñ€ÑÐ¶ÐµÐ½Ð°"
-            : `ÐÐšÐ‘ ${Math.round(battery)} %`;
-      return {
-        title: "ÐžÑ‚ ÑÐµÑ‚Ð¸",
-        detail: `Ð’Ñ‹Ñ…Ð¾Ð´ ÑÑ‚Ð°Ð±Ð¸Ð»ÐµÐ½ Â· ${batteryCopy}`,
-        tone: "good",
-      };
-    }
-    return headline;
-  };
-
-  Panel.prototype._reserveV050 = function (device, trusted) {
-    const mode = this._mode(device);
-    const battery = this._numeric(device, "battery_capacity");
-    const onBattery = mode === "battery_mode" || this._isOn(device, "on_battery") === true;
-
-    if (!trusted) {
-      return {
-        label: "ÐžÑ†ÐµÐ½ÐºÐ° Ñ€ÐµÐ·ÐµÑ€Ð²Ð° Ð½ÐµÐ´Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð°",
-        tone: "unknown",
-        icon: "mdi:battery-unknown",
-      };
-    }
-    if (battery === null) {
-      return {
-        label: "Ð¡Ð¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ Ñ€ÐµÐ·ÐµÑ€Ð²Ð° Ð½ÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð¾",
-        tone: "unknown",
-        icon: "mdi:battery-unknown",
-      };
-    }
-    if (onBattery) {
-      return {
-        label: `ÐŸÐ¸Ñ‚Ð°Ð½Ð¸Ðµ Ð¾Ñ‚ ÐÐšÐ‘ Â· ${Math.round(battery)} %`,
-        tone: battery <= 20 ? "bad" : "warn",
-        icon: "mdi:battery-arrow-down-outline",
-      };
-    }
-    if (battery <= 20) {
-      return {
-        label: `ÐÐ¸Ð·ÐºÐ¸Ð¹ Ð·Ð°Ñ€ÑÐ´ Â· ${Math.round(battery)} %`,
-        tone: "bad",
-        icon: "mdi:battery-alert-variant-outline",
-      };
-    }
-    return {
-      label: `Ð ÐµÐ·ÐµÑ€Ð² Ð³Ð¾Ñ‚Ð¾Ð² Â· ÐÐšÐ‘ ${Math.round(battery)} %`,
-      tone: "good",
-      icon: "mdi:battery-check-outline",
-    };
-  };
-
-  Panel.prototype._metricCardV050 = function (device, key, label, icon, captionKey) {
-    const entityId = this._entityId(device, key);
-    const caption = captionKey ? this._format(device, captionKey) : "";
-    return `<div class="metric-card-v050" ${entityId ? `data-entity="${esc(entityId)}"` : ""}>
-      <div class="metric-icon-v050"><ha-icon icon="${esc(icon)}"></ha-icon></div>
-      <div class="metric-copy-v050">
-        <span>${esc(label)}</span>
-        <strong>${esc(this._format(device, key))}</strong>
-        ${caption ? `<small>${esc(caption)}</small>` : ""}
-      </div>
-    </div>`;
-  };
-
-  Panel.prototype._statePillV050 = function (label, tone) {
-    return `<span class="state-pill-v050 ${esc(tone)}"><i></i>${esc(label)}</span>`;
-  };
-
-  Panel.prototype._renderStateSummaryV050 = function (device, trusted, onBattery) {
-    const inputVoltage = this._numeric(device, "input_voltage");
-    const battery = this._numeric(device, "battery_capacity");
-    const quality = this._lineQualityV050(inputVoltage, trusted && !onBattery);
-
-    const lineState = !trusted
-      ? { label: "ÐÐµ Ð¿Ð¾Ð´Ñ‚Ð²ÐµÑ€Ð¶Ð´ÐµÐ½Ð°", tone: "unknown" }
-      : onBattery
-        ? { label: "ÐÐµÑ‚ Ð²Ñ…Ð¾Ð´Ð°", tone: "warn" }
-        : inputVoltage === null
-          ? { label: "ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð°", tone: "unknown" }
-          : { label: "ÐÐºÑ‚Ð¸Ð²Ð½Ð°", tone: "good" };
-
-    const batteryState = !trusted
-      ? { label: "ÐÐµ Ð¿Ð¾Ð´Ñ‚Ð²ÐµÑ€Ð¶Ð´ÐµÐ½Ð°", tone: "unknown" }
-      : battery === null
-        ? { label: "ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð°", tone: "unknown" }
-        : onBattery
-          ? { label: "ÐŸÐ¸Ñ‚Ð°ÐµÑ‚ Ð½Ð°Ð³Ñ€ÑƒÐ·ÐºÑƒ", tone: battery <= 20 ? "bad" : "warn" }
-          : battery <= 20
-            ? { label: "ÐÐ¸Ð·ÐºÐ¸Ð¹ Ð·Ð°Ñ€ÑÐ´", tone: "bad" }
-            : { label: "Ð ÐµÐ·ÐµÑ€Ð² Ð³Ð¾Ñ‚Ð¾Ð²", tone: "good" };
-
-    const inputEntity = this._entityId(device, "input_voltage");
-    const batteryEntity = this._entityId(device, "battery_capacity");
-
-    return `<article class="state-card-v050 card-v050">
-      <h3>Ð¡Ð¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ</h3>
-      <div class="state-row-v050 line" ${inputEntity ? `data-entity="${esc(inputEntity)}"` : ""}>
-        <div class="state-row-head-v050">
-          <div><ha-icon icon="mdi:transmission-tower"></ha-icon><strong>ÐÐµÐ¾Ñ‚ÐºÐ»ÑŽÑ‡Ð°ÐµÐ¼Ð°Ñ Ð»Ð¸Ð½Ð¸Ñ</strong></div>
-          ${this._statePillV050(lineState.label, lineState.tone)}
-        </div>
-        <div class="state-values-v050 three">
-          <div><span>ÐÐ°Ð¿Ñ€ÑÐ¶ÐµÐ½Ð¸Ðµ</span><strong>${esc(this._format(device, "input_voltage"))}</strong></div>
-          <div><span>Ð§Ð°ÑÑ‚Ð¾Ñ‚Ð°</span><strong>${esc(this._format(device, "input_frequency"))}</strong></div>
-          <div><span>ÐšÐ°Ñ‡ÐµÑÑ‚Ð²Ð¾</span><strong class="tone-${esc(quality.tone)}">${esc(quality.label)}</strong></div>
-        </div>
-      </div>
-      <div class="state-row-v050 battery" ${batteryEntity ? `data-entity="${esc(batteryEntity)}"` : ""}>
-        <div class="state-row-head-v050">
-          <div><ha-icon icon="mdi:battery"></ha-icon><strong>ÐÐšÐ‘</strong></div>
-          ${this._statePillV050(batteryState.label, batteryState.tone)}
-        </div>
-        <div class="state-values-v050 three">
-          <div><span>Ð—Ð°Ñ€ÑÐ´</span><strong>${battery === null ? "â€”" : `${Math.round(battery)} %`}</strong></div>
-          <div><span>ÐÐ°Ð¿Ñ€ÑÐ¶ÐµÐ½Ð¸Ðµ</span><strong>${esc(this._format(device, "battery_voltage"))}</strong></div>
-          <div><span>Ð ÐµÐ¶Ð¸Ð¼</span><strong>${esc(this._modeLabel(device))}</strong></div>
-        </div>
-      </div>
-    </article>`;
-  };
-
-  Panel.prototype._renderOverview = function () {
-    const selectedId = this._selectedUpsId?.();
-    const device = this._devices.find((item) => item.id === selectedId) || this._devices[0];
-    if (!device) return this._empty("UPS Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½Ñ‹");
-
-    const headline = this._heroCopyV050(device);
-    const freshness = this._freshnessV050(device);
-    const cloud = this._isOn(device, "cloud_connected");
-    const stale = this._isOn(device, "data_stale");
-    const trusted = cloud === true && stale === false;
-    const mode = this._mode(device);
-    const onBattery = mode === "battery_mode" || this._isOn(device, "on_battery") === true;
-    const reserve = this._reserveV050(device, trusted);
-    const battery = this._numeric(device, "battery_capacity");
-    const load = this._numeric(device, "output_load");
-
-    const inputEntity = this._entityId(device, "input_voltage");
-    const outputEntity = this._entityId(device, "output_voltage");
-    const batteryEntity = this._entityId(device, "battery_capacity");
-    const loadEntity = this._entityId(device, "output_load");
-    const modeEntity = this._entityId(device, "mode");
-
-    return `<section class="overview-v050">
-      <article class="ups-hero-v050 card-v050 ${esc(headline.tone)}">
-        <div class="hero-head-v050">
-          <div class="hero-copy-v050">
-            <span>ÐŸÐ˜Ð¢ÐÐÐ˜Ð•</span>
-            <h2>${esc(headline.title)}</h2>
-            <p>${esc(headline.detail)}</p>
-          </div>
-          <div class="freshness-v050 ${esc(freshness.tone)}">
-            <ha-icon icon="${esc(freshness.icon)}"></ha-icon>
-            <span>${esc(freshness.label)}</span>
-          </div>
-        </div>
-
-        <div class="hero-scene-v050 ${onBattery ? "battery-flow-v050" : "line-flow-v050"}">
-          <div class="scene-window-v050" aria-hidden="true"></div>
-          <div class="scene-rack-v050" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-          <svg class="flow-lines-v050" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-            <path class="line-grid-v050" d="M17 43 H38 Q44 43 44 51 H49" />
-            <path class="line-output-v050" d="M51 51 H56 Q56 43 62 43 H83" />
-            <path class="line-battery-v050" d="M50 82 V64" />
-          </svg>
-          <div class="scene-node-v050 grid" ${inputEntity ? `data-entity="${esc(inputEntity)}"` : ""}>
-            <ha-icon icon="mdi:transmission-tower"></ha-icon>
-            <div><span>Ð›Ð¸Ð½Ð¸Ñ</span><strong>${esc(this._format(device, "input_voltage"))}</strong></div>
-          </div>
-          <div class="scene-node-v050 load" ${loadEntity ? `data-entity="${esc(loadEntity)}"` : ""}>
-            <ha-icon icon="mdi:monitor-dashboard"></ha-icon>
-            <div><span>ÐÐ°Ð³Ñ€ÑƒÐ·ÐºÐ°</span><strong>${load === null ? "â€”" : `${Math.round(load)} %`}</strong></div>
-          </div>
-          <img class="ups-art-v050" src="${UPS_ARTWORK}" alt="Stark Country 1000 ONLINE (16A)" loading="eager" decoding="async" ${modeEntity ? `data-entity="${esc(modeEntity)}"` : ""}>
-          <div class="scene-node-v050 battery" ${batteryEntity ? `data-entity="${esc(batteryEntity)}"` : ""}>
-            <ha-icon icon="mdi:battery"></ha-icon>
-            <div><span>ÐÐšÐ‘</span><strong>${battery === null ? "â€”" : `${Math.round(battery)} %`}</strong></div>
-          </div>
-        </div>
-
-        <div class="reserve-strip-v050 ${esc(reserve.tone)}" ${batteryEntity ? `data-entity="${esc(batteryEntity)}"` : ""}>
-          <ha-icon icon="${esc(reserve.icon)}"></ha-icon>
-          <strong>${esc(reserve.label)}</strong>
-        </div>
-      </article>
-
-      <div class="metrics-row-v050">
-        ${this._metricCardV050(device, "input_voltage", "Ð’Ð¥ÐžÐ”", "mdi:power-plug", "input_frequency")}
-        ${this._metricCardV050(device, "output_voltage", "Ð’Ð«Ð¥ÐžÐ”", "mdi:sine-wave", "output_frequency")}
-        ${this._metricCardV050(device, "output_load", "ÐÐÐ“Ð Ð£Ð—ÐšÐ", "mdi:gauge", "output_current")}
-      </div>
-
-      ${this._renderStateSummaryV050(device, trusted, onBattery)}
-
-      <article class="events-card-v050 card-v050">
-        <div class="section-head-v050"><h3>ÐŸÐ¾ÑÐ»ÐµÐ´Ð½Ð¸Ðµ ÑÐ¾Ð±Ñ‹Ñ‚Ð¸Ñ</h3><span>read-only</span></div>
-        <div class="overview-events-list">
-          ${this._eventRow(device, "battery_mode_events", "Ð ÐµÐ¶Ð¸Ð¼ ÐÐšÐ‘")}
-          ${this._eventRow(device, "cloud_telemetry_events", "ÐžÐ±Ð»Ð°ÐºÐ¾")}
-          ${this._eventRow(device, "data_freshness_events", "Ð¡Ð²ÐµÐ¶ÐµÑÑ‚ÑŒ Ð´Ð°Ð½Ð½Ñ‹Ñ…")}
-          ${this._eventRow(device, "fault_mode_events", "ÐÐ²Ð°Ñ€Ð¸Ð¹Ð½Ñ‹Ð¹ Ñ€ÐµÐ¶Ð¸Ð¼")}
-        </div>
-      </article>
-    </section>
-    <p class="hint hint-v050">ÐÐ°Ð¶Ð¼Ð¸Ñ‚Ðµ Ð¸ ÑƒÐ´ÐµÑ€Ð¶Ð¸Ð²Ð°Ð¹Ñ‚Ðµ Ð¿Ð¾ÐºÐ°Ð·Ð°Ñ‚ÐµÐ»ÑŒ, Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð¾Ñ‚ÐºÑ€Ñ‹Ñ‚ÑŒ ÑˆÑ‚Ð°Ñ‚Ð½Ñ‹Ð¹ more-info Home Assistant.</p>`;
-  };
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    const subtitle = root.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-
-    if (!root.querySelector("style[data-stark-ui-v050]")) {
-      const style = document.createElement("style");
-      style.dataset.starkUiV050 = "true";
-      style.textContent = `
-        :host {
-          --stark-ice: color-mix(in srgb, var(--primary-color) 9%, var(--card-background-color));
-          --stark-line: color-mix(in srgb, var(--primary-color) 74%, #55d7ff);
-          color-scheme: light dark;
-        }
-        .app {
-          background: var(--primary-background-color);
-          padding-top: 4px !important;
-        }
-        .app-header {
-          min-height: 74px !important;
-          margin-bottom: 12px !important;
-          border-bottom: 1px solid color-mix(in srgb, var(--divider-color) 55%, transparent);
-        }
-        .app-header h1 { font-size: 23px !important; font-weight: 800 !important; letter-spacing: -.025em !important; }
-        .subtitle { font-size: 14px !important; font-weight: 560 !important; }
-        .back,.refresh {
-          border: 1px solid color-mix(in srgb, var(--divider-color) 72%, transparent) !important;
-          border-radius: 16px !important;
-          background: var(--card-background-color) !important;
-          box-shadow: 0 7px 20px rgba(23,45,76,.08) !important;
-        }
-        .global-device-context {
-          gap: 0 !important;
-          padding: 3px !important;
-          border: 1px solid var(--divider-color);
-          border-radius: 22px !important;
-          overflow: hidden;
-          background: var(--card-background-color);
-          box-shadow: 0 5px 16px rgba(23,45,76,.045);
-        }
-        .global-device-context button {
-          border: 0 !important;
-          border-radius: 18px !important;
-          background: transparent !important;
-        }
-        .global-device-context button.active {
-          background: var(--stark-ice) !important;
-          box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary-color) 22%, transparent);
-        }
-        .device-health-dot { width: 8px !important; height: 8px !important; flex-basis: 8px !important; }
-
-        .overview-v050 { width: min(100%, 820px); margin: 0 auto; display: grid; gap: 14px; }
-        .card-v050 {
-          min-width: 0;
-          border: 1px solid color-mix(in srgb, var(--divider-color) 84%, transparent);
-          border-radius: 28px;
-          background: var(--card-background-color);
-          box-shadow: 0 10px 30px rgba(23,45,76,.065);
-        }
-        .ups-hero-v050 {
-          position: relative;
-          overflow: hidden;
-          padding: 18px;
-          background:
-            radial-gradient(circle at 92% 7%, color-mix(in srgb, var(--primary-color) 10%, transparent) 0 14%, transparent 14.5%),
-            linear-gradient(145deg, color-mix(in srgb, var(--primary-color) 5%, var(--card-background-color)), var(--card-background-color) 48%, color-mix(in srgb, #80d8ff 10%, var(--card-background-color)));
-        }
-        .hero-head-v050 { position: relative; z-index: 4; display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 12px; align-items: start; }
-        .hero-copy-v050 { min-width: 0; }
-        .hero-copy-v050>span { display: block; color: var(--secondary-text-color); font-size: 14px; line-height: 1.2; font-weight: 800; letter-spacing: .075em; }
-        .hero-copy-v050 h2 { margin: 7px 0 0; font-size: clamp(34px, 9vw, 46px); line-height: 1; letter-spacing: -.04em; overflow-wrap: anywhere; }
-        .hero-copy-v050 p { margin: 7px 0 0; color: var(--secondary-text-color); font-size: 16px; line-height: 1.3; }
-        .ups-hero-v050.good .hero-copy-v050 h2 { color: var(--success-color,#2eae55); }
-        .ups-hero-v050.warn .hero-copy-v050 h2 { color: var(--warning-color,#ed8b00); }
-        .ups-hero-v050.bad .hero-copy-v050 h2 { color: var(--error-color,#d93b3b); }
-        .freshness-v050 { min-height: 42px; max-width: 210px; display: inline-flex; align-items: center; gap: 7px; padding: 8px 12px; border: 1px solid color-mix(in srgb,currentColor 18%,transparent); border-radius: 999px; background: color-mix(in srgb,var(--card-background-color) 82%,transparent); box-shadow: 0 5px 16px rgba(23,45,76,.055); font-size: 14px; line-height: 1.2; font-weight: 700; text-align: right; }
-        .freshness-v050 ha-icon { --mdc-icon-size: 19px; flex: 0 0 auto; }
-        .freshness-v050.good { color: var(--success-color,#2eae55); }
-        .freshness-v050.warn { color: var(--warning-color,#ed8b00); }
-        .freshness-v050.bad { color: var(--error-color,#d93b3b); }
-        .freshness-v050.unknown { color: var(--secondary-text-color); }
-
-        .hero-scene-v050 { position: relative; height: 346px; margin: 10px -18px 0; overflow: hidden; isolation: isolate; }
-        .hero-scene-v050::before { content:""; position:absolute; inset:34% 0 0; z-index:-3; background: linear-gradient(180deg,transparent,color-mix(in srgb,var(--primary-color) 4%,var(--card-background-color))); border-top: 1px solid color-mix(in srgb,var(--divider-color) 35%,transparent); }
-        .scene-window-v050 { position:absolute; left:3%; top:16%; width:24%; height:62%; z-index:-2; border-radius:4px; opacity:.62; background: linear-gradient(90deg,transparent 48%,rgba(255,255,255,.72) 49% 52%,transparent 53%),linear-gradient(0deg,transparent 48%,rgba(255,255,255,.72) 49% 52%,transparent 53%),linear-gradient(145deg,rgba(210,240,255,.74),rgba(255,255,255,.35)); box-shadow: inset 0 0 0 1px rgba(255,255,255,.58); }
-        .scene-rack-v050 { position:absolute; right:2%; top:8%; width:22%; height:73%; z-index:-2; padding:9px 7px; display:grid; grid-template-rows:repeat(4,1fr); gap:8px; border-radius:7px; border:2px solid color-mix(in srgb,var(--secondary-text-color) 18%,transparent); background:color-mix(in srgb,var(--secondary-text-color) 7%,transparent); opacity:.58; }
-        .scene-rack-v050 i { display:block; border-radius:3px; background:repeating-linear-gradient(0deg,color-mix(in srgb,var(--secondary-text-color) 15%,transparent) 0 2px,transparent 2px 5px); border:1px solid color-mix(in srgb,var(--secondary-text-color) 11%,transparent); }
-        .flow-lines-v050 { position:absolute; inset:0; z-index:1; width:100%; height:100%; overflow:visible; pointer-events:none; }
-        .flow-lines-v050 path { fill:none; stroke:var(--stark-line); stroke-width:1.1; vector-effect:non-scaling-stroke; stroke-linecap:round; filter:drop-shadow(0 0 4px color-mix(in srgb,var(--primary-color) 64%,transparent)); }
-        .flow-lines-v050 .line-battery-v050 { stroke:color-mix(in srgb,var(--success-color,#2eae55) 76%,#69f0ae); }
-        .battery-flow-v050 .line-grid-v050 { stroke:var(--secondary-text-color); opacity:.35; filter:none; }
-        .battery-flow-v050 .line-output-v050,.battery-flow-v050 .line-battery-v050 { stroke:var(--warning-color,#ed8b00); }
-        .ups-art-v050 { position:absolute; z-index:2; left:50%; bottom:30px; width:min(43%,280px); max-height:77%; object-fit:contain; transform:translateX(-50%); filter:drop-shadow(0 16px 14px rgba(24,39,57,.19)); user-select:none; -webkit-user-drag:none; }
-        .scene-node-v050 { position:absolute; z-index:3; min-width:130px; min-height:72px; display:flex; align-items:center; gap:9px; padding:10px 12px; border:1px solid rgba(255,255,255,.78); border-radius:19px; background:color-mix(in srgb,var(--card-background-color) 86%,transparent); box-shadow:0 8px 24px rgba(23,45,76,.095); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
-        .scene-node-v050.grid { left:2%; top:34%; }
-        .scene-node-v050.load { right:2%; top:34%; }
-        .scene-node-v050.battery { left:50%; bottom:5px; transform:translateX(-50%); min-width:142px; }
-        .scene-node-v050 ha-icon { --mdc-icon-size:28px; color:var(--primary-color); flex:0 0 auto; }
-        .scene-node-v050.battery ha-icon { color:var(--success-color,#2eae55); }
-        .battery-flow-v050 .scene-node-v050.battery ha-icon { color:var(--warning-color,#ed8b00); }
-        .scene-node-v050 span,.scene-node-v050 strong { display:block; }
-        .scene-node-v050 span { color:var(--secondary-text-color); font-size:14px; line-height:1.15; }
-        .scene-node-v050 strong { margin-top:2px; font-size:18px; line-height:1.15; }
-        .reserve-strip-v050 { min-height:58px; display:flex; align-items:center; gap:12px; padding:10px 16px; border:1px solid color-mix(in srgb,var(--primary-color) 28%,transparent); border-radius:20px; background:color-mix(in srgb,var(--primary-color) 7%,var(--card-background-color)); color:var(--primary-color); }
-        .reserve-strip-v050 ha-icon { --mdc-icon-size:28px; }
-        .reserve-strip-v050 strong { font-size:17px; line-height:1.2; }
-        .reserve-strip-v050.good { color:var(--primary-color); }
-        .reserve-strip-v050.warn { color:var(--warning-color,#ed8b00); border-color:color-mix(in srgb,var(--warning-color,#ed8b00) 30%,transparent); background:color-mix(in srgb,var(--warning-color,#ed8b00) 8%,var(--card-background-color)); }
-        .reserve-strip-v050.bad { color:var(--error-color,#d93b3b); border-color:color-mix(in srgb,var(--error-color,#d93b3b) 28%,transparent); background:color-mix(in srgb,var(--error-color,#d93b3b) 7%,var(--card-background-color)); }
-        .reserve-strip-v050.unknown { color:var(--secondary-text-color); border-color:var(--divider-color); background:color-mix(in srgb,var(--secondary-text-color) 5%,var(--card-background-color)); }
-
-        .metrics-row-v050 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
-        .metric-card-v050 { min-width:0; min-height:116px; display:flex; align-items:center; gap:11px; padding:14px; border:1px solid var(--divider-color); border-radius:23px; background:var(--card-background-color); box-shadow:0 7px 22px rgba(23,45,76,.055); }
-        .metric-icon-v050 { width:48px; height:48px; flex:0 0 48px; display:grid; place-items:center; border-radius:50%; background:var(--stark-ice); color:var(--primary-color); }
-        .metric-icon-v050 ha-icon { --mdc-icon-size:27px; }
-        .metric-copy-v050 { min-width:0; }
-        .metric-copy-v050 span,.metric-copy-v050 strong,.metric-copy-v050 small { display:block; }
-        .metric-copy-v050 span { color:var(--secondary-text-color); font-size:14px; font-weight:800; line-height:1.15; }
-        .metric-copy-v050 strong { margin-top:5px; font-size:24px; line-height:1; letter-spacing:-.02em; overflow-wrap:anywhere; }
-        .metric-copy-v050 small { margin-top:6px; color:var(--secondary-text-color); font-size:14px; line-height:1.2; overflow-wrap:anywhere; }
-
-        .state-card-v050,.events-card-v050 { padding:18px; }
-        .state-card-v050 h3,.section-head-v050 h3 { margin:0; font-size:24px; line-height:1.15; letter-spacing:-.02em; }
-        .state-row-v050 { margin-top:14px; padding:15px 16px; border:1px solid var(--divider-color); border-radius:21px; }
-        .state-row-v050.line { border-color:color-mix(in srgb,var(--primary-color) 42%,var(--divider-color)); background:color-mix(in srgb,var(--primary-color) 3%,var(--card-background-color)); }
-        .state-row-head-v050 { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-        .state-row-head-v050>div { min-width:0; display:flex; align-items:center; gap:9px; }
-        .state-row-head-v050>div ha-icon { --mdc-icon-size:25px; color:var(--primary-color); flex:0 0 auto; }
-        .state-row-v050.battery .state-row-head-v050>div ha-icon { color:var(--success-color,#2eae55); }
-        .state-row-head-v050>div strong { font-size:18px; line-height:1.2; overflow-wrap:anywhere; }
-        .state-pill-v050 { min-height:34px; flex:0 0 auto; display:inline-flex; align-items:center; gap:7px; padding:6px 11px; border-radius:999px; font-size:14px; font-weight:700; white-space:nowrap; }
-        .state-pill-v050 i { width:8px; height:8px; border-radius:50%; background:currentColor; }
-        .state-pill-v050.good { color:var(--success-color,#2eae55); background:color-mix(in srgb,var(--success-color,#2eae55) 10%,transparent); }
-        .state-pill-v050.warn { color:var(--warning-color,#ed8b00); background:color-mix(in srgb,var(--warning-color,#ed8b00) 11%,transparent); }
-        .state-pill-v050.bad { color:var(--error-color,#d93b3b); background:color-mix(in srgb,var(--error-color,#d93b3b) 10%,transparent); }
-        .state-pill-v050.unknown { color:var(--secondary-text-color); background:color-mix(in srgb,var(--secondary-text-color) 9%,transparent); }
-        .state-values-v050 { margin-top:14px; display:grid; gap:0; }
-        .state-values-v050.three { grid-template-columns:repeat(3,minmax(0,1fr)); }
-        .state-values-v050>div { min-width:0; padding:0 12px; border-left:1px solid var(--divider-color); }
-        .state-values-v050>div:first-child { padding-left:0; border-left:0; }
-        .state-values-v050>div:last-child { padding-right:0; }
-        .state-values-v050 span,.state-values-v050 strong { display:block; }
-        .state-values-v050 span { color:var(--secondary-text-color); font-size:14px; line-height:1.2; }
-        .state-values-v050 strong { margin-top:4px; font-size:18px; line-height:1.2; overflow-wrap:anywhere; }
-        .tone-good { color:var(--success-color,#2eae55); }
-        .tone-warn { color:var(--warning-color,#ed8b00); }
-        .tone-bad { color:var(--error-color,#d93b3b); }
-        .tone-unknown { color:var(--secondary-text-color); }
-        .section-head-v050 { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-        .section-head-v050>span { color:var(--secondary-text-color); font-size:14px; }
-        .events-card-v050 .overview-events-list { margin-top:10px; }
-        .events-card-v050 .event-row { min-height:58px !important; padding:10px 2px !important; }
-        .hint-v050 { width:min(100%,820px); margin:0 auto; padding-bottom:5px; }
-
-        .diagnostic-card,.history-card { border-radius:24px !important; box-shadow:0 8px 26px rgba(23,45,76,.06) !important; }
-        .tabs.bottom-nav { box-shadow:0 -5px 22px rgba(23,45,76,.08) !important; }
-        .bottom-nav .tab.active { background:var(--stark-ice) !important; }
-
-        @media (max-width:620px) {
-          .hero-head-v050 { grid-template-columns:minmax(0,1fr); }
-          .freshness-v050 { justify-self:start; max-width:100%; min-height:38px; }
-          .hero-scene-v050 { height:330px; margin-top:4px; }
-          .metrics-row-v050 { grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
-          .metric-card-v050 { min-height:114px; flex-direction:column; align-items:flex-start; gap:8px; padding:12px; }
-          .metric-icon-v050 { width:42px; height:42px; flex-basis:42px; }
-          .metric-copy-v050 strong { font-size:21px; }
-        }
-        @media (max-width:430px) {
-          .app { padding-left:max(10px,env(safe-area-inset-left)) !important; padding-right:max(10px,env(safe-area-inset-right)) !important; }
-          .app-header h1 { font-size:21px !important; }
-          .subtitle { font-size:13px !important; }
-          .ups-hero-v050 { padding:15px; border-radius:25px; }
-          .hero-copy-v050 h2 { font-size:38px; }
-          .hero-copy-v050 p { font-size:15px; }
-          .hero-scene-v050 { height:306px; margin-left:-15px; margin-right:-15px; }
-          .ups-art-v050 { width:46%; max-height:74%; bottom:28px; }
-          .scene-node-v050 { min-width:112px; min-height:65px; gap:7px; padding:8px 9px; border-radius:17px; }
-          .scene-node-v050.grid { left:1%; top:34%; }
-          .scene-node-v050.load { right:1%; top:34%; }
-          .scene-node-v050.battery { min-width:126px; bottom:3px; }
-          .scene-node-v050 ha-icon { --mdc-icon-size:24px; }
-          .scene-node-v050 span { font-size:13px; }
-          .scene-node-v050 strong { font-size:16px; }
-          .reserve-strip-v050 { min-height:54px; padding:9px 13px; }
-          .reserve-strip-v050 strong { font-size:16px; }
-          .metrics-row-v050 { gap:7px; }
-          .metric-card-v050 { min-height:108px; border-radius:20px; padding:10px; }
-          .metric-icon-v050 { width:39px; height:39px; flex-basis:39px; }
-          .metric-icon-v050 ha-icon { --mdc-icon-size:23px; }
-          .metric-copy-v050 span,.metric-copy-v050 small { font-size:13px; }
-          .metric-copy-v050 strong { font-size:19px; }
-          .state-card-v050,.events-card-v050 { padding:15px; border-radius:25px; }
-          .state-card-v050 h3,.section-head-v050 h3 { font-size:22px; }
-          .state-row-v050 { padding:13px; }
-          .state-row-head-v050>div strong { font-size:16px; }
-          .state-pill-v050 { min-height:32px; padding:5px 9px; font-size:13px; }
-          .state-values-v050>div { padding-left:8px; padding-right:8px; }
-          .state-values-v050 span { font-size:12px; }
-          .state-values-v050 strong { font-size:16px; }
-        }
-        @media (max-width:370px) {
-          .hero-scene-v050 { height:286px; }
-          .scene-node-v050 { min-width:101px; }
-          .scene-node-v050 ha-icon { display:none; }
-          .metric-card-v050 { padding:9px; }
-          .metric-icon-v050 { width:36px; height:36px; flex-basis:36px; }
-          .metric-copy-v050 strong { font-size:17px; }
-          .state-values-v050 span { font-size:11px; }
-          .state-values-v050 strong { font-size:14px; }
-        }
-        @media (min-width:760px) {
-          .hero-scene-v050 { height:400px; }
-          .ups-art-v050 { width:min(38%,300px); }
-        }
-        @media (prefers-reduced-motion:reduce) {
-          * { scroll-behavior:auto !important; }
-        }
-      `;
-      root.append(style);
-    }
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v050.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v051.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.5.1";
-const UPS_ARTWORK =
-  "/stark_solarpower_panel/assets/stark-country-1000-online.png?v=0.5.1";
-const HERO_INTERNET =
-  "/stark_solarpower_panel/assets/stark-hero-internet-v051.webp?v=0.5.1";
-const HERO_BOILER =
-  "/stark_solarpower_panel/assets/stark-hero-boiler-v051.webp?v=0.5.1";
-
-const NAV_ITEMS = [
-  ["overview", "mdi:home", "ÐžÐ±Ð·Ð¾Ñ€"],
-  ["ups", "mdi:battery-charging", "Ð˜Ð‘ÐŸ"],
-  ["events", "mdi:bell", "Ð¡Ð¾Ð±Ñ‹Ñ‚Ð¸Ñ"],
-  ["history", "mdi:chart-line", "Ð˜ÑÑ‚Ð¾Ñ€Ð¸Ñ"],
-  ["diagnostics", "mdi:stethoscope", "Ð”Ð¸Ð°Ð³Ð½."],
-];
-
-function esc(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-if (Panel && !Panel.prototype.__starkUiV051) {
-  Panel.prototype.__starkUiV051 = true;
-
-  const previousRender = Panel.prototype._render;
-  const previousOverview = Panel.prototype._renderOverview;
-
-  Panel.prototype._selectedDeviceV051 = function () {
-    const selectedId = this._selectedUpsId?.();
-    return this._devices.find((item) => item.id === selectedId) || this._devices[0] || null;
-  };
-
-  Panel.prototype._heroBackgroundV051 = function (device) {
-    return device?.name?.toLocaleLowerCase("ru").includes("ÐºÐ¾Ñ‚") ? HERO_BOILER : HERO_INTERNET;
-  };
-
-  Panel.prototype._metricCardV051 = function (device, key, label, icon, captionKey) {
-    const entityId = this._entityId(device, key);
-    const caption = captionKey ? this._format(device, captionKey) : "";
-    return `<div class="metric-card-v051" ${entityId ? `data-entity="${esc(entityId)}"` : ""}>
-      <div class="metric-icon-v051"><ha-icon icon="${esc(icon)}"></ha-icon></div>
-      <div class="metric-copy-v051">
-        <span>${esc(label)}</span>
-        <strong>${esc(this._format(device, key))}</strong>
-        ${caption ? `<small>${esc(caption)}</small>` : ""}
-      </div>
-    </div>`;
-  };
-
-  Panel.prototype._statePillV051 = function (label, tone) {
-    return `<span class="state-pill-v051 ${esc(tone)}">${esc(label)}</span>`;
-  };
-
-  Panel.prototype._renderStateSummaryV051 = function (device, trusted, onBattery) {
-    const inputVoltage = this._numeric(device, "input_voltage");
-    const battery = this._numeric(device, "battery_capacity");
-    const quality = this._lineQualityV050(inputVoltage, trusted && !onBattery);
-    const lineState = !trusted
-      ? { label: "ÐÐµ Ð¿Ð¾Ð´Ñ‚Ð²ÐµÑ€Ð¶Ð´ÐµÐ½Ð°", tone: "unknown" }
-      : onBattery
-        ? { label: "ÐÐµÑ‚ Ð²Ñ…Ð¾Ð´Ð°", tone: "warn" }
-        : inputVoltage === null
-          ? { label: "ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð°", tone: "unknown" }
-          : { label: "ÐÐºÑ‚Ð¸Ð²Ð½Ð°", tone: "good" };
-    const batteryState = !trusted
-      ? { label: "ÐÐµ Ð¿Ð¾Ð´Ñ‚Ð²ÐµÑ€Ð¶Ð´ÐµÐ½Ð°", tone: "unknown" }
-      : battery === null
-        ? { label: "ÐÐµÐ¸Ð·Ð²ÐµÑÑ‚Ð½Ð°", tone: "unknown" }
-        : onBattery
-          ? { label: "ÐŸÐ¸Ñ‚Ð°ÐµÑ‚ Ð½Ð°Ð³Ñ€ÑƒÐ·ÐºÑƒ", tone: battery <= 20 ? "bad" : "warn" }
-          : battery <= 20
-            ? { label: "ÐÐ¸Ð·ÐºÐ¸Ð¹ Ð·Ð°Ñ€ÑÐ´", tone: "bad" }
-            : { label: "Ð ÐµÐ·ÐµÑ€Ð² Ð³Ð¾Ñ‚Ð¾Ð²", tone: "good" };
-
-    return `<article class="state-card-v051 card-v051">
-      <h3>Ð¡Ð¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ</h3>
-      <div class="state-row-v051 line" ${this._entityId(device, "input_voltage") ? `data-entity="${esc(this._entityId(device, "input_voltage"))}"` : ""}>
-        <div class="state-row-head-v051">
-          <div><ha-icon icon="mdi:transmission-tower"></ha-icon><strong>ÐÐµÐ¾Ñ‚ÐºÐ»ÑŽÑ‡Ð°ÐµÐ¼Ð°Ñ Ð»Ð¸Ð½Ð¸Ñ</strong></div>
-          ${this._statePillV051(lineState.label, lineState.tone)}
-        </div>
-        <div class="state-values-v051 four">
-          <div><span>Ð’Ñ…Ð¾Ð´</span><strong>${esc(this._format(device, "input_voltage"))}</strong></div>
-          <div><span>Ð’Ñ‹Ñ…Ð¾Ð´</span><strong>${esc(this._format(device, "output_voltage"))}</strong></div>
-          <div><span>Ð§Ð°ÑÑ‚Ð¾Ñ‚Ð°</span><strong>${esc(this._format(device, "input_frequency"))}</strong></div>
-          <div><span>ÐšÐ°Ñ‡ÐµÑÑ‚Ð²Ð¾</span><strong class="tone-${esc(quality.tone)}">${esc(quality.label)}</strong></div>
-        </div>
-      </div>
-      <div class="state-row-v051 battery" ${this._entityId(device, "battery_capacity") ? `data-entity="${esc(this._entityId(device, "battery_capacity"))}"` : ""}>
-        <div class="state-row-head-v051">
-          <div><ha-icon icon="mdi:battery"></ha-icon><strong>ÐÐšÐ‘</strong></div>
-          ${this._statePillV051(batteryState.label, batteryState.tone)}
-        </div>
-        <div class="state-values-v051 three">
-          <div><span>Ð—Ð°Ñ€ÑÐ´</span><strong>${battery === null ? "â€”" : `${Math.round(battery)} %`}</strong></div>
-          <div><span>ÐÐ°Ð¿Ñ€ÑÐ¶ÐµÐ½Ð¸Ðµ</span><strong>${esc(this._format(device, "battery_voltage"))}</strong></div>
-          <div><span>Ð¡Ð¾ÑÑ‚Ð¾ÑÐ½Ð¸Ðµ</span><strong>${esc(onBattery ? "Ð’ Ñ€Ð°Ð±Ð¾Ñ‚Ðµ" : "Ð—Ð°Ñ€ÑÐ¶ÐµÐ½Ð°")}</strong></div>
-        </div>
-      </div>
-    </article>`;
-  };
-
-  Panel.prototype._renderOverviewV051 = function () {
-    const device = this._selectedDeviceV051();
-    if (!device) return this._empty("UPS Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½Ñ‹");
-
-    const headline = this._heroCopyV050(device);
-    const freshness = this._freshnessV050(device);
-    const cloud = this._isOn(device, "cloud_connected");
-    const stale = this._isOn(device, "data_stale");
-    const trusted = cloud === true && stale === false;
-    const mode = this._mode(device);
-    const onBattery = mode === "battery_mode" || this._isOn(device, "on_battery") === true;
-    const reserve = this._reserveV050(device, trusted);
-    const battery = this._numeric(device, "battery_capacity");
-    const load = this._numeric(device, "output_load");
-    const background = this._heroBackgroundV051(device);
-
-    return `<section class="overview-v051">
-      <article class="ups-hero-v051 card-v051 ${esc(headline.tone)} ${onBattery ? "battery-flow-v051" : "line-flow-v051"}" style="--hero-background-v051:url('${esc(background)}')">
-        <div class="hero-head-v051">
-          <div class="hero-copy-v051">
-            <span>ÐŸÐ˜Ð¢ÐÐÐ˜Ð•</span>
-            <h2>${esc(headline.title)}</h2>
-            <p>${esc(headline.detail)}</p>
-          </div>
-          <div class="freshness-v051 ${esc(freshness.tone)}">
-            <ha-icon icon="${esc(freshness.icon)}"></ha-icon>
-            <span>${esc(freshness.label)}</span>
-          </div>
-        </div>
-
-        <div class="hero-scene-v051">
-          <svg class="flow-lines-v051" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-            <path class="line-grid-v051" d="M17 46 H35 Q41 46 41 55 H47" />
-            <path class="line-output-v051" d="M53 55 H59 Q59 46 65 46 H83" />
-            <path class="line-battery-v051" d="M50 91 V75" />
-          </svg>
-          <div class="scene-node-v051 grid" ${this._entityId(device, "input_voltage") ? `data-entity="${esc(this._entityId(device, "input_voltage"))}"` : ""}>
-            <ha-icon icon="mdi:transmission-tower"></ha-icon>
-            <div><span>Ð¡ÐµÑ‚ÑŒ</span><strong>${esc(this._format(device, "input_voltage"))}</strong></div>
-          </div>
-          <div class="scene-node-v051 load" ${this._entityId(device, "output_load") ? `data-entity="${esc(this._entityId(device, "output_load"))}"` : ""}>
-            <ha-icon icon="mdi:monitor-dashboard"></ha-icon>
-            <div><span>ÐÐ°Ð³Ñ€ÑƒÐ·ÐºÐ°</span><strong>${load === null ? "â€”" : `${Math.round(load)} %`}</strong></div>
-          </div>
-          <img class="ups-art-v051" src="${UPS_ARTWORK}" alt="Stark Country 1000 ONLINE (16A)" loading="eager" decoding="async" ${this._entityId(device, "mode") ? `data-entity="${esc(this._entityId(device, "mode"))}"` : ""}>
-          <div class="scene-node-v051 battery" ${this._entityId(device, "battery_capacity") ? `data-entity="${esc(this._entityId(device, "battery_capacity"))}"` : ""}>
-            <ha-icon icon="mdi:battery"></ha-icon>
-            <div><span>ÐÐšÐ‘</span><strong>${battery === null ? "â€”" : `${Math.round(battery)} %`}</strong></div>
-          </div>
-        </div>
-
-        <div class="reserve-strip-v051 ${esc(reserve.tone)}" ${this._entityId(device, "battery_capacity") ? `data-entity="${esc(this._entityId(device, "battery_capacity"))}"` : ""}>
-          <ha-icon icon="${esc(reserve.icon)}"></ha-icon>
-          <strong>${esc(reserve.label)}</strong>
-        </div>
-      </article>
-
-      <div class="metrics-row-v051">
-        ${this._metricCardV051(device, "input_voltage", "Ð’Ð¥ÐžÐ”", "mdi:power-plug", "input_frequency")}
-        ${this._metricCardV051(device, "output_voltage", "Ð’Ð«Ð¥ÐžÐ”", "mdi:sine-wave", "output_frequency")}
-        ${this._metricCardV051(device, "output_load", "ÐÐÐ“Ð Ð£Ð—ÐšÐ", "mdi:gauge", "output_current")}
-      </div>
-
-      ${this._renderStateSummaryV051(device, trusted, onBattery)}
-    </section>`;
-  };
-
-  Panel.prototype._detailRowV051 = function (device, key, label) {
-    const entityId = this._entityId(device, key);
-    if (!entityId) return "";
-    return `<div class="detail-row-v051" data-entity="${esc(entityId)}"><span>${esc(label)}</span><strong>${esc(this._format(device, key))}</strong></div>`;
-  };
-
-  Panel.prototype._renderUpsV051 = function () {
-    const device = this._selectedDeviceV051();
-    if (!device) return this._empty("UPS Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½Ñ‹");
-    const cloud = this._isOn(device, "cloud_connected");
-    const stale = this._isOn(device, "data_stale");
-    const trusted = cloud === true && stale === false;
-    const onBattery = this._mode(device) === "battery_mode" || this._isOn(device, "on_battery") === true;
-    return `<section class="single-view-v051">
-      <article class="detail-card-v051 card-v051">
-        <div class="detail-head-v051"><div><span>Ð˜Ð‘ÐŸ</span><h2>${esc(device.name)}</h2><p>${esc(device.model || "STARK Country Online")}</p></div>${this._statePillV051(this._modeLabel(device), trusted ? (onBattery ? "warn" : "good") : "unknown")}</div>
-        ${this._renderStateSummaryV051(device, trusted, onBattery)}
-        <h3>Ð Ð°Ð±Ð¾Ñ‡Ð¸Ðµ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ñ‹</h3>
-        <div class="detail-list-v051">
-          ${this._detailRowV051(device, "output_current", "Ð’Ñ‹Ñ…Ð¾Ð´Ð½Ð¾Ð¹ Ñ‚Ð¾Ðº")}
-          ${this._detailRowV051(device, "ups_temperature", "Ð¢ÐµÐ¼Ð¿ÐµÑ€Ð°Ñ‚ÑƒÑ€Ð° Ð˜Ð‘ÐŸ")}
-          ${this._detailRowV051(device, "firmware", "ÐŸÑ€Ð¾ÑˆÐ¸Ð²ÐºÐ°")}
-          ${this._detailRowV051(device, "data_age", "Ð’Ð¾Ð·Ñ€Ð°ÑÑ‚ Ð´Ð°Ð½Ð½Ñ‹Ñ…")}
-        </div>
-      </article>
-    </section>`;
-  };
-
-  Panel.prototype._renderEventsV051 = function () {
-    const device = this._selectedDeviceV051();
-    if (!device) return this._empty("UPS Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½Ñ‹");
-    return `<section class="single-view-v051">
-      <article class="events-card-v051 card-v051">
-        <div class="detail-head-v051"><div><span>Ð¡ÐžÐ‘Ð«Ð¢Ð˜Ð¯</span><h2>${esc(device.name)}</h2><p>ÐŸÐ¾ÑÐ»ÐµÐ´Ð½Ð¸Ðµ Ð¿Ð¾Ð´Ñ‚Ð²ÐµÑ€Ð¶Ð´Ñ‘Ð½Ð½Ñ‹Ðµ Ð¸Ð·Ð¼ÐµÐ½ÐµÐ½Ð¸Ñ ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ð¹</p></div></div>
-        <div class="events-list-v051">
-          ${this._eventRow(device, "battery_mode_events", "Ð ÐµÐ¶Ð¸Ð¼ ÐÐšÐ‘")}
-          ${this._eventRow(device, "cloud_telemetry_events", "ÐžÐ±Ð»Ð°ÐºÐ¾")}
-          ${this._eventRow(device, "data_freshness_events", "Ð¡Ð²ÐµÐ¶ÐµÑÑ‚ÑŒ Ð´Ð°Ð½Ð½Ñ‹Ñ…")}
-          ${this._eventRow(device, "fault_mode_events", "ÐÐ²Ð°Ñ€Ð¸Ð¹Ð½Ñ‹Ð¹ Ñ€ÐµÐ¶Ð¸Ð¼")}
-          ${this._eventRow(device, "extended_telemetry_events", "Ð Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð½Ð°Ñ Ñ‚ÐµÐ»ÐµÐ¼ÐµÑ‚Ñ€Ð¸Ñ")}
-        </div>
-      </article>
-    </section>`;
-  };
-
-  Panel.prototype._renderHistory = function () {
-    const device = this._selectedDeviceV051();
-    if (!device) return this._empty("UPS Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½Ñ‹");
-    const items = [
-      ["input_voltage", "Ð’Ñ…Ð¾Ð´Ð½Ð¾Ðµ Ð½Ð°Ð¿Ñ€ÑÐ¶ÐµÐ½Ð¸Ðµ", "mdi:transmission-tower"],
-      ["output_voltage", "Ð’Ñ‹Ñ…Ð¾Ð´Ð½Ð¾Ðµ Ð½Ð°Ð¿Ñ€ÑÐ¶ÐµÐ½Ð¸Ðµ", "mdi:sine-wave"],
-      ["output_load", "ÐÐ°Ð³Ñ€ÑƒÐ·ÐºÐ°", "mdi:gauge"],
-      ["battery_capacity", "Ð—Ð°Ñ€ÑÐ´ ÐÐšÐ‘", "mdi:battery"],
-    ];
-    return `<section class="single-view-v051"><article class="history-card history-card-v051">
-      <div class="detail-head-v051"><div><span>Ð˜Ð¡Ð¢ÐžÐ Ð˜Ð¯</span><h2>${esc(device.name)}</h2><p>ÐžÑ‚ÐºÑ€Ñ‹Ð²Ð°ÐµÑ‚ÑÑ ÑˆÑ‚Ð°Ñ‚Ð½Ð°Ñ Ð¸ÑÑ‚Ð¾Ñ€Ð¸Ñ Home Assistant</p></div></div>
-      <div class="history-metrics">
-        ${items.map(([key, label, icon]) => {
-          const entityId = this._entityId(device, key);
-          return entityId ? `<button class="history-link" data-entity="${esc(entityId)}"><ha-icon icon="${esc(icon)}"></ha-icon><span>${esc(label)}</span><strong>${esc(this._format(device, key))}</strong><ha-icon icon="mdi:chart-line"></ha-icon></button>` : "";
-        }).join("")}
-      </div>
-    </article></section>`;
-  };
-
-  Panel.prototype._renderOverview = function () {
-    if (this._view === "ups") return this._renderUpsV051();
-    if (this._view === "events") return this._renderEventsV051();
-    if (this._view === "overview") return this._renderOverviewV051();
-    return previousOverview.call(this);
-  };
-
-  Panel.prototype._installNavigationV051 = function () {
-    const root = this.shadowRoot;
-    const nav = root?.querySelector(".tabs.bottom-nav, .tabs");
-    if (!root || !nav) return;
-    nav.classList.add("bottom-nav", "bottom-nav-v051");
-    nav.innerHTML = NAV_ITEMS.map(([view, icon, label]) => `<button class="tab ${this._view === view ? "active" : ""}" data-view-v051="${view}" aria-label="${esc(label)}" ${this._view === view ? 'aria-current="page"' : ""}><ha-icon icon="${icon}"></ha-icon><span>${esc(label)}</span></button>`).join("");
-    nav.querySelectorAll("button[data-view-v051]").forEach((button) => {
-      button.addEventListener("click", () => {
-        this._view = button.dataset.viewV051;
-        this._queueRender();
-      });
-    });
-  };
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    const subtitle = root.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-    this._installNavigationV051();
-
-    if (!root.querySelector("style[data-stark-ui-v051]")) {
-      const style = document.createElement("style");
-      style.dataset.starkUiV051 = "true";
-      style.textContent = `
-        .global-device-context { min-height: 58px !important; margin-bottom: 12px !important; padding: 2px !important; border-radius: 18px !important; }
-        .global-device-context button { min-height: 54px !important; border-radius: 15px !important; font-size: 16px !important; }
-        .global-device-context .device-health-dot { display: none !important; }
-
-        .overview-v051,.single-view-v051 { width:min(100%,820px); margin:0 auto; display:grid; gap:12px; }
-        .card-v051 { min-width:0; border:1px solid color-mix(in srgb,var(--divider-color) 82%,transparent); border-radius:26px; background:var(--card-background-color); box-shadow:0 9px 28px rgba(23,45,76,.065); }
-        .ups-hero-v051 { position:relative; overflow:hidden; padding:16px; background-image:linear-gradient(180deg,rgba(255,255,255,.92) 0%,rgba(255,255,255,.62) 23%,rgba(255,255,255,.08) 56%,rgba(255,255,255,.18) 100%),var(--hero-background-v051); background-size:cover; background-position:center; isolation:isolate; }
-        .ups-hero-v051::after { content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(90deg,rgba(235,248,255,.12),transparent 38%,rgba(235,248,255,.08)); pointer-events:none; }
-        .hero-head-v051 { position:relative; z-index:6; display:flex; align-items:flex-start; justify-content:space-between; gap:10px; min-height:91px; }
-        .hero-copy-v051>span { display:block; color:var(--secondary-text-color); font-size:13px; font-weight:800; letter-spacing:.13em; }
-        .hero-copy-v051 h2 { margin:4px 0 0; color:var(--success-color,#2eae55); font-size:38px; line-height:.98; letter-spacing:-.045em; }
-        .hero-copy-v051 p { margin:8px 0 0; color:#525a61; font-size:15px; line-height:1.2; font-weight:520; }
-        .ups-hero-v051.warn .hero-copy-v051 h2 { color:var(--warning-color,#ed8b00); }
-        .ups-hero-v051.bad .hero-copy-v051 h2 { color:var(--error-color,#d93b3b); }
-        .ups-hero-v051.unknown .hero-copy-v051 h2 { color:var(--secondary-text-color); }
-        .freshness-v051 { min-height:36px; max-width:48%; display:flex; align-items:center; gap:6px; padding:7px 10px; border:1px solid rgba(255,255,255,.86); border-radius:999px; background:rgba(255,255,255,.88); box-shadow:0 3px 12px rgba(23,45,76,.08); font-size:12px; font-weight:750; line-height:1.15; }
-        .freshness-v051 ha-icon { --mdc-icon-size:20px; flex:0 0 auto; }
-        .freshness-v051.good { color:var(--success-color,#2eae55); }
-        .freshness-v051.warn { color:var(--warning-color,#ed8b00); }
-        .freshness-v051.bad { color:var(--error-color,#d93b3b); }
-        .freshness-v051.unknown { color:var(--secondary-text-color); }
-
-        .hero-scene-v051 { position:relative; height:220px; margin:0 -12px; isolation:isolate; }
-        .flow-lines-v051 { position:absolute; inset:0; z-index:2; width:100%; height:100%; pointer-events:none; filter:drop-shadow(0 0 4px rgba(58,198,255,.84)); }
-        .flow-lines-v051 path { fill:none; stroke:var(--stark-line); stroke-width:1.2; stroke-linecap:round; stroke-linejoin:round; vector-effect:non-scaling-stroke; }
-        .flow-lines-v051 path.line-battery-v051 { stroke:var(--success-color,#2eae55); }
-        .battery-flow-v051 .line-grid-v051 { opacity:.22; stroke:var(--secondary-text-color); filter:none; }
-        .battery-flow-v051 .line-battery-v051 { stroke:var(--warning-color,#ed8b00); }
-        .ups-art-v051 { position:absolute; z-index:3; left:50%; bottom:25px; width:min(39%,190px); max-height:83%; object-fit:contain; transform:translateX(-50%); filter:drop-shadow(0 11px 12px rgba(15,27,38,.28)); }
-        .scene-node-v051 { position:absolute; z-index:4; min-width:104px; min-height:62px; display:flex; align-items:center; gap:7px; padding:8px 10px; border:1px solid rgba(255,255,255,.88); border-radius:17px; background:rgba(255,255,255,.92); box-shadow:0 7px 20px rgba(23,45,76,.10); color:#15191d; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
-        .scene-node-v051.grid { left:0; top:38%; }
-        .scene-node-v051.load { right:0; top:38%; }
-        .scene-node-v051.battery { left:50%; bottom:-1px; min-width:122px; transform:translateX(-50%); }
-        .scene-node-v051 ha-icon { --mdc-icon-size:25px; color:var(--primary-color); flex:0 0 auto; }
-        .scene-node-v051.battery ha-icon { color:var(--success-color,#2eae55); }
-        .battery-flow-v051 .scene-node-v051.battery ha-icon { color:var(--warning-color,#ed8b00); }
-        .scene-node-v051 span,.scene-node-v051 strong { display:block; }
-        .scene-node-v051 span { color:#606970; font-size:13px; line-height:1.1; }
-        .scene-node-v051 strong { margin-top:3px; color:#171b1f; font-size:16px; line-height:1.05; }
-        .reserve-strip-v051 { position:relative; z-index:6; min-height:49px; display:flex; align-items:center; gap:10px; padding:8px 14px; border:1px solid color-mix(in srgb,var(--primary-color) 28%,transparent); border-radius:17px; background:rgba(243,251,255,.94); color:var(--primary-color); }
-        .reserve-strip-v051 ha-icon { --mdc-icon-size:25px; }
-        .reserve-strip-v051 strong { font-size:15px; line-height:1.15; }
-        .reserve-strip-v051.warn { color:var(--warning-color,#ed8b00); border-color:color-mix(in srgb,var(--warning-color,#ed8b00) 30%,transparent); }
-        .reserve-strip-v051.bad { color:var(--error-color,#d93b3b); border-color:color-mix(in srgb,var(--error-color,#d93b3b) 30%,transparent); }
-        .reserve-strip-v051.unknown { color:var(--secondary-text-color); border-color:var(--divider-color); }
-
-        .metrics-row-v051 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
-        .metric-card-v051 { min-width:0; min-height:92px; display:flex; align-items:flex-start; gap:8px; padding:11px; border:1px solid var(--divider-color); border-radius:21px; background:var(--card-background-color); box-shadow:0 5px 18px rgba(23,45,76,.05); }
-        .metric-icon-v051 { width:39px; height:39px; flex:0 0 39px; display:grid; place-items:center; border-radius:50%; background:var(--stark-ice); color:var(--primary-color); }
-        .metric-icon-v051 ha-icon { --mdc-icon-size:23px; }
-        .metric-copy-v051 { min-width:0; padding-top:2px; }
-        .metric-copy-v051 span,.metric-copy-v051 strong,.metric-copy-v051 small { display:block; }
-        .metric-copy-v051 span { color:var(--secondary-text-color); font-size:12px; font-weight:800; line-height:1.1; }
-        .metric-copy-v051 strong { margin-top:5px; color:var(--primary-text-color); font-size:19px; line-height:1; letter-spacing:-.02em; overflow-wrap:anywhere; }
-        .metric-copy-v051 small { margin-top:7px; color:var(--secondary-text-color); font-size:12px; line-height:1.1; overflow-wrap:anywhere; }
-
-        .state-card-v051 { padding:14px; }
-        .state-card-v051 h3 { margin:0 0 10px; font-size:22px; line-height:1.1; }
-        .state-row-v051 { padding:11px 12px; border:1px solid var(--divider-color); border-radius:18px; }
-        .state-row-v051+.state-row-v051 { margin-top:9px; }
-        .state-row-v051.line { border-color:color-mix(in srgb,var(--primary-color) 38%,var(--divider-color)); background:color-mix(in srgb,var(--primary-color) 3%,var(--card-background-color)); }
-        .state-row-head-v051 { display:flex; align-items:center; justify-content:space-between; gap:9px; }
-        .state-row-head-v051>div { min-width:0; display:flex; align-items:center; gap:7px; }
-        .state-row-head-v051 ha-icon { --mdc-icon-size:22px; color:var(--primary-color); }
-        .state-row-v051.battery .state-row-head-v051 ha-icon { color:var(--success-color,#2eae55); }
-        .state-row-head-v051 strong { font-size:15px; line-height:1.15; }
-        .state-pill-v051 { flex:0 0 auto; padding:6px 9px; border-radius:999px; font-size:12px; font-weight:750; white-space:nowrap; }
-        .state-pill-v051.good { color:var(--success-color,#2eae55); background:color-mix(in srgb,var(--success-color,#2eae55) 10%,transparent); }
-        .state-pill-v051.warn { color:var(--warning-color,#ed8b00); background:color-mix(in srgb,var(--warning-color,#ed8b00) 10%,transparent); }
-        .state-pill-v051.bad { color:var(--error-color,#d93b3b); background:color-mix(in srgb,var(--error-color,#d93b3b) 10%,transparent); }
-        .state-pill-v051.unknown { color:var(--secondary-text-color); background:color-mix(in srgb,var(--secondary-text-color) 9%,transparent); }
-        .state-values-v051 { display:grid; margin-top:10px; }
-        .state-values-v051.four { grid-template-columns:repeat(4,minmax(0,1fr)); }
-        .state-values-v051.three { grid-template-columns:repeat(3,minmax(0,1fr)); }
-        .state-values-v051>div { min-width:0; padding:0 8px; border-left:1px solid var(--divider-color); }
-        .state-values-v051>div:first-child { padding-left:0; border-left:0; }
-        .state-values-v051>div:last-child { padding-right:0; }
-        .state-values-v051 span,.state-values-v051 strong { display:block; }
-        .state-values-v051 span { color:var(--secondary-text-color); font-size:11px; line-height:1.1; }
-        .state-values-v051 strong { margin-top:4px; color:var(--primary-text-color); font-size:14px; line-height:1.15; overflow-wrap:anywhere; }
-        .state-values-v051 .tone-good { color:var(--success-color,#2eae55); }
-        .state-values-v051 .tone-warn { color:var(--warning-color,#ed8b00); }
-        .state-values-v051 .tone-bad { color:var(--error-color,#d93b3b); }
-        .state-values-v051 .tone-unknown { color:var(--secondary-text-color); }
-
-        .detail-card-v051,.events-card-v051 { padding:16px; }
-        .detail-card-v051 .state-card-v051 { margin:14px 0; box-shadow:none; }
-        .detail-head-v051 { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
-        .detail-head-v051>div>span { color:var(--secondary-text-color); font-size:12px; font-weight:800; letter-spacing:.1em; }
-        .detail-head-v051 h2 { margin:4px 0 0; font-size:24px; }
-        .detail-head-v051 p { margin:5px 0 0; color:var(--secondary-text-color); font-size:13px; line-height:1.3; }
-        .detail-card-v051>h3 { margin:16px 0 7px; color:var(--secondary-text-color); font-size:14px; }
-        .detail-list-v051 { border-top:1px solid var(--divider-color); }
-        .detail-row-v051 { min-height:47px; display:flex; align-items:center; justify-content:space-between; gap:12px; border-bottom:1px solid var(--divider-color); }
-        .detail-row-v051 span { color:var(--secondary-text-color); font-size:13px; }
-        .detail-row-v051 strong { font-size:13px; text-align:right; }
-        .events-list-v051 { margin-top:15px; }
-        .events-list-v051 .event-row { min-height:58px !important; }
-        .history-card-v051 { padding:16px !important; }
-        .history-card-v051 .history-metrics { margin-top:14px; }
-
-        .tabs.bottom-nav-v051 { grid-template-columns:repeat(5,minmax(0,1fr)) !important; gap:1px !important; }
-        .bottom-nav-v051 .tab { min-height:60px !important; padding:5px 1px !important; border-radius:13px !important; font-size:12px !important; }
-        .bottom-nav-v051 .tab ha-icon { --mdc-icon-size:24px !important; }
-
-        @media (max-width:430px) {
-          .app { padding-left:max(10px,env(safe-area-inset-left)) !important; padding-right:max(10px,env(safe-area-inset-right)) !important; }
-          .app-header { min-height:68px !important; margin-bottom:8px !important; }
-          .app-header h1 { font-size:21px !important; }
-          .subtitle { font-size:12px !important; }
-          .global-device-context { min-height:55px !important; margin-bottom:10px !important; }
-          .global-device-context button { min-height:51px !important; font-size:15px !important; }
-          .ups-hero-v051 { padding:14px; border-radius:23px; }
-          .hero-head-v051 { min-height:86px; }
-          .hero-copy-v051 h2 { font-size:35px; }
-          .hero-copy-v051 p { font-size:14px; }
-          .freshness-v051 { max-width:47%; padding:6px 8px; font-size:11px; }
-          .hero-scene-v051 { height:205px; margin:0 -10px; }
-          .ups-art-v051 { width:41%; bottom:22px; }
-          .scene-node-v051 { min-width:96px; min-height:58px; padding:7px 8px; }
-          .scene-node-v051 span { font-size:12px; }
-          .scene-node-v051 strong { font-size:15px; }
-          .scene-node-v051 ha-icon { --mdc-icon-size:22px; }
-          .scene-node-v051.battery { min-width:112px; }
-          .reserve-strip-v051 { min-height:46px; padding:7px 11px; }
-          .reserve-strip-v051 strong { font-size:14px; }
-          .metric-card-v051 { min-height:88px; padding:9px; flex-direction:column; gap:6px; }
-          .metric-icon-v051 { width:35px; height:35px; flex-basis:35px; }
-          .metric-copy-v051 strong { font-size:17px; }
-          .metric-copy-v051 small { margin-top:5px; }
-          .state-card-v051 { padding:12px; }
-          .state-card-v051 h3 { font-size:20px; }
-          .state-row-v051 { padding:10px; }
-          .state-row-head-v051 strong { font-size:14px; }
-          .state-pill-v051 { font-size:11px; }
-          .state-values-v051>div { padding-left:5px; padding-right:5px; }
-          .state-values-v051 span { font-size:10px; }
-          .state-values-v051 strong { font-size:12px; }
-        }
-        @media (max-width:370px) {
-          .freshness-v051 { max-width:45%; }
-          .scene-node-v051 { min-width:87px; }
-          .scene-node-v051 ha-icon { display:none; }
-          .bottom-nav-v051 .tab { font-size:10px !important; }
-        }
-        @media (min-width:760px) {
-          .hero-scene-v051 { height:330px; }
-          .ups-art-v051 { width:min(34%,250px); }
-        }
-      `;
-      root.append(style);
-    }
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v051.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v052.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.5.2";
-
-if (Panel && !Panel.prototype.__starkUiV052) {
-  Panel.prototype.__starkUiV052 = true;
-
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    const subtitle = root.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-
-    if (!root.querySelector("style[data-stark-ui-v052]")) {
-      const style = document.createElement("style");
-      style.dataset.starkUiV052 = "true";
-      style.textContent = `
-        /* UI 0.5.2: field alignment with the accepted iPhone target. */
-        :host { margin-top:0 !important; padding-top:0 !important; }
-        .app { padding-top:2px !important; }
-        .app-header {
-          min-height:62px !important;
-          margin:0 0 6px !important;
-          padding:2px 0 3px !important;
-        }
-        .global-device-context {
-          min-height:48px !important;
-          margin-bottom:8px !important;
-          padding:2px !important;
-          border-radius:17px !important;
-        }
-        .global-device-context button {
-          min-height:44px !important;
-          padding:5px 8px !important;
-          border-radius:14px !important;
-          font-size:15px !important;
-        }
-
-        .ups-hero-v051 {
-          background-image:
-            linear-gradient(180deg,rgba(255,255,255,.82) 0%,rgba(255,255,255,.46) 24%,rgba(255,255,255,.02) 58%,rgba(255,255,255,.10) 100%),
-            var(--hero-background-v051) !important;
-        }
-        .hero-head-v051 { min-height:82px !important; }
-        .hero-copy-v051 p { white-space:nowrap; }
-        .freshness-v051 {
-          width:auto !important;
-          max-width:none !important;
-          flex:0 0 auto;
-          padding:6px 9px !important;
-          white-space:nowrap;
-        }
-        .freshness-v051 span { white-space:nowrap; }
-        .hero-scene-v051 { height:225px !important; }
-        .flow-lines-v051 {
-          filter:drop-shadow(0 0 5px rgba(30,188,255,.98)) drop-shadow(0 0 2px rgba(255,255,255,.95)) !important;
-        }
-        .flow-lines-v051 path { stroke-width:1.55 !important; }
-        .ups-art-v051 {
-          width:min(46%,205px) !important;
-          max-height:78% !important;
-          bottom:62px !important;
-        }
-        .scene-node-v051.grid,.scene-node-v051.load { top:41% !important; }
-        .scene-node-v051.battery { bottom:-7px !important; }
-
-        .metric-card-v051 {
-          min-height:76px !important;
-          flex-direction:row !important;
-          align-items:center !important;
-          gap:7px !important;
-          padding:8px !important;
-          border-radius:19px !important;
-        }
-        .metric-icon-v051 {
-          width:36px !important;
-          height:36px !important;
-          flex:0 0 36px !important;
-        }
-        .metric-copy-v051 { padding-top:0 !important; }
-        .metric-copy-v051 span { font-size:11px !important; }
-        .metric-copy-v051 strong { margin-top:4px !important; font-size:17px !important; }
-        .metric-copy-v051 small { margin-top:4px !important; font-size:11px !important; }
-
-        .state-card-v051 { padding:10px !important; }
-        .state-card-v051 h3 { margin-bottom:8px !important; font-size:18px !important; }
-        .state-row-v051 { padding:9px !important; border-radius:16px !important; }
-        .state-row-v051+.state-row-v051 { margin-top:7px !important; }
-        .state-row-head-v051 strong { font-size:14px !important; }
-        .state-values-v051 { margin-top:8px !important; }
-        .state-values-v051 span { font-size:11px !important; }
-        .state-values-v051 strong { font-size:12px !important; }
-
-        .tabs.bottom-nav-v051 {
-          padding-top:4px !important;
-          padding-bottom:calc(4px + env(safe-area-inset-bottom)) !important;
-        }
-        .bottom-nav-v051 .tab {
-          min-height:52px !important;
-          padding:3px 1px !important;
-          font-size:12px !important;
-        }
-        .bottom-nav-v051 .tab ha-icon { --mdc-icon-size:22px !important; }
-
-        @media (max-width:430px) {
-          .app-header { min-height:60px !important; }
-          .hero-copy-v051 h2 { font-size:35px !important; }
-          .hero-copy-v051 p { font-size:13px !important; }
-          .freshness-v051 { min-height:34px !important; font-size:11px !important; }
-          .freshness-v051 ha-icon { --mdc-icon-size:18px !important; }
-          .hero-scene-v051 { margin-left:-10px !important; margin-right:-10px !important; }
-          .scene-node-v051 { min-width:94px !important; min-height:56px !important; }
-        }
-        @media (max-width:370px) {
-          .hero-copy-v051 p { white-space:normal; }
-          .freshness-v051 { padding-left:7px !important; padding-right:7px !important; }
-        }
-      `;
-      root.append(style);
-    }
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v052.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v053.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.5.3";
-
-if (Panel && !Panel.prototype.__starkUiV053) {
-  Panel.prototype.__starkUiV053 = true;
-
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    const subtitle = root.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-
-    if (!root.querySelector("style[data-stark-ui-v053]")) {
-      const style = document.createElement("style");
-      style.dataset.starkUiV053 = "true";
-      style.textContent = `
-        /*
-         * UI 0.5.3: keep the panel header below the iOS Dynamic Island.
-         * panel_custom already owns the Home Assistant shell; only this
-         * integration panel consumes the remaining top safe-area inset.
-         */
-        :host {
-          --stark-safe-top-v053:
-            max(
-              10px,
-              var(
-                --safe-area-inset-top,
-                env(safe-area-inset-top, 0px)
-              )
-            );
-          margin-top:0 !important;
-          padding-top:0 !important;
-        }
-        .app {
-          padding-top:var(--stark-safe-top-v053) !important;
-        }
-        .app-header {
-          margin-top:0 !important;
-        }
-
-        @media (display-mode:browser) and (min-width:760px) {
-          :host { --stark-safe-top-v053:10px; }
-        }
-      `;
-      root.append(style);
-    }
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v053.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v054.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.5.4";
-const PARENT_ROUTE = "/dashboard-infrastructure/overview";
-const MIN_SCALE = 0.75;
-const MAX_SCALE = 2;
-const SCALE_STEP = 0.1;
-
-function clampScale(value) {
-  const number = Number(value);
-  if (!Number.isFinite(number)) return 1;
-  return Math.min(MAX_SCALE, Math.max(MIN_SCALE, number));
-}
-
-function touchDistance(first, second) {
-  return Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
-}
-
-function touchMidpoint(first, second, viewport) {
-  const rect = viewport.getBoundingClientRect();
-  return {
-    x: (first.clientX + second.clientX) / 2 - rect.left,
-    y: (first.clientY + second.clientY) / 2 - rect.top,
-  };
-}
-
-if (Panel && !Panel.prototype.__starkUiV054) {
-  Panel.prototype.__starkUiV054 = true;
-
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._zoomStorageKeyV054 = function () {
-    const deviceId = this._selectedUpsId?.() || this._diagnosticDeviceId || this._devices?.[0]?.id || "default";
-    return `nikas:specialized-panel:stark-solarpower:zoom:${deviceId}`;
-  };
-
-  Panel.prototype._loadZoomV054 = function () {
-    const key = this._zoomStorageKeyV054();
-    if (this.__starkZoomKeyV054 === key && Number.isFinite(this.__starkZoomV054)) {
-      return clampScale(this.__starkZoomV054);
-    }
-    this.__starkZoomKeyV054 = key;
-    try {
-      this.__starkZoomV054 = clampScale(window.localStorage.getItem(key) || 1);
-    } catch (_error) {
-      this.__starkZoomV054 = 1;
-    }
-    return this.__starkZoomV054;
-  };
-
-  Panel.prototype._storeZoomV054 = function () {
-    try {
-      window.localStorage.setItem(this._zoomStorageKeyV054(), String(clampScale(this.__starkZoomV054)));
-    } catch (_error) {
-      // Private browsing/storage policy must never make the panel unusable.
-    }
-  };
-
-  Panel.prototype._installBackV054 = function () {
-    const root = this.shadowRoot;
-    const oldControl = root?.querySelector(".app-header .back, .app-header .menu-trigger-v041");
-    if (!root || !oldControl) return;
-
-    const back = oldControl.cloneNode(true);
-    back.classList.remove("menu-trigger-v041");
-    back.classList.add("back", "shell-back-v054");
-    back.setAttribute("aria-label", "ÐÐ°Ð·Ð°Ð´ Ðº Ð¸Ð½Ñ„Ñ€Ð°ÑÑ‚Ñ€ÑƒÐºÑ‚ÑƒÑ€Ðµ");
-    back.setAttribute("title", "ÐÐ°Ð·Ð°Ð´ Ðº Ð¸Ð½Ñ„Ñ€Ð°ÑÑ‚Ñ€ÑƒÐºÑ‚ÑƒÑ€Ðµ");
-    back.removeAttribute("aria-expanded");
-    back.innerHTML = '<ha-icon icon="mdi:arrow-left"></ha-icon>';
-    oldControl.replaceWith(back);
-    back.addEventListener("click", () => {
-      this._menuOpen = false;
-      if (typeof this._navigateTo === "function") this._navigateTo(PARENT_ROUTE);
-      else {
-        window.history.pushState(null, "", PARENT_ROUTE);
-        window.dispatchEvent(new Event("location-changed"));
-      }
-    });
-
-    root.querySelectorAll(".menu-backdrop-v041,.menu-drawer-v041").forEach((node) => node.remove());
-  };
-
-  Panel.prototype._installZoomV054 = function () {
-    const root = this.shadowRoot;
-    const app = root?.querySelector("main.app");
-    const header = app?.querySelector(":scope > .app-header");
-    const selector = app?.querySelector(":scope > .global-device-context");
-    const nav = app?.querySelector(":scope > .tabs.bottom-nav, :scope > .tabs");
-    if (!root || !app || !header || !nav) return;
-
-    const toolbar = document.createElement("div");
-    toolbar.className = "zoom-toolbar-v054";
-    toolbar.setAttribute("aria-label", "ÐœÐ°ÑÑˆÑ‚Ð°Ð± Ñ€Ð°Ð±Ð¾Ñ‡ÐµÐ¹ Ð¾Ð±Ð»Ð°ÑÑ‚Ð¸");
-    toolbar.innerHTML = `
-      <span class="zoom-label-v054">ÐœÐ°ÑÑˆÑ‚Ð°Ð±</span>
-      <div class="zoom-controls-v054">
-        <button type="button" data-zoom-out aria-label="Ð£Ð¼ÐµÐ½ÑŒÑˆÐ¸Ñ‚ÑŒ Ð¼Ð°ÑÑˆÑ‚Ð°Ð±">âˆ’</button>
-        <button type="button" class="zoom-value-v054" data-zoom-reset aria-label="Ð¡Ð±Ñ€Ð¾ÑÐ¸Ñ‚ÑŒ Ð¼Ð°ÑÑˆÑ‚Ð°Ð± Ð´Ð¾ 100%">100%</button>
-        <button type="button" data-zoom-in aria-label="Ð£Ð²ÐµÐ»Ð¸Ñ‡Ð¸Ñ‚ÑŒ Ð¼Ð°ÑÑˆÑ‚Ð°Ð±">+</button>
-      </div>`;
-
-    const viewport = document.createElement("section");
-    viewport.className = "zoom-viewport-v054";
-    viewport.setAttribute("aria-label", "Ð Ð°Ð±Ð¾Ñ‡Ð°Ñ Ð¾Ð±Ð»Ð°ÑÑ‚ÑŒ Stark SolarPower");
-    const content = document.createElement("div");
-    content.className = "zoom-content-v054";
-    viewport.append(content);
-
-    const excluded = new Set([header, selector, nav]);
-    Array.from(app.children).forEach((child) => {
-      if (!excluded.has(child)) content.append(child);
-    });
-
-    const anchor = selector || header;
-    anchor.insertAdjacentElement("afterend", toolbar);
-    toolbar.insertAdjacentElement("afterend", viewport);
-    app.append(nav);
-
-    const value = toolbar.querySelector(".zoom-value-v054");
-    const applyScale = (nextScale, focalPoint = null, persist = false) => {
-      const previousScale = clampScale(this.__starkZoomV054 || 1);
-      const scale = clampScale(nextScale);
-      const point = focalPoint || {
-        x: viewport.clientWidth / 2,
-        y: viewport.clientHeight / 2,
-      };
-      const contentX = (viewport.scrollLeft + point.x) / previousScale;
-      const contentY = (viewport.scrollTop + point.y) / previousScale;
-
-      this.__starkZoomV054 = scale;
-      content.style.zoom = String(scale);
-      value.textContent = `${Math.round(scale * 100)}%`;
-      value.setAttribute("aria-label", `ÐœÐ°ÑÑˆÑ‚Ð°Ð± ${Math.round(scale * 100)}%. Ð¡Ð±Ñ€Ð¾ÑÐ¸Ñ‚ÑŒ Ð´Ð¾ 100%`);
-
-      requestAnimationFrame(() => {
-        viewport.scrollLeft = Math.max(0, contentX * scale - point.x);
-        viewport.scrollTop = Math.max(0, contentY * scale - point.y);
-      });
-      if (persist) this._storeZoomV054();
-    };
-
-    applyScale(this._loadZoomV054());
-
-    toolbar.querySelector("[data-zoom-out]")?.addEventListener("click", () => {
-      applyScale(this.__starkZoomV054 - SCALE_STEP, null, true);
-    });
-    toolbar.querySelector("[data-zoom-in]")?.addEventListener("click", () => {
-      applyScale(this.__starkZoomV054 + SCALE_STEP, null, true);
-    });
-    toolbar.querySelector("[data-zoom-reset]")?.addEventListener("click", () => {
-      applyScale(1, { x: 0, y: 0 }, true);
-    });
-
-    let pinch = null;
-    viewport.addEventListener("touchstart", (event) => {
-      if (event.touches.length !== 2) return;
-      const [first, second] = event.touches;
-      const midpoint = touchMidpoint(first, second, viewport);
-      const scale = clampScale(this.__starkZoomV054 || 1);
-      pinch = {
-        distance: Math.max(1, touchDistance(first, second)),
-        scale,
-        contentX: (viewport.scrollLeft + midpoint.x) / scale,
-        contentY: (viewport.scrollTop + midpoint.y) / scale,
-      };
-      event.preventDefault();
-    }, { passive: false });
-
-    viewport.addEventListener("touchmove", (event) => {
-      if (!pinch || event.touches.length !== 2) return;
-      const [first, second] = event.touches;
-      const midpoint = touchMidpoint(first, second, viewport);
-      const scale = clampScale(pinch.scale * touchDistance(first, second) / pinch.distance);
-      this.__starkZoomV054 = scale;
-      content.style.zoom = String(scale);
-      value.textContent = `${Math.round(scale * 100)}%`;
-      viewport.scrollLeft = Math.max(0, pinch.contentX * scale - midpoint.x);
-      viewport.scrollTop = Math.max(0, pinch.contentY * scale - midpoint.y);
-      event.preventDefault();
-    }, { passive: false });
-
-    const finishPinch = () => {
-      if (!pinch) return;
-      pinch = null;
-      this._storeZoomV054();
-      value.setAttribute("aria-label", `ÐœÐ°ÑÑˆÑ‚Ð°Ð± ${Math.round(this.__starkZoomV054 * 100)}%. Ð¡Ð±Ñ€Ð¾ÑÐ¸Ñ‚ÑŒ Ð´Ð¾ 100%`);
-    };
-    viewport.addEventListener("touchend", finishPinch, { passive: true });
-    viewport.addEventListener("touchcancel", finishPinch, { passive: true });
-  };
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    const subtitle = root.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-
-    this._installBackV054();
-    this._installZoomV054();
-
-    if (!root.querySelector("style[data-stark-ui-v054]")) {
-      const style = document.createElement("style");
-      style.dataset.starkUiV054 = "true";
-      style.textContent = `
-        /* Shared specialized-panel shell: native chrome around one zoomable work viewport. */
-        .app-header { padding-top:5px !important; }
-        .shell-back-v054 { color:var(--primary-text-color) !important; }
-        .zoom-toolbar-v054 {
-          width:min(100%,820px);
-          min-height:44px;
-          margin:0 auto 8px;
-          display:flex;
-          align-items:center;
-          justify-content:flex-end;
-          gap:10px;
-          color:var(--secondary-text-color);
-        }
-        .zoom-label-v054 { font-size:12px; font-weight:700; letter-spacing:.02em; }
-        .zoom-controls-v054 {
-          display:grid;
-          grid-template-columns:44px 66px 44px;
-          min-height:44px;
-          overflow:hidden;
-          border:1px solid var(--divider-color);
-          border-radius:15px;
-          background:var(--card-background-color);
-          box-shadow:0 4px 14px rgba(23,45,76,.06);
-        }
-        .zoom-controls-v054 button {
-          min-width:44px;
-          min-height:44px;
-          padding:0;
-          border:0;
-          border-right:1px solid var(--divider-color);
-          border-radius:0;
-          background:transparent;
-          color:var(--primary-text-color);
-          font:inherit;
-          font-size:22px;
-          font-weight:700;
-          line-height:1;
-          -webkit-tap-highlight-color:transparent;
-        }
-        .zoom-controls-v054 button:last-child { border-right:0; }
-        .zoom-controls-v054 button:active { background:var(--stark-ice); }
-        .zoom-controls-v054 .zoom-value-v054 {
-          color:var(--primary-color);
-          font-size:13px;
-          font-variant-numeric:tabular-nums;
-        }
-        .zoom-viewport-v054 {
-          width:100%;
-          max-width:100%;
-          min-height:180px;
-          max-height:calc(100dvh - 242px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
-          overflow:auto;
-          overscroll-behavior:contain;
-          touch-action:pan-x pan-y;
-          -webkit-overflow-scrolling:touch;
-        }
-        .zoom-content-v054 {
-          width:100%;
-          min-width:100%;
-          transform-origin:0 0;
-        }
-        .zoom-content-v054 > :last-child { margin-bottom:8px; }
-
-        @media (max-width:430px) {
-          .zoom-toolbar-v054 { min-height:40px; margin-bottom:7px; }
-          .zoom-label-v054 { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
-          .zoom-controls-v054 { grid-template-columns:42px 62px 42px; min-height:42px; }
-          .zoom-controls-v054 button { min-width:42px; min-height:42px; }
-          .zoom-viewport-v054 {
-            max-height:calc(100dvh - 228px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
-          }
-        }
-        @media (min-width:760px) {
-          .zoom-viewport-v054 { max-height:calc(100dvh - 238px); }
-        }
-      `;
-      root.append(style);
-    }
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v054.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v055.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.5.5";
-const MIN_SCALE = 0.75;
-const MAX_SCALE = 2;
-
-function clampScale(value) {
-  const number = Number(value);
-  if (!Number.isFinite(number)) return 1;
-  return Math.min(MAX_SCALE, Math.max(MIN_SCALE, number));
-}
-
-function touchDistance(first, second) {
-  return Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
-}
-
-function touchMidpoint(first, second, viewport) {
-  const rect = viewport.getBoundingClientRect();
-  return {
-    x: (first.clientX + second.clientX) / 2 - rect.left,
-    y: (first.clientY + second.clientY) / 2 - rect.top,
-  };
-}
-
-if (Panel && !Panel.prototype.__starkUiV055) {
-  Panel.prototype.__starkUiV055 = true;
-
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._removeZoomShellsV055 = function () {
-    const app = this.shadowRoot?.querySelector("main.app");
-    if (!app) return;
-
-    // UI 0.5.4 could wrap an already-rendered work viewport again when an
-    // optimized HA state update skipped the base innerHTML replacement.
-    // Unwrap from the deepest viewport outward and rebuild exactly one shell.
-    const wrappers = Array.from(
-      app.querySelectorAll(".zoom-viewport-v054, .zoom-viewport-v055")
-    ).reverse();
-
-    wrappers.forEach((viewport) => {
-      const content = viewport.querySelector(
-        ":scope > .zoom-content-v054, :scope > .zoom-content-v055"
-      );
-      if (content) {
-        while (content.firstChild) viewport.before(content.firstChild);
-      }
-      viewport.remove();
-    });
-
-    app.querySelectorAll(".zoom-toolbar-v054").forEach((toolbar) => toolbar.remove());
-  };
-
-  Panel.prototype._installPinchViewportV055 = function () {
-    const root = this.shadowRoot;
-    const app = root?.querySelector("main.app");
-    const header = app?.querySelector(":scope > .app-header");
-    const selector = app?.querySelector(":scope > .global-device-context");
-    const nav = app?.querySelector(":scope > .tabs.bottom-nav, :scope > .tabs");
-    if (!root || !app || !header || !nav) return;
-
-    const viewport = document.createElement("section");
-    viewport.className = "zoom-viewport-v055";
-    viewport.setAttribute("aria-label", "Ð Ð°Ð±Ð¾Ñ‡Ð°Ñ Ð¾Ð±Ð»Ð°ÑÑ‚ÑŒ Stark SolarPower. ÐœÐ°ÑÑˆÑ‚Ð°Ð±Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ Ð´Ð²ÑƒÐ¼Ñ Ð¿Ð°Ð»ÑŒÑ†Ð°Ð¼Ð¸");
-    const content = document.createElement("div");
-    content.className = "zoom-content-v055";
-    viewport.append(content);
-
-    const excluded = new Set([header, selector, nav]);
-    Array.from(app.children).forEach((child) => {
-      if (!excluded.has(child)) content.append(child);
-    });
-
-    const anchor = selector || header;
-    anchor.insertAdjacentElement("afterend", viewport);
-    app.append(nav);
-
-    const initialScale = clampScale(this._loadZoomV054?.() || this.__starkZoomV054 || 1);
-    this.__starkZoomV054 = initialScale;
-    content.style.zoom = String(initialScale);
-
-    let pinch = null;
-    viewport.addEventListener("touchstart", (event) => {
-      if (event.touches.length !== 2) return;
-      const [first, second] = event.touches;
-      const midpoint = touchMidpoint(first, second, viewport);
-      const scale = clampScale(this.__starkZoomV054 || 1);
-      pinch = {
-        distance: Math.max(1, touchDistance(first, second)),
-        scale,
-        contentX: (viewport.scrollLeft + midpoint.x) / scale,
-        contentY: (viewport.scrollTop + midpoint.y) / scale,
-      };
-      event.preventDefault();
-    }, { passive: false });
-
-    viewport.addEventListener("touchmove", (event) => {
-      if (!pinch || event.touches.length !== 2) return;
-      const [first, second] = event.touches;
-      const midpoint = touchMidpoint(first, second, viewport);
-      const scale = clampScale(pinch.scale * touchDistance(first, second) / pinch.distance);
-      this.__starkZoomV054 = scale;
-      content.style.zoom = String(scale);
-      viewport.scrollLeft = Math.max(0, pinch.contentX * scale - midpoint.x);
-      viewport.scrollTop = Math.max(0, pinch.contentY * scale - midpoint.y);
-      event.preventDefault();
-    }, { passive: false });
-
-    const finishPinch = () => {
-      if (!pinch) return;
-      pinch = null;
-      this._storeZoomV054?.();
-    };
-    viewport.addEventListener("touchend", finishPinch, { passive: true });
-    viewport.addEventListener("touchcancel", finishPinch, { passive: true });
-  };
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    const subtitle = root.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-
-    this._removeZoomShellsV055();
-    this._installPinchViewportV055();
-
-    if (!root.querySelector("style[data-stark-ui-v055]")) {
-      const style = document.createElement("style");
-      style.dataset.starkUiV055 = "true";
-      style.textContent = `
-        /* UI 0.5.5: gesture-only zoom, exactly one work viewport. */
-        .zoom-toolbar-v054 { display:none !important; }
-        .zoom-viewport-v055 {
-          width:100%;
-          max-width:100%;
-          min-height:180px;
-          max-height:calc(100dvh - 188px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
-          overflow:auto;
-          overscroll-behavior:contain;
-          touch-action:pan-x pan-y;
-          -webkit-overflow-scrolling:touch;
-        }
-        .zoom-content-v055 {
-          width:100%;
-          min-width:100%;
-          transform-origin:0 0;
-        }
-        .zoom-content-v055 > :last-child { margin-bottom:8px; }
-
-        @media (max-width:430px) {
-          .zoom-viewport-v055 {
-            max-height:calc(100dvh - 180px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
-          }
-        }
-        @media (min-width:760px) {
-          .zoom-viewport-v055 { max-height:calc(100dvh - 188px); }
-        }
-      `;
-      root.append(style);
-    }
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v055.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v056.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.5.6";
-const SNAP_MIN = 0.97;
-const SNAP_MAX = 1.03;
-const DOUBLE_TAP_DELAY_MS = 360;
-const TAP_DURATION_MS = 280;
-const TAP_MOVE_PX = 14;
-
-function midpoint(first, second) {
-  return {
-    x: (first.clientX + second.clientX) / 2,
-    y: (first.clientY + second.clientY) / 2,
-  };
-}
-
-function pointDistance(first, second) {
-  return Math.hypot(second.x - first.x, second.y - first.y);
-}
-
-if (Panel && !Panel.prototype.__starkUiV056) {
-  Panel.prototype.__starkUiV056 = true;
-
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._installSystemMenuV056 = function () {
-    const root = this.shadowRoot;
-    const oldControl = root?.querySelector(
-      ".app-header .shell-back-v054, .app-header .back, .app-header .menu-trigger-v041"
-    );
-    if (!root || !oldControl) return;
-
-    const menu = oldControl.cloneNode(true);
-    menu.classList.remove("shell-back-v054", "back", "menu-trigger-v041");
-    menu.classList.add("system-menu-v056");
-    menu.setAttribute("aria-label", "ÐžÑ‚ÐºÑ€Ñ‹Ñ‚ÑŒ Ð¼ÐµÐ½ÑŽ Home Assistant");
-    menu.setAttribute("title", "ÐœÐµÐ½ÑŽ Home Assistant");
-    menu.removeAttribute("aria-expanded");
-    menu.innerHTML = '<ha-icon icon="mdi:menu"></ha-icon>';
-    oldControl.replaceWith(menu);
-
-    menu.addEventListener("click", () => {
-      this.dispatchEvent(new CustomEvent("hass-toggle-menu", {
-        bubbles: true,
-        composed: true,
-      }));
-    });
-  };
-
-  Panel.prototype._showZoomResetV056 = function (viewport) {
-    let toast = viewport.querySelector(":scope > .zoom-reset-toast-v056");
-    if (!toast) {
-      toast = document.createElement("div");
-      toast.className = "zoom-reset-toast-v056";
-      toast.setAttribute("role", "status");
-      toast.setAttribute("aria-live", "polite");
-      viewport.prepend(toast);
-    }
-    toast.textContent = "ÐœÐ°ÑÑˆÑ‚Ð°Ð± 100%";
-    toast.classList.remove("visible");
-    requestAnimationFrame(() => toast.classList.add("visible"));
-    window.clearTimeout(this.__starkZoomToastTimerV056);
-    this.__starkZoomToastTimerV056 = window.setTimeout(() => {
-      toast?.classList.remove("visible");
-    }, 1100);
-  };
-
-  Panel.prototype._resetZoomV056 = function (viewport, content, notify = true) {
-    this.__starkZoomV054 = 1;
-    content.style.zoom = "1";
-    viewport.scrollTo({ left: 0, top: 0, behavior: "smooth" });
-    this._storeZoomV054?.();
-    if (notify) this._showZoomResetV056(viewport);
-  };
-
-  Panel.prototype._installZoomResetV056 = function () {
-    const viewport = this.shadowRoot?.querySelector(".zoom-viewport-v055");
-    const content = viewport?.querySelector(":scope > .zoom-content-v055");
-    if (!viewport || !content) return;
-
-    let gesture = null;
-    viewport.addEventListener("touchstart", (event) => {
-      if (event.touches.length !== 2) return;
-      const [first, second] = event.touches;
-      gesture = {
-        startedAt: performance.now(),
-        midpoint: midpoint(first, second),
-        distance: Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY),
-        moved: false,
-      };
-    }, { passive: true });
-
-    viewport.addEventListener("touchmove", (event) => {
-      if (!gesture || event.touches.length !== 2) return;
-      const [first, second] = event.touches;
-      const currentMidpoint = midpoint(first, second);
-      const currentDistance = Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
-      if (
-        pointDistance(gesture.midpoint, currentMidpoint) > TAP_MOVE_PX ||
-        Math.abs(currentDistance - gesture.distance) > TAP_MOVE_PX
-      ) {
-        gesture.moved = true;
-      }
-    }, { passive: true });
-
-    const finishGesture = (event) => {
-      if (!gesture || event.touches.length !== 0) return;
-      const completed = gesture;
-      gesture = null;
-      const now = performance.now();
-      const scale = Number(this.__starkZoomV054 || 1);
-
-      if (scale >= SNAP_MIN && scale <= SNAP_MAX && scale !== 1) {
-        this._resetZoomV056(viewport, content, true);
-      }
-
-      const isTwoFingerTap = !completed.moved && now - completed.startedAt <= TAP_DURATION_MS;
-      if (!isTwoFingerTap) {
-        this.__starkLastTwoFingerTapV056 = null;
-        return;
-      }
-
-      const previousTap = this.__starkLastTwoFingerTapV056;
-      if (
-        previousTap &&
-        now - previousTap.at <= DOUBLE_TAP_DELAY_MS &&
-        pointDistance(previousTap.midpoint, completed.midpoint) <= 48
-      ) {
-        this.__starkLastTwoFingerTapV056 = null;
-        this._resetZoomV056(viewport, content, true);
-        return;
-      }
-
-      this.__starkLastTwoFingerTapV056 = { at: now, midpoint: completed.midpoint };
-    };
-
-    viewport.addEventListener("touchend", finishGesture, { passive: true });
-    viewport.addEventListener("touchcancel", () => {
-      gesture = null;
-      this.__starkLastTwoFingerTapV056 = null;
-    }, { passive: true });
-  };
-
-  Panel.prototype._strengthenBatteryLineV056 = function () {
-    const line = this.shadowRoot?.querySelector(".flow-lines-v051 .line-battery-v051");
-    if (!line) return;
-    // Continue beneath both endpoint cards so the visible gap never looks
-    // disconnected when responsive geometry or user zoom changes.
-    line.setAttribute("d", "M50 97 V62");
-  };
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    const subtitle = root.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-
-    this._installSystemMenuV056();
-    this._installZoomResetV056();
-    this._strengthenBatteryLineV056();
-
-    if (!root.querySelector("style[data-stark-ui-v056]")) {
-      const style = document.createElement("style");
-      style.dataset.starkUiV056 = "true";
-      style.textContent = `
-        /* UI 0.5.6: native HA menu, gesture reset and continuous battery path. */
-        .system-menu-v056 {
-          grid-column:1 !important;
-          justify-self:start !important;
-          width:44px !important;
-          min-width:44px !important;
-          height:44px !important;
-          min-height:44px !important;
-          display:grid !important;
-          place-items:center !important;
-          padding:0 !important;
-          border:1px solid color-mix(in srgb,var(--divider-color) 72%,transparent) !important;
-          border-radius:16px !important;
-          background:var(--card-background-color) !important;
-          color:var(--primary-text-color) !important;
-          box-shadow:0 7px 20px rgba(23,45,76,.08) !important;
-        }
-        .system-menu-v056 ha-icon { --mdc-icon-size:25px !important; }
-        .zoom-viewport-v055 { position:relative; }
-        .zoom-reset-toast-v056 {
-          position:sticky;
-          top:10px;
-          z-index:30;
-          width:max-content;
-          max-width:calc(100% - 24px);
-          margin:0 12px -36px auto;
-          padding:8px 12px;
-          border:1px solid color-mix(in srgb,var(--primary-color) 22%,transparent);
-          border-radius:999px;
-          background:color-mix(in srgb,var(--card-background-color) 92%,transparent);
-          color:var(--primary-color);
-          box-shadow:0 5px 18px rgba(23,45,76,.12);
-          font-size:13px;
-          font-weight:750;
-          pointer-events:none;
-          opacity:0;
-          transform:translateY(-6px);
-          transition:opacity .16s ease,transform .16s ease;
-          backdrop-filter:blur(10px);
-          -webkit-backdrop-filter:blur(10px);
-        }
-        .zoom-reset-toast-v056.visible { opacity:1; transform:translateY(0); }
-        .flow-lines-v051 path.line-battery-v051 {
-          opacity:1 !important;
-          stroke-width:2.15 !important;
-          filter:drop-shadow(0 0 5px var(--success-color,#2eae55)) drop-shadow(0 0 2px rgba(255,255,255,.95));
-        }
-        .battery-flow-v051 .flow-lines-v051 path.line-battery-v051 {
-          filter:drop-shadow(0 0 5px var(--warning-color,#ed8b00)) drop-shadow(0 0 2px rgba(255,255,255,.95));
-        }
-      `;
-      root.append(style);
-    }
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v056.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v057.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.5.7";
-const MIN_SCALE = 0.75;
-const MAX_SCALE = 2;
-const SNAP_MIN = 0.97;
-const SNAP_MAX = 1.03;
-const DOUBLE_TAP_DELAY_MS = 360;
-const TAP_DURATION_MS = 280;
-const TAP_MOVE_PX = 14;
-
-function clampScale(value) {
-  const number = Number(value);
-  if (!Number.isFinite(number)) return 1;
-  return Math.min(MAX_SCALE, Math.max(MIN_SCALE, number));
-}
-
-function distance(first, second) {
-  return Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
-}
-
-function clientMidpoint(first, second) {
-  return {
-    x: (first.clientX + second.clientX) / 2,
-    y: (first.clientY + second.clientY) / 2,
-  };
-}
-
-function viewportMidpoint(first, second, viewport) {
-  const point = clientMidpoint(first, second);
-  const rect = viewport.getBoundingClientRect();
-  return { x: point.x - rect.left, y: point.y - rect.top };
-}
-
-function pointDistance(first, second) {
-  return Math.hypot(second.x - first.x, second.y - first.y);
-}
-
-if (Panel && !Panel.prototype.__starkUiV057) {
-  Panel.prototype.__starkUiV057 = true;
-
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._removeZoomShellsV057 = function () {
-    this.__starkCanvasResizeObserverV057?.disconnect();
-    this.__starkCanvasResizeObserverV057 = null;
-    this.__starkCanvasResizeCleanupV057?.();
-    this.__starkCanvasResizeCleanupV057 = null;
-    window.cancelAnimationFrame(this.__starkCanvasFrameV057);
-
-    const app = this.shadowRoot?.querySelector("main.app");
-    if (!app) return;
-
-    const wrappers = Array.from(
-      app.querySelectorAll(".zoom-viewport-v054, .zoom-viewport-v055, .zoom-viewport-v057")
-    ).reverse();
-
-    wrappers.forEach((viewport) => {
-      const content = viewport.classList.contains("zoom-viewport-v057")
-        ? viewport.querySelector(":scope > .zoom-stage-v057 > .zoom-content-v057")
-        : viewport.querySelector(":scope > .zoom-content-v054, :scope > .zoom-content-v055");
-      if (content) {
-        while (content.firstChild) viewport.before(content.firstChild);
-      }
-      viewport.remove();
-    });
-
-    app.querySelectorAll(".zoom-toolbar-v054").forEach((toolbar) => toolbar.remove());
-  };
-
-  Panel.prototype._retainFixedCanvasV057 = function (canvas) {
-    const app = this.shadowRoot?.querySelector("main.app");
-    if (!app || !canvas) return;
-
-    // Older build-time layers still reconcile their historical wrappers
-    // before this patch runs. Unwrap only those temporary parents while
-    // preserving the mounted v0.5.7 canvas, listeners and scroll position.
-    const temporaryWrappers = Array.from(
-      app.querySelectorAll(".zoom-viewport-v054, .zoom-viewport-v055")
-    ).reverse();
-    temporaryWrappers.forEach((viewport) => {
-      const content = viewport.querySelector(
-        ":scope > .zoom-content-v054, :scope > .zoom-content-v055"
-      );
-      if (content) {
-        while (content.firstChild) viewport.before(content.firstChild);
-      }
-      viewport.remove();
-    });
-    app.querySelectorAll(".zoom-toolbar-v054").forEach((toolbar) => toolbar.remove());
-    const nav = app.querySelector(":scope > .tabs.bottom-nav, :scope > .tabs");
-    if (nav) app.append(nav);
-  };
-
-  Panel.prototype._installFixedCanvasV057 = function () {
-    const root = this.shadowRoot;
-    const app = root?.querySelector("main.app");
-    const header = app?.querySelector(":scope > .app-header");
-    const selector = app?.querySelector(":scope > .global-device-context");
-    const nav = app?.querySelector(":scope > .tabs.bottom-nav, :scope > .tabs");
-    if (!root || !app || !header || !nav) return;
-
-    const viewport = document.createElement("section");
-    viewport.className = "zoom-viewport-v057";
-    viewport.setAttribute("aria-label", "Ð•Ð´Ð¸Ð½Ð°Ñ Ð¼Ð°ÑÑˆÑ‚Ð°Ð±Ð¸Ñ€ÑƒÐµÐ¼Ð°Ñ Ñ€Ð°Ð±Ð¾Ñ‡Ð°Ñ Ð¾Ð±Ð»Ð°ÑÑ‚ÑŒ Stark SolarPower");
-
-    const stage = document.createElement("div");
-    stage.className = "zoom-stage-v057";
-    const content = document.createElement("div");
-    content.className = "zoom-content-v057";
-    stage.append(content);
-    viewport.append(stage);
-
-    const excluded = new Set([header, selector, nav]);
-    Array.from(app.children).forEach((child) => {
-      if (!excluded.has(child)) content.append(child);
-    });
-
-    const anchor = selector || header;
-    anchor.insertAdjacentElement("afterend", viewport);
-    app.append(nav);
-
-    let scale = clampScale(this._loadZoomV054?.() || this.__starkZoomV054 || 1);
-    let baseWidth = Math.max(1, viewport.clientWidth || viewport.getBoundingClientRect().width);
-    let baseHeight = 1;
-
-    const horizontalOffset = (targetScale = scale) => Math.max(0, (baseWidth - baseWidth * targetScale) / 2);
-
-    const measureBase = () => {
-      const nextWidth = Math.max(1, viewport.clientWidth || viewport.getBoundingClientRect().width);
-      if (Math.abs(nextWidth - baseWidth) > 0.5) {
-        baseWidth = nextWidth;
-        content.style.width = `${baseWidth}px`;
-      }
-      baseHeight = Math.max(1, content.scrollHeight);
-    };
-
-    const applyGeometry = (remeasure = false) => {
-      if (remeasure) measureBase();
-      const offset = horizontalOffset();
-      stage.style.width = `${Math.max(baseWidth, baseWidth * scale)}px`;
-      stage.style.height = `${Math.max(1, baseHeight * scale)}px`;
-      content.style.left = `${offset}px`;
-      content.style.transform = `scale(${scale})`;
-      this.__starkZoomV054 = scale;
-    };
-
-    const setScaleAtPoint = (nextScale, point, persist = false) => {
-      const previousScale = scale;
-      const previousOffset = horizontalOffset(previousScale);
-      const focal = point || { x: viewport.clientWidth / 2, y: viewport.clientHeight / 2 };
-      const contentX = (viewport.scrollLeft + focal.x - previousOffset) / previousScale;
-      const contentY = (viewport.scrollTop + focal.y) / previousScale;
-
-      scale = clampScale(nextScale);
-      applyGeometry(false);
-      const nextOffset = horizontalOffset(scale);
-      viewport.scrollLeft = Math.max(0, contentX * scale + nextOffset - focal.x);
-      viewport.scrollTop = Math.max(0, contentY * scale - focal.y);
-      if (persist) this._storeZoomV054?.();
-    };
-
-    const resetScale = (notify = true) => {
-      scale = 1;
-      applyGeometry(false);
-      this.__starkZoomV054 = 1;
-      this._storeZoomV054?.();
-      viewport.scrollTo({ left: 0, top: 0, behavior: "smooth" });
-      if (notify) this._showZoomResetV056?.(viewport);
-    };
-
-    content.style.width = `${baseWidth}px`;
-    content.style.zoom = "";
-    measureBase();
-    applyGeometry(false);
-
-    const scheduleMeasure = (resetOrigin = false) => {
-      window.cancelAnimationFrame(this.__starkCanvasFrameV057);
-      this.__starkCanvasFrameV057 = window.requestAnimationFrame(() => {
-        const previousWidth = baseWidth;
-        measureBase();
-        applyGeometry(false);
-        if (resetOrigin && Math.abs(previousWidth - baseWidth) > 0.5) {
-          viewport.scrollLeft = 0;
-          viewport.scrollTop = 0;
-        }
-      });
-    };
-
-    if (typeof ResizeObserver === "function") {
-      const observer = new ResizeObserver(() => scheduleMeasure(false));
-      observer.observe(content);
-      this.__starkCanvasResizeObserverV057 = observer;
-    }
-
-    const handleViewportResize = () => scheduleMeasure(true);
-    window.addEventListener("resize", handleViewportResize, { passive: true });
-    window.visualViewport?.addEventListener("resize", handleViewportResize, { passive: true });
-    this.__starkCanvasResizeCleanupV057 = () => {
-      window.removeEventListener("resize", handleViewportResize);
-      window.visualViewport?.removeEventListener("resize", handleViewportResize);
-    };
-    window.requestAnimationFrame(() => scheduleMeasure(false));
-
-    let pinch = null;
-    let tapGesture = null;
-
-    viewport.addEventListener("touchstart", (event) => {
-      if (event.touches.length !== 2) return;
-      const [first, second] = event.touches;
-      const point = viewportMidpoint(first, second, viewport);
-      pinch = {
-        distance: Math.max(1, distance(first, second)),
-        scale,
-        point,
-      };
-      tapGesture = {
-        startedAt: performance.now(),
-        midpoint: clientMidpoint(first, second),
-        distance: distance(first, second),
-        moved: false,
-      };
-      event.preventDefault();
-    }, { passive: false });
-
-    viewport.addEventListener("touchmove", (event) => {
-      if (!pinch || event.touches.length !== 2) return;
-      const [first, second] = event.touches;
-      const point = viewportMidpoint(first, second, viewport);
-      const currentDistance = distance(first, second);
-      const nextScale = pinch.scale * currentDistance / pinch.distance;
-      setScaleAtPoint(nextScale, point, false);
-
-      if (
-        tapGesture &&
-        (pointDistance(tapGesture.midpoint, clientMidpoint(first, second)) > TAP_MOVE_PX ||
-          Math.abs(currentDistance - tapGesture.distance) > TAP_MOVE_PX)
-      ) {
-        tapGesture.moved = true;
-      }
-      event.preventDefault();
-    }, { passive: false });
-
-    viewport.addEventListener("touchend", (event) => {
-      if (event.touches.length !== 0 || (!pinch && !tapGesture)) return;
-      const completedTap = tapGesture;
-      pinch = null;
-      tapGesture = null;
-      const now = performance.now();
-
-      if (scale >= SNAP_MIN && scale <= SNAP_MAX && scale !== 1) {
-        resetScale(true);
-      } else {
-        this.__starkZoomV054 = scale;
-        this._storeZoomV054?.();
-      }
-
-      const isTwoFingerTap = completedTap &&
-        !completedTap.moved &&
-        now - completedTap.startedAt <= TAP_DURATION_MS;
-      if (!isTwoFingerTap) {
-        this.__starkLastTwoFingerTapV057 = null;
-        return;
-      }
-
-      const previousTap = this.__starkLastTwoFingerTapV057;
-      if (
-        previousTap &&
-        now - previousTap.at <= DOUBLE_TAP_DELAY_MS &&
-        pointDistance(previousTap.midpoint, completedTap.midpoint) <= 48
-      ) {
-        this.__starkLastTwoFingerTapV057 = null;
-        resetScale(true);
-        return;
-      }
-      this.__starkLastTwoFingerTapV057 = { at: now, midpoint: completedTap.midpoint };
-    }, { passive: true });
-
-    viewport.addEventListener("touchcancel", () => {
-      pinch = null;
-      tapGesture = null;
-      this.__starkLastTwoFingerTapV057 = null;
-    }, { passive: true });
-  };
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    const subtitle = root.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-
-    if (!root.querySelector("style[data-stark-ui-v057]")) {
-      const style = document.createElement("style");
-      style.dataset.starkUiV057 = "true";
-      style.textContent = `
-        /* UI 0.5.7: one fixed-layout canvas scaled as a single live image. */
-        .zoom-viewport-v057 {
-          position:relative;
-          width:100%;
-          max-width:100%;
-          min-height:180px;
-          max-height:calc(100dvh - 188px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
-          overflow:auto;
-          overscroll-behavior:contain;
-          touch-action:pan-x pan-y;
-          -webkit-overflow-scrolling:touch;
-        }
-        .zoom-stage-v057 {
-          position:relative;
-          min-width:1px;
-          min-height:1px;
-          overflow:visible;
-        }
-        .zoom-content-v057 {
-          position:absolute;
-          top:0;
-          width:100%;
-          min-width:0;
-          transform-origin:0 0;
-          will-change:transform;
-          contain:layout style;
-        }
-        .zoom-content-v057 > :last-child { margin-bottom:8px; }
-
-        @media (max-width:430px) {
-          .zoom-viewport-v057 {
-            max-height:calc(100dvh - 180px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
-          }
-        }
-        @media (min-width:760px) {
-          .zoom-viewport-v057 { max-height:calc(100dvh - 188px); }
-        }
-      `;
-      root.append(style);
-    }
-
-    // v0.4.3 deliberately skips the base DOM rebuild for unrelated HA state
-    // updates. Keep the existing canvas (and its scroll position/listeners)
-    // in that case; rebuild only after a real domain/view render replaced it.
-    const existingCanvas = root.querySelector(".zoom-viewport-v057");
-    if (existingCanvas) {
-      this._retainFixedCanvasV057(existingCanvas);
-    } else {
-      this._removeZoomShellsV057();
-      this._installFixedCanvasV057();
-    }
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v057.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v058.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.5.8";
-const PAN_THRESHOLD_PX = 5;
-const GESTURE_GUARD_MS = 700;
-
-function cancelEntityHold(target) {
-  const entity = target?.closest?.("[data-entity]");
-  if (!entity) return;
-  const event = typeof PointerEvent === "function"
-    ? new PointerEvent("pointercancel", { bubbles: true, composed: true })
-    : new Event("pointercancel", { bubbles: true, composed: true });
-  entity.dispatchEvent(event);
-}
-
-if (Panel && !Panel.prototype.__starkUiV058) {
-  Panel.prototype.__starkUiV058 = true;
-
-  const previousRender = Panel.prototype._render;
-  const previousShowMoreInfo = Panel.prototype._showMoreInfo;
-
-  Panel.prototype._showMoreInfo = function (entityId) {
-    const guardedUntil = Number(this.__starkGestureGuardUntilV058 || 0);
-    if (guardedUntil === Number.POSITIVE_INFINITY || performance.now() < guardedUntil) return;
-    previousShowMoreInfo.call(this, entityId);
-  };
-
-  Panel.prototype._installCanvasPanV058 = function () {
-    const root = this.shadowRoot;
-    const viewport = root?.querySelector(".zoom-viewport-v057");
-    if (!root || !viewport || viewport.dataset.starkPanV058 === "true") return;
-    viewport.dataset.starkPanV058 = "true";
-
-    let pan = null;
-    let multiTouchActive = false;
-
-    const beginPan = (touch, target) => {
-      pan = {
-        x: touch.clientX,
-        y: touch.clientY,
-        scrollLeft: viewport.scrollLeft,
-        scrollTop: viewport.scrollTop,
-        target,
-        moved: false,
-      };
-    };
-
-    viewport.addEventListener("touchstart", (event) => {
-      if (event.touches.length >= 2) {
-        multiTouchActive = true;
-        pan = null;
-        this.__starkGestureGuardUntilV058 = Number.POSITIVE_INFINITY;
-        Array.from(event.touches).forEach((touch) => {
-          const target = root.elementFromPoint?.(touch.clientX, touch.clientY) ||
-            document.elementFromPoint(touch.clientX, touch.clientY);
-          cancelEntityHold(target);
-        });
-        return;
-      }
-      if (event.touches.length === 1 && !multiTouchActive) {
-        beginPan(event.touches[0], event.target);
-      }
-    }, { passive: true });
-
-    viewport.addEventListener("touchmove", (event) => {
-      if (event.touches.length >= 2) {
-        multiTouchActive = true;
-        pan = null;
-        this.__starkGestureGuardUntilV058 = Number.POSITIVE_INFINITY;
-        return;
-      }
-      if (!pan || event.touches.length !== 1) return;
-
-      const touch = event.touches[0];
-      const dx = touch.clientX - pan.x;
-      const dy = touch.clientY - pan.y;
-      if (!pan.moved && Math.hypot(dx, dy) < PAN_THRESHOLD_PX) return;
-
-      if (!pan.moved) {
-        pan.moved = true;
-        this.__starkGestureGuardUntilV058 = Number.POSITIVE_INFINITY;
-        cancelEntityHold(pan.target);
-      }
-
-      viewport.scrollLeft = pan.scrollLeft - dx;
-      viewport.scrollTop = pan.scrollTop - dy;
-      event.preventDefault();
-    }, { passive: false });
-
-    viewport.addEventListener("touchend", (event) => {
-      if (multiTouchActive) {
-        if (event.touches.length === 1) {
-          beginPan(event.touches[0], event.target);
-          return;
-        }
-        if (event.touches.length === 0) {
-          multiTouchActive = false;
-          pan = null;
-          this.__starkGestureGuardUntilV058 = performance.now() + GESTURE_GUARD_MS;
-        }
-        return;
-      }
-
-      if (event.touches.length === 0 && pan) {
-        if (pan.moved) {
-          this.__starkGestureGuardUntilV058 = performance.now() + GESTURE_GUARD_MS;
-        }
-        pan = null;
-      }
-    }, { passive: true });
-
-    viewport.addEventListener("touchcancel", () => {
-      multiTouchActive = false;
-      pan = null;
-      this.__starkGestureGuardUntilV058 = performance.now() + GESTURE_GUARD_MS;
-    }, { passive: true });
-
-    viewport.addEventListener("click", (event) => {
-      const guardedUntil = Number(this.__starkGestureGuardUntilV058 || 0);
-      if (guardedUntil === Number.POSITIVE_INFINITY || performance.now() < guardedUntil) {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-      }
-    }, { capture: true });
-  };
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    const subtitle = root.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-
-    if (!root.querySelector("style[data-stark-ui-v058]")) {
-      const style = document.createElement("style");
-      style.dataset.starkUiV058 = "true";
-      style.textContent = `
-        /* UI 0.5.8: deterministic one-finger canvas pan and gesture guards. */
-        .zoom-viewport-v057 {
-          touch-action:none !important;
-          cursor:grab;
-        }
-        .zoom-viewport-v057:active { cursor:grabbing; }
-      `;
-      root.append(style);
-    }
-
-    this._installCanvasPanV058();
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v058.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v059.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.5.9";
-
-function clampScale(value) {
-  const number = Number(value);
-  if (!Number.isFinite(number)) return 1;
-  return Math.min(2, Math.max(0.75, number));
-}
-
-function renderedScale(content, fallback = 1) {
-  const match = String(content?.style?.transform || "").match(/scale\(([^)]+)\)/);
-  return clampScale(match ? match[1] : fallback);
-}
-
-if (Panel && !Panel.prototype.__starkUiV059) {
-  Panel.prototype.__starkUiV059 = true;
-
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._canvasViewKeyV059 = function () {
-    return this._selectedUpsId?.() || this._diagnosticDeviceId || this._devices?.[0]?.id || "default";
-  };
-
-  Panel.prototype._captureCanvasViewV059 = function (viewport) {
-    const content = viewport?.querySelector(":scope > .zoom-stage-v057 > .zoom-content-v057");
-    if (!viewport || !content) return null;
-
-    const scale = renderedScale(content, this.__starkZoomV054 || 1);
-    const offset = Number.parseFloat(content.style.left || "0") || 0;
-    const focalX = viewport.clientWidth / 2;
-    const focalY = viewport.clientHeight / 2;
-    const state = {
-      scale,
-      contentX: (viewport.scrollLeft + focalX - offset) / scale,
-      contentY: (viewport.scrollTop + focalY) / scale,
-      scrollLeft: viewport.scrollLeft,
-      scrollTop: viewport.scrollTop,
-    };
-
-    const key = viewport.dataset.starkViewKeyV059 || this._canvasViewKeyV059();
-    this.__starkCanvasViewsV059 ||= new Map();
-    this.__starkCanvasViewsV059.set(key, state);
-    return state;
-  };
-
-  Panel.prototype._restoreCanvasViewV059 = function (viewport, state) {
-    const content = viewport?.querySelector(":scope > .zoom-stage-v057 > .zoom-content-v057");
-    if (!viewport || !content || !state) return;
-
-    const scale = renderedScale(content, state.scale);
-    const offset = Number.parseFloat(content.style.left || "0") || 0;
-    const focalX = viewport.clientWidth / 2;
-    const focalY = viewport.clientHeight / 2;
-    const left = state.contentX * scale + offset - focalX;
-    const top = state.contentY * scale - focalY;
-
-    viewport.scrollLeft = Math.max(0, Number.isFinite(left) ? left : state.scrollLeft || 0);
-    viewport.scrollTop = Math.max(0, Number.isFinite(top) ? top : state.scrollTop || 0);
-  };
-
-  Panel.prototype._render = function () {
-    const oldViewport = this.shadowRoot?.querySelector(".zoom-viewport-v057");
-    if (oldViewport) this._captureCanvasViewV059(oldViewport);
-
-    previousRender.call(this);
-
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    const subtitle = root.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-
-    const viewport = root.querySelector(".zoom-viewport-v057");
-    if (!viewport) return;
-
-    const key = this._canvasViewKeyV059();
-    viewport.dataset.starkViewKeyV059 = key;
-
-    // A telemetry update may legitimately rebuild the live DOM. Restore the
-    // same logical point after the replacement canvas has measured its stage.
-    if (oldViewport && oldViewport !== viewport) {
-      const state = this.__starkCanvasViewsV059?.get(key);
-      if (!state) return;
-
-      this._restoreCanvasViewV059(viewport, state);
-      window.requestAnimationFrame(() => {
-        this._restoreCanvasViewV059(viewport, state);
-        window.requestAnimationFrame(() => this._restoreCanvasViewV059(viewport, state));
-      });
-    }
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v059.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v060.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.6.0";
-const MIN_SCALE = 0.75;
-const MAX_SCALE = 2;
-const SNAP_MIN = 0.97;
-const SNAP_MAX = 1.03;
-const PAN_THRESHOLD_PX = 5;
-const GESTURE_GUARD_MS = 700;
-const DOUBLE_TAP_DELAY_MS = 360;
-const TAP_DURATION_MS = 280;
-const TAP_MOVE_PX = 14;
-
-function clampScale(value) {
-  const number = Number(value);
-  if (!Number.isFinite(number)) return 1;
-  return Math.min(MAX_SCALE, Math.max(MIN_SCALE, number));
-}
-
-function distance(first, second) {
-  return Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
-}
-
-function midpoint(first, second, viewport = null) {
-  const point = {
-    x: (first.clientX + second.clientX) / 2,
-    y: (first.clientY + second.clientY) / 2,
-  };
-  if (!viewport) return point;
-  const rect = viewport.getBoundingClientRect();
-  return { x: point.x - rect.left, y: point.y - rect.top };
-}
-
-function pointDistance(first, second) {
-  return Math.hypot(second.x - first.x, second.y - first.y);
-}
-
-function cancelEntityHold(target) {
-  const entity = target?.closest?.("[data-entity]");
-  if (!entity) return;
-  const event = typeof PointerEvent === "function"
-    ? new PointerEvent("pointercancel", { bubbles: true, composed: true })
-    : new Event("pointercancel", { bubbles: true, composed: true });
-  entity.dispatchEvent(event);
-}
-
-if (Panel && !Panel.prototype.__starkUiV060) {
-  Panel.prototype.__starkUiV060 = true;
-
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._canvasStateKeyV060 = function () {
-    return this._selectedUpsId?.() || this._diagnosticDeviceId || this._devices?.[0]?.id || "default";
-  };
-
-  Panel.prototype._rememberCanvasStateV060 = function (key, state) {
-    this.__starkCanvasStatesV060 ||= new Map();
-    this.__starkCanvasStatesV060.set(key, { ...state });
-  };
-
-  Panel.prototype._installTransformPanV060 = function (sourceViewport) {
-    const root = this.shadowRoot;
-    const oldStage = sourceViewport?.querySelector(":scope > .zoom-stage-v057");
-    const content = oldStage?.querySelector(":scope > .zoom-content-v057");
-    if (!root || !sourceViewport || !oldStage || !content) return null;
-
-    // Detach every anonymous listener from the scroll-based engines while
-    // retaining the live work DOM. Future compatibility layers see the same
-    // historical class but skip installing their pan handler via the marker.
-    this.__starkCanvasResizeObserverV057?.disconnect();
-    this.__starkCanvasResizeObserverV057 = null;
-    this.__starkCanvasResizeCleanupV057?.();
-    this.__starkCanvasResizeCleanupV057 = null;
-    window.cancelAnimationFrame(this.__starkCanvasFrameV057);
-
-    this.__starkCanvasResizeObserverV060?.disconnect();
-    this.__starkCanvasResizeObserverV060 = null;
-    this.__starkCanvasResizeCleanupV060?.();
-    this.__starkCanvasResizeCleanupV060 = null;
-
-    const viewport = sourceViewport.cloneNode(false);
-    viewport.className = "zoom-viewport-v057 zoom-viewport-v060";
-    viewport.dataset.starkPanV058 = "true";
-    viewport.dataset.starkTransformPanV060 = "true";
-    viewport.setAttribute("aria-label", "Ð•Ð´Ð¸Ð½Ð°Ñ Ð¼Ð°ÑÑˆÑ‚Ð°Ð±Ð¸Ñ€ÑƒÐµÐ¼Ð°Ñ Ð¸ Ð¿ÐµÑ€ÐµÐ¼ÐµÑ‰Ð°ÐµÐ¼Ð°Ñ Ñ€Ð°Ð±Ð¾Ñ‡Ð°Ñ Ð¾Ð±Ð»Ð°ÑÑ‚ÑŒ Stark SolarPower");
-
-    const stage = oldStage.cloneNode(false);
-    stage.className = "zoom-stage-v057 zoom-stage-v060";
-    stage.append(content);
-    viewport.append(stage);
-    sourceViewport.replaceWith(viewport);
-
-    const key = this._canvasStateKeyV060();
-    viewport.dataset.starkStateKeyV060 = key;
-    const stored = this.__starkCanvasStatesV060?.get(key);
-    const state = {
-      scale: clampScale(stored?.scale ?? this._loadZoomV054?.() ?? this.__starkZoomV054 ?? 1),
-      x: Number.isFinite(stored?.x) ? stored.x : 0,
-      y: Number.isFinite(stored?.y) ? stored.y : 0,
-    };
-
-    let baseWidth = 1;
-    let baseHeight = 1;
-
-    const measure = () => {
-      baseWidth = Math.max(1, viewport.clientWidth || viewport.getBoundingClientRect().width);
-      content.style.width = `${baseWidth}px`;
-      baseHeight = Math.max(1, content.scrollHeight, content.getBoundingClientRect().height / state.scale);
-    };
-
-    const clampPosition = () => {
-      const viewportWidth = Math.max(1, viewport.clientWidth);
-      const viewportHeight = Math.max(1, viewport.clientHeight);
-      const scaledWidth = baseWidth * state.scale;
-      const scaledHeight = baseHeight * state.scale;
-
-      if (scaledWidth <= viewportWidth) state.x = (viewportWidth - scaledWidth) / 2;
-      else state.x = Math.min(0, Math.max(viewportWidth - scaledWidth, state.x));
-
-      if (scaledHeight <= viewportHeight) state.y = 0;
-      else state.y = Math.min(0, Math.max(viewportHeight - scaledHeight, state.y));
-    };
-
-    const apply = (remeasure = false) => {
-      if (remeasure) measure();
-      clampPosition();
-      stage.style.width = `${Math.max(baseWidth, viewport.clientWidth)}px`;
-      stage.style.height = `${Math.max(baseHeight, viewport.clientHeight)}px`;
-      content.style.left = "0px";
-      content.style.transform = `translate3d(${state.x}px,${state.y}px,0) scale(${state.scale})`;
-      this.__starkZoomV054 = state.scale;
-      this._rememberCanvasStateV060(key, state);
-    };
-
-    const persist = () => {
-      this.__starkZoomV054 = state.scale;
-      this._storeZoomV054?.();
-      this._rememberCanvasStateV060(key, state);
-    };
-
-    const reset = (notify = true) => {
-      state.scale = 1;
-      state.x = 0;
-      state.y = 0;
-      apply(false);
-      persist();
-      if (notify) this._showZoomResetV056?.(viewport);
-    };
-
-    content.style.zoom = "";
-    content.style.transformOrigin = "0 0";
-    measure();
-    apply(false);
-
-    let pan = null;
-    let pinch = null;
-    let tapGesture = null;
-    let multiTouchActive = false;
-
-    const beginPan = (touch, target) => {
-      pan = {
-        clientX: touch.clientX,
-        clientY: touch.clientY,
-        x: state.x,
-        y: state.y,
-        target,
-        moved: false,
-      };
-    };
-
-    viewport.addEventListener("touchstart", (event) => {
-      if (event.touches.length >= 2) {
-        const [first, second] = event.touches;
-        const point = midpoint(first, second, viewport);
-        multiTouchActive = true;
-        pan = null;
-        pinch = {
-          distance: Math.max(1, distance(first, second)),
-          scale: state.scale,
-          contentX: (point.x - state.x) / state.scale,
-          contentY: (point.y - state.y) / state.scale,
-        };
-        tapGesture = {
-          startedAt: performance.now(),
-          midpoint: midpoint(first, second),
-          distance: distance(first, second),
-          moved: false,
-        };
-        this.__starkGestureGuardUntilV058 = Number.POSITIVE_INFINITY;
-        Array.from(event.touches).forEach((touch) => {
-          const target = root.elementFromPoint?.(touch.clientX, touch.clientY) ||
-            document.elementFromPoint(touch.clientX, touch.clientY);
-          cancelEntityHold(target);
-        });
-        event.preventDefault();
-        return;
-      }
-
-      if (event.touches.length === 1 && !multiTouchActive) {
-        beginPan(event.touches[0], event.target);
-      }
-    }, { passive: false });
-
-    viewport.addEventListener("touchmove", (event) => {
-      if (event.touches.length >= 2 && pinch) {
-        const [first, second] = event.touches;
-        const point = midpoint(first, second, viewport);
-        const currentDistance = distance(first, second);
-        state.scale = clampScale(pinch.scale * currentDistance / pinch.distance);
-        state.x = point.x - pinch.contentX * state.scale;
-        state.y = point.y - pinch.contentY * state.scale;
-        apply(false);
-
-        if (
-          tapGesture &&
-          (pointDistance(tapGesture.midpoint, midpoint(first, second)) > TAP_MOVE_PX ||
-            Math.abs(currentDistance - tapGesture.distance) > TAP_MOVE_PX)
-        ) {
-          tapGesture.moved = true;
-        }
-        event.preventDefault();
-        return;
-      }
-
-      if (!pan || event.touches.length !== 1) return;
-      const touch = event.touches[0];
-      const dx = touch.clientX - pan.clientX;
-      const dy = touch.clientY - pan.clientY;
-      if (!pan.moved && Math.hypot(dx, dy) < PAN_THRESHOLD_PX) return;
-
-      if (!pan.moved) {
-        pan.moved = true;
-        this.__starkGestureGuardUntilV058 = Number.POSITIVE_INFINITY;
-        cancelEntityHold(pan.target);
-      }
-      state.x = pan.x + dx;
-      state.y = pan.y + dy;
-      apply(false);
-      event.preventDefault();
-    }, { passive: false });
-
-    viewport.addEventListener("touchend", (event) => {
-      if (multiTouchActive && event.touches.length === 1) {
-        pinch = null;
-        beginPan(event.touches[0], event.target);
-        return;
-      }
-
-      if (event.touches.length !== 0) return;
-      const completedTap = tapGesture;
-      const wasMultiTouch = multiTouchActive;
-      const panMoved = Boolean(pan?.moved);
-      multiTouchActive = false;
-      pinch = null;
-      tapGesture = null;
-      pan = null;
-
-      if (state.scale >= SNAP_MIN && state.scale <= SNAP_MAX && state.scale !== 1) {
-        reset(true);
-      } else {
-        apply(false);
-        persist();
-      }
-
-      const now = performance.now();
-      if (wasMultiTouch) {
-        this.__starkGestureGuardUntilV058 = now + GESTURE_GUARD_MS;
-        const isTwoFingerTap = completedTap && !completedTap.moved &&
-          now - completedTap.startedAt <= TAP_DURATION_MS;
-        if (isTwoFingerTap) {
-          const previousTap = this.__starkLastTwoFingerTapV060;
-          if (
-            previousTap && now - previousTap.at <= DOUBLE_TAP_DELAY_MS &&
-            pointDistance(previousTap.midpoint, completedTap.midpoint) <= 48
-          ) {
-            this.__starkLastTwoFingerTapV060 = null;
-            reset(true);
-          } else {
-            this.__starkLastTwoFingerTapV060 = { at: now, midpoint: completedTap.midpoint };
-          }
-        } else {
-          this.__starkLastTwoFingerTapV060 = null;
-        }
-      } else if (panMoved) {
-        this.__starkGestureGuardUntilV058 = now + GESTURE_GUARD_MS;
-      }
-    }, { passive: true });
-
-    viewport.addEventListener("touchcancel", () => {
-      multiTouchActive = false;
-      pinch = null;
-      tapGesture = null;
-      pan = null;
-      apply(false);
-      persist();
-      this.__starkGestureGuardUntilV058 = performance.now() + GESTURE_GUARD_MS;
-    }, { passive: true });
-
-    viewport.addEventListener("click", (event) => {
-      const guardedUntil = Number(this.__starkGestureGuardUntilV058 || 0);
-      if (guardedUntil === Number.POSITIVE_INFINITY || performance.now() < guardedUntil) {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-      }
-    }, { capture: true });
-
-    if (typeof ResizeObserver === "function") {
-      const observer = new ResizeObserver(() => apply(true));
-      observer.observe(content);
-      this.__starkCanvasResizeObserverV060 = observer;
-    }
-
-    const handleResize = () => apply(true);
-    window.addEventListener("resize", handleResize, { passive: true });
-    window.visualViewport?.addEventListener("resize", handleResize, { passive: true });
-    this.__starkCanvasResizeCleanupV060 = () => {
-      window.removeEventListener("resize", handleResize);
-      window.visualViewport?.removeEventListener("resize", handleResize);
-    };
-    window.requestAnimationFrame(() => apply(true));
-
-    return viewport;
-  };
-
-  Panel.prototype._render = function () {
-    const oldViewport = this.shadowRoot?.querySelector(".zoom-viewport-v060");
-    if (oldViewport) {
-      const key = oldViewport.dataset.starkStateKeyV060 || this._canvasStateKeyV060();
-      const stored = this.__starkCanvasStatesV060?.get(key);
-      if (stored) this._rememberCanvasStateV060(key, stored);
-    }
-
-    previousRender.call(this);
-
-    const root = this.shadowRoot;
-    if (!root) return;
-    const subtitle = root.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-
-    const viewport = root.querySelector(".zoom-viewport-v057");
-    if (!viewport) return;
-    if (!viewport.classList.contains("zoom-viewport-v060")) {
-      this._installTransformPanV060(viewport);
-    }
-
-    if (!root.querySelector("style[data-stark-ui-v060]")) {
-      const style = document.createElement("style");
-      style.dataset.starkUiV060 = "true";
-      style.textContent = `
-        /* UI 0.6.0: transform-owned pan; no browser scroll/rubber-band state. */
-        .zoom-viewport-v060 {
-          position:relative;
-          overflow:hidden !important;
-          overscroll-behavior:none !important;
-          overflow-anchor:none !important;
-          touch-action:none !important;
-        }
-        .zoom-stage-v060 {
-          position:relative;
-          overflow:hidden !important;
-        }
-        .zoom-stage-v060 > .zoom-content-v057 {
-          position:absolute;
-          top:0;
-          transform-origin:0 0 !important;
-          will-change:transform;
-          overflow-anchor:none !important;
-        }
-      `;
-      root.append(style);
-    }
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v060.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v061.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.6.1";
-
-if (Panel && !Panel.prototype.__starkUiV061) {
-  Panel.prototype.__starkUiV061 = true;
-
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    const subtitle = root.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-
-    // Input, output and load already exist in the live hero and the factual
-    // state summary. Remove the repeated overview row from both layout and
-    // the entity interaction surface.
-    root.querySelector(".overview-v051 > .metrics-row-v051")?.remove();
-
-    if (!root.querySelector("style[data-stark-ui-v061]")) {
-      const style = document.createElement("style");
-      style.dataset.starkUiV061 = "true";
-      style.textContent = `
-        /* UI 0.6.1: one-screen mobile Overview without repeated metrics. */
-        .overview-v051 { gap:8px !important; }
-        .overview-v051 > .metrics-row-v051 { display:none !important; }
-
-        .hero-head-v051 { min-height:78px !important; }
-        .hero-scene-v051 { height:215px !important; }
-        .scene-node-v051.battery { bottom:8px !important; }
-        .reserve-strip-v051 {
-          min-height:44px !important;
-          padding-top:6px !important;
-          padding-bottom:6px !important;
-        }
-
-        .overview-v051 > .state-card-v051 { padding:8px !important; }
-        .overview-v051 > .state-card-v051 h3 {
-          margin-bottom:7px !important;
-          font-size:17px !important;
-        }
-        .overview-v051 > .state-card-v051 .state-row-v051 {
-          padding:7px 8px !important;
-          border-radius:15px !important;
-        }
-        .overview-v051 > .state-card-v051 .state-row-v051 + .state-row-v051 {
-          margin-top:6px !important;
-        }
-        .overview-v051 > .state-card-v051 .state-values-v051 {
-          margin-top:5px !important;
-        }
-
-        @media (max-width:430px) {
-          .ups-hero-v051 { padding:12px !important; }
-          .hero-scene-v051 {
-            height:208px !important;
-            margin-left:-8px !important;
-            margin-right:-8px !important;
-          }
-          .scene-node-v051.battery { bottom:7px !important; }
-          .reserve-strip-v051 { min-height:43px !important; }
-        }
-      `;
-      root.append(style);
-    }
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v061.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v062.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.6.2";
-
-if (Panel && !Panel.prototype.__starkUiV062) {
-  Panel.prototype.__starkUiV062 = true;
-
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    const subtitle = root.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-
-    const overview = root.querySelector(".overview-v051");
-    const hero = overview?.querySelector(":scope > .ups-hero-v051");
-    const reserve = hero?.querySelector(":scope > .reserve-strip-v051");
-    if (hero && reserve) hero.insertAdjacentElement("afterend", reserve);
-
-    // The battery node now sits above the UPS, so its live path runs down
-    // from the charge card toward the cabinet instead of below the cabinet.
-    const batteryLine = root.querySelector(".flow-lines-v051 .line-battery-v051");
-    if (batteryLine) batteryLine.setAttribute("d", "M50 22 V38");
-
-    if (!root.querySelector("style[data-stark-ui-v062]")) {
-      const style = document.createElement("style");
-      style.dataset.starkUiV062 = "true";
-      style.textContent = `
-        /* UI 0.6.2: taller photographic scene with floor-mounted UPS. */
-        .ups-hero-v051 {
-          background-position:center 54% !important;
-        }
-        .hero-scene-v051 {
-          height:260px !important;
-        }
-        .ups-art-v051 {
-          width:min(54%,230px) !important;
-          max-height:85% !important;
-          bottom:5px !important;
-        }
-        .scene-node-v051.grid,
-        .scene-node-v051.load {
-          top:46% !important;
-        }
-        .scene-node-v051.battery {
-          top:4px !important;
-          bottom:auto !important;
-        }
-        .overview-v051 > .reserve-strip-v051 {
-          width:100%;
-          min-height:44px !important;
-          box-sizing:border-box;
-          padding:7px 14px !important;
-          border-radius:17px;
-          background:var(--card-background-color) !important;
-          box-shadow:0 5px 18px rgba(23,45,76,.05);
-        }
-
-        @media (max-width:430px) {
-          .hero-scene-v051 {
-            height:252px !important;
-          }
-          .ups-art-v051 {
-            width:min(55%,222px) !important;
-            max-height:84% !important;
-            bottom:4px !important;
-          }
-          .scene-node-v051.battery { top:3px !important; }
-          .overview-v051 > .reserve-strip-v051 {
-            min-height:43px !important;
-            padding:6px 12px !important;
-          }
-        }
-      `;
-      root.append(style);
-    }
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v062.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v063.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.6.3";
-const HERO_INTERNET =
-  "/stark_solarpower_panel/assets/stark-hero-internet-v063.webp?v=0.6.3";
-const HERO_BOILER =
-  "/stark_solarpower_panel/assets/stark-hero-boiler-v063.webp?v=0.6.3";
-
-if (Panel && !Panel.prototype.__starkUiV063) {
-  Panel.prototype.__starkUiV063 = true;
-
-  // v0.6.3 uses clean, edge-safe context plates. This override is installed
-  // before the inherited renderer runs, so no stale background flashes first.
-  Panel.prototype._heroBackgroundV051 = function (device) {
-    return device?.name?.toLocaleLowerCase("ru").includes("ÐºÐ¾Ñ‚")
-      ? HERO_BOILER
-      : HERO_INTERNET;
-  };
-
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    const subtitle = root.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-
-    // Reserve readiness is already represented in the factual battery row.
-    // Remove the repeated strip and give its height back to the photograph.
-    root.querySelector(".overview-v051 > .reserve-strip-v051")?.remove();
-    root.querySelector(".ups-hero-v051 > .reserve-strip-v051")?.remove();
-
-    // The metric cards remain interactive; only the decorative flow drawing
-    // is removed to keep the photographic composition calm and uncluttered.
-    root.querySelector(".flow-lines-v051")?.remove();
-
-    if (!root.querySelector("style[data-stark-ui-v063]")) {
-      const style = document.createElement("style");
-      style.dataset.starkUiV063 = "true";
-      style.textContent = `
-        /* UI 0.6.3: clean full-height hero without decorative wiring. */
-        .ups-hero-v051 {
-          background-position:center 52% !important;
-        }
-        .ups-hero-v051::after {
-          display:none !important;
-        }
-        .hero-head-v051 {
-          min-height:92px !important;
-        }
-        .hero-scene-v051 {
-          height:290px !important;
-        }
-        .flow-lines-v051 {
-          display:none !important;
-        }
-        .ups-art-v051 {
-          width:min(54%,230px) !important;
-          max-height:84% !important;
-          bottom:4px !important;
-        }
-        .scene-node-v051.grid,
-        .scene-node-v051.load {
-          top:50% !important;
-        }
-        .scene-node-v051.battery {
-          top:5px !important;
-          bottom:auto !important;
-        }
-        .overview-v051 > .reserve-strip-v051,
-        .ups-hero-v051 > .reserve-strip-v051 {
-          display:none !important;
-        }
-
-        @media (max-width:430px) {
-          .hero-head-v051 {
-            min-height:92px !important;
-          }
-          .hero-scene-v051 {
-            height:290px !important;
-          }
-          .ups-art-v051 {
-            width:min(55%,222px) !important;
-            max-height:84% !important;
-            bottom:4px !important;
-          }
-          .scene-node-v051.battery { top:5px !important; }
-        }
-      `;
-      root.append(style);
-    }
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v063.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v064.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.6.4";
-
-if (Panel && !Panel.prototype.__starkUiV064) {
-  Panel.prototype.__starkUiV064 = true;
-
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    const subtitle = root.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-
-    if (!root.querySelector("style[data-stark-ui-v064]")) {
-      const style = document.createElement("style");
-      style.dataset.starkUiV064 = "true";
-      style.textContent = `
-        /* UI 0.6.4: spend the remaining phone-height reserve on the room. */
-        .hero-scene-v051 {
-          height:322px !important;
-        }
-
-        @media (max-width:430px) {
-          .hero-scene-v051 {
-            height:322px !important;
-          }
-        }
-      `;
-      root.append(style);
-    }
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v064.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v065.js
-(() => {
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.6.5";
-const MIN_SCALE = 0.75;
-const MAX_SCALE = 2;
-const SNAP_MIN = 0.97;
-const SNAP_MAX = 1.03;
-const PAN_THRESHOLD = 7;
-const TAP_MOVE = 12;
-const TAP_DURATION = 260;
-const DOUBLE_TAP_DELAY = 360;
-const GUARD_MS = 700;
-
-const clampScale = (value) => Math.min(MAX_SCALE, Math.max(MIN_SCALE, Number(value) || 1));
-const distance = (a, b) => Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
-const midpoint = (a, b, viewport) => {
-  const rect = viewport.getBoundingClientRect();
-  return { x:(a.clientX + b.clientX) / 2 - rect.left, y:(a.clientY + b.clientY) / 2 - rect.top };
-};
-const pageMidpoint = (a, b) => ({ x:(a.clientX + b.clientX) / 2, y:(a.clientY + b.clientY) / 2 });
-const pointDistance = (a, b) => Math.hypot(b.x - a.x, b.y - a.y);
-
-function cancelHold(target) {
-  const entity = target?.closest?.("[data-entity]");
-  if (!entity) return;
-  const event = typeof PointerEvent === "function"
-    ? new PointerEvent("pointercancel", { bubbles:true, composed:true })
-    : new Event("pointercancel", { bubbles:true, composed:true });
-  entity.dispatchEvent(event);
-}
-
-if (Panel && !Panel.prototype.__starkUiV065) {
-  Panel.prototype.__starkUiV065 = true;
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._stateKeyV065 = function () {
-    return this._selectedUpsId?.() || this._diagnosticDeviceId || this._devices?.[0]?.id || "default";
-  };
-
-  Panel.prototype._loadStateV065 = function (key) {
-    this.__starkStatesV065 ||= new Map();
-    const memory = this.__starkStatesV065.get(key);
-    if (memory) return { ...memory };
-    let state = { scale:1, x:0, y:0 };
-    try {
-      const saved = JSON.parse(localStorage.getItem(`nikas:specialized-panel:stark-solarpower:transform:${key}`) || "null");
-      if (saved && typeof saved === "object") {
-        state = {
-          scale:clampScale(saved.scale),
-          x:Number.isFinite(saved.x) ? saved.x : 0,
-          y:Number.isFinite(saved.y) ? saved.y : 0,
-        };
-      } else {
-        state.scale = clampScale(localStorage.getItem(`nikas:specialized-panel:stark-solarpower:zoom:${key}`) || 1);
-      }
-    } catch (_error) { state = { scale:1, x:0, y:0 }; }
-    if (state.scale <= 1) { state.x = 0; state.y = 0; }
-    return state;
-  };
-
-  Panel.prototype._saveStateV065 = function (key, state) {
-    this.__starkStatesV065 ||= new Map();
-    this.__starkStatesV065.set(key, { scale:state.scale, x:state.x, y:state.y });
-    try {
-      localStorage.setItem(`nikas:specialized-panel:stark-solarpower:zoom:${key}`, state.scale.toFixed(3));
-      localStorage.setItem(`nikas:specialized-panel:stark-solarpower:transform:${key}`, JSON.stringify({
-        scale:state.scale,
-        x:state.scale > 1 ? state.x : 0,
-        y:state.scale > 1 ? state.y : 0,
-      }));
-    }
-    catch (_error) { /* private WebView */ }
-  };
-
-  Panel.prototype._installStandardCanvasV065 = function (source) {
-    const root = this.shadowRoot;
-    const oldStage = source?.querySelector(":scope > .zoom-stage-v060, :scope > .zoom-stage-v057");
-    const surface = oldStage?.querySelector(":scope > .zoom-content-v057");
-    if (!root || !source || !oldStage || !surface) return;
-
-    this.__starkCanvasResizeObserverV060?.disconnect();
-    this.__starkCanvasResizeCleanupV060?.();
-    this.__starkResizeObserverV065?.disconnect();
-    this.__starkResizeCleanupV065?.();
-
-    const viewport = source.cloneNode(false);
-    viewport.className = "zoom-viewport-v065";
-    viewport.setAttribute("aria-label", "Ð Ð°Ð±Ð¾Ñ‡Ð°Ñ Ð¾Ð±Ð»Ð°ÑÑ‚ÑŒ Stark SolarPower");
-    const stage = document.createElement("div");
-    stage.className = "zoom-stage-v065";
-    surface.className = "zoom-surface-v065";
-    stage.append(surface);
-    viewport.append(stage);
-    source.replaceWith(viewport);
-
-    let key = this._stateKeyV065();
-    viewport.dataset.stateKeyV065 = key;
-    const state = this._loadStateV065(key);
-    // Keep the last real width inherited from the previous canvas layer.
-    // On iOS a freshly replaced element can report clientWidth=0 for one
-    // frame; overwriting the surface with 1px makes the whole panel vanish.
-    let baseWidth = Math.max(1, Number.parseFloat(surface.style.width) || 0);
-    let baseHeight = Math.max(1, surface.scrollHeight || 0);
-    let pinch = null;
-    let pan = null;
-    let twoTap = null;
-    let multi = false;
-
-    const measure = () => {
-      const directWidth = Math.max(
-        viewport.clientWidth || 0,
-        viewport.getBoundingClientRect().width || 0,
-      );
-      const selector = root.querySelector(".global-device-context");
-      const selectorWidth = Math.max(
-        selector?.clientWidth || 0,
-        selector?.getBoundingClientRect().width || 0,
-      );
-      const hostWidth = Math.max(
-        root.host?.clientWidth || 0,
-        root.host?.getBoundingClientRect().width || 0,
-      );
-      const measuredWidth = directWidth > 1
-        ? directWidth
-        : selectorWidth > 1
-          ? selectorWidth
-          : hostWidth;
-      if (measuredWidth > 1) baseWidth = measuredWidth;
-      if (baseWidth > 1) surface.style.width = `${baseWidth}px`;
-      const rendered = surface.getBoundingClientRect().height / Math.max(state.scale, .01);
-      baseHeight = Math.max(1, surface.scrollHeight, Number.isFinite(rendered) ? rendered : 0);
-    };
-    const bounds = () => ({
-      minX:Math.min(0, viewport.clientWidth - baseWidth * state.scale),
-      minY:Math.min(0, viewport.clientHeight - baseHeight * state.scale),
-      overflowX:baseWidth * state.scale > viewport.clientWidth + .5,
-      overflowY:baseHeight * state.scale > viewport.clientHeight + .5,
-    });
-    const clampPosition = () => {
-      if (state.scale <= 1) { state.x = 0; state.y = 0; return; }
-      const b = bounds();
-      state.x = b.overflowX ? Math.min(0, Math.max(b.minX, state.x)) : 0;
-      state.y = b.overflowY ? Math.min(0, Math.max(b.minY, state.y)) : 0;
-    };
-    const apply = ({ remeasure=false, persist=false } = {}) => {
-      if (remeasure) measure();
-      clampPosition();
-      const native = state.scale <= 1;
-      if (viewport.classList.contains("native-scroll") !== native) {
-        viewport.classList.toggle("native-scroll", native);
-        viewport.classList.toggle("zoomed", !native);
-      }
-      const stageWidth = `${Math.max(viewport.clientWidth, baseWidth * state.scale)}px`;
-      const stageHeight = `${Math.max(viewport.clientHeight, baseHeight * state.scale)}px`;
-      const transform = native
-        ? `scale(${state.scale})`
-        : `translate3d(${state.x}px,${state.y}px,0) scale(${state.scale})`;
-      if (stage.style.width !== stageWidth) stage.style.width = stageWidth;
-      if (stage.style.height !== stageHeight) stage.style.height = stageHeight;
-      if (surface.style.transform !== transform) surface.style.transform = transform;
-      if (!native) {
-        if (viewport.scrollLeft) viewport.scrollLeft = 0;
-        if (viewport.scrollTop) viewport.scrollTop = 0;
-      }
-      this.__starkZoomV054 = state.scale;
-      if (persist) this._saveStateV065(key, state);
-    };
-    const showToast = () => {
-      let toast = viewport.querySelector(":scope > .zoom-toast-v065");
-      if (!toast) {
-        toast = document.createElement("div");
-        toast.className = "zoom-toast-v065";
-        toast.setAttribute("role", "status");
-        toast.textContent = "ÐœÐ°ÑÑˆÑ‚Ð°Ð± 100%";
-        viewport.append(toast);
-      }
-      clearTimeout(this.__starkToastTimerV065);
-      requestAnimationFrame(() => toast.classList.add("visible"));
-      this.__starkToastTimerV065 = setTimeout(() => toast.classList.remove("visible"), 1250);
-    };
-    const reset = (notify=true) => {
-      state.scale = 1; state.x = 0; state.y = 0;
-      viewport.scrollTo({ left:0, top:0, behavior:"auto" });
-      apply({ persist:true });
-      if (notify) showToast();
-    };
-    const resetPosition = ({ persist=true } = {}) => {
-      state.x = 0; state.y = 0;
-      viewport.scrollTo({ left:0, top:0, behavior:"auto" });
-      apply({ remeasure:true, persist });
-    };
-    const switchContext = (nextKey) => {
-      const normalized = nextKey || "default";
-      if (normalized === key) {
-        resetPosition({ persist:true });
-        return;
-      }
-      this._saveStateV065(key, state);
-      key = normalized;
-      viewport.dataset.stateKeyV065 = key;
-      const next = this._loadStateV065(key);
-      state.scale = next.scale;
-      state.x = next.x;
-      state.y = next.y;
-      viewport.scrollTo({ left:0, top:0, behavior:"auto" });
-      apply({ remeasure:true, persist:true });
-    };
-    const contentPoint = (focal) => state.scale <= 1
-      ? { x:focal.x / state.scale, y:(viewport.scrollTop + focal.y) / state.scale }
-      : { x:(focal.x - state.x) / state.scale, y:(focal.y - state.y) / state.scale };
-    const setAround = (next, focal, anchor) => {
-      state.scale = clampScale(next);
-      if (state.scale > 1) {
-        state.x = focal.x - anchor.x * state.scale;
-        state.y = focal.y - anchor.y * state.scale;
-        apply();
-      } else {
-        state.x = 0; state.y = 0;
-        apply();
-        viewport.scrollLeft = 0;
-        viewport.scrollTop = Math.max(0, anchor.y * state.scale - focal.y);
-      }
-    };
-
-    surface.style.zoom = "";
-    surface.style.left = "0";
-    surface.style.transformOrigin = "0 0";
-    measure();
-    apply();
-
-    viewport.addEventListener("touchstart", (event) => {
-      if (event.touches.length >= 2) {
-        const [a,b] = event.touches;
-        const focal = midpoint(a,b,viewport);
-        multi = true; pan = null;
-        pinch = { distance:Math.max(1,distance(a,b)), scale:state.scale, anchor:contentPoint(focal), startedAt:performance.now(), midpoint:pageMidpoint(a,b), moved:false };
-        this.__starkGuardUntilV065 = Infinity;
-        Array.from(event.touches).forEach((touch) => cancelHold(root.elementFromPoint?.(touch.clientX,touch.clientY) || document.elementFromPoint(touch.clientX,touch.clientY)));
-        event.preventDefault();
-      } else if (event.touches.length === 1 && state.scale > 1 && !multi) {
-        const touch = event.touches[0];
-        pan = { clientX:touch.clientX, clientY:touch.clientY, x:state.x, y:state.y, target:event.target, moved:false };
-      }
-    }, { passive:false });
-
-    viewport.addEventListener("touchmove", (event) => {
-      if (event.touches.length >= 2 && pinch) {
-        const [a,b] = event.touches;
-        const focal = midpoint(a,b,viewport);
-        const currentDistance = distance(a,b);
-        setAround(pinch.scale * currentDistance / pinch.distance, focal, pinch.anchor);
-        if (pointDistance(pinch.midpoint,pageMidpoint(a,b)) > TAP_MOVE || Math.abs(currentDistance-pinch.distance) > TAP_MOVE) pinch.moved = true;
-        event.preventDefault();
-        return;
-      }
-      if (!pan || event.touches.length !== 1 || state.scale <= 1) return;
-      const touch = event.touches[0];
-      const dx = touch.clientX-pan.clientX, dy = touch.clientY-pan.clientY;
-      if (!pan.moved && Math.hypot(dx,dy) < PAN_THRESHOLD) return;
-      if (!pan.moved) { pan.moved=true; this.__starkGuardUntilV065=Infinity; cancelHold(pan.target); }
-      const b = bounds();
-      if (b.overflowX) state.x = pan.x + dx;
-      if (b.overflowY) state.y = pan.y + dy;
-      apply();
-      event.preventDefault();
-    }, { passive:false });
-
-    viewport.addEventListener("touchend", (event) => {
-      // Keep the original two-finger gesture until the second finger leaves.
-      // Clearing `pinch` on the first lift made a two-finger tap impossible to
-      // complete and therefore broke the two-finger double-tap reset.
-      if (multi && event.touches.length === 1) {
-        pan=null;
-        event.preventDefault();
-        return;
-      }
-      if (event.touches.length) return;
-      const completed = pinch;
-      const wasMulti = multi;
-      const moved = Boolean(pan?.moved);
-      pinch=null; pan=null; multi=false;
-      if (state.scale >= SNAP_MIN && state.scale <= SNAP_MAX && state.scale !== 1) {
-        state.scale=1; state.x=0; state.y=0; apply({persist:true}); showToast();
-      } else apply({persist:true});
-      const now=performance.now();
-      if (wasMulti) {
-        event.preventDefault();
-        this.__starkGuardUntilV065=now+GUARD_MS;
-        const isTap=completed && !completed.moved && now-completed.startedAt<=TAP_DURATION;
-        if (isTap) {
-          if (twoTap && now-twoTap.at<=DOUBLE_TAP_DELAY && pointDistance(twoTap.midpoint,completed.midpoint)<=48) { twoTap=null; reset(true); }
-          else twoTap={at:now,midpoint:completed.midpoint};
-        } else twoTap=null;
-      } else if (moved) this.__starkGuardUntilV065=now+GUARD_MS;
-    }, { passive:false });
-    viewport.addEventListener("touchcancel", () => { pinch=null;pan=null;multi=false;apply({persist:true});this.__starkGuardUntilV065=performance.now()+GUARD_MS; }, { passive:true });
-    viewport.addEventListener("click", (event) => {
-      if (this.__starkGuardUntilV065===Infinity || performance.now()<Number(this.__starkGuardUntilV065||0)) { event.preventDefault();event.stopImmediatePropagation(); }
-    }, { capture:true });
-
-    root.querySelectorAll(".bottom-nav-v051 [data-view-v051]").forEach((button) => button.addEventListener("click", (event) => {
-      if (this.__starkGuardUntilV065===Infinity || performance.now()<Number(this.__starkGuardUntilV065||0)) {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        return;
-      }
-      state.x=0;state.y=0;viewport.scrollTo({left:0,top:0,behavior:"auto"});this._saveStateV065(key,state);
-    }, { capture:true }));
-
-    const resize = () => requestAnimationFrame(() => apply({remeasure:true}));
-    if (typeof ResizeObserver === "function") { this.__starkResizeObserverV065=new ResizeObserver(resize);this.__starkResizeObserverV065.observe(surface); }
-    window.addEventListener("resize",resize,{passive:true});
-    window.visualViewport?.addEventListener("resize",resize,{passive:true});
-    this.__starkResizeCleanupV065=()=>{window.removeEventListener("resize",resize);window.visualViewport?.removeEventListener("resize",resize);};
-    this.__starkCanvasControllerV065={
-      viewport,
-      surface,
-      state,
-      refresh:()=>apply({remeasure:true}),
-      resetPosition,
-      switchContext,
-      reset,
-    };
-    requestAnimationFrame(() => apply({remeasure:true}));
-  };
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-    const root=this.shadowRoot;
-    if (!root) return;
-    const subtitle=root.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent=`UPS Control Center Â· UI v${UI_VERSION}`;
-    const viewport=root.querySelector(".zoom-viewport-v060,.zoom-viewport-v057");
-    if (viewport) this._installStandardCanvasV065(viewport);
-    if (!root.querySelector("style[data-stark-ui-v065]")) {
-      const style=document.createElement("style");
-      style.dataset.starkUiV065="true";
-      style.textContent=`
-        .app-header{display:grid!important;grid-template-columns:52px minmax(0,1fr) 52px!important;align-items:center!important;min-height:62px!important;gap:0!important;margin:0 0 8px!important;padding:0!important}
-        .app-header .title-wrap{grid-column:2!important;justify-self:center!important;text-align:center!important;min-width:0!important}.app-header .title-icon{display:none!important}
-        .app-header h1{font-size:21px!important;font-weight:800!important}.app-header .subtitle{font-size:12px!important;font-weight:560!important;color:var(--secondary-text-color)!important}
-        .app-header .system-menu-v056,.app-header .refresh{width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important;border-radius:16px!important;border:1px solid var(--divider-color)!important;background:var(--card-background-color)!important;box-shadow:var(--ha-card-box-shadow,0 2px 8px rgba(0,0,0,.12))!important;padding:0!important;display:grid!important;place-items:center!important}
-        .app-header .system-menu-v056{grid-column:1!important;grid-row:1!important;justify-self:start!important;color:var(--primary-text-color)!important}.app-header .refresh{grid-column:3!important;grid-row:1!important;justify-self:end!important;color:var(--primary-color)!important}
-        .app-header .system-menu-v056 ha-icon,.app-header .refresh ha-icon{--mdc-icon-size:25px!important}
-        .tabs.bottom-nav-v051{position:fixed!important;left:0!important;right:0!important;bottom:0!important;width:100%!important;margin:0!important;padding:4px max(4px,env(safe-area-inset-right,0px)) calc(4px + env(safe-area-inset-bottom,0px)) max(4px,env(safe-area-inset-left,0px))!important;border-radius:0!important;border-top:1px solid var(--divider-color)!important;background:var(--card-background-color)!important;box-shadow:0 -3px 14px rgba(0,0,0,.08)!important;z-index:30!important}
-        .bottom-nav-v051 .tab{min-height:52px!important;height:auto!important;border-radius:14px!important;font-size:12px!important;font-weight:700!important;color:var(--secondary-text-color)!important;background:transparent!important;box-shadow:none!important}
-        .bottom-nav-v051 .tab ha-icon{--mdc-icon-size:28px!important}.bottom-nav-v051 .tab span{font-size:12px!important;font-weight:700!important;white-space:nowrap!important}
-        .bottom-nav-v051 .tab.active{color:var(--primary-color)!important;background:color-mix(in srgb,var(--primary-color) 11%,transparent)!important;box-shadow:none!important}
-        .zoom-viewport-v065{position:relative;min-width:0;min-height:0;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}.zoom-viewport-v065.native-scroll{overflow-x:hidden!important;overflow-y:auto!important;touch-action:pan-y!important}.zoom-viewport-v065.zoomed{overflow:hidden!important;touch-action:none!important}
-        .zoom-stage-v065{position:relative;min-width:100%;min-height:100%;overflow:visible}.zoom-surface-v065{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
-        .zoom-toast-v065{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom,0px));transform:translate(-50%,8px);opacity:0;pointer-events:none;padding:8px 13px;border-radius:999px;background:rgba(20,24,31,.88);color:#fff;font-size:12px;font-weight:700;transition:.18s;z-index:50}.zoom-toast-v065.visible{opacity:1;transform:translate(-50%,0)}
-        @media(max-width:390px){.app-header{grid-template-columns:48px minmax(0,1fr) 48px!important;min-height:60px!important}}
-      `;
-      root.append(style);
-    }
-  };
-}
-})();
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v065.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v066.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.6.6";
-const UPS_ARTWORK =
-  "/stark_solarpower_panel/assets/stark-country-1000-online.png?v=0.6.6";
-
-function esc(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-if (Panel && !Panel.prototype.__starkUiV066) {
-  Panel.prototype.__starkUiV066 = true;
-
-  Panel.prototype._connectionStatusV066 = function (device) {
-    const cloud = this._isOn(device, "cloud_connected");
-    const stale = this._isOn(device, "data_stale");
-
-    const channel = cloud === true
-      ? { label:"ÐžÐ±Ð»Ð°ÐºÐ¾", tone:"good" }
-      : cloud === false
-        ? { label:"ÐÐµÑ‚ ÑÐ²ÑÐ·Ð¸", tone:"bad" }
-        : { label:"ÐÐµÑ‚ Ð´Ð°Ð½Ð½Ñ‹Ñ…", tone:"unknown" };
-    const freshness = stale === false
-      ? { label:"Ð”Ð°Ð½Ð½Ñ‹Ðµ Ð°ÐºÑ‚ÑƒÐ°Ð»ÑŒÐ½Ñ‹", tone:"current" }
-      : stale === true
-        ? { label:"Ð”Ð°Ð½Ð½Ñ‹Ðµ ÑƒÑÑ‚Ð°Ñ€ÐµÐ»Ð¸", tone:"warn" }
-        : { label:"ÐÐµÑ‚ Ð´Ð°Ð½Ð½Ñ‹Ñ…", tone:"unknown" };
-
-    return { channel, freshness };
-  };
-
-  Panel.prototype._powerStatusV066 = function (device) {
-    const mode = this._mode(device);
-    const onBattery = mode === "battery_mode" || this._isOn(device, "on_battery") === true;
-    if (onBattery) {
-      return {
-        title:"ÐžÑ‚ Ð±Ð°Ñ‚Ð°Ñ€ÐµÐ¸",
-        detail:`ÐÐ°Ð³Ñ€ÑƒÐ·ÐºÐ° Ð¿Ð¸Ñ‚Ð°ÐµÑ‚ÑÑ Ð¾Ñ‚ ÐÐšÐ‘ Â· Ð’Ñ‹Ñ…Ð¾Ð´ ${this._format(device, "output_voltage")}`,
-        tone:"warn",
-      };
-    }
-    if (mode === "line_mode") {
-      return {
-        title:"ÐžÑ‚ ÑÐµÑ‚Ð¸",
-        detail:`Ð’Ñ‹Ñ…Ð¾Ð´ ${this._format(device, "output_voltage")} Â· ${this._format(device, "output_frequency")}`,
-        tone:"good",
-      };
-    }
-    if (mode === "fault_mode") {
-      return {
-        title:"ÐÐµ Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð¾",
-        detail:"UPS ÑÐ¾Ð¾Ð±Ñ‰Ð°ÐµÑ‚ Ð°Ð²Ð°Ñ€Ð¸Ð¹Ð½Ñ‹Ð¹ Ñ€ÐµÐ¶Ð¸Ð¼",
-        tone:"bad",
-      };
-    }
-    return {
-      title:"ÐÐµ Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½Ð¾",
-      detail:"Ð ÐµÐ¶Ð¸Ð¼ ÑÐ»ÐµÐºÑ‚Ñ€Ð¾Ð¿Ð¸Ñ‚Ð°Ð½Ð¸Ñ Ð´Ð¾ÑÑ‚Ð¾Ð²ÐµÑ€Ð½Ð¾ Ð½Ðµ ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð»ÐµÐ½",
-      tone:"unknown",
-    };
-  };
-
-  Panel.prototype._renderOverviewV051 = function () {
-    const device = this._selectedDeviceV051();
-    if (!device) return this._empty("UPS Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½Ñ‹");
-
-    const power = this._powerStatusV066(device);
-    const connection = this._connectionStatusV066(device);
-    const battery = this._numeric(device, "battery_capacity");
-    const load = this._numeric(device, "output_load");
-    const background = this._heroBackgroundV051(device);
-
-    return `<section class="overview-v051 overview-v066">
-      <article class="ups-hero-v051 card-v051 ${esc(power.tone)}" style="--hero-background-v051:url('${esc(background)}')">
-        <div class="hero-head-v051">
-          <div class="hero-copy-v051">
-            <span>ÐŸÐ˜Ð¢ÐÐÐ˜Ð•</span>
-            <h2>${esc(power.title)}</h2>
-            <p>${esc(power.detail)}</p>
-          </div>
-          <div class="freshness-v051 connection-v066 ${esc(connection.channel.tone)}" role="status" aria-live="polite" aria-label="${esc(connection.channel.label)} Â· ${esc(connection.freshness.label)}">
-            <span class="connection-lamp-v066" aria-hidden="true"></span>
-            <span class="connection-copy-v066">
-              <strong>${esc(connection.channel.label)}</strong>
-              <small class="${esc(connection.freshness.tone)}">${esc(connection.freshness.label)}</small>
-            </span>
-          </div>
-        </div>
-
-        <div class="hero-scene-v051">
-          <div class="scene-node-v051 grid" ${this._entityId(device, "input_voltage") ? `data-entity="${esc(this._entityId(device, "input_voltage"))}"` : ""}>
-            <ha-icon icon="mdi:transmission-tower"></ha-icon>
-            <div><span>Ð¡ÐµÑ‚ÑŒ</span><strong>${esc(this._format(device, "input_voltage"))}</strong></div>
-          </div>
-          <div class="scene-node-v051 load" ${this._entityId(device, "output_load") ? `data-entity="${esc(this._entityId(device, "output_load"))}"` : ""}>
-            <ha-icon icon="mdi:monitor-dashboard"></ha-icon>
-            <div><span>ÐÐ°Ð³Ñ€ÑƒÐ·ÐºÐ°</span><strong>${load === null ? "â€”" : `${Math.round(load)} %`}</strong></div>
-          </div>
-          <img class="ups-art-v051" src="${UPS_ARTWORK}" alt="Stark Country 1000 ONLINE (16A)" loading="eager" decoding="sync" fetchpriority="high" ${this._entityId(device, "mode") ? `data-entity="${esc(this._entityId(device, "mode"))}"` : ""}>
-          <div class="scene-node-v051 battery" ${this._entityId(device, "battery_capacity") ? `data-entity="${esc(this._entityId(device, "battery_capacity"))}"` : ""}>
-            <ha-icon icon="mdi:battery"></ha-icon>
-            <div><span>ÐÐšÐ‘</span><strong>${battery === null ? "â€”" : `${Math.round(battery)} %`}</strong></div>
-          </div>
-        </div>
-      </article>
-    </section>`;
-  };
-
-  const previousRender = Panel.prototype._render;
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-    const root = this.shadowRoot;
-    if (!root) return;
-
-    const subtitle = root.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-
-    if (!root.querySelector("style[data-stark-ui-v066]")) {
-      const style = document.createElement("style");
-      style.dataset.starkUiV066 = "true";
-      style.textContent = `
-        /* UI 0.6.6: Overview contains one visual source of truth. */
-        .overview-v066 { gap:0 !important; }
-        .overview-v066 .ups-hero-v051 { min-height:0; }
-        .overview-v066 .hero-scene-v051 { height:360px !important; }
-        .overview-v066 .hero-copy-v051 { min-width:0; max-width:48%; }
-
-        .connection-v066 {
-          min-height:48px !important;
-          max-width:52% !important;
-          gap:10px !important;
-          padding:12px 14px !important;
-          border-radius:18px !important;
-          color:var(--primary-text-color) !important;
-        }
-        .connection-lamp-v066 {
-          width:10px;
-          height:10px;
-          flex:0 0 10px;
-          border-radius:50%;
-          background:var(--disabled-text-color);
-          box-shadow:0 0 0 3px color-mix(in srgb,var(--disabled-text-color) 12%,transparent);
-        }
-        .connection-v066.good .connection-lamp-v066 { background:var(--success-color,#2eae55); box-shadow:0 0 0 3px color-mix(in srgb,var(--success-color,#2eae55) 12%,transparent); }
-        .connection-v066.bad .connection-lamp-v066 { background:var(--error-color,#d93b3b); box-shadow:0 0 0 3px color-mix(in srgb,var(--error-color,#d93b3b) 12%,transparent); }
-        .connection-copy-v066 { min-width:0; display:grid; gap:2px; text-align:left; }
-        .connection-copy-v066 strong { color:var(--disabled-text-color); font-size:15px; font-weight:700; line-height:1.1; }
-        .connection-v066.good .connection-copy-v066 strong { color:var(--success-color,#2eae55); }
-        .connection-v066.bad .connection-copy-v066 strong { color:var(--error-color,#d93b3b); }
-        .connection-copy-v066 small { color:var(--secondary-text-color); font-size:12px; font-weight:550; line-height:1.15; }
-        .connection-copy-v066 small.warn { color:var(--warning-color,#ed8b00); font-weight:650; }
-        .connection-copy-v066 small.unknown { color:var(--secondary-text-color); }
-
-        @media (max-width:430px) {
-          .overview-v066 .hero-scene-v051 { height:360px !important; }
-          .connection-v066 { max-width:51% !important; }
-          .overview-v066 .hero-copy-v051 p { max-width:230px; }
-        }
-      `;
-      root.append(style);
-    }
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v066.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v067.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.6.7";
-
-function esc(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-if (Panel && !Panel.prototype.__starkUiV067) {
-  Panel.prototype.__starkUiV067 = true;
-
-  const previousOverview = Panel.prototype._renderOverviewV051;
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._renderOverviewV051 = function () {
-    const html = previousOverview.call(this);
-    const device = this._selectedDeviceV051();
-    if (!device || !html.includes('class="overview-v051 overview-v066"')) return html;
-
-    const battery = this._numeric(device, "battery_capacity");
-    const reserve = this._reserveV050(device, battery !== null);
-    const entityId = this._entityId(device, "battery_capacity");
-
-    // This style is part of the initial work-surface markup. The zoom engine
-    // therefore measures the final geometry instead of observing a later CSS
-    // height change and briefly collapsing/repositioning the iOS canvas.
-    const stableStyle = `<style data-stark-overview-v067>
-      section.overview-v066 { gap:10px !important; }
-      section.overview-v066 .ups-hero-v051 { min-height:0; }
-      section.overview-v066 .hero-scene-v051 { height:360px !important; }
-      section.overview-v066 .hero-copy-v051 { min-width:0; max-width:48%; }
-      section.overview-v066 .connection-v066 {
-        min-height:48px !important;
-        max-width:52% !important;
-        gap:10px !important;
-        padding:12px 14px !important;
-        border-radius:18px !important;
-        color:var(--primary-text-color) !important;
-      }
-      section.overview-v066 .connection-lamp-v066 {
-        width:10px; height:10px; flex:0 0 10px; border-radius:50%;
-        background:var(--disabled-text-color);
-        box-shadow:0 0 0 3px color-mix(in srgb,var(--disabled-text-color) 12%,transparent);
-      }
-      section.overview-v066 .connection-v066.good .connection-lamp-v066 { background:var(--success-color,#2eae55); box-shadow:0 0 0 3px color-mix(in srgb,var(--success-color,#2eae55) 12%,transparent); }
-      section.overview-v066 .connection-v066.bad .connection-lamp-v066 { background:var(--error-color,#d93b3b); box-shadow:0 0 0 3px color-mix(in srgb,var(--error-color,#d93b3b) 12%,transparent); }
-      section.overview-v066 .connection-copy-v066 { min-width:0; display:grid; gap:2px; text-align:left; }
-      section.overview-v066 .connection-copy-v066 strong { color:var(--disabled-text-color); font-size:15px; font-weight:700; line-height:1.1; }
-      section.overview-v066 .connection-v066.good .connection-copy-v066 strong { color:var(--success-color,#2eae55); }
-      section.overview-v066 .connection-v066.bad .connection-copy-v066 strong { color:var(--error-color,#d93b3b); }
-      section.overview-v066 .connection-copy-v066 small { color:var(--secondary-text-color); font-size:12px; font-weight:550; line-height:1.15; }
-      section.overview-v066 .connection-copy-v066 small.warn { color:var(--warning-color,#ed8b00); font-weight:650; }
-      .reserve-strip-v067 {
-        min-height:50px; display:flex; align-items:center; justify-content:center; gap:10px;
-        padding:10px 14px; border:1px solid color-mix(in srgb,var(--success-color,#2eae55) 28%,transparent);
-        border-radius:18px; background:color-mix(in srgb,var(--success-color,#2eae55) 7%,var(--card-background-color));
-        color:var(--success-color,#2eae55); box-shadow:0 5px 18px rgba(23,45,76,.05);
-      }
-      .reserve-strip-v067 ha-icon { --mdc-icon-size:25px; flex:0 0 auto; }
-      .reserve-strip-v067 strong { font-size:15px; line-height:1.15; }
-      .reserve-strip-v067.warn { color:var(--warning-color,#ed8b00); border-color:color-mix(in srgb,var(--warning-color,#ed8b00) 30%,transparent); background:color-mix(in srgb,var(--warning-color,#ed8b00) 7%,var(--card-background-color)); }
-      .reserve-strip-v067.bad { color:var(--error-color,#d93b3b); border-color:color-mix(in srgb,var(--error-color,#d93b3b) 30%,transparent); background:color-mix(in srgb,var(--error-color,#d93b3b) 7%,var(--card-background-color)); }
-      .reserve-strip-v067.unknown { color:var(--secondary-text-color); border-color:var(--divider-color); background:var(--card-background-color); }
-      @media (max-width:430px) {
-        section.overview-v066 .hero-scene-v051 { height:360px !important; }
-        section.overview-v066 .connection-v066 { max-width:51% !important; }
-        section.overview-v066 .hero-copy-v051 p { max-width:230px; }
-      }
-    </style>`;
-
-    const reserveStrip = `<div class="reserve-strip-v067 ${esc(reserve.tone)}" ${entityId ? `data-entity="${esc(entityId)}"` : ""}>
-      <ha-icon icon="${esc(reserve.icon)}"></ha-icon>
-      <strong>${esc(reserve.label)}</strong>
-    </div>`;
-
-    return stableStyle + html.replace("</section>", `${reserveStrip}</section>`);
-  };
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-    const subtitle = this.shadowRoot?.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v067.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v068.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.6.8";
-const TONES = ["good", "warn", "bad", "unknown", "current"];
-
-function setText(root, selector, value) {
-  const element = root?.querySelector(selector);
-  if (!element) return false;
-  const text = String(value ?? "");
-  if (element.textContent !== text) element.textContent = text;
-  return true;
-}
-
-function setTone(element, tone) {
-  if (!element) return false;
-  element.classList.remove(...TONES);
-  if (tone) element.classList.add(tone);
-  return true;
-}
-
-if (Panel && !Panel.prototype.__starkUiV068) {
-  Panel.prototype.__starkUiV068 = true;
-
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._overviewStructureKeyV068 = function (device) {
-    const entities = Object.entries(device?.entities || {})
-      .map(([key, entityId]) => [key, entityId])
-      .sort(([left], [right]) => left.localeCompare(right));
-    return JSON.stringify([
-      this._view,
-      device?.id ?? null,
-      device?.name ?? null,
-      device?.model ?? null,
-      entities,
-    ]);
-  };
-
-  Panel.prototype._patchOverviewV068 = function (device) {
-    const root = this.shadowRoot;
-    const overview = root?.querySelector(".zoom-surface-v065 .overview-v066")
-      || root?.querySelector(".overview-v066");
-    if (!root || !overview || !device) return false;
-
-    const power = this._powerStatusV066(device);
-    const connection = this._connectionStatusV066(device);
-    const battery = this._numeric(device, "battery_capacity");
-    const load = this._numeric(device, "output_load");
-    const reserve = this._reserveV050(device, battery !== null);
-
-    setTone(overview.querySelector(".ups-hero-v051"), power.tone);
-    setText(overview, ".hero-copy-v051 h2", power.title);
-    setText(overview, ".hero-copy-v051 p", power.detail);
-
-    const connectionPlaque = overview.querySelector(".connection-v066");
-    setTone(connectionPlaque, connection.channel.tone);
-    setText(overview, ".connection-copy-v066 strong", connection.channel.label);
-    const freshness = overview.querySelector(".connection-copy-v066 small");
-    setTone(freshness, connection.freshness.tone);
-    if (freshness && freshness.textContent !== connection.freshness.label) {
-      freshness.textContent = connection.freshness.label;
-    }
-
-    setText(overview, ".scene-node-v051.grid strong", this._format(device, "input_voltage"));
-    setText(overview, ".scene-node-v051.load strong", load === null ? "â€”" : `${Math.round(load)} %`);
-    setText(overview, ".scene-node-v051.battery strong", battery === null ? "â€”" : `${Math.round(battery)} %`);
-
-    const reserveStrip = overview.querySelector(".reserve-strip-v067");
-    setTone(reserveStrip, reserve.tone);
-    const reserveIcon = reserveStrip?.querySelector("ha-icon");
-    if (reserveIcon?.getAttribute("icon") !== reserve.icon) {
-      reserveIcon?.setAttribute("icon", reserve.icon);
-    }
-    setText(overview, ".reserve-strip-v067 strong", reserve.label);
-
-    setText(root, ".subtitle", `UPS Control Center Â· UI v${UI_VERSION}`);
-    return true;
-  };
-
-  Panel.prototype._render = function () {
-    const device = this._selectedDeviceV051?.();
-    const structureKey = this._view === "overview" && device
-      ? this._overviewStructureKeyV068(device)
-      : null;
-
-    // Telemetry updates must not replace the Overview DOM. Keeping the same
-    // image, canvas and zoom nodes prevents iOS WebView flashes and preserves
-    // the user's current scale, pan and native scroll position.
-    if (
-      structureKey
-      && this._overviewStructureCacheV068 === structureKey
-      && this._patchOverviewV068(device)
-    ) {
-      return;
-    }
-
-    previousRender.call(this);
-
-    const renderedDevice = this._selectedDeviceV051?.();
-    this._overviewStructureCacheV068 = this._view === "overview" && renderedDevice
-      ? this._overviewStructureKeyV068(renderedDevice)
-      : null;
-    setText(this.shadowRoot, ".subtitle", `UPS Control Center Â· UI v${UI_VERSION}`);
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v068.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v069.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.6.9";
-
-function sameTreeShape(current, desired) {
-  if (!current || !desired || current.nodeType !== desired.nodeType) return false;
-  if (current.nodeType === Node.ELEMENT_NODE && current.tagName !== desired.tagName) return false;
-  if (current.childNodes.length !== desired.childNodes.length) return false;
-  for (let index = 0; index < current.childNodes.length; index += 1) {
-    if (!sameTreeShape(current.childNodes[index], desired.childNodes[index])) return false;
-  }
-  return true;
-}
-
-function sameChildrenShape(current, desired) {
-  if (current.childNodes.length !== desired.childNodes.length) return false;
-  for (let index = 0; index < current.childNodes.length; index += 1) {
-    if (!sameTreeShape(current.childNodes[index], desired.childNodes[index])) return false;
-  }
-  return true;
-}
-
-function syncAttributes(current, desired) {
-  for (const attribute of Array.from(current.attributes)) {
-    if (!desired.hasAttribute(attribute.name)) current.removeAttribute(attribute.name);
-  }
-  for (const attribute of Array.from(desired.attributes)) {
-    if (current.getAttribute(attribute.name) !== attribute.value) {
-      current.setAttribute(attribute.name, attribute.value);
-    }
-  }
-}
-
-function syncTree(current, desired) {
-  if (current.nodeType === Node.TEXT_NODE) {
-    if (current.nodeValue !== desired.nodeValue) current.nodeValue = desired.nodeValue;
-    return;
-  }
-  if (current.nodeType === Node.ELEMENT_NODE) syncAttributes(current, desired);
-  for (let index = 0; index < current.childNodes.length; index += 1) {
-    syncTree(current.childNodes[index], desired.childNodes[index]);
-  }
-}
-
-function syncChildren(current, desired) {
-  for (let index = 0; index < current.childNodes.length; index += 1) {
-    syncTree(current.childNodes[index], desired.childNodes[index]);
-  }
-}
-
-if (Panel && !Panel.prototype.__starkUiV069) {
-  Panel.prototype.__starkUiV069 = true;
-
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._liveStructureKeyV069 = function () {
-    const devices = (this._devices || []).map((device) => [
-      device.id,
-      device.name,
-      device.model,
-      Object.entries(device.entities || {})
-        .map(([key, entityId]) => [key, entityId])
-        .sort(([left], [right]) => left.localeCompare(right)),
-    ]);
-    return JSON.stringify([
-      this._view,
-      this._selectedUpsId?.() || null,
-      Boolean(this._menuOpen),
-      devices,
-    ]);
-  };
-
-  Panel.prototype._renderLiveViewV069 = function () {
-    if (this._view === "overview") return this._renderOverviewV051();
-    if (this._view === "ups") return this._renderUpsV051();
-    if (this._view === "history") return this._renderHistory();
-    if (this._view === "events") return this._renderEventsV051();
-    if (this._view === "diagnostics") return this._renderDiagnostics();
-    return null;
-  };
-
-  Panel.prototype._patchLiveViewV069 = function () {
-    const root = this.shadowRoot;
-    const current = root?.querySelector(".zoom-surface-v065")
-      || root?.querySelector(".zoom-content-v057");
-    const markup = this._renderLiveViewV069();
-    if (!root || !current || typeof markup !== "string") return false;
-
-    const template = document.createElement("template");
-    template.innerHTML = markup;
-    // The permanent selector above the canvas supersedes the legacy local
-    // Diagnostics selector, which the normal render pipeline also removes.
-    template.content.querySelectorAll(".device-switcher").forEach((node) => node.remove());
-    // The zoom installer moves app.children, not top-level whitespace nodes.
-    // Mirror that exact shape for multi-root Diagnostics markup.
-    Array.from(template.content.childNodes).forEach((node) => {
-      if (node.nodeType === Node.TEXT_NODE && !node.nodeValue.trim()) node.remove();
-    });
-
-    if (!sameChildrenShape(current, template.content)) return false;
-    syncChildren(current, template.content);
-
-    const subtitle = root.querySelector(".subtitle");
-    if (subtitle?.textContent !== `UPS Control Center Â· UI v${UI_VERSION}`) {
-      subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-    }
-    return true;
-  };
-
-  Panel.prototype._render = function () {
-    const canPatch = Boolean(
-      this._hass
-      && !this._loadingRegistry
-      && !this._registryError
-      && this._devices?.length
-    );
-    const structureKey = canPatch ? this._liveStructureKeyV069() : null;
-
-    if (
-      structureKey
-      && this._liveStructureCacheV069 === structureKey
-      && this._patchLiveViewV069()
-    ) {
-      return;
-    }
-
-    // Force the older Overview-only guard to yield whenever the selected
-    // view/device structure actually changed and a complete render is needed.
-    this._overviewStructureCacheV068 = null;
-    previousRender.call(this);
-
-    this._liveStructureCacheV069 = canPatch ? this._liveStructureKeyV069() : null;
-    const subtitle = this.shadowRoot?.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v069.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v070.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.7.0";
-
-function esc(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-if (Panel && !Panel.prototype.__starkUiV070) {
-  Panel.prototype.__starkUiV070 = true;
-
-  const previousOverview = Panel.prototype._renderOverviewV051;
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._batteryFactV070 = function (device, key, label) {
-    const entityId = this._entityId(device, key);
-    return `<div class="battery-fact-v070" ${entityId ? `data-entity="${esc(entityId)}"` : ""}>
-      <span>${esc(label)}</span>
-      <strong>${esc(this._format(device, key, "â€”"))}</strong>
-    </div>`;
-  };
-
-  Panel.prototype._renderOverviewV051 = function () {
-    const html = previousOverview.call(this);
-    const device = this._selectedDeviceV051();
-    if (!device || !html.includes('class="overview-v051 overview-v066"')) return html;
-
-    const stableStyle = `<style data-stark-overview-v070>
-      section.overview-v066 .scene-node-v051.battery {
-        top:72px !important;
-        bottom:auto !important;
-      }
-      .battery-details-v070 {
-        padding:12px 14px;
-        border:1px solid color-mix(in srgb,var(--success-color,#2eae55) 24%,var(--divider-color));
-        border-radius:22px;
-        background:var(--card-background-color);
-        box-shadow:0 5px 18px rgba(23,45,76,.05);
-      }
-      .battery-details-head-v070 {
-        display:flex; align-items:center; gap:8px; margin-bottom:10px;
-      }
-      .battery-details-head-v070 ha-icon {
-        --mdc-icon-size:23px; color:var(--success-color,#2eae55); flex:0 0 auto;
-      }
-      .battery-details-head-v070 strong {
-        font-size:17px; line-height:1.1;
-      }
-      .battery-details-head-v070 small {
-        margin-left:auto; color:var(--secondary-text-color); font-size:11px; line-height:1.1;
-      }
-      .battery-facts-v070 {
-        display:grid; grid-template-columns:repeat(4,minmax(0,1fr));
-      }
-      .battery-fact-v070 {
-        min-width:0; padding:0 9px; border-left:1px solid var(--divider-color);
-      }
-      .battery-fact-v070:first-child { padding-left:0; border-left:0; }
-      .battery-fact-v070:last-child { padding-right:0; }
-      .battery-fact-v070 span,.battery-fact-v070 strong { display:block; }
-      .battery-fact-v070 span {
-        min-height:24px; color:var(--secondary-text-color); font-size:11px; line-height:1.1;
-      }
-      .battery-fact-v070 strong {
-        margin-top:4px; color:var(--primary-text-color); font-size:15px; line-height:1.1;
-        overflow-wrap:anywhere;
-      }
-      @media(max-width:390px) {
-        section.overview-v066 .scene-node-v051.battery { top:68px !important; }
-        .battery-details-v070 { padding:11px 12px; }
-        .battery-details-head-v070 small { display:none; }
-        .battery-fact-v070 { padding:0 6px; }
-        .battery-fact-v070 span { font-size:10px; }
-        .battery-fact-v070 strong { font-size:14px; }
-      }
-    </style>`;
-
-    const details = `<article class="battery-details-v070">
-      <div class="battery-details-head-v070">
-        <ha-icon icon="mdi:battery-heart-variant"></ha-icon>
-        <strong>Ð‘Ð°Ñ‚Ð°Ñ€ÐµÑ</strong>
-        <small>Ð Ð°ÑÑˆÐ¸Ñ€ÐµÐ½Ð½Ð°Ñ Ñ‚ÐµÐ»ÐµÐ¼ÐµÑ‚Ñ€Ð¸Ñ</small>
-      </div>
-      <div class="battery-facts-v070">
-        ${this._batteryFactV070(device, "battery_voltage", "ÐÐ°Ð¿Ñ€ÑÐ¶ÐµÐ½Ð¸Ðµ")}
-        ${this._batteryFactV070(device, "battery_piece_number", "ÐšÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ ÐÐšÐ‘")}
-        ${this._batteryFactV070(device, "charger_temperature", "Ð¢ÐµÐ¼Ð¿. Ð—Ð£")}
-        ${this._batteryFactV070(device, "battery_remain_time", "ÐžÑÑ‚Ð°Ñ‚Ð¾Ðº RAW")}
-      </div>
-    </article>`;
-
-    return stableStyle + html.replace("</section>", `${details}</section>`);
-  };
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-    const subtitle = this.shadowRoot?.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v070.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v071.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.7.1";
-
-if (Panel && !Panel.prototype.__starkUiV071) {
-  Panel.prototype.__starkUiV071 = true;
-
-  // Gesture completion and post-pinch navigation suppression are implemented
-  // by the permanent canvas layer in v065; this layer only finalizes layout.
-
-  const previousOverview = Panel.prototype._renderOverviewV051;
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._renderOverviewV051 = function () {
-    const html = previousOverview.call(this);
-    if (!html.includes('class="overview-v051 overview-v066"')) return html;
-
-    return `<style data-stark-overview-v071>
-      /* Keep the capacity plaque visually separate from the cabinet. */
-      section.overview-v066 .scene-node-v051.battery {
-        top:58px !important;
-        bottom:auto !important;
-      }
-      /* The long fallback state is one calm line; normal mode titles keep
-         their established 35â€“38 px hierarchy. */
-      section.overview-v066 .ups-hero-v051.unknown .hero-copy-v051 h2,
-      section.overview-v066 .ups-hero-v051.bad .hero-copy-v051 h2 {
-        white-space:nowrap;
-        overflow-wrap:normal;
-        font-size:clamp(23px,6.4vw,29px) !important;
-        letter-spacing:-.035em;
-      }
-      @media(max-width:390px) {
-        section.overview-v066 .scene-node-v051.battery { top:54px !important; }
-      }
-    </style>${html}`;
-  };
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-    const subtitle = this.shadowRoot?.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v071.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v080.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.8.0";
-const TONES = ["good", "warn", "bad", "unknown", "current"];
-
-function sameTreeShape(current, desired) {
-  if (!current || !desired || current.nodeType !== desired.nodeType) return false;
-  if (current.nodeType === Node.ELEMENT_NODE && current.tagName !== desired.tagName) return false;
-  if (current.childNodes.length !== desired.childNodes.length) return false;
-  for (let index = 0; index < current.childNodes.length; index += 1) {
-    if (!sameTreeShape(current.childNodes[index], desired.childNodes[index])) return false;
-  }
-  return true;
-}
-
-function sameChildrenShape(current, desired) {
-  if (current.childNodes.length !== desired.childNodes.length) return false;
-  for (let index = 0; index < current.childNodes.length; index += 1) {
-    if (!sameTreeShape(current.childNodes[index], desired.childNodes[index])) return false;
-  }
-  return true;
-}
-
-function syncAttributes(current, desired) {
-  for (const attribute of Array.from(current.attributes)) {
-    if (!desired.hasAttribute(attribute.name)) current.removeAttribute(attribute.name);
-  }
-  for (const attribute of Array.from(desired.attributes)) {
-    if (current.getAttribute(attribute.name) !== attribute.value) {
-      current.setAttribute(attribute.name, attribute.value);
-    }
-  }
-}
-
-function syncTree(current, desired) {
-  if (current.nodeType === Node.TEXT_NODE) {
-    if (current.nodeValue !== desired.nodeValue) current.nodeValue = desired.nodeValue;
-    return;
-  }
-  if (current.nodeType === Node.ELEMENT_NODE) syncAttributes(current, desired);
-  for (let index = 0; index < current.childNodes.length; index += 1) {
-    syncTree(current.childNodes[index], desired.childNodes[index]);
-  }
-}
-
-function syncChildren(current, desired) {
-  for (let index = 0; index < current.childNodes.length; index += 1) {
-    syncTree(current.childNodes[index], desired.childNodes[index]);
-  }
-}
-
-function cleanTemplate(markup) {
-  const template = document.createElement("template");
-  template.innerHTML = markup;
-  template.content.querySelectorAll(".device-switcher").forEach((node) => node.remove());
-  Array.from(template.content.childNodes).forEach((node) => {
-    if (node.nodeType === Node.TEXT_NODE && !node.nodeValue.trim()) node.remove();
-  });
-  return template;
-}
-
-if (Panel && !Panel.prototype.__starkUiV080) {
-  Panel.prototype.__starkUiV080 = true;
-
-  const legacyRender = Panel.prototype._render;
-
-  Panel.prototype._viewCacheKeyV080 = function () {
-    const device = this._selectedUpsId?.() || this._diagnosticDeviceId || this._devices?.[0]?.id || "default";
-    return `${device}::${this._view || "overview"}`;
-  };
-
-  Panel.prototype._renderViewMarkupV080 = function () {
-    return this._renderLiveViewV069?.() ?? null;
-  };
-
-  Panel.prototype._viewStructureKeyV080 = function () {
-    const device = this._selectedDeviceV051?.();
-    const entities = Object.entries(device?.entities || {})
-      .map(([name, entityId]) => [name, entityId])
-      .sort(([left], [right]) => left.localeCompare(right));
-    return JSON.stringify([this._view, device?.id || null, entities]);
-  };
-
-  Panel.prototype._bindViewEntitiesV080 = function (scope) {
-    scope?.querySelectorAll("[data-entity]").forEach((element) => {
-      if (element.dataset.starkBoundV080) return;
-      element.dataset.starkBoundV080 = "true";
-      const entityId = element.dataset.entity;
-      if (!entityId) return;
-      let timer = null;
-      let fired = false;
-      const clear = () => {
-        if (timer) clearTimeout(timer);
-        timer = null;
-      };
-      element.addEventListener("pointerdown", () => {
-        fired = false;
-        timer = setTimeout(() => {
-          fired = true;
-          this._showMoreInfo(entityId);
-        }, 520);
-      });
-      element.addEventListener("pointerup", clear);
-      element.addEventListener("pointercancel", clear);
-      element.addEventListener("pointerleave", clear);
-      if (element.classList.contains("history-link")) {
-        element.addEventListener("click", (event) => {
-          if (!fired) this._showMoreInfo(entityId);
-          event.preventDefault();
-        });
-      }
-    });
-  };
-
-  Panel.prototype._createCachedViewV080 = function (key, markup, structureKey) {
-    const shell = this.__starkShellV080;
-    if (!shell || typeof markup !== "string") return null;
-    const view = document.createElement("div");
-    view.className = "work-view-v080";
-    view.dataset.cacheKeyV080 = key;
-    view.__starkStructureKeyV080 = structureKey;
-    view.hidden = true;
-    const template = cleanTemplate(markup);
-    view.append(template.content);
-    this._bindViewEntitiesV080(view);
-    shell.surface.append(view);
-    shell.cache.set(key, view);
-    return view;
-  };
-
-  Panel.prototype._patchCachedViewV080 = function (view, markup, structureKey) {
-    if (!view || typeof markup !== "string") return false;
-    const template = cleanTemplate(markup);
-    if (
-      view.__starkStructureKeyV080 === structureKey
-      && sameChildrenShape(view, template.content)
-    ) {
-      syncChildren(view, template.content);
-      return true;
-    }
-
-    // Only a real structural change may replace one cached work view. The
-    // Header, selector, viewport, canvas, artwork owner and Bottom Tab Bar
-    // remain the original mounted nodes.
-    view.replaceChildren(template.content);
-    view.__starkStructureKeyV080 = structureKey;
-    this._bindViewEntitiesV080(view);
-    return true;
-  };
-
-  Panel.prototype._syncShellControlsV080 = function () {
-    const shell = this.__starkShellV080;
-    if (!shell) return;
-    const selectedId = this._selectedUpsId?.() || this._devices?.[0]?.id || null;
-    shell.selector?.querySelectorAll("[data-ups-device]").forEach((button) => {
-      const active = button.dataset.upsDevice === selectedId;
-      if (button.classList.contains("active") !== active) {
-        button.classList.toggle("active", active);
-      }
-      const pressed = active ? "true" : "false";
-      if (button.getAttribute("aria-pressed") !== pressed) {
-        button.setAttribute("aria-pressed", pressed);
-      }
-      const device = this._devices?.find((item) => item.id === button.dataset.upsDevice);
-      const dot = button.querySelector(".device-health-dot");
-      if (dot && device) {
-        const tone = this._status?.(device)?.tone || "unknown";
-        if (!dot.classList.contains(tone)) {
-          dot.classList.remove(...TONES);
-          dot.classList.add(tone);
-        }
-      }
-    });
-    shell.nav?.querySelectorAll("[data-view-v051]").forEach((button) => {
-      const active = button.dataset.viewV051 === this._view;
-      if (button.classList.contains("active") !== active) {
-        button.classList.toggle("active", active);
-      }
-      if (active && button.getAttribute("aria-current") !== "page") {
-        button.setAttribute("aria-current", "page");
-      } else if (!active && button.hasAttribute("aria-current")) {
-        button.removeAttribute("aria-current");
-      }
-    });
-    const subtitle = shell.header?.querySelector(".subtitle");
-    if (subtitle?.textContent !== `UPS Control Center Â· UI v${UI_VERSION}`) {
-      subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-    }
-  };
-
-  Panel.prototype._installShellV080 = function () {
-    const root = this.shadowRoot;
-    const app = root?.querySelector("main.app");
-    const header = app?.querySelector(":scope > .app-header");
-    const selector = app?.querySelector(":scope > .global-device-context");
-    const viewport = app?.querySelector(":scope > .zoom-viewport-v065");
-    const surface = viewport?.querySelector(":scope > .zoom-stage-v065 > .zoom-surface-v065");
-    const nav = app?.querySelector(":scope > .tabs.bottom-nav-v051");
-    if (!root || !app || !header || !viewport || !surface || !nav) return false;
-
-    const key = this._viewCacheKeyV080();
-    const initial = document.createElement("div");
-    initial.className = "work-view-v080";
-    initial.dataset.cacheKeyV080 = key;
-    initial.__starkStructureKeyV080 = this._viewStructureKeyV080();
-    while (surface.firstChild) initial.append(surface.firstChild);
-    initial.querySelectorAll("[data-entity]").forEach((element) => {
-      // Initial view already owns the legacy listeners installed during the
-      // one allowed complete mount. New cached views use the v0.8 binder.
-      element.dataset.starkBoundV080 = "legacy";
-    });
-    surface.append(initial);
-
-    this.__starkShellV080 = {
-      app,
-      header,
-      selector,
-      viewport,
-      surface,
-      nav,
-      cache:new Map([[key, initial]]),
-      activeKey:key,
-      deviceId:this._selectedUpsId?.() || this._devices?.[0]?.id || "default",
-    };
-    this._syncShellControlsV080();
-    this.__starkCanvasControllerV065?.refresh();
-    return true;
-  };
-
-  Panel.prototype._reconcileShellV080 = function () {
-    const shell = this.__starkShellV080;
-    if (!shell || !shell.app.isConnected || !shell.viewport.isConnected) return false;
-
-    const key = this._viewCacheKeyV080();
-    const deviceId = this._selectedUpsId?.() || this._devices?.[0]?.id || "default";
-    const markup = this._renderViewMarkupV080();
-    const structureKey = this._viewStructureKeyV080();
-    let target = shell.cache.get(key);
-    if (!target) target = this._createCachedViewV080(key, markup, structureKey);
-    else this._patchCachedViewV080(target, markup, structureKey);
-    if (!target) return false;
-
-    const changedView = shell.activeKey !== key;
-    const changedDevice = shell.deviceId !== deviceId;
-    if (changedView) {
-      shell.cache.forEach((view, viewKey) => { view.hidden = viewKey !== key; });
-      shell.activeKey = key;
-      shell.deviceId = deviceId;
-      if (changedDevice) this.__starkCanvasControllerV065?.switchContext(deviceId);
-      else this.__starkCanvasControllerV065?.resetPosition({ persist:true });
-    } else {
-      this.__starkCanvasControllerV065?.refresh();
-    }
-
-    this._syncShellControlsV080();
-    return true;
-  };
-
-  Panel.prototype._render = function () {
-    if (this.__starkShellV080 && this._reconcileShellV080()) return;
-
-    legacyRender.call(this);
-    if (
-      this._hass
-      && !this._loadingRegistry
-      && !this._registryError
-      && this._devices?.length
-    ) {
-      this._installShellV080();
-    }
-
-    const root = this.shadowRoot;
-    if (!root || root.querySelector("style[data-stark-ui-v080]")) return;
-    const style = document.createElement("style");
-    style.dataset.starkUiV080 = "true";
-    style.textContent = `
-      /* NikaS Specialized Panel UI Standard v1.6. */
-      :host {
-        display:block!important;
-        width:100%!important;
-        height:100dvh!important;
-        min-height:0!important;
-        overflow:hidden!important;
-        overscroll-behavior:none!important;
-      }
-      main.app {
-        width:100%!important;
-        height:100dvh!important;
-        max-height:100dvh!important;
-        min-height:0!important;
-        display:flex!important;
-        flex-direction:column!important;
-        overflow:hidden!important;
-        padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))!important;
-      }
-      .app-header,.global-device-context { flex:0 0 auto!important; }
-      .app-header h1 { font-size:23px!important; font-weight:800!important; white-space:nowrap!important; }
-      .app-header .subtitle { font-size:14px!important; font-weight:560!important; }
-      .app-header .system-menu-v056,.app-header .refresh {
-        box-shadow:0 7px 20px rgba(23,45,76,.08)!important;
-      }
-      .tabs.bottom-nav-v051 {
-        padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))!important;
-      }
-      .bottom-nav-v051 .tab {
-        min-height:52px!important;
-        gap:3px!important;
-        padding:4px 2px!important;
-        border-radius:16px!important;
-      }
-      .zoom-viewport-v065 {
-        flex:1 1 auto!important;
-        width:100%!important;
-        height:auto!important;
-        min-height:0!important;
-        max-height:none!important;
-        overflow-anchor:none!important;
-        overscroll-behavior-x:none!important;
-        overscroll-behavior-y:none!important;
-      }
-      .zoom-surface-v065,.work-view-v080 { width:100%; min-width:0; }
-      .work-view-v080[hidden] { display:none!important; }
-
-      /* v1.6 typography envelope: meaningful phone text is 12â€“25 px. */
-      .hero-copy-v051 h2 { font-size:25px!important; line-height:1.04!important; letter-spacing:-.025em!important; }
-      section.overview-v066 .ups-hero-v051.unknown .hero-copy-v051 h2,
-      section.overview-v066 .ups-hero-v051.bad .hero-copy-v051 h2 { font-size:25px!important; }
-      .eyebrow,.flow-node span,.flow-ups span,.metric-label,.hint,.mini-version,.status,
-      .metric-copy-v051 span,.metric-copy-v051 small,
-      .state-values-v051 span,.state-pill-v051,.battery-details-head-v070 small,
-      .battery-fact-v070 span { font-size:12px!important; }
-      .connection-copy-v066 strong { font-size:16px!important; font-weight:700!important; }
-      .connection-copy-v066 small { font-size:13px!important; font-weight:560!important; }
-
-      /* Status color owns the stable two-line plaque, not only its lamp. */
-      section.overview-v066 .connection-v066 {
-        border-width:1px!important;
-        border-style:solid!important;
-        box-shadow:0 5px 16px rgba(23,45,76,.06)!important;
-      }
-      section.overview-v066 .connection-v066.good {
-        border-color:color-mix(in srgb,var(--success-color,#2eae55) 30%,var(--divider-color))!important;
-        background:color-mix(in srgb,var(--success-color,#2eae55) 10%,var(--card-background-color))!important;
-      }
-      section.overview-v066 .connection-v066.bad {
-        border-color:color-mix(in srgb,var(--error-color,#d93b3b) 30%,var(--divider-color))!important;
-        background:color-mix(in srgb,var(--error-color,#d93b3b) 10%,var(--card-background-color))!important;
-      }
-      section.overview-v066 .connection-v066.unknown {
-        border-color:color-mix(in srgb,var(--disabled-text-color) 30%,var(--divider-color))!important;
-        background:color-mix(in srgb,var(--disabled-text-color) 9%,var(--card-background-color))!important;
-      }
-
-      @media(max-width:390px) {
-        .app-header h1 { font-size:21px!important; }
-        .app-header .subtitle { font-size:13px!important; }
-        .global-device-context button { font-size:15px!important; }
-        .bottom-nav-v051 .tab,.bottom-nav-v051 .tab span { font-size:12px!important; }
-        .state-pill-v051,.state-values-v051 span,.battery-fact-v070 span { font-size:12px!important; }
-      }
-      @media(max-width:680px) {
-        :host { position:fixed!important; inset:0!important; width:auto!important; height:auto!important; }
-        main.app { position:absolute!important; inset:0!important; width:auto!important; height:auto!important; }
-      }
-    `;
-    root.append(style);
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v080.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v081.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.8.1";
-
-if (Panel && !Panel.prototype.__starkUiV081) {
-  Panel.prototype.__starkUiV081 = true;
-
-  const previousBatteryFact = Panel.prototype._batteryFactV070;
-  const previousOverview = Panel.prototype._renderOverviewV051;
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._batteryFactV070 = function (device, key, label) {
-    const compactLabel = key === "battery_piece_number" ? "ÐÐšÐ‘, ÑˆÑ‚." : label;
-    return previousBatteryFact.call(this, device, key, compactLabel);
-  };
-
-  Panel.prototype._renderOverviewV051 = function () {
-    const html = previousOverview.call(this);
-    if (!html.includes('class="overview-v051 overview-v066"')) return html;
-
-    // The final mobile composition is emitted with the initial detached view
-    // markup. The canvas therefore measures the compact geometry before it is
-    // shown; no late resize or structural render is needed.
-    const stableStyle = `<style data-stark-overview-v081>
-      section.overview-v066 {
-        gap:8px !important;
-        box-sizing:border-box;
-        padding-bottom:16px;
-      }
-      section.overview-v066 .hero-scene-v051 {
-        height:336px !important;
-      }
-      section.overview-v066 .scene-node-v051.battery {
-        top:38px !important;
-        bottom:auto !important;
-      }
-      section.overview-v066 .scene-node-v051.grid,
-      section.overview-v066 .scene-node-v051.load {
-        top:54% !important;
-      }
-      section.overview-v066 .reserve-strip-v067 {
-        min-height:44px !important;
-        padding:7px 12px !important;
-      }
-      section.overview-v066 .battery-details-v070 {
-        padding:10px 14px 11px;
-      }
-      section.overview-v066 .battery-details-head-v070 {
-        margin-bottom:8px;
-      }
-      section.overview-v066 .battery-fact-v070 span {
-        min-height:15px;
-        white-space:nowrap;
-        overflow-wrap:normal;
-      }
-
-      @media(max-width:430px) {
-        section.overview-v066 .hero-scene-v051 { height:336px !important; }
-        section.overview-v066 .scene-node-v051.battery { top:38px !important; }
-      }
-      @media(max-width:390px) {
-        section.overview-v066 .hero-scene-v051 { height:332px !important; }
-        section.overview-v066 .scene-node-v051.battery { top:36px !important; }
-        section.overview-v066 .battery-details-v070 { padding:10px 12px 11px; }
-      }
-    </style>`;
-
-    return `${html}${stableStyle}`;
-  };
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-    const subtitle = this.shadowRoot?.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v081.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v082.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.8.2";
-
-function gestureGuardActiveV082(panel) {
-  const now = performance.now();
-  return [panel.__starkGuardUntilV065, panel.__starkGestureGuardUntilV058]
-    .map((value) => Number(value || 0))
-    .some((guardedUntil) => (
-      guardedUntil === Number.POSITIVE_INFINITY || now < guardedUntil
-    ));
-}
-
-function cancelEntityHoldV082(element) {
-  const event = typeof PointerEvent === "function"
-    ? new PointerEvent("pointercancel", { bubbles:true, composed:true })
-    : new Event("pointercancel", { bubbles:true, composed:true });
-  element.dispatchEvent(event);
-}
-
-if (Panel && !Panel.prototype.__starkUiV082) {
-  Panel.prototype.__starkUiV082 = true;
-
-  const previousShowMoreInfo = Panel.prototype._showMoreInfo;
-  const previousRender = Panel.prototype._render;
-
-  // Hold timers call `_showMoreInfo()` directly, so click suppression alone
-  // cannot stop them. Keep this guard at the final dispatch boundary shared
-  // by the initial legacy view and all lazily cached v0.8 views.
-  Panel.prototype._showMoreInfo = function (entityId) {
-    if (gestureGuardActiveV082(this)) return;
-    previousShowMoreInfo.call(this, entityId);
-  };
-
-  Panel.prototype._cancelEntityHoldsV082 = function (scope) {
-    scope?.querySelectorAll("[data-entity]").forEach(cancelEntityHoldV082);
-  };
-
-  Panel.prototype._installPinchMoreInfoGuardV082 = function () {
-    const viewport = this.__starkShellV080?.viewport
-      || this.shadowRoot?.querySelector(".zoom-viewport-v065");
-    const surface = this.__starkShellV080?.surface
-      || viewport?.querySelector(".zoom-surface-v065");
-    if (!viewport || !surface || this.__starkGuardViewportV082 === viewport) return;
-    this.__starkGuardViewportV082 = viewport;
-
-    // The first finger may already own a 520 ms hold timer when the second
-    // finger arrives. Cancel every entity hold in the permanent work surface
-    // instead of relying on elementFromPoint across an iOS shadow root.
-    viewport.addEventListener("touchstart", (event) => {
-      if (event.touches.length < 2) return;
-      this.__starkGuardUntilV065 = Number.POSITIVE_INFINITY;
-      this._cancelEntityHoldsV082(surface);
-    }, { capture:true, passive:true });
-  };
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-    this._installPinchMoreInfoGuardV082();
-    const subtitle = this.shadowRoot?.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v082.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v083.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.8.3";
-
-function escV083(value) {
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-function formatRuntimeMinutesV083(value) {
-  const rawMinutes = Number(value);
-  if (!Number.isFinite(rawMinutes) || rawMinutes < 0) return "â€”";
-  const totalMinutes = Math.round(rawMinutes);
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  if (hours === 0) return `${minutes} Ð¼Ð¸Ð½`;
-  return `${hours} Ñ‡ ${String(minutes).padStart(2, "0")} Ð¼Ð¸Ð½`;
-}
-
-if (Panel && !Panel.prototype.__starkUiV083) {
-  Panel.prototype.__starkUiV083 = true;
-
-  const previousBatteryFact = Panel.prototype._batteryFactV070;
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._batteryFactV070 = function (device, key, label) {
-    if (key !== "battery_remain_time") {
-      return previousBatteryFact.call(this, device, key, label);
-    }
-
-    const entityId = this._entityId(device, key);
-    const rawMinutes = this._numeric(device, key);
-    const runtime = formatRuntimeMinutesV083(rawMinutes);
-    return `<div class="battery-fact-v070 battery-runtime-v083" ${entityId ? `data-entity="${escV083(entityId)}"` : ""} data-runtime-source="vendor-raw-minutes">
-      <span>ÐÐ²Ñ‚Ð¾Ð½Ð¾Ð¼Ð¸Ñ</span>
-      <strong>${escV083(runtime)}</strong>
-    </div>`;
-  };
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-    const subtitle = this.shadowRoot?.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v083.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v084.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.8.4";
-
-if (Panel && !Panel.prototype.__starkUiV084) {
-  Panel.prototype.__starkUiV084 = true;
-
-  const previousReserve = Panel.prototype._reserveV050;
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._reserveV050 = function (device, trusted) {
-    const reserve = previousReserve.call(this, device, trusted);
-    const battery = this._numeric(device, "battery_capacity");
-    const mode = this._mode(device);
-    const onBattery = mode === "battery_mode"
-      || this._isOn(device, "on_battery") === true;
-
-    if (!trusted || battery === null || onBattery || battery <= 20) {
-      return reserve;
-    }
-
-    if (mode === "line_mode" && battery < 95) {
-      return {
-        label: `Ð ÐµÐ·ÐµÑ€Ð² Ð½ÐµÐ¿Ð¾Ð»Ð½Ñ‹Ð¹ Â· ÐÐšÐ‘ ${Math.round(battery)} %`,
-        tone: "warn",
-        icon: "mdi:battery-medium",
-      };
-    }
-
-    if (mode !== "line_mode") {
-      return {
-        label: "Ð“Ð¾Ñ‚Ð¾Ð²Ð½Ð¾ÑÑ‚ÑŒ Ñ€ÐµÐ·ÐµÑ€Ð²Ð° Ð½Ðµ Ð¿Ð¾Ð´Ñ‚Ð²ÐµÑ€Ð¶Ð´ÐµÐ½Ð°",
-        tone: "unknown",
-        icon: "mdi:battery-unknown",
-      };
-    }
-
-    return reserve;
-  };
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-    const subtitle = this.shadowRoot?.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v084.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v085.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.8.5";
-const STARTUP_ASSETS = [
-  "/stark_solarpower_panel/assets/stark-country-1000-online.png?v=0.6.6",
-  "/stark_solarpower_panel/assets/stark-hero-internet-v063.webp?v=0.6.3",
-  "/stark_solarpower_panel/assets/stark-hero-boiler-v063.webp?v=0.6.3",
-];
-
-function prewarmStartupAssetsV085() {
-  if (globalThis.__starkStartupAssetsV085) return globalThis.__starkStartupAssetsV085.ready;
-
-  const images = STARTUP_ASSETS.map((url) => {
-    const image = new Image();
-    image.loading = "eager";
-    image.decoding = "sync";
-    image.fetchPriority = "high";
-    image.src = url;
-    return image;
-  });
-  const ready = Promise.allSettled(images.map((image) => (
-    typeof image.decode === "function"
-      ? image.decode()
-      : new Promise((resolve) => {
-        if (image.complete) resolve();
-        else {
-          image.addEventListener("load", resolve, { once:true });
-          image.addEventListener("error", resolve, { once:true });
-        }
-      })
-  )));
-
-  globalThis.__starkStartupAssetsV085 = { images, ready };
-  return ready;
-}
-
-prewarmStartupAssetsV085();
-
-if (Panel && !Panel.prototype.__starkUiV085) {
-  Panel.prototype.__starkUiV085 = true;
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-    const subtitle = this.shadowRoot?.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v085.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v086.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.8.6";
-const STARTUP_BACKGROUND =
-  "/stark_solarpower_panel/assets/stark-hero-internet-v063.webp?v=0.6.3";
-const STARTUP_ARTWORK =
-  "/stark_solarpower_panel/assets/stark-country-1000-online.png?v=0.6.6";
-
-function startupOverviewV086() {
-  return `<section class="overview-v051 overview-v066 startup-overview-v086" aria-busy="true" aria-label="ÐŸÐ¾Ð»ÑƒÑ‡ÐµÐ½Ð¸Ðµ Ð´Ð°Ð½Ð½Ñ‹Ñ… UPS">
-    <article class="ups-hero-v051 card-v051 unknown" style="--hero-background-v051:url('${STARTUP_BACKGROUND}')">
-      <div class="hero-head-v051">
-        <div class="hero-copy-v051">
-          <span>ÐŸÐ˜Ð¢ÐÐÐ˜Ð•</span>
-          <h2>ÐŸÐ¾Ð»ÑƒÑ‡ÐµÐ½Ð¸Ðµ Ð´Ð°Ð½Ð½Ñ‹Ñ…</h2>
-          <p>ÐŸÐ¾Ð´ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ðµ Ðº Home Assistant</p>
-        </div>
-        <div class="freshness-v051 connection-v066 unknown" role="status" aria-label="ÐŸÐ¾Ð´ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ðµ Â· Ð§Ñ‚ÐµÐ½Ð¸Ðµ Ñ‚ÐµÐ»ÐµÐ¼ÐµÑ‚Ñ€Ð¸Ð¸">
-          <span class="connection-lamp-v066" aria-hidden="true"></span>
-          <span class="connection-copy-v066">
-            <strong>ÐŸÐ¾Ð´ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ðµ</strong>
-            <small>Ð§Ñ‚ÐµÐ½Ð¸Ðµ Ñ‚ÐµÐ»ÐµÐ¼ÐµÑ‚Ñ€Ð¸Ð¸</small>
-          </span>
-        </div>
-      </div>
-      <div class="hero-scene-v051">
-        <div class="scene-node-v051 grid">
-          <ha-icon icon="mdi:transmission-tower"></ha-icon>
-          <div><span>Ð¡ÐµÑ‚ÑŒ</span><strong>â€”</strong></div>
-        </div>
-        <div class="scene-node-v051 load">
-          <ha-icon icon="mdi:monitor-dashboard"></ha-icon>
-          <div><span>ÐÐ°Ð³Ñ€ÑƒÐ·ÐºÐ°</span><strong>â€”</strong></div>
-        </div>
-        <img class="ups-art-v051" src="${STARTUP_ARTWORK}" alt="Stark Country 1000 ONLINE (16A)" loading="eager" decoding="sync" fetchpriority="high">
-        <div class="scene-node-v051 battery">
-          <ha-icon icon="mdi:battery"></ha-icon>
-          <div><span>ÐÐšÐ‘</span><strong>â€”</strong></div>
-        </div>
-      </div>
-    </article>
-    <div class="reserve-strip-v067 unknown">
-      <ha-icon icon="mdi:battery-sync"></ha-icon>
-      <strong>ÐŸÑ€Ð¾Ð²ÐµÑ€ÐºÐ° ÑÐ¾ÑÑ‚Ð¾ÑÐ½Ð¸Ñ ÐÐšÐ‘</strong>
-    </div>
-    <article class="battery-details-v070">
-      <div class="battery-details-head-v070">
-        <ha-icon icon="mdi:battery-heart-variant"></ha-icon>
-        <strong>Ð‘Ð°Ñ‚Ð°Ñ€ÐµÑ</strong>
-        <small>ÐŸÐ¾Ð»ÑƒÑ‡ÐµÐ½Ð¸Ðµ Ñ‚ÐµÐ»ÐµÐ¼ÐµÑ‚Ñ€Ð¸Ð¸</small>
-      </div>
-      <div class="battery-facts-v070">
-        <div class="battery-fact-v070"><span>ÐÐ°Ð¿Ñ€ÑÐ¶ÐµÐ½Ð¸Ðµ</span><strong>â€”</strong></div>
-        <div class="battery-fact-v070"><span>ÐÐšÐ‘, ÑˆÑ‚.</span><strong>â€”</strong></div>
-        <div class="battery-fact-v070"><span>Ð¢ÐµÐ¼Ð¿. Ð—Ð£</span><strong>â€”</strong></div>
-        <div class="battery-fact-v070"><span>ÐÐ²Ñ‚Ð¾Ð½Ð¾Ð¼Ð¸Ñ</span><strong>â€”</strong></div>
-      </div>
-    </article>
-    <style data-stark-startup-v086>
-      section.startup-overview-v086 {
-        gap:8px !important;
-        box-sizing:border-box;
-        padding-bottom:16px;
-      }
-      section.startup-overview-v086 .hero-scene-v051 { height:336px !important; }
-      section.startup-overview-v086 .scene-node-v051.battery {
-        top:38px !important;
-        bottom:auto !important;
-      }
-      section.startup-overview-v086 .scene-node-v051.grid,
-      section.startup-overview-v086 .scene-node-v051.load { top:54% !important; }
-      section.startup-overview-v086 .reserve-strip-v067 {
-        min-height:44px !important;
-        padding:7px 12px !important;
-      }
-      section.startup-overview-v086 .battery-details-v070 { padding:10px 14px 11px; }
-      section.startup-overview-v086 .battery-details-head-v070 { margin-bottom:8px; }
-      section.startup-overview-v086 .battery-fact-v070 span {
-        min-height:15px;
-        white-space:nowrap;
-        overflow-wrap:normal;
-      }
-      @media(max-width:390px) {
-        section.startup-overview-v086 .hero-scene-v051 { height:332px !important; }
-        section.startup-overview-v086 .scene-node-v051.battery { top:36px !important; }
-        section.startup-overview-v086 .battery-details-v070 { padding:10px 12px 11px; }
-      }
-    </style>
-  </section>`;
-}
-
-if (Panel && !Panel.prototype.__starkUiV086) {
-  Panel.prototype.__starkUiV086 = true;
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._installStartupOverviewV086 = function () {
-    if (this._registryLoaded || this._registryError) return;
-    const root = this.shadowRoot;
-    const app = root?.querySelector("main.app");
-    const header = app?.querySelector(":scope > .app-header");
-    const empty = app?.querySelector(".zoom-surface-v065 .empty, .empty");
-    if (!app || !header || !empty) return;
-
-    if (!app.querySelector(":scope > .global-device-context")) {
-      const selector = document.createElement("div");
-      selector.className = "global-device-context startup-selector-v086";
-      selector.setAttribute("aria-label", "Ð’Ñ‹Ð±Ð¾Ñ€ UPS Ð·Ð°Ð³Ñ€ÑƒÐ¶Ð°ÐµÑ‚ÑÑ");
-      selector.style.setProperty("--ups-count", "2");
-      selector.innerHTML = `<button type="button" class="active" aria-pressed="true" aria-disabled="true"><span class="device-name">UPS Ð˜Ð½Ñ‚ÐµÑ€Ð½ÐµÑ‚</span></button>
-        <button type="button" aria-pressed="false" aria-disabled="true"><span class="device-name">UPS ÐšÐ¾Ñ‚Ñ‘Ð»</span></button>`;
-      header.insertAdjacentElement("afterend", selector);
-    }
-
-    const template = document.createElement("template");
-    template.innerHTML = startupOverviewV086();
-    empty.replaceWith(template.content);
-  };
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-    this._installStartupOverviewV086();
-    const subtitle = this.shadowRoot?.querySelector(".subtitle");
-    if (subtitle) subtitle.textContent = `UPS Control Center Â· UI v${UI_VERSION}`;
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v086.js
-
-// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v090.js
-(() => {
-const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.9.2";
-const SOURCE_ROUTE_KEY = "nikas.specialized.source_route.v1";
-const SOURCE_ROUTE_AT_KEY = "nikas.specialized.source_route_at.v1";
-const RETURN_ROUTE_KEY = "nikas.stark_solarpower.return_route.v1";
-const SAFE_RETURN_ROUTE = "/dashboard-infrastructure/overview";
-
-function normalizeBaseRouteV090(value) {
-  if (!value) return null;
-  try {
-    const url = new URL(String(value).trim(), window.location.origin);
-    if (url.origin !== window.location.origin) return null;
-    if (url.pathname === "/dashboard-house-v11" || url.pathname.startsWith("/dashboard-house-v11/")) {
-      return "/dashboard-house-v11/home";
-    }
-    if (url.pathname === "/dashboard-actions" || url.pathname.startsWith("/dashboard-actions/")) {
-      return "/dashboard-actions/home";
-    }
-    if (url.pathname === "/dashboard-infrastructure" || url.pathname.startsWith("/dashboard-infrastructure/")) {
-      return "/dashboard-infrastructure/overview";
-    }
-  } catch (_error) {
-    // Invalid and cross-origin candidates fall through to the next source.
-  }
-  return null;
-}
-
-function readOneShotSourceV090() {
-  try {
-    const rawRoute = sessionStorage.getItem(SOURCE_ROUTE_KEY);
-    const rawTimestamp = sessionStorage.getItem(SOURCE_ROUTE_AT_KEY);
-    sessionStorage.removeItem(SOURCE_ROUTE_KEY);
-    sessionStorage.removeItem(SOURCE_ROUTE_AT_KEY);
-    if (rawRoute === null || rawTimestamp === null) return null;
-    const timestamp = Number(rawTimestamp);
-    const age = Date.now() - timestamp;
-    if (!Number.isFinite(timestamp) || age < 0 || age > 30_000) return null;
-    return normalizeBaseRouteV090(rawRoute);
-  } catch (_error) {
-    return null;
-  }
-}
-
-function readSavedSourceV090() {
-  try {
-    return normalizeBaseRouteV090(sessionStorage.getItem(RETURN_ROUTE_KEY));
-  } catch (_error) {
-    return null;
-  }
-}
-
-function resolveReturnRouteV090(panel) {
-  const current = new URL(window.location.href);
-  const explicit = normalizeBaseRouteV090(current.searchParams.get("return_to"))
-    || normalizeBaseRouteV090(current.searchParams.get("from"));
-  const handedOff = readOneShotSourceV090();
-  const saved = readSavedSourceV090();
-  const referrer = normalizeBaseRouteV090(document.referrer);
-  const configured = normalizeBaseRouteV090(
-    panel?._panel?.config?.parent_route || panel?.panel?.config?.parent_route,
-  );
-  const route = explicit || handedOff || saved || referrer || configured || SAFE_RETURN_ROUTE;
-  try {
-    sessionStorage.setItem(RETURN_ROUTE_KEY, route);
-  } catch (_error) {
-    // Private browsing may disable storage; the captured instance value remains valid.
-  }
-  return route;
-}
-
-function navigateToSourceV090(route) {
-  const target = normalizeBaseRouteV090(route) || SAFE_RETURN_ROUTE;
-  window.history.pushState(null, "", target);
-  window.dispatchEvent(new Event("location-changed"));
-}
-
-if (Panel && !Panel.prototype.__starkUiV090) {
-  Panel.prototype.__starkUiV090 = true;
-  const previousRender = Panel.prototype._render;
-  const previousSyncControls = Panel.prototype._syncShellControlsV080;
-
-  Panel.prototype._installHeaderReturnV090 = function () {
-    const root = this.shadowRoot;
-    const header = root?.querySelector(".app-header");
-    if (!header) return;
-
-    if (!this.__starkReturnRouteV090) {
-      this.__starkReturnRouteV090 = resolveReturnRouteV090(this);
-    }
-
-    let plaque = header.querySelector(".title-return-v090");
-    if (!plaque) {
-      const legacyTitle = header.querySelector(".title-wrap");
-      if (!legacyTitle) return;
-      plaque = document.createElement("button");
-      plaque.type = "button";
-      plaque.className = "title-wrap title-return-v090";
-      plaque.setAttribute("aria-label", "Ð’ÐµÑ€Ð½ÑƒÑ‚ÑŒÑÑ Ð² Ð¸ÑÑ…Ð¾Ð´Ð½ÑƒÑŽ Ð¿Ð°Ð½ÐµÐ»ÑŒ NikaS");
-      const content = document.createElement("span");
-      content.className = "title-return-copy-v090";
-      const title = document.createElement("span");
-      title.className = "title-return-name-v090";
-      title.textContent = "Ð˜Ð‘ÐŸ Stark";
-      const version = document.createElement("span");
-      version.className = "subtitle";
-      version.textContent = `UI v${UI_VERSION}`;
-      content.append(title, version);
-      plaque.append(content);
-      plaque.addEventListener("click", () => navigateToSourceV090(this.__starkReturnRouteV090));
-      legacyTitle.replaceWith(plaque);
-    }
-
-    const version = plaque.querySelector(".subtitle");
-    if (version?.textContent !== `UI v${UI_VERSION}`) version.textContent = `UI v${UI_VERSION}`;
-
-    if (!root.querySelector("style[data-stark-ui-v090]")) {
-      const style = document.createElement("style");
-      style.dataset.starkUiV090 = "true";
-      style.textContent = `
-        /* NikaS Specialized Panel UI + Navigation Standard v1.9. */
-        .app-header .title-return-v090 {
-          grid-column:2!important;
-          justify-self:center!important;
-          min-width:min(290px,100%)!important;
-          max-width:100%!important;
-          min-height:44px!important;
-          margin:0!important;
-          padding:5px 14px!important;
-          display:block!important;
-          border:1px solid color-mix(in srgb,var(--primary-color,#03a9d9) 24%,var(--divider-color,#dfe3e8))!important;
-          border-radius:16px!important;
-          background:color-mix(in srgb,var(--primary-color,#03a9d9) 5%,var(--card-background-color,#fff))!important;
-          color:var(--primary-text-color)!important;
-          box-shadow:0 5px 16px rgba(23,45,76,.06)!important;
-          appearance:none!important;
-          font:inherit!important;
-          text-align:center!important;
-          cursor:pointer!important;
-          -webkit-tap-highlight-color:transparent;
-        }
-        .app-header .title-return-v090:focus-visible {
-          outline:2px solid var(--primary-color)!important;
-          outline-offset:2px!important;
-        }
-        .app-header .title-return-v090:active { transform:scale(.985); background:color-mix(in srgb,var(--primary-color,#03a9d9) 13%,var(--card-background-color,#fff))!important; border-color:color-mix(in srgb,var(--primary-color,#03a9d9) 42%,var(--divider-color,#dfe3e8))!important; box-shadow:0 2px 7px rgba(23,45,76,.05)!important; }
-        .title-return-copy-v090 { display:flex; min-width:0; flex-direction:column; align-items:center; }
-        .title-return-name-v090 {
-          max-width:100%;
-          overflow:hidden;
-          text-overflow:ellipsis;
-          white-space:nowrap;
-          font-size:23px;
-          line-height:1.05;
-          font-weight:800;
-        }
-        .title-return-v090 .subtitle { margin-top:3px!important; font-size:14px!important; line-height:1.2; font-weight:560!important; letter-spacing:.01em; }
-        @media(max-width:390px) {
-          .app-header .title-return-v090 { min-width:0!important; width:100%!important; padding-inline:8px!important; }
-          .title-return-name-v090 { font-size:21px; }
-          .title-return-v090 .subtitle { font-size:13px!important; }
-        }
-      `;
-      root.append(style);
-    }
-  };
-
-  Panel.prototype._installScrollBoundaryGuardV090 = function () {
-    const viewport = this.__starkShellV080?.viewport
-      || this.shadowRoot?.querySelector(".zoom-viewport-v065");
-    if (!viewport || this.__starkScrollGuardViewportV090 === viewport) return;
-
-    this.__starkScrollGuardCleanupV090?.();
-    let lastTouchY = null;
-
-    const isNativeScroll = () => viewport.classList.contains("native-scroll");
-    const atTop = () => viewport.scrollTop <= 0;
-    const atBottom = () => (
-      Math.ceil(viewport.scrollTop + viewport.clientHeight) >= viewport.scrollHeight
-    );
-    const onTouchStart = (event) => {
-      lastTouchY = event.touches.length === 1 ? event.touches[0].clientY : null;
-    };
-    const onTouchMove = (event) => {
-      if (!isNativeScroll() || event.touches.length !== 1 || lastTouchY === null) {
-        lastTouchY = null;
-        return;
-      }
-      const nextY = event.touches[0].clientY;
-      const deltaY = nextY - lastTouchY;
-      lastTouchY = nextY;
-      if ((atTop() && deltaY > 0) || (atBottom() && deltaY < 0)) {
-        event.preventDefault();
-      }
-    };
-    const onTouchEnd = (event) => {
-      lastTouchY = event.touches.length === 1 ? event.touches[0].clientY : null;
-    };
-    const onWheel = (event) => {
-      if (!isNativeScroll()) return;
-      if ((atTop() && event.deltaY < 0) || (atBottom() && event.deltaY > 0)) {
-        event.preventDefault();
-      }
-    };
-
-    viewport.addEventListener("touchstart", onTouchStart, { passive:true });
-    viewport.addEventListener("touchmove", onTouchMove, { passive:false });
-    viewport.addEventListener("touchend", onTouchEnd, { passive:true });
-    viewport.addEventListener("touchcancel", onTouchEnd, { passive:true });
-    viewport.addEventListener("wheel", onWheel, { passive:false });
-    this.__starkScrollGuardViewportV090 = viewport;
-    this.__starkScrollGuardCleanupV090 = () => {
-      viewport.removeEventListener("touchstart", onTouchStart);
-      viewport.removeEventListener("touchmove", onTouchMove);
-      viewport.removeEventListener("touchend", onTouchEnd);
-      viewport.removeEventListener("touchcancel", onTouchEnd);
-      viewport.removeEventListener("wheel", onWheel);
-      if (this.__starkScrollGuardViewportV090 === viewport) {
-        this.__starkScrollGuardViewportV090 = null;
-      }
-    };
-  };
-
-  Panel.prototype._syncShellControlsV080 = function () {
-    previousSyncControls?.call(this);
-    this._installHeaderReturnV090();
-    this._installScrollBoundaryGuardV090();
-  };
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-    this._installHeaderReturnV090();
-    this._installScrollBoundaryGuardV090();
-  };
-}
-})();
-// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v090.js
+YªçŠx-®éÜj×¢ëiºÚ+Š§j[h‘éÜ¢éí×^öß¤èµ©hºÚn¶X§zÍKËÈÑS‘TUQ’SKˆÈ“ÕQUT‘PÕK‚‹ËÈÝ\šÈÛÛ\”ÝÙ\ˆÙ[‹XÛÛZ[™YÛYH\ÜÚ\Ý[[™[[™K‚‹ËÈÛÝ\˜ÙH\ÝÜžH\ÈÛÛ\ÜÙY]Z[[YNÈ›È™]š[Ý\ÈRHš[H\ÈØYY][[YK‚‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[šœÂŠ
+
+HOˆÂ˜ÛÛœÝÓPRSˆHœÝ\š×ÜÛÛ\œÝÙ\ˆŽÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒŒKŒŽÂ‚˜ÛÛœÝS•UWÒÑVTÈHÂˆ™^[™YÝ[[Y]žWÙ]™[È‹ˆ˜ÛÝYÝ[[Y]žWÙ]™[È‹ˆ™]WÙœ™\Ú™\Ü×Ù]™[È‹ˆ˜˜]\žWÛ[ÙWÙ]™[È‹ˆ™˜][Û[ÙWÙ]™[È‹ˆ›\ÝÜÝXØÙ\ÜÙ[Ý\]H‹ˆœÜÚ]]™WØ\×Ý›ÛYÙH‹ˆ›™YØ]]™WØ\×Ý›ÛYÙH‹ˆ˜[XšY[Ý[\\˜]\™H‹ˆ˜Ú\™Ù\—Ý[\\˜]\™H‹ˆ˜˜]\žWÜYXÙWÛ[X™\ˆ‹ˆ˜˜]\žWÙÜ›Ý\Û[X™\ˆ‹ˆ˜˜]\žWÜ™[XZ[—Ý[YH‹ˆš[œ]Ü™[^WÜÝ]\È‹ˆ›Ý]]Ü™[^WÜÝ]\È‹ˆ™ÝÙ×ÜÝ]\È‹ˆš[™\\—ÜÝ]\È‹ˆœ˜×Ý[\\˜]\™H‹ˆ\×Ý[\\˜]\™H‹ˆœ›ÝØÛÛÚY‹ˆ˜˜]\žWØØ\XÚ]H‹ˆ˜˜]\žWÝ›ÛYÙH‹ˆš[œ]Ùœ™\]Y[˜ÞH‹ˆ›Ý]]Ùœ™\]Y[˜ÞH‹ˆ›Ý]]ØÝ\œ™[‹ˆš[œ]Ý›ÛYÙH‹ˆ›Ý]]Ý›ÛYÙH‹ˆ›Ý]]ÛØY‹ˆ˜ÛÝYØÛÛ›™XÝY‹ˆ™]WÜÝ[H‹ˆ›Û—Ø˜]\žH‹ˆ™]WÝ[Y\Ý[\‹ˆ™]WØYÙH‹ˆ™š\›]Ø\™H‹ˆœ™Yœ™\ÚÛ›ÝÈ‹ˆ›[ÙH‹—NÂ‚˜ÛÛœÝSÑWÓP‘SÈHÂˆ[™WÛ[ÙNˆ´'´`ˆ4`t-t`´.‹ˆ˜]\žWÛ[ÙNˆ´'´`ˆ4,t,4`´,4`4-t.‹ˆÝ[™žWÛ[ÙNˆ´'´-´.4-4,4/t.4-H‹ˆž\\Ü×Û[ÙNˆ´$t,4.t/ô,4`H‹ˆ˜][Û[ÙNˆ´$4,´,4`4.4cÈ‹ˆÚ]ÝÛ—Û[ÙNˆ´$´bô.´.ôc´aô-t/H‹ˆ[šÛ›ÝÛŽˆ´'t-t.4-ô,´-t`t`´/t/ˆ‹ŸNÂ‚˜ÛÛœÝPQÓ“ÔÕP×ÑÔ“ÕTÈHÂˆÂˆ]Nˆ´&´,4aô-t`t`´,´/ˆ4-4,4/t/tbôaH‹ˆ][\ÎˆÂˆÈ˜ÛÝYØÛÛ›™XÝY‹´'´,t.ô,4aô/t,4cÈ4`´-t.ô-t/4-t`´`4.4cÈ—KˆÈ™]WÜÝ[H‹´%4,4/t/tbô-H4`ô`t`´,4`4-t.ô.—KˆÈ™]WØYÙH‹´$´/´-ô`4,4`t`ˆ4-4,4/t/tbôaH—KˆÈ™]WÝ[Y\Ý[\‹´$´`4-t/4cÈ4-4,4/t/tbôaH4&4$t'È—KˆÈ›\ÝÜÝXØÙ\ÜÙ[Ý\]H‹´'ô/´`t.ô-t-4/t-t-H4`ô`t/ô-tb4/t/´-H4/´,t/t/´,´.ô-t/t.4-H—KˆKˆKˆÂˆ]Nˆ´+t.ô-t.´`´`4.4aô-t`t.´.4-H4/ô,4`4,4/4-t`´`4bÈ‹ˆ][\ÎˆÂˆÈš[œ]Ý›ÛYÙH‹´$´at/´-4/t/´-H4/t,4/ô`4cô-´-t/t.4-H—KˆÈš[œ]Ùœ™\]Y[˜ÞH‹´$´at/´-4/t,4cÈ4aô,4`t`´/´`´,—KˆÈ›Ý]]Ý›ÛYÙH‹´$´bôat/´-4/t/´-H4/t,4/ô`4cô-´-t/t.4-H—KˆÈ›Ý]]Ùœ™\]Y[˜ÞH‹´$´bôat/´-4/t,4cÈ4aô,4`t`´/´`´,—KˆÈ›Ý]]ØÝ\œ™[‹´$´bôat/´-4/t/´.H4`´/´.ˆ—KˆÈ›Ý]]ÛØY‹´'t,4,ô`4`ô-ô.´,—KˆÈ˜˜]\žWØØ\XÚ]H‹´%ô,4`4cô-4$4&´$H—KˆÈ˜˜]\žWÝ›ÛYÙH‹´'t,4/ô`4cô-´-t/t.4-H4$4&´$H—KˆKˆKˆÂˆ]Nˆ´(4,4`tb4.4`4-t/t/t,4cÈ4`´-t.ô-t/4-t`´`4.4cÈ‹ˆ][\ÎˆÂˆÈœÜÚ]]™WØ\×Ý›ÛYÙH‹´'ô/´.ô/´-´.4`´-t.ôc4/t,4cÈ4b4.4/t,È—KˆÈ›™YØ]]™WØ\×Ý›ÛYÙH‹´'´`´`4.4a´,4`´-t.ôc4/t,4cÈ4b4.4/t,È—KˆÈ\×Ý[\\˜]\™H‹´(´-t/4/ô-t`4,4`´`ô`4,4&4$t'È—KˆÈœ˜×Ý[\\˜]\™H‹´(´-t/4/ô-t`4,4`´`ô`4,È—KˆÈ˜[XšY[Ý[\\˜]\™H‹´(´-t/4/ô-t`4,4`´`ô`4,4/´.´`4`ô-´,4c´bt-t.H4`t`4-t-4bÈ—KˆÈ˜Ú\™Ù\—Ý[\\˜]\™H‹´(´-t/4/ô-t`4,4`´`ô`4,4-ô,4`4cô-4/t/´,ô/ˆ4`ô`t`´`4/´.t`t`´,´,—KˆKˆKˆÂˆ]Nˆ´(t-t`4,´.4`t/tbô-H4/ô,4`4,4/4-t`´`4bÈ‹ˆ][\ÎˆÂˆÈœ›ÝØÛÛÚY‹´'ô`4/´`´/´.´/´.È4&4$t'È—KˆÈ™š\›]Ø\™H‹´'ô`4/´b4.4,´.´,4&4$t'È—KˆÈ˜˜]\žWÜYXÙWÛ[X™\ˆ‹´&´/´.ô.4aô-t`t`´,´/ˆ4$4&´$H—KˆÈ˜˜]\žWÜ™[XZ[—Ý[YH‹´'´`t`´,4`´/´.ˆ4,´`4-t/4-t/t.4$4&´$H
+UÈ4&4$t'ÊH—KˆÈ˜˜]\žWÙÜ›Ý\Û[X™\ˆ‹´'ô,4`4,4/4-t`´`4,ô`4`ô/ô/ôbÈ4$4&´$H
+UÈ4&4$t'ÊH—KˆÈš[œ]Ü™[^WÜÝ]\È‹´$´at/´-4/t/´-H4`4-t.ô-H—KˆÈ›Ý]]Ü™[^WÜÝ]\È‹´$´bôat/´-4/t/´-H4`4-t.ô-H—KˆÈš[™\\—ÜÝ]\È‹´(t/´`t`´/´cô/t.4-H4.4/t,´-t`4`´/´`4,—KˆÈ™ÝÙ×ÜÝ]\È‹´(t/´`t`´/´cô/t.4-HËQÈ—KˆÈœ˜×ÜÝ]\È‹´(t/´`t`´/´cô/t.4-HÈ—KˆKˆK—NÂ‚˜ÛÛœÝTÕÔ–WÒUSTÈHÂˆÈš[œ]Ý›ÛYÙH‹´$´at/´-4/t/´-H4/t,4/ô`4cô-´-t/t.4-H‹›YN™›\Ú—KˆÈ›Ý]]Ý›ÛYÙH‹´$´bôat/´-4/t/´-H4/t,4/ô`4cô-´-t/t.4-H‹›YNœÝÙ\‹\YÈ—KˆÈ›Ý]]ÛØY‹´'t,4,ô`4`ô-ô.´,‹›YN™Ø]YÙH—KˆÈ˜˜]\žWØØ\XÚ]H‹´%ô,4`4cô-4$4&´$H‹›YN˜˜]\žH—K—NÂ‚™[˜Ý[Ûˆ\ØØ\R[
+˜[YJHÂˆ™]\›ˆÝš[™Ê˜[YHÏÈˆŠBˆœ™\XÙP[
+‰ˆ‹‰˜[\ÈŠBˆœ™\XÙP[
+‹‰›ÈŠBˆœ™\XÙP[
+ˆ‹‰™ÝÈŠBˆœ™\XÙP[
+	È‰Ë‰œ][ÝÈŠBˆœ™\XÙP[
+‰È‹‰ˆÌÎNÈŠNÂŸB‚˜Û\ÜÈÝ\šÔÛÛ\”ÝÙ\”[™[^[™ÈS[[Y[ÂˆÛÛœÝXÝÜŠ
+HÂˆÝ\\Š
+NÂˆ\Ë˜]XÚÚYÝÊÈ[ÙNˆ›Ü[ˆˆJNÂˆ\Ë—Ú\ÜÈH[Âˆ\Ë—Ü[™[H[Âˆ\Ë—Ù]šXÙ\ÈH×NÂˆ\Ë—ÛØY[™Ô™YÚ\ÝžHH˜[ÙNÂˆ\Ë—Ü™YÚ\ÝžSØYYH˜[ÙNÂˆ\Ë—Ü™YÚ\ÝžQ\œ›ÜˆH[Âˆ\Ë—ÝšY]ÈH›Ý™\šY]ÈŽÂˆ\Ë—ÙXYÛ›ÜÝXÑ]šXÙRYH[Âˆ\Ë—Ü™[™\”]Y]YYH˜[ÙNÂˆB‚ˆÙ]\ÜÊ˜[YJHÂˆ\Ë—Ú\ÜÈH˜[YNÂˆYˆ
+]\Ë—Ü™YÚ\ÝžSØYY	‰ˆ]\Ë—ÛØY[™Ô™YÚ\ÝžJHÂˆ\Ë—ÛØY™YÚ\ÝžJ
+NÂˆBˆ\Ë—Ü]Y]YT™[™\Š
+NÂˆB‚ˆÙ]\ÜÊ
+HÂˆ™]\›ˆ\Ë—Ú\ÜÎÂˆB‚ˆÙ][™[
+˜[YJHÂˆ\Ë—Ü[™[H˜[YNÂˆ\Ë—Ü]Y]YT™[™\Š
+NÂˆB‚ˆÛÛ›™XÝYØ[˜XÚÊ
+HÂˆ\Ë—Ü]Y]YT™[™\Š
+NÂˆB‚ˆÜ]Y]YT™[™\Š
+HÂˆYˆ
+\Ë—Ü™[™\”]Y]YY
+H™]\›ŽÂˆ\Ë—Ü™[™\”]Y]YYHYNÂˆ™\]Y\Ý[š[X][Û‘œ˜[YJ
+
+HOˆÂˆ\Ë—Ü™[™\”]Y]YYH˜[ÙNÂˆ\Ë—Ü™[™\Š
+NÂˆJNÂˆB‚ˆ\Þ[˜ÈÛØY™YÚ\ÝžJ
+HÂˆYˆ
+]\Ë—Ú\ÜÊH™]\›ŽÂˆ\Ë—ÛØY[™Ô™YÚ\ÝžHHYNÂˆ\Ë—Ü™YÚ\ÝžQ\œ›ÜˆH[ÂˆžHÂˆÛÛœÝÙ[]Y\Ë]šXÙ\×HH]ØZ]›ÛZ\ÙK˜[
+Âˆ\Ë—Ú\ÜË˜Ø[ÔÊÈ\Nˆ˜ÛÛ™šYËÙ[]WÜ™YÚ\ÝžKÛ\ÝˆJKˆ\Ë—Ú\ÜË˜Ø[ÔÊÈ\Nˆ˜ÛÛ™šYËÙ]šXÙWÜ™YÚ\ÝžKÛ\ÝˆJKˆJNÂ‚ˆÛÛœÝ]šXÙSX\H™]ÈX\
+]šXÙ\Ë›X\
+
+]šXÙJHOˆÙ]šXÙKšY]šXÙWJJNÂˆÛÛœÝÜ›Ý\ÈH™]ÈX\
+
+NÂ‚ˆ›Üˆ
+ÛÛœÝ[žHÙˆ[]Y\ÊHÂˆYˆ
+[žKœ]›Ü›HOOHÓPRSˆY[žK™]šXÙWÚY
+HÛÛ[YNÂˆÛÛœÝÙ^HH\Ë—ÚÙ^Qœ›ÛU[š\]YRY
+[žK[š\]YWÚY
+NÂˆYˆ
+ZÙ^JHÛÛ[YNÂ‚ˆYˆ
+YÜ›Ý\Ëš\Ê[žK™]šXÙWÚY
+JHÂˆÛÛœÝ]šXÙHH]šXÙSX\™Ù]
+[žK™]šXÙWÚY
+HßNÂˆÜ›Ý\ËœÙ]
+[žK™]šXÙWÚYÂˆYˆ[žK™]šXÙWÚYˆ˜[YNˆ]šXÙK›˜[YWØžWÝ\Ù\ˆ]šXÙK›˜[YH•TÈ‹ˆX[Y˜XÝ\™\Žˆ]šXÙK›X[Y˜XÝ\™\ˆ”ÕT’ÈÛÝ[žH‹ˆ[Ù[ˆ]šXÙK›[Ù[ÛÝ[žHÛ›[™H‹ˆ[]Y\ÎˆßKˆJNÂˆBˆÜ›Ý\Ë™Ù]
+[žK™]šXÙWÚY
+K™[]Y\ÖÚÙ^WHH[žK™[]WÚYÂˆB‚ˆ\Ë—Ù]šXÙ\ÈHË‹‹™Ü›Ý\Ë˜[Y\Ê
+WKœÛÜ
+
+KŠHOˆÂˆÛÛœÝ˜[šÈH
+˜[YJHOˆÂˆYˆ
+˜[YKš[˜ÛY\Ê´&4/t`´-t`4/t-t`ˆŠJH™]\›ˆÂˆYˆ
+˜[YKš[˜ÛY\Ê´&´/´`ˆŠJH™]\›ˆNÂˆ™]\›ˆLÂˆNÂˆ™]\›ˆ˜[šÊK›˜[YJHH˜[šÊ‹›˜[YJHK›˜[YK›ØØ[PÛÛ\\™J‹›˜[YKœHŠNÂˆJNÂˆ\Ë—ÙXYÛ›ÜÝXÑ]šXÙRYH\Ë—Ù]šXÙ\ÖÌOËšY[Âˆ\Ë—Ü™YÚ\ÝžSØYYHYNÂˆHØ]Ú
+\œŠHÂˆ\Ë—Ü™YÚ\ÝžQ\œ›ÜˆHÝš[™Ê\œŠNÂˆHš[˜[HÂˆ\Ë—ÛØY[™Ô™YÚ\ÝžHH˜[ÙNÂˆ\Ë—Ü]Y]YT™[™\Š
+NÂˆBˆB‚ˆÚÙ^Qœ›ÛU[š\]YRY
+[š\]YRY
+HÂˆYˆ
+][š\]YRY
+H™]\›ˆ[Âˆ™]\›ˆS•UWÒÑVTË™š[™
+
+Ù^JHOˆ[š\]YRY™[™ÕÚ]
+ÉÚÙ^_X
+JH[ÂˆB‚ˆÜÝ]J]šXÙKÙ^JHÂˆÛÛœÝ[]RYH]šXÙOË™[]Y\ÏË–ÚÙ^WNÂˆ™]\›ˆ[]RY	‰ˆ\Ë—Ú\ÜÈÈ\Ë—Ú\ÜËœÝ]\ÖÙ[]RYHˆ[ÂˆB‚ˆÙ[]RY
+]šXÙKÙ^JHÂˆ™]\›ˆ]šXÙOË™[]Y\ÏË–ÚÙ^WH[ÂˆB‚ˆØ]˜Z[X›JÝ]SØšŠHÂˆ™]\›ˆ›ÛÛX[ŠˆÝ]SØšˆ	‰‚ˆÝ]SØš‹œÝ]HOOH[˜]˜Z[X›Hˆ	‰‚ˆÝ]SØš‹œÝ]HOOH[šÛ›ÝÛˆˆ	‰‚ˆÝ]SØš‹œÝ]HOOH››Û™H‚ˆ
+NÂˆB‚ˆÚ\ÓÛŠ]šXÙKÙ^JHÂˆÛÛœÝÝ]SØšˆH\Ë—ÜÝ]J]šXÙKÙ^JNÂˆ™]\›ˆ\Ë—Ø]˜Z[X›JÝ]SØšŠHÈÝ]SØš‹œÝ]HOOH›Ûˆˆˆ[ÂˆB‚ˆÛ[Y\šXÊ]šXÙKÙ^JHÂˆÛÛœÝÝ]SØšˆH\Ë—ÜÝ]J]šXÙKÙ^JNÂˆYˆ
+]\Ë—Ø]˜Z[X›JÝ]SØšŠJH™]\›ˆ[ÂˆÛÛœÝ˜[YHH[X™\ŠÝ]SØš‹œÝ]JNÂˆ™]\›ˆ[X™\‹š\Ñš[š]J˜[YJHÈ˜[YHˆ[ÂˆB‚ˆÛ[ÙJ]šXÙJHÂˆÛÛœÝÝ]SØšˆH\Ë—ÜÝ]J]šXÙK›[ÙHŠNÂˆ™]\›ˆ\Ë—Ø]˜Z[X›JÝ]SØšŠHÈÝ]SØš‹œÝ]Hˆ[ÂˆB‚ˆÛ[ÙSX™[
+]šXÙJHÂˆÛÛœÝ[ÙHH\Ë—Û[ÙJ]šXÙJNÂˆ™]\›ˆ[ÙHÈSÑWÓP‘SÖÛ[ÙWH[ÙHˆ´'t-t.4-ô,´-t`t`´/t/ˆŽÂˆB‚ˆÜÝ]\Ê]šXÙJHÂˆÛÛœÝÛÝYH\Ë—Ú\ÓÛŠ]šXÙK˜ÛÝYØÛÛ›™XÝYŠNÂˆÛÛœÝÝ[HH\Ë—Ú\ÓÛŠ]šXÙK™]WÜÝ[HŠNÂˆÛÛœÝÛ˜]\žHH\Ë—Ú\ÓÛŠ]šXÙK›Û—Ø˜]\žHŠNÂˆÛÛœÝ[ÙHH\Ë—Û[ÙJ]šXÙJNÂ‚ˆYˆ
+ÛÝYOOH˜[ÙJHÂˆ™]\›ˆÈX™[ˆ´'´,t.ô,4.´/ˆ4/t-t-4/´`t`´`ô/ô/t/ˆ‹Û™Nˆ˜˜Y‹XÛÛŽˆ›YN˜ÛÝY[Ù™‹[Ý][™HˆNÂˆBˆYˆ
+ÛÝYOOH[
+HÂˆ™]\›ˆÈX™[ˆ´&4`t`´/´aô/t.4.ˆ4/t-t.4-ô,´-t`t`´-t/H‹Û™Nˆ˜˜Y‹XÛÛŽˆ›YN˜ÛÝY\]Y\Ý[Û‹[Ý][™HˆNÂˆBˆYˆ
+Ý[HOOHYJHÂˆ™]\›ˆÈX™[ˆ´%4,4/t/tbô-H4`ô`t`´,4`4-t.ô.‹Û™NˆØ\›ˆ‹XÛÛŽˆ›YN˜ÛØÚËX[\[Ý][™HˆNÂˆBˆYˆ
+Ý[HOOH[
+HÂˆ™]\›ˆÈX™[ˆ´(t,´-t-´-t`t`´c4/t-t.4-ô,´-t`t`´/t,‹Û™Nˆ˜˜Y‹XÛÛŽˆ›YN˜ÛØÚË\]Y\Ý[Û‹[Ý][™HˆNÂˆBˆYˆ
+[ÙHOOH™˜][Û[ÙHŠHÂˆ™]\›ˆÈX™[ˆ´$4,´,4`4.4cÈ‹Û™Nˆ˜˜Y‹XÛÛŽˆ›YN˜[\[ØÝYÛÛ‹[Ý][™HˆNÂˆBˆYˆ
+Û˜]\žHOOHYH[ÙHOOH˜˜]\žWÛ[ÙHŠHÂˆ™]\›ˆÈX™[ˆ´'´`ˆ4,t,4`´,4`4-t.‹Û™NˆØ\›ˆ‹XÛÛŽˆ›YN˜˜]\žKX\œ›ÝËYÝÛ‹[Ý][™HˆNÂˆBˆYˆ
+[ÙHOOH›[™WÛ[ÙHŠHÂˆÛÛœÝ™\]Z\™YHÈš[œ]Ý›ÛYÙH‹›Ý]]Ý›ÛYÙH‹˜˜]\žWØØ\XÚ]H‹›Ý]]ÛØY—NÂˆYˆ
+™\]Z\™Y™]™\žJ
+Ù^JHOˆ\Ë—Ø]˜Z[X›J\Ë—ÜÝ]J]šXÙKÙ^JJJJHÂˆ™]\›ˆÈX™[ˆ´'t/´`4/4,4.ôc4/t/ˆ‹Û™Nˆ™ÛÛÙ‹XÛÛŽˆ›YN˜ÚXÚËXÚ\˜ÛK[Ý][™HˆNÂˆBˆ™]\›ˆÈX™[ˆ´)ô,4`t`´c4-4,4/t/tbôaH4/t-t-4/´`t`´`ô/ô/t,‹Û™NˆØ\›ˆ‹XÛÛŽˆ›YN˜[\XÚ\˜ÛK[Ý][™HˆNÂˆBˆYˆ
+[ÙJHÂˆ™]\›ˆÈX™[ˆ\Ë—Û[ÙSX™[
+]šXÙJKÛ™NˆØ\›ˆ‹XÛÛŽˆ›YNš[™›Ü›X][Û‹[Ý][™HˆNÂˆBˆ™]\›ˆÈX™[ˆ´(t/´`t`´/´cô/t.4-H4/t-t.4-ô,´-t`t`´/t/ˆ‹Û™Nˆ˜˜Y‹XÛÛŽˆ›YNš[XÚ\˜ÛK[Ý][™HˆNÂˆB‚ˆÙ›Ü›X]
+]šXÙKÙ^K˜[˜XÚÈH¸ %ŠHÂˆÛÛœÝÝ]SØšˆH\Ë—ÜÝ]J]šXÙKÙ^JNÂˆYˆ
+\Ý]SØšŠH™]\›ˆ˜[˜XÚÎÂˆYˆ
+Ý]SØš‹œÝ]HOOH[˜]˜Z[X›HŠH™]\›ˆ´'t-t-4/´`t`´`ô/ô/t/ˆŽÂˆYˆ
+Ý]SØš‹œÝ]HOOH[šÛ›ÝÛˆŠH™]\›ˆ´'t-t.4-ô,´-t`t`´/t/ˆŽÂ‚ˆYˆ
+Ù^HOOH›[ÙHŠH™]\›ˆ\Ë—Û[ÙSX™[
+]šXÙJNÂˆYˆ
+Ù^HOOH˜ÛÝYØÛÛ›™XÝYŠH™]\›ˆÝ]SØš‹œÝ]HOOH›ÛˆˆÈ´'ô/´-4.´.ôc´aô-t/t/ˆˆˆ´'´`´.´.ôc´aô-t/t/ˆŽÂˆYˆ
+Ù^HOOH™]WÜÝ[HŠH™]\›ˆÝ]SØš‹œÝ]HOOH›ÛˆˆÈ´%4,ˆˆ´'t-t`ˆŽÂˆYˆ
+Ù^HOOH›Û—Ø˜]\žHŠH™]\›ˆÝ]SØš‹œÝ]HOOH›ÛˆˆÈ´%4,ˆˆ´'t-t`ˆŽÂˆYˆ
+Ù^HOOH™]WØYÙHŠH™]\›ˆ\Ë—Ù›Ü›X]\˜][ÛŠ[X™\ŠÝ]SØš‹œÝ]JJNÂˆYˆ
+Ù^K™[™ÕÚ]
+—Ù]™[ÈŠJHÂˆ™]\›ˆÝ]SØš‹˜]šX]\ÏË™]™[Ý\HÝ]SØš‹œÝ]H˜[˜XÚÎÂˆB‚ˆÛÛœÝ[š]HÝ]SØš‹˜]šX]\ÏË[š]ÛÙ—ÛYX\Ý\™[Y[Âˆ™]\›ˆ[š]È	ÜÝ]SØš‹œÝ]_H	Ý[š]XˆÝ]SØš‹œÝ]NÂˆB‚ˆÙ›Ü›X]\˜][ÛŠÙXÛÛ™ÊHÂˆYˆ
+S[X™\‹š\Ñš[š]JÙXÛÛ™ÊJH™]\›ˆ´'t-t.4-ô,´-t`t`´/t/ˆŽÂˆYˆ
+ÙXÛÛ™ÈŒ
+H™]\›ˆ	ÓX]œ›Ý[™
+ÙXÛÛ™Ê_H4`XÂˆÛÛœÝZ[]\ÈHX]™›ÛÜŠÙXÛÛ™ÈÈŒ
+NÂˆÛÛœÝ™\ÝHX]œ›Ý[™
+ÙXÛÛ™È	HŒ
+NÂˆ™]\›ˆ™\ÝÈ	ÛZ[]\ßH4/4.4/H	Ü™\ÝH4`Xˆ	ÛZ[]\ßH4/4.4/XÂˆB‚ˆÙ^[™Y]˜Z[X›J]šXÙJHÂˆ™]\›ˆÈœÜÚ]]™WØ\×Ý›ÛYÙH‹›™YØ]]™WØ\×Ý›ÛYÙH‹\×Ý[\\˜]\™H—KœÛÛYJ
+Ù^JHO‚ˆ\Ë—Ø]˜Z[X›J\Ë—ÜÝ]J]šXÙKÙ^JJBˆ
+NÂˆB‚ˆÛY]šXÊ]šXÙKÙ^KX™[XÛÛŠHÂˆÛÛœÝ[]RYH\Ë—Ù[]RY
+]šXÙKÙ^JNÂˆÛÛœÝ˜[YHH\Ë—Ù›Ü›X]
+]šXÙKÙ^JNÂˆÛÛœÝ]˜Z[X›HH\Ë—Ø]˜Z[X›J\Ë—ÜÝ]J]šXÙKÙ^JJNÂˆ™]\›ˆˆ]ˆÛ\ÜÏH›Y]šXÈ	Ø]˜Z[X›HÈˆˆˆ›Y]šXË][˜]˜Z[X›HŸHˆ	Ù[]RYÈ]KY[]OH‰Ù\ØØ\R[
+[]RY
+_H˜ˆˆŸO‚ˆKZXÛÛˆXÛÛH‰ÚXÛÛŸHÚKZXÛÛ‚ˆ]ˆÛ\ÜÏH›Y]šXËXÛÜH‚ˆÜ[ˆÛ\ÜÏH›Y]šXË[X™[‰Ù\ØØ\R[
+X™[
+_OÜÜ[‚ˆÝ›Û™Ï‰Ù\ØØ\R[
+˜[YJ_OÜÝ›Û™Ï‚ˆÙ]‚ˆÙ]˜ÂˆB‚ˆÜ™[™\“Ý™\šY]ÐØ\™
+]šXÙJHÂˆÛÛœÝÝ]\ÈH\Ë—ÜÝ]\Ê]šXÙJNÂˆÛÛœÝ[œ]›ÛYÙHH\Ë—Ù›Ü›X]
+]šXÙKš[œ]Ý›ÛYÙHŠNÂˆÛÛœÝÝ]]›ÛYÙHH\Ë—Ù›Ü›X]
+]šXÙK›Ý]]Ý›ÛYÙHŠNÂˆÛÛœÝ˜]\žHH\Ë—Û[Y\šXÊ]šXÙK˜˜]\žWØØ\XÚ]HŠNÂˆÛÛœÝØYH\Ë—Û[Y\šXÊ]šXÙK›Ý]]ÛØYŠNÂˆÛÛœÝÛ˜]\žHH\Ë—Ú\ÓÛŠ]šXÙK›Û—Ø˜]\žHŠHOOHYH\Ë—Û[ÙJ]šXÙJHOOH˜˜]\žWÛ[ÙHŽÂˆÛÛœÝ]PYÙHH\Ë—Ù›Ü›X]
+]šXÙK™]WØYÙHŠNÂˆÛÛœÝÛÝYH\Ë—Ú\ÓÛŠ]šXÙK˜ÛÝYØÛÛ›™XÝYŠNÂˆÛÛœÝÝ[HH\Ë—Ú\ÓÛŠ]šXÙK™]WÜÝ[HŠNÂ‚ˆ]\Ý^H´&´,4aô-t`t`´,´/ˆ4-4,4/t/tbôaH4/t-t.4-ô,´-t`t`´/t/ˆŽÂˆ]\ÝÛ™HH˜˜YŽÂˆYˆ
+ÛÝYOOH˜[ÙJHÂˆ\Ý^H´&4`t`´/´aô/t.4.ˆÛÛ\”ÝÙ\ˆ4/t-t-4/´`t`´`ô/ô-t/HŽÂˆH[ÙHYˆ
+Ý[HOOHYJHÂˆ\Ý^H4%4,4/t/tbô-H4`ô`t`´,4`4-t.ô.0­È	Ù]PYÙ_XÂˆ\ÝÛ™HHØ\›ˆŽÂˆH[ÙHYˆ
+ÛÝYOOHYH	‰ˆÝ[HOOH˜[ÙJHÂˆ\Ý^H4%4,4/t/tbô-H4,4.´`´`ô,4.ôc4/tbÈ0­È4,´/´-ô`4,4`t`ˆ	Ù]PYÙ_XÂˆ\ÝÛ™HH™ÛÛÙŽÂˆB‚ˆÛÛœÝ˜]\žUÚYH˜]\žHOOH[ÈˆX]›X^
+X]›Z[ŠL˜]\žJJNÂˆÛÛœÝØYÚYHØYOOH[ÈˆX]›X^
+X]›Z[ŠLØY
+JNÂˆÛÛœÝÛÝ\˜ÙRXÛÛˆHÛ˜]\žHÈ›YN˜˜]\žKZYÚˆˆ›YN˜[œÛZ\ÜÚ[Û‹]ÝÙ\ˆŽÂˆÛÛœÝÛÝ\˜ÙSX™[HÛ˜]\žHÈ´$4&´$Hˆˆ´(t-t`´cŽÂ‚ˆ™]\›ˆˆ\XÛHÛ\ÜÏH\ËXØ\™‚ˆ]ˆÛ\ÜÏH˜Ø\™ZXY‚ˆ]‚ˆ]ˆÛ\ÜÏH™^YXœ›ÝÈ‰Ù\ØØ\R[
+]šXÙK›[Ù[
+_OÙ]‚ˆ‰Ù\ØØ\R[
+]šXÙK›˜[YJ_OÚ‚ˆÙ]‚ˆ]ˆÛ\ÜÏHœÝ]\È	ÜÝ]\ËÛ™_H‚ˆKZXÛÛˆXÛÛH‰ÜÝ]\ËšXÛÛŸHÚKZXÛÛ‚ˆÜ[‰Ù\ØØ\R[
+Ý]\Ë›X™[
+_OÜÜ[‚ˆÙ]‚ˆÙ]‚‚ˆ]ˆÛ\ÜÏHœÝÙ\‹Y›ÝÈ‚ˆ]ˆÛ\ÜÏH™›ÝË[›ÙH	ÛÛ˜]\žHÈœÛÝ\˜ÙKX˜]\žHˆˆˆŸHˆ	Ý\Ë—Ù[]RY
+]šXÙKÛ˜]\žHÈ˜˜]\žWØØ\XÚ]Hˆˆš[œ]Ý›ÛYÙHŠHÈ]KY[]OH‰Ù\ØØ\R[
+\Ë—Ù[]RY
+]šXÙKÛ˜]\žHÈ˜˜]\žWØØ\XÚ]Hˆˆš[œ]Ý›ÛYÙHŠJ_H˜ˆˆŸO‚ˆKZXÛÛˆXÛÛH‰ÜÛÝ\˜ÙRXÛÛŸHÚKZXÛÛ‚ˆÜ[‰ÜÛÝ\˜ÙSX™[OÜÜ[‚ˆÝ›Û™Ï‰ÛÛ˜]\žHÈ
+˜]\žHOOH[È¸ %ˆˆ	ÓX]œ›Ý[™
+˜]\žJ_IX
+Hˆ[œ]›ÛYÙ_OÜÝ›Û™Ï‚ˆÙ]‚ˆ]ˆÛ\ÜÏH™›ÝË[[™HÜ[ÜÜ[KZXÛÛˆXÛÛH›YN˜Ú]œ›Û‹\šYÚÚKZXÛÛÙ]‚ˆ]ˆÛ\ÜÏH™›ÝË]\Èˆ	Ý\Ë—Ù[]RY
+]šXÙK›[ÙHŠHÈ]KY[]OH‰Ù\ØØ\R[
+\Ë—Ù[]RY
+]šXÙK›[ÙHŠJ_H˜ˆˆŸO‚ˆKZXÛÛˆXÛÛH›YN˜˜]\žKXÚ\™Ú[™ÈÚKZXÛÛ‚ˆÝ›Û™Ï•TÏÜÝ›Û™Ï‚ˆÜ[‰Ù\ØØ\R[
+\Ë—Û[ÙSX™[
+]šXÙJJ_OÜÜ[‚ˆÙ]‚ˆ]ˆÛ\ÜÏH™›ÝË[[™HÜ[ÜÜ[KZXÛÛˆXÛÛH›YN˜Ú]œ›Û‹\šYÚÚKZXÛÛÙ]‚ˆ]ˆÛ\ÜÏH™›ÝË[›ÙHˆ	Ý\Ë—Ù[]RY
+]šXÙK›Ý]]Ý›ÛYÙHŠHÈ]KY[]OH‰Ù\ØØ\R[
+\Ë—Ù[]RY
+]šXÙK›Ý]]Ý›ÛYÙHŠJ_H˜ˆˆŸO‚ˆKZXÛÛˆXÛÛH›YNœÝÙ\‹\YÈÚKZXÛÛ‚ˆÜ[´'t,4,ô`4`ô-ô.´,ÜÜ[‚ˆÝ›Û™Ï‰Ù\ØØ\R[
+Ý]]›ÛYÙJ_OÜÝ›Û™Ï‚ˆÙ]‚ˆÙ]‚‚ˆ]ˆÛ\ÜÏH˜˜\œÈ‚ˆ]ˆÛ\ÜÏH˜˜\‹\›ÝÈˆ	Ý\Ë—Ù[]RY
+]šXÙK˜˜]\žWØØ\XÚ]HŠHÈ]KY[]OH‰Ù\ØØ\R[
+\Ë—Ù[]RY
+]šXÙK˜˜]\žWØØ\XÚ]HŠJ_H˜ˆˆŸO‚ˆ]ˆÛ\ÜÏH˜˜\‹]]HÜ[´$4&´$OÜÜ[Ý›Û™Ï‰Ø˜]\žHOOH[È¸ %ˆˆ	ÓX]œ›Ý[™
+˜]\žJ_IXOÜÝ›Û™ÏÙ]‚ˆ]ˆÛ\ÜÏH˜˜\ˆHÝ[OHÚY‰Ø˜]\žUÚYIHÚOÙ]‚ˆÙ]‚ˆ]ˆÛ\ÜÏH˜˜\‹\›ÝÈˆ	Ý\Ë—Ù[]RY
+]šXÙK›Ý]]ÛØYŠHÈ]KY[]OH‰Ù\ØØ\R[
+\Ë—Ù[]RY
+]šXÙK›Ý]]ÛØYŠJ_H˜ˆˆŸO‚ˆ]ˆÛ\ÜÏH˜˜\‹]]HÜ[´'t,4,ô`4`ô-ô.´,ÜÜ[Ý›Û™Ï‰ÛØYOOH[È¸ %ˆˆ	ÓX]œ›Ý[™
+ØY
+_IXOÜÝ›Û™ÏÙ]‚ˆ]ˆÛ\ÜÏH˜˜\ˆHÝ[OHÚY‰ÛØYÚYIHÚOÙ]‚ˆÙ]‚ˆÙ]‚‚ˆ]ˆÛ\ÜÏH\Ý	Ý\ÝÛ™_H‚ˆKZXÛÛˆXÛÛH‰ØÛÝYOOH˜[ÙHÈ›YN˜ÛÝY[Ù™‹[Ý][™HˆˆÝ[HOOHYHÈ›YN˜ÛØÚËX[\[Ý][™Hˆˆ›YNœÚY[XÚXÚË[Ý][™HŸHÚKZXÛÛ‚ˆÜ[‰Ù\ØØ\R[
+\Ý^
+_OÜÜ[‚ˆÙ]‚‚ˆ]ˆÛ\ÜÏHœ]ZXÚËYÜšY‚ˆ	Ý\Ë—ÛY]šXÊ]šXÙKš[œ]Ý›ÛYÙH‹´$´at/´-‹›YN™›\ÚŠ_Bˆ	Ý\Ë—ÛY]šXÊ]šXÙK›Ý]]Ý›ÛYÙH‹´$´bôat/´-‹›YNœÝÙ\‹\YÈŠ_Bˆ	Ý\Ë—ÛY]šXÊ]šXÙK˜˜]\žWØØ\XÚ]H‹´$4&´$H‹›YN˜˜]\žHŠ_Bˆ	Ý\Ë—ÛY]šXÊ]šXÙK›Ý]]ÛØY‹´'t,4,ô`4`ô-ô.´,‹›YN™Ø]YÙHŠ_BˆÙ]‚ˆØ\XÛO˜ÂˆB‚ˆÜ™[™\“Ý™\šY]Ê
+HÂˆ™]\›ˆˆÙXÝ[ÛˆÛ\ÜÏH›Ý™\šY]ËYÜšY‚ˆ	Ý\Ë—Ù]šXÙ\Ë›X\
+
+]šXÙJHOˆ\Ë—Ü™[™\“Ý™\šY]ÐØ\™
+]šXÙJJKš›Ú[ŠˆŠ_BˆÜÙXÝ[Û‚ˆÛ\ÜÏHš[´'t,4-´/4.4`´-H4.4`ô-4-t`4-´.4,´,4.t`´-H4a4,4.´`´.4aô-t`t.´.4.H4/ô/´.´,4-ô,4`´-t.ôc4aô`´/´,tbÈ4/´`´.´`4bô`´c4b4`´,4`´/tbô.H[Ü™KZ[™›ÈÛYH\ÜÚ\Ý[Ü˜ÂˆB‚ˆÜ™[™\‘XYÛ›ÜÝXÔÝ[[X\žJ]šXÙJHÂˆÛÛœÝÛÝYH\Ë—Ú\ÓÛŠ]šXÙK˜ÛÝYØÛÛ›™XÝYŠNÂˆÛÛœÝÝ[HH\Ë—Ú\ÓÛŠ]šXÙK™]WÜÝ[HŠNÂˆÛÛœÝ^[™YH\Ë—Ù^[™Y]˜Z[X›J]šXÙJNÂˆÛÛœÝ›ÝÜÈHÂˆÈ´'´`t/t/´,´/t/´.H4.´,4/t,4.ÈÛÛ\”ÝÙ\ˆ‹ÛÝYOOHYHÈ´(4,4,t/´`´,4-t`ˆˆˆÛÝYOOH˜[ÙHÈ´'t-t-4/´`t`´`ô/ô-t/Hˆˆ´'t-t.4-ô,´-t`t`´/t/ˆ‹ÛÝYOOHYHÈ™ÛÛÙˆˆ˜˜Y—KˆÈ´(t,´-t-´-t`t`´cÛ˜\ÚÝ‹Ý[HOOH˜[ÙHÈ´$4.´`´`ô,4.ôc4/t/ˆˆˆÝ[HOOHYHÈ´(ô`t`´,4`4-t.ô/ˆˆˆ´'t-t.4-ô,´-t`t`´/t/ˆ‹Ý[HOOH˜[ÙHÈ™ÛÛÙˆˆÝ[HOOHYHÈØ\›ˆˆˆ˜˜Y—KˆÈ´(4,4`tb4.4`4-t/t/t,4cÈ4`´-t.ô-t/4-t`´`4.4cÈ‹^[™YÈ´%4/´`t`´`ô/ô/t,ˆˆ´'t-t-4/´`t`´`ô/ô/t,‹^[™YÈ™ÛÛÙˆˆØ\›ˆ—KˆNÂˆ™]\›ˆˆ]ˆÛ\ÜÏHœÛÝ\˜ÙK\Ý[[X\žH‚ˆ	Ü›ÝÜË›X\
+
+ÛX™[˜[YKÛ™WJHOˆ]Ü[‰ÛX™[OÜÜ[Ý›Û™ÈÛ\ÜÏH^IÝÛ™_H‰Ý˜[Y_OÜÝ›Û™ÏÙ]˜
+Kš›Ú[ŠˆŠ_BˆÙ]˜ÂˆB‚ˆÜ™[™\‘XYÛ›ÜÝXÜÊ
+HÂˆÛÛœÝ]šXÙHH\Ë—Ù]šXÙ\Ë™š[™
+
+][JHOˆ][KšYOOH\Ë—ÙXYÛ›ÜÝXÑ]šXÙRY
+H\Ë—Ù]šXÙ\ÖÌNÂˆYˆ
+Y]šXÙJH™]\›ˆ\Ë—Ù[\J•TÈ4/t-H4/t,4.t-4-t/tbÈŠNÂ‚ˆ™]\›ˆˆ]ˆÛ\ÜÏH™]šXÙK\ÝÚ]Ú\ˆ‚ˆ	Ý\Ë—Ù]šXÙ\Ë›X\
+
+][JHOˆ]ÛˆÛ\ÜÏH™]šXÙKXÚ\	Ú][KšYOOH]šXÙKšYÈ˜XÝ]™HˆˆˆŸHˆ]KY]šXÙOH‰Ù\ØØ\R[
+][KšY
+_H‰Ù\ØØ\R[
+][K›˜[YJ_OØ]Û˜
+Kš›Ú[ŠˆŠ_BˆÙ]‚ˆÙXÝ[ÛˆÛ\ÜÏH™XYÛ›ÜÝXËXØ\™‚ˆ]ˆÛ\ÜÏH˜Ø\™ZXYÛÛ\XÝ‚ˆ]]ˆÛ\ÜÏH™^YXœ›ÝÈ´%4.4,4,ô/t/´`t`´.4.´,Ù]‰Ù\ØØ\R[
+]šXÙK›˜[YJ_OÚÙ]‚ˆÜ[ˆÛ\ÜÏH›Z[šK]™\œÚ[Ûˆ‰Ù\ØØ\R[
+\Ë—Ù›Ü›X]
+]šXÙK™š\›]Ø\™HŠJ_OÜÜ[‚ˆÙ]‚ˆ	Ý\Ë—Ü™[™\‘XYÛ›ÜÝXÔÝ[[X\žJ]šXÙJ_Bˆ	ÑPQÓ“ÔÕP×ÑÔ“ÕTË›X\
+
+Ü›Ý\
+HOˆ\Ë—Ü™[™\‘XYÛ›ÜÝXÑÜ›Ý\
+]šXÙKÜ›Ý\
+JKš›Ú[ŠˆŠ_BˆÜÙXÝ[Û‚ˆÛ\ÜÏHš[´'t-t-4/´`t`´`ô/ô/t/ˆ4/t-H4`taô.4`´,4-t`´`tcÈ4/t/´`4/4/´.Kˆ4'´`t/t/´,´/t/´.H4.4`4,4`tb4.4`4-t/t/tbô.H4/´,t.ô,4aô/tbô-H4.´,4/t,4.ôbÈ4/´a´-t/t.4,´,4c´`´`tcÈ4`4,4-ô-4-t.ôc4/t/‹Ü˜ÂˆB‚ˆÜ™[™\‘XYÛ›ÜÝXÑÜ›Ý\
+]šXÙKÜ›Ý\
+HÂˆÛÛœÝ][\ÈHÜ›Ý\š][\Ë™š[\Š
+ÚÙ^WJHOˆ\Ë—Ù[]RY
+]šXÙKÙ^JJNÂˆYˆ
+Z][\Ë›[™Ý
+H™]\›ˆˆŽÂˆ™]\›ˆˆ]ˆÛ\ÜÏH™XYÛ›ÜÝXËYÜ›Ý\‚ˆÏ‰Ù\ØØ\R[
+Ü›Ý\]J_OÚÏ‚ˆ	Ú][\Ë›X\
+
+ÚÙ^KX™[JHOˆÂˆÛÛœÝ[]RYH\Ë—Ù[]RY
+]šXÙKÙ^JNÂˆÛÛœÝÝ]SØšˆH\Ë—ÜÝ]J]šXÙKÙ^JNÂˆÛÛœÝ[˜]˜Z[X›HH]\Ë—Ø]˜Z[X›JÝ]SØšŠNÂˆ™]\›ˆ]ˆÛ\ÜÏH™XYÛ›ÜÝXË\›ÝÈ	Ý[˜]˜Z[X›HÈš\Ë][˜]˜Z[X›HˆˆˆŸHˆ]KY[]OH‰Ù\ØØ\R[
+[]RY
+_H‚ˆÜ[‰Ù\ØØ\R[
+X™[
+_OÜÜ[‚ˆÝ›Û™Ï‰Ù\ØØ\R[
+\Ë—Ù›Ü›X]
+]šXÙKÙ^JJ_OÜÝ›Û™Ï‚ˆÙ]˜ÂˆJKš›Ú[ŠˆŠ_BˆÙ]˜ÂˆB‚ˆÜ™[™\’\ÝÜžJ
+HÂˆ™]\›ˆˆÙXÝ[ÛˆÛ\ÜÏHš\ÝÜžKYÜšY‚ˆ	Ý\Ë—Ù]šXÙ\Ë›X\
+
+]šXÙJHOˆˆ\XÛHÛ\ÜÏHš\ÝÜžKXØ\™‚ˆ]ˆÛ\ÜÏH˜Ø\™ZXYÛÛ\XÝ]]ˆÛ\ÜÏH™^YXœ›ÝÈ´&4`t`´/´`4.4cÏÙ]‰Ù\ØØ\R[
+]šXÙK›˜[YJ_OÚÙ]Ù]‚ˆ]ˆÛ\ÜÏHš\ÝÜžK[Y]šXÜÈ‚ˆ	ÒTÕÔ–WÒUSTË›X\
+
+ÚÙ^KX™[XÛÛ—JHOˆÂˆÛÛœÝ[]RYH\Ë—Ù[]RY
+]šXÙKÙ^JNÂˆYˆ
+Y[]RY
+H™]\›ˆˆŽÂˆ™]\›ˆ]ÛˆÛ\ÜÏHš\ÝÜžK[[šÈˆ]KY[]OH‰Ù\ØØ\R[
+[]RY
+_H‚ˆKZXÛÛˆXÛÛH‰ÚXÛÛŸHÚKZXÛÛÜ[‰Ù\ØØ\R[
+X™[
+_OÜÜ[Ý›Û™Ï‰Ù\ØØ\R[
+\Ë—Ù›Ü›X]
+]šXÙKÙ^JJ_OÜÝ›Û™ÏKZXÛÛˆXÛÛH›YN˜Ú\[[™HÚKZXÛÛ‚ˆØ]Û˜ÂˆJKš›Ú[ŠˆŠ_BˆÙ]‚ˆ]ˆÛ\ÜÏH™]™[\Ý[[X\žH‚ˆÏ´'ô/´`t.ô-t-4/t.4-H4`t/´,tbô`´.4cÏÚÏ‚ˆ	Ý\Ë—Ù]™[›ÝÊ]šXÙK˜˜]\žWÛ[ÙWÙ]™[È‹´(4-t-´.4/4$4&´$HŠ_Bˆ	Ý\Ë—Ù]™[›ÝÊ]šXÙK˜ÛÝYÝ[[Y]žWÙ]™[È‹´'´,t.ô,4.´/ˆŠ_Bˆ	Ý\Ë—Ù]™[›ÝÊ]šXÙK™]WÙœ™\Ú™\Ü×Ù]™[È‹´(t,´-t-´-t`t`´c4-4,4/t/tbôaHŠ_Bˆ	Ý\Ë—Ù]™[›ÝÊ]šXÙK™˜][Û[ÙWÙ]™[È‹´$4,´,4`4.4.t/tbô.H4`4-t-´.4/Š_BˆÙ]‚ˆØ\XÛO˜
+Kš›Ú[ŠˆŠ_BˆÜÙXÝ[Û‚ˆÛ\ÜÏHš[´'t,TÛ™H4,ô`4,4a4.4.´.4/´`´.´`4bô,´,4c´`´`tcÈ4b4`´,4`´/tbô/[Ü™KZ[™›Îˆ4/t,4-´/4.4`´-H4.4`ô-4-t`4-´.4,´,4.t`´-H4/ô/´.´,4-ô,4`´-t.ôcˆ4(´,4.ˆ4.4`t`´/´`4.4cÈ4/´`t`´,4dt`´`tcÈ4.´/´/4/ô,4.´`´/t/´.H4.4.4`t/ô/´.ôc4-ô`ô-t`ˆ4/t,4`´.4,´/t`ôcˆ4.4`t`´/´`4.4cˆÛYH\ÜÚ\Ý[Ü˜ÂˆB‚ˆÙ]™[›ÝÊ]šXÙKÙ^KX™[
+HÂˆÛÛœÝ[]RYH\Ë—Ù[]RY
+]šXÙKÙ^JNÂˆYˆ
+Y[]RY
+H™]\›ˆˆŽÂˆÛÛœÝÝ]SØšˆH\Ë—ÜÝ]J]šXÙKÙ^JNÂˆÛÛœÝ˜]ÈHÝ]SØšË˜]šX]\ÏË™]™[Ý\H
+\Ë—Ø]˜Z[X›JÝ]SØšŠHÈÝ]SØš‹œÝ]Hˆ´'t-H4,tbô.ô/ˆ4`t/´,tbô`´.4.HŠNÂˆÛÛœÝX™[ÈHÂˆ˜]\žWÛ[ÙWÙ[\™Yˆ´'ô-t`4-tb4dt.È4/t,4,t,4`´,4`4-tcˆ‹ˆ˜]\žWÛ[ÙWÙ^]Yˆ´$´bôb4-t.È4.4-È4`4-t-´.4/4,4$4&´$H‹ˆ[[Y]žWÛÜÝˆ´(´-t.ô-t/4-t`´`4.4cÈ4/ô/´`´-t`4cô/t,‹ˆ[[Y]žWÜ™\ÝÜ™Yˆ´(´-t.ô-t/4-t`´`4.4cÈ4,´/´`t`t`´,4/t/´,´.ô-t/t,‹ˆ]WÜÝ[Nˆ´%4,4/t/tbô-H4`ô`t`´,4`4-t.ô.‹ˆ]WÙœ™\Úˆ´%4,4/t/tbô-H4`t/t/´,´,4`t,´-t-´.4-H‹ˆ˜][Û[ÙWÙ[\™Yˆ´$4,´,4`4.4.t/tbô.H4`4-t-´.4/‹ˆ˜][Û[ÙWØÛX\™Yˆ´$4,´,4`4.4.t/tbô.H4`4-t-´.4/4`t/tcô`ˆ‹ˆNÂˆ™]\›ˆ]ˆÛ\ÜÏH™]™[\›ÝÈˆ]KY[]OH‰Ù\ØØ\R[
+[]RY
+_HÜ[‰Ù\ØØ\R[
+X™[
+_OÜÜ[Ý›Û™Ï‰Ù\ØØ\R[
+X™[ÖÜ˜]×H˜]Ê_OÜÝ›Û™ÏÙ]˜ÂˆB‚ˆÙ[\JY\ÜØYÙJHÂˆ™]\›ˆ]ˆÛ\ÜÏH™[\HKZXÛÛˆXÛÛH›YN˜˜]\žKX[\]˜\šX[[Ý][™HÚKZXÛÛÝ›Û™Ï‰Ù\ØØ\R[
+Y\ÜØYÙJ_OÜÝ›Û™ÏÜ[´'ô`4/´,´-t`4c4`´-H4-ô,4,ô`4`ô-ô.´`È4.4/t`´-t,ô`4,4a´.4.Ý\šÈÛÛ\”ÝÙ\‹ÜÜ[Ù]˜ÂˆB‚ˆÜÝ[\Ê
+HÂˆ™]\›ˆˆšÜÝÂˆ\Ü^N˜›ØÚÎÂˆZ[‹ZZYÚŒL	NÂˆ˜XÚÙÜ›Ý[™˜\ŠK\š[X\žKX˜XÚÙÜ›Ý[™XÛÛÜŠNÂˆÛÛÜŽ˜\ŠK\š[X\žK]^XÛÛÜŠNÂˆ›ÛY˜[Z[N˜\ŠK\\\‹Y›ÛX›ÙLWËWÙ›ÛY˜[Z[KX\K\Þ\Ý[K›[šÓXXÔÞ\Ý[Q›Û”ÙYÛÙHRH‹Ø[œË\Ù\šYŠNÂˆÝ™\™›ÝË^šY[ŽÂˆBˆ
+ˆÈ›Þ\Ú^š[™Î˜›Ü™\‹X›ÞÈBˆ˜\ÈX^]ÚYŒLLÈX\™Ú[ŽŒ]]ÎÈY[™ÎŒMLœÍœÈBˆ˜\ZXY\ˆÈ\Ü^N™›^È[YÛ‹Z][\Î˜Ù[\ŽÈ\ÝYžKXÛÛ[œÜXÙKX™]ÙY[ŽÈØ\ŒLœÈX\™Ú[ŽŒœœMÈBˆ]K]Ü˜\È\Ü^N™›^È[YÛ‹Z][\Î˜Ù[\ŽÈØ\ŒLœÈZ[‹]ÚYŒÈBˆ]KZXÛÛˆÈÚYœÈZYÚœÈ›Ü™\‹\˜Y]\ÎŒM\È\Ü^N™ÜšYÈXÙKZ][\Î˜Ù[\ŽÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\š[X\žKXÛÛÜŠHM	K˜[œÜ\™[
+NÈÛÛÜŽ˜\ŠK\š[X\žKXÛÛÜŠNÈBˆ]KZXÛÛˆKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NŒÜÈBˆK‹ËÈX\™Ú[ŽŒÈBˆHÈ›Û\Ú^™NŒœÈ[™KZZYÚŒKŒNÈ]\‹\ÜXÚ[™Î‹KŒ™[NÈBˆˆÈ›Û\Ú^™NŒŒœÈ[™KZZYÚŒKŒMNÈ]\‹\ÜXÚ[™Î‹KŒY[NÈBˆÈÈ›Û\Ú^™NŒM\ÈBˆœÝX]K™^YXœ›ÝËš[›Z[šK]™\œÚ[ÛˆÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈBˆœÝX]HÈX\™Ú[‹]ÜÈ›Û\Ú^™NŒLœÈBˆ™^YXœ›ÝÈÈ›Û\Ú^™NŒL\È^]˜[œÙ›Ü›N\\˜Ø\ÙNÈ]\‹\ÜXÚ[™Î‹Œ[NÈX\™Ú[‹X›ÝÛN\ÈBˆœ™Yœ™\ÚÈZ[‹]ÚYÈZYÚÈ›Ü™\ŽŒÈ›Ü™\‹\˜Y]\ÎŒMÈ˜XÚÙÜ›Ý[™˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠNÈÛÛÜŽ˜\ŠK\š[X\žKXÛÛÜŠNÈ\Ü^N™ÜšYÈXÙKZ][\Î˜Ù[\ŽÈ›Þ\ÚYÝÎ˜\ŠKZKXØ\™X›Þ\ÚYÝË\Ü™Ø˜JŒMJJNÈBˆXœÈÈ\Ü^N™ÜšYÈÜšY][\]KXÛÛ[[œÎœ™\X]
+ËYœŠNÈØ\œÈY[™Î\È›Ü™\‹\˜Y]\ÎŒM\È˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠHL	K˜[œÜ\™[
+NÈX\™Ú[‹X›ÝÛNŒLœÈBˆXˆÈZYÚœÈ›Ü™\ŽŒÈ›Ü™\‹\˜Y]\ÎŒL\È˜XÚÙÜ›Ý[™˜[œÜ\™[ÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈ›Ûš[š\š]È›Û]ÙZYÚŒÈBˆX‹˜XÝ]™HÈ˜XÚÙÜ›Ý[™˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠNÈÛÛÜŽ˜\ŠK\š[X\žK]^XÛÛÜŠNÈ›Þ\ÚYÝÎŒ\Ü™Ø˜JŒLŠNÈBˆ›Ý™\šY]ËYÜšYš\ÝÜžKYÜšYÈ\Ü^N™ÜšYÈÜšY][\]KXÛÛ[[œÎŒYœŽÈØ\ŒLœÈBˆ\ËXØ\™™XYÛ›ÜÝXËXØ\™š\ÝÜžKXØ\™È˜XÚÙÜ›Ý[™˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠNÈ›Ü™\ŽŒ\ÛÛY˜\ŠKY]šY\‹XÛÛÜŠNÈ›Ü™\‹\˜Y]\ÎŒŒœÈY[™ÎŒMœÈ›Þ\ÚYÝÎ˜\ŠKZKXØ\™X›Þ\ÚYÝË›Û™JNÈÝ™\™›ÝÎšY[ŽÈBˆ˜Ø\™ZXYÈ\Ü^N™›^È[YÛ‹Z][\Î™›^\Ý\È\ÝYžKXÛÛ[œÜXÙKX™]ÙY[ŽÈØ\ŒLÈX\™Ú[‹X›ÝÛNŒMœÈBˆ˜Ø\™ZXY˜ÛÛ\XÝÈX\™Ú[‹X›ÝÛNŒLœÈ[YÛ‹Z][\Î˜Ù[\ŽÈBˆœÝ]\ÈÈ\Ü^N™›^È[YÛ‹Z][\Î˜Ù[\ŽÈØ\œÈY[™ÎŽLÈ›Ü™\‹\˜Y]\ÎŽNN\È›Û\Ú^™NŒLœÈ›Û]ÙZYÚÌÈÚ]K\ÜXÙN››ÝÜ˜\ÈBˆœÝ]\ÈKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NŒNÈBˆ™ÛÛÙ^YÛÛÙÈÛÛÜŽ˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™MÙÌŠNÈBˆØ\›‹^]Ø\›ˆÈÛÛÜŽ˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙY˜ÌŠNÈBˆ˜˜Y^X˜YÈÛÛÜŽ˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙÌ™Œ™ŠNÈBˆœÝ]\Ë™ÛÛÙ\Ý™ÛÛÙÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™MÙÌŠHL‰K˜[œÜ\™[
+NÈBˆœÝ]\ËØ\›‹\ÝØ\›ˆÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙY˜ÌŠHLÉK˜[œÜ\™[
+NÈBˆœÝ]\Ë˜˜Y\Ý˜˜YÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙÌ™Œ™ŠHL‰K˜[œÜ\™[
+NÈBˆœÝÙ\‹Y›ÝÈÈ\Ü^N™ÜšYÈÜšY][\]KXÛÛ[[œÎ›Z[›X^
+ÍYœŠHŽZ[›X^
+œYœŠHŽZ[›X^
+ÍYœŠNÈ[YÛ‹Z][\Î˜Ù[\ŽÈØ\ŒÜÈX\™Ú[ŽŒœMÜÈBˆ™›ÝË[›ÙK™›ÝË]\ÈÈZ[‹]ÚYŒÈZ[‹ZZYÚŽLœÈ›Ü™\‹\˜Y]\ÎŒMÜÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠHÉK˜[œÜ\™[
+NÈ\Ü^N™›^È›^Y\™XÝ[ÛŽ˜ÛÛ[[ŽÈ[YÛ‹Z][\Î˜Ù[\ŽÈ\ÝYžKXÛÛ[˜Ù[\ŽÈØ\È^X[YÛŽ˜Ù[\ŽÈY[™ÎŽ\ÈBˆ™›ÝË[›ÙHKZXÛÛ‹™›ÝË]\ÈKZXÛÛˆÈÛÛÜŽ˜\ŠK\š[X\žKXÛÛÜŠNÈK[YËZXÛÛ‹\Ú^™NŒÈBˆ™›ÝË[›ÙHÜ[‹™›ÝË]\ÈÜ[ˆÈ›Û\Ú^™NŒL\ÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈBˆ™›ÝË[›ÙHÝ›Û™Ë™›ÝË]\ÈÝ›Û™ÈÈ›Û\Ú^™NŒLÜÈX^]ÚYŒL	NÈÝ™\™›ÝÎšY[ŽÈ^[Ý™\™›ÝÎ™[\Ú\ÎÈBˆœÛÝ\˜ÙKX˜]\žHÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙY˜ÌŠHL‰K˜[œÜ\™[
+NÈBˆœÛÝ\˜ÙKX˜]\žHKZXÛÛˆÈÛÛÜŽ˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙY˜ÌŠNÈBˆ™›ÝË[[™HÈ\Ü^N™›^È[YÛ‹Z][\Î˜Ù[\ŽÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈBˆ™›ÝË[[™HÜ[ˆÈZYÚŒœÈ˜XÚÙÜ›Ý[™˜Ý\œ™[ÛÛÜŽÈ›^ŒNÈÜXÚ]N‹NÈBˆ™›ÝË[[™HKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NŒNÈX\™Ú[‹[Y‹MÈBˆ˜˜\œÈÈ\Ü^N™ÜšYÈÜšY][\]KXÛÛ[[œÎŒYœˆYœŽÈØ\ŒLÈX\™Ú[‹X›ÝÛNŒLÜÈBˆ˜˜\‹\›ÝÈÈZ[‹]ÚYŒÈBˆ˜˜\‹]]HÈ\Ü^N™›^È\ÝYžKXÛÛ[œÜXÙKX™]ÙY[ŽÈØ\ŽÈ›Û\Ú^™NŒLœÈX\™Ú[‹X›ÝÛNœÈBˆ˜˜\‹]]HÜ[ˆÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈBˆ˜˜\ˆÈZYÚÜÈ›Ü™\‹\˜Y]\ÎŽNN\ÈÝ™\™›ÝÎšY[ŽÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠHLÉK˜[œÜ\™[
+NÈBˆ˜˜\ˆHÈ\Ü^N˜›ØÚÎÈZYÚŒL	NÈ›Ü™\‹\˜Y]\Îš[š\š]È˜XÚÙÜ›Ý[™˜\ŠK\š[X\žKXÛÛÜŠNÈBˆ\ÝÈZ[‹ZZYÚœÈ\Ü^N™›^È[YÛ‹Z][\Î˜Ù[\ŽÈØ\ŽÈY[™ÎŽ\L\È›Ü™\‹\˜Y]\ÎŒLÜÈX\™Ú[‹X›ÝÛNŒLœÈ›Û\Ú^™NŒLœÈ›Û]ÙZYÚŒÈBˆ\ÝKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NŒN\È›^Œ]]ÎÈBˆœ]ZXÚËYÜšYÈ\Ü^N™ÜšYÈÜšY][\]KXÛÛ[[œÎŒYœˆYœŽÈØ\ŽÈBˆ›Y]šXÈÈZ[‹ZZYÚM\È\Ü^N™›^È[YÛ‹Z][\Î˜Ù[\ŽÈØ\Ž\ÈY[™ÎŽ\È›Ü™\ŽŒ\ÛÛY˜\ŠKY]šY\‹XÛÛÜŠNÈ›Ü™\‹\˜Y]\ÎŒMÈZ[‹]ÚYŒÈBˆ›Y]šXÈKZXÛÛˆÈÛÛÜŽ˜\ŠK\š[X\žKXÛÛÜŠNÈK[YËZXÛÛ‹\Ú^™NŒŒ\È›^Œ]]ÎÈBˆ›Y]šXËXÛÜHÈZ[‹]ÚYŒÈ\Ü^N™›^È›^Y\™XÝ[ÛŽ˜ÛÛ[[ŽÈØ\ŒœÈBˆ›Y]šXË[X™[È›Û\Ú^™NŒLÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈBˆ›Y]šXÈÝ›Û™ÈÈ›Û\Ú^™NŒLÜÈÝ™\™›ÝÎšY[ŽÈ^[Ý™\™›ÝÎ™[\Ú\ÎÈÚ]K\ÜXÙN››ÝÜ˜\ÈBˆ›Y]šXË][˜]˜Z[X›HÈÜXÚ]N‹NÈBˆš[È›Û\Ú^™NŒL\È[™KZZYÚŒKNÈY[™ÎŒL\ÈBˆ™]šXÙK\ÝÚ]Ú\ˆÈ\Ü^N™›^ÈØ\ŽÈÝ™\™›ÝË^˜]]ÎÈØÜ›Û˜\‹]ÚY››Û™NÈX\™Ú[ŽŒLÈY[™ÎŒ\ÈBˆ™]šXÙK\ÝÚ]Ú\ŽŽ‹]ÙXšÚ]\ØÜ›Û˜\ˆÈ\Ü^N››Û™NÈBˆ™]šXÙKXÚ\È›^Œ]]ÎÈZ[‹ZZYÚÈ›Ü™\ŽŒ\ÛÛY˜\ŠKY]šY\‹XÛÛÜŠNÈ›Ü™\‹\˜Y]\ÎŽNN\È˜XÚÙÜ›Ý[™˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠNÈÛÛÜŽ˜\ŠK\š[X\žK]^XÛÛÜŠNÈY[™ÎŒMÈ›Ûš[š\š]È›Û\Ú^™NŒLÜÈBˆ™]šXÙKXÚ\˜XÝ]™HÈ›Ü™\‹XÛÛÜŽ˜\ŠK\š[X\žKXÛÛÜŠNÈÛÛÜŽ˜\ŠK\š[X\žKXÛÛÜŠNÈ›Û]ÙZYÚÌÈBˆœÛÝ\˜ÙK\Ý[[X\žHÈ\Ü^N™ÜšYÈØ\Œ\ÈÝ™\™›ÝÎšY[ŽÈ›Ü™\ŽŒ\ÛÛY˜\ŠKY]šY\‹XÛÛÜŠNÈ›Ü™\‹\˜Y]\ÎŒM\ÈX\™Ú[‹X›ÝÛNŒMœÈBˆœÛÝ\˜ÙK\Ý[[X\žH]ˆÈZ[‹ZZYÚœÈ\Ü^N™›^È[YÛ‹Z][\Î˜Ù[\ŽÈ\ÝYžKXÛÛ[œÜXÙKX™]ÙY[ŽÈØ\ŒLœÈY[™ÎŽL\È˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠH	K˜[œÜ\™[
+NÈBˆœÛÝ\˜ÙK\Ý[[X\žHÜ[ˆÈ›Û\Ú^™NŒLœÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈBˆœÛÝ\˜ÙK\Ý[[X\žHÝ›Û™ÈÈ›Û\Ú^™NŒLœÈ^X[YÛŽœšYÚÈBˆ™XYÛ›ÜÝXËYÜ›Ý\ÈX\™Ú[‹]ÜŒMÜÈBˆ™XYÛ›ÜÝXËYÜ›Ý\ÈÈX\™Ú[‹X›ÝÛNÜÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈBˆ™XYÛ›ÜÝXË\›ÝÈÈZ[‹ZZYÚÈ\Ü^N™›^È[YÛ‹Z][\Î˜Ù[\ŽÈ\ÝYžKXÛÛ[œÜXÙKX™]ÙY[ŽÈØ\ŒLœÈ›Ü™\‹]ÜŒ\ÛÛY˜\ŠKY]šY\‹XÛÛÜŠNÈY[™ÎŽœÈBˆ™XYÛ›ÜÝXË\›ÝÈÜ[ˆÈ›Û\Ú^™NŒLÜÈZ[‹]ÚYŒÈBˆ™XYÛ›ÜÝXË\›ÝÈÝ›Û™ÈÈ›Û\Ú^™NŒLÜÈ^X[YÛŽœšYÚÈX^]ÚYL‰NÈÝ™\™›ÝË]Ü˜\˜[ž]Ú\™NÈBˆ™XYÛ›ÜÝXË\›ÝËš\Ë][˜]˜Z[X›HÝ›Û™ÈÈÛÛÜŽ˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙÌ™Œ™ŠNÈBˆš\ÝÜžK[Y]šXÜÈÈ\Ü^N™ÜšYÈØ\ÜÈBˆš\ÝÜžK[[šÈÈZ[‹ZZYÚLœÈÚYŒL	NÈ›Ü™\ŽŒ\ÛÛY˜\ŠKY]šY\‹XÛÛÜŠNÈ›Ü™\‹\˜Y]\ÎŒMÈ˜XÚÙÜ›Ý[™˜[œÜ\™[ÈÛÛÜŽ˜\ŠK\š[X\žK]^XÛÛÜŠNÈ\Ü^N™ÜšYÈÜšY][\]KXÛÛ[[œÎŒŽYœˆ]]ÈŒœÈ[YÛ‹Z][\Î˜Ù[\ŽÈØ\ÜÈY[™ÎŽLÈ^X[YÛŽ›YÈ›Ûš[š\š]ÈBˆš\ÝÜžK[[šÈˆKZXÛÛŽ™š\œÝXÚ[ÈÛÛÜŽ˜\ŠK\š[X\žKXÛÛÜŠNÈBˆš\ÝÜžK[[šÈˆKZXÛÛŽ›\ÝXÚ[ÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈK[YËZXÛÛ‹\Ú^™NŒNÈBˆš\ÝÜžK[[šÈÜ[ˆÈ›Û\Ú^™NŒLœÈBˆš\ÝÜžK[[šÈÝ›Û™ÈÈ›Û\Ú^™NŒLœÈ^X[YÛŽœšYÚÈBˆ™]™[\Ý[[X\žHÈX\™Ú[‹]ÜŒMœÈBˆ™]™[\Ý[[X\žHÈÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈX\™Ú[‹X›ÝÛNÜÈBˆ™]™[\›ÝÈÈZ[‹ZZYÚÈ\Ü^N™›^È[YÛ‹Z][\Î˜Ù[\ŽÈ\ÝYžKXÛÛ[œÜXÙKX™]ÙY[ŽÈØ\ŒLÈ›Ü™\‹]ÜŒ\ÛÛY˜\ŠKY]šY\‹XÛÛÜŠNÈY[™ÎŽœÈBˆ™]™[\›ÝÈÜ[ˆÈ›Û\Ú^™NŒLœÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈBˆ™]™[\›ÝÈÝ›Û™ÈÈ›Û\Ú^™NŒLœÈ^X[YÛŽœšYÚÈX^]ÚYŒ	NÈBˆ™[\HÈZ[‹ZZYÚŒÈ\Ü^N™›^È›^Y\™XÝ[ÛŽ˜ÛÛ[[ŽÈ[YÛ‹Z][\Î˜Ù[\ŽÈ\ÝYžKXÛÛ[˜Ù[\ŽÈØ\Ž\È^X[YÛŽ˜Ù[\ŽÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈBˆ™[\HKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NœÈÛÛÜŽ˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙY˜ÌŠNÈBˆ™[\HÝ›Û™ÈÈÛÛÜŽ˜\ŠK\š[X\žK]^XÛÛÜŠNÈBˆ]ÛˆÈ]ÙXšÚ]]\ZYÚYÚXÛÛÜŽ˜[œÜ\™[ÈÝ\œÛÜŽœÚ[\ŽÈBˆÙ]KY[]WHÈÝXÚXXÝ[ÛŽ›X[š\[][ÛŽÈBˆYYXH
+Z[‹]ÚYÍŒ
+HÂˆ˜\ÈY[™ÎŒŒŒÈBˆ›Ý™\šY]ËYÜšYš\ÝÜžKYÜšYÈÜšY][\]KXÛÛ[[œÎŒYœˆYœŽÈBˆXœÈÈX^]ÚYLŒÈBˆ™XYÛ›ÜÝXËXØ\™ÈX^]ÚYÍŒÈBˆBˆYYXH
+X^]ÚYŒÎ
+HÂˆ˜\ÈY[™Ë[YŽ\ÈY[™Ë\šYÚŽ\ÈBˆHÈ›Û\Ú^™NŒŒÜÈBˆˆÈ›Û\Ú^™NŒŒÈBˆ\ËXØ\™™XYÛ›ÜÝXËXØ\™š\ÝÜžKXØ\™ÈY[™ÎŒLÜÈ›Ü™\‹\˜Y]\ÎŒN\ÈBˆœÝ]\ÈÈY[™ÎÜÈ›Û\Ú^™NŒL\ÈBˆœÝÙ\‹Y›ÝÈÈÜšY][\]KXÛÛ[[œÎ›Z[›X^
+ŽYœŠHŒœZ[›X^
+ÍœYœŠHŒœZ[›X^
+ŽYœŠNÈBˆ™›ÝË[›ÙK™›ÝË]\ÈÈZ[‹ZZYÚŽœÈBˆBˆÂˆB‚ˆÜ™[™\Š
+HÂˆYˆ
+]\ËœÚYÝÔ›ÛÝ
+H™]\›ŽÂˆ]›ÙHHˆŽÂˆYˆ
+]\Ë—Ú\ÜÈ\Ë—ÛØY[™Ô™YÚ\ÝžJHÂˆ›ÙHH]ˆÛ\ÜÏH™[\HKZXÛÛˆXÛÛH›YN›ØY[™ÈÚKZXÛÛÝ›Û™Ï´%ô,4,ô`4`ô-ô.´,Tø )ÜÝ›Û™ÏÙ]˜ÂˆH[ÙHYˆ
+\Ë—Ü™YÚ\ÝžQ\œ›ÜŠHÂˆ›ÙHH\Ë—Ù[\J´'t-H4`ô-4,4.ô/´`tc4/ô`4/´aô.4`´,4`´c4`4-t-t`t`´`4`t`ôbt/t/´`t`´-t.HŠNÂˆH[ÙHYˆ
+]\Ë—Ù]šXÙ\Ë›[™Ý
+HÂˆ›ÙHH\Ë—Ù[\J´(ô`t`´`4/´.t`t`´,´,Ý\šÈÛÛ\”ÝÙ\ˆ4/t-H4/t,4.t-4-t/tbÈŠNÂˆH[ÙHYˆ
+\Ë—ÝšY]ÈOOH™XYÛ›ÜÝXÜÈŠHÂˆ›ÙHH\Ë—Ü™[™\‘XYÛ›ÜÝXÜÊ
+NÂˆH[ÙHYˆ
+\Ë—ÝšY]ÈOOHš\ÝÜžHŠHÂˆ›ÙHH\Ë—Ü™[™\’\ÝÜžJ
+NÂˆH[ÙHÂˆ›ÙHH\Ë—Ü™[™\“Ý™\šY]Ê
+NÂˆB‚ˆ\ËœÚYÝÔ›ÛÝš[›™\’SHˆÝ[O‰Ý\Ë—ÜÝ[\Ê
+_OÜÝ[O‚ˆXZ[ˆÛ\ÜÏH˜\‚ˆXY\ˆÛ\ÜÏH˜\ZXY\ˆ‚ˆ]ˆÛ\ÜÏH]K]Ü˜\‚ˆ]ˆÛ\ÜÏH]KZXÛÛˆKZXÛÛˆXÛÛH›YN˜˜]\žKXÚ\™Ú[™ÈÚKZXÛÛÙ]‚ˆ]O”Ý\šÈÛÛ\”ÝÙ\ÚO]ˆÛ\ÜÏHœÝX]H•TÈ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸOÙ]Ù]‚ˆÙ]‚ˆ]ÛˆÛ\ÜÏHœ™Yœ™\Úˆ\šXK[X™[H´'´,t/t/´,´.4`´c4,´`t-H4&4$t'Èˆ]OH´'´,t/t/´,´.4`´c4,´`t-H4&4$t'ÈKZXÛÛˆXÛÛH›YNœ™Yœ™\ÚÚKZXÛÛØ]Û‚ˆÚXY\‚ˆ˜]ˆÛ\ÜÏHXœÈˆ\šXK[X™[H´(4,4-ô-4-t.ôbÈTÈ‚ˆ]ÛˆÛ\ÜÏHXˆ	Ý\Ë—ÝšY]ÈOOH›Ý™\šY]ÈˆÈ˜XÝ]™HˆˆˆŸHˆ]K]šY]ÏH›Ý™\šY]È´'´,t-ô/´`Ø]Û‚ˆ]ÛˆÛ\ÜÏHXˆ	Ý\Ë—ÝšY]ÈOOH™XYÛ›ÜÝXÜÈˆÈ˜XÝ]™HˆˆˆŸHˆ]K]šY]ÏH™XYÛ›ÜÝXÜÈ´%4.4,4,ô/t/´`t`´.4.´,Ø]Û‚ˆ]ÛˆÛ\ÜÏHXˆ	Ý\Ë—ÝšY]ÈOOHš\ÝÜžHˆÈ˜XÝ]™HˆˆˆŸHˆ]K]šY]ÏHš\ÝÜžH´&4`t`´/´`4.4cÏØ]Û‚ˆÛ˜]‚ˆ	Ø›Ù_BˆÛXZ[˜Â‚ˆ\Ë—Øš[™]™[Ê
+NÂˆB‚ˆØš[™]™[Ê
+HÂˆ\ËœÚYÝÔ›ÛÝœ]Y\žTÙ[XÝÜ[
+–Ù]K]šY]×HŠK™›Ü‘XXÚ
+
+]ÛŠHOˆÂˆ]Û‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂˆ\Ë—ÝšY]ÈH]Û‹™]\Ù]šY]ÎÂˆ\Ë—Ü]Y]YT™[™\Š
+NÂˆJNÂˆJNÂ‚ˆ\ËœÚYÝÔ›ÛÝœ]Y\žTÙ[XÝÜ[
+–Ù]KY]šXÙWHŠK™›Ü‘XXÚ
+
+]ÛŠHOˆÂˆ]Û‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂˆ\Ë—ÙXYÛ›ÜÝXÑ]šXÙRYH]Û‹™]\Ù]™]šXÙNÂˆ\Ë—Ü]Y]YT™[™\Š
+NÂˆJNÂˆJNÂ‚ˆ\ËœÚYÝÔ›ÛÝœ]Y\žTÙ[XÝÜŠ‹œ™Yœ™\ÚŠOË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹\Þ[˜È
+
+HOˆÂˆÛÛœÝ[]RYH\Ë—Ù]šXÙ\Ë›X\
+
+]šXÙJHOˆ\Ë—Ù[]RY
+]šXÙKœ™Yœ™\ÚÛ›ÝÈŠJK™š[™
+›ÛÛX[ŠNÂˆYˆ
+Y[]RY]\Ë—Ú\ÜÊH™]\›ŽÂˆžHÂˆ]ØZ]\Ë—Ú\ÜË˜Ø[Ù\šXÙJ˜]Ûˆ‹œ™\ÜÈ‹È[]WÚYˆ[]RYJNÂˆHØ]Ú
+\œŠHÂˆÛÛœÛÛKØ\›Š”Ý\šÈÛÛ\”ÝÙ\ˆ™Yœ™\Ú˜Z[Y‹\œŠNÂˆBˆJNÂ‚ˆ\ËœÚYÝÔ›ÛÝœ]Y\žTÙ[XÝÜ[
+–Ù]KY[]WHŠK™›Ü‘XXÚ
+
+[[Y[
+HOˆÂˆÛÛœÝ[]RYH[[Y[™]\Ù]™[]NÂˆYˆ
+Y[]RY
+H™]\›ŽÂˆ][Y\ˆH[Âˆ]š\™YH˜[ÙNÂˆÛÛœÝÛX\ˆH
+
+HOˆÂˆYˆ
+[Y\ŠHÛX\•[Y[Ý]
+[Y\ŠNÂˆ[Y\ˆH[ÂˆNÂˆ[[Y[˜Y]™[\Ý[™\ŠœÚ[\™ÝÛˆ‹
+
+HOˆÂˆš\™YH˜[ÙNÂˆ[Y\ˆHÙ][Y[Ý]
+
+
+HOˆÂˆš\™YHYNÂˆ\Ë—ÜÚÝÓ[Ü™R[™›Ê[]RY
+NÂˆKLŒ
+NÂˆJNÂˆ[[Y[˜Y]™[\Ý[™\ŠœÚ[\\‹ÛX\ŠNÂˆ[[Y[˜Y]™[\Ý[™\ŠœÚ[\˜Ø[˜Ù[‹ÛX\ŠNÂˆ[[Y[˜Y]™[\Ý[™\ŠœÚ[\›X]™H‹ÛX\ŠNÂˆYˆ
+[[Y[˜Û\ÜÓ\Ý˜ÛÛZ[œÊš\ÝÜžK[[šÈŠJHÂˆ[[Y[˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+]™[
+HOˆÂˆYˆ
+Yš\™Y
+H\Ë—ÜÚÝÓ[Ü™R[™›Ê[]RY
+NÂˆ]™[œ™]™[Y˜][
+
+NÂˆJNÂˆBˆJNÂˆB‚ˆÜÚÝÓ[Ü™R[™›Ê[]RY
+HÂˆ\Ë™\Ü]Ú]™[
+ˆ™]ÈÝ\ÝÛQ]™[
+š\ÜË[[Ü™KZ[™›È‹ÂˆX˜›\ÎˆYKˆÛÛ\ÜÙYˆYKˆ]Z[ˆÈ[]RYKˆJBˆ
+NÂˆBŸB‚˜Ý\ÝÛQ[[Y[Ë™Yš[™JœÝ\šË\ÛÛ\œÝÙ\‹\[™[‹Ý\šÔÛÛ\”ÝÙ\”[™[
+NÂŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[šœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒŒšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝTÕÔ–WÒUST×ÕŒŒHÂˆÈš[œ]Ý›ÛYÙH‹´$´at/´-4/t/´-H4/t,4/ô`4cô-´-t/t.4-H‹›YN™›\Ú—KˆÈ›Ý]]Ý›ÛYÙH‹´$´bôat/´-4/t/´-H4/t,4/ô`4cô-´-t/t.4-H‹›YNœÝÙ\‹\YÈ—KˆÈ›Ý]]ÛØY‹´'t,4,ô`4`ô-ô.´,‹›YN™Ø]YÙH—KˆÈ˜˜]\žWØØ\XÚ]H‹´%ô,4`4cô-4$4&´$H‹›YN˜˜]\žH—K—NÂ‚™[˜Ý[Ûˆ\ØÊ˜[YJHÂˆ™]\›ˆÝš[™Ê˜[YHÏÈˆŠBˆœ™\XÙP[
+‰ˆ‹‰˜[\ÈŠBˆœ™\XÙP[
+‹‰›ÈŠBˆœ™\XÙP[
+ˆ‹‰™ÝÈŠBˆœ™\XÙP[
+	È‰Ë‰œ][ÝÈŠBˆœ™\XÙP[
+‰È‹‰ˆÌÎNÈŠNÂŸB‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒŒ
+HÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒŒHYNÂ‚ˆÛÛœÝ˜\ÙQ›Ü›X]H[™[œ›ÝÝ\K—Ù›Ü›X]ÂˆÛÛœÝ˜\ÙTÝ[\ÈH[™[œ›ÝÝ\K—ÜÝ[\ÎÂˆÛÛœÝ˜\ÙT™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—Ù›Ü›X]]U[YHH[˜Ý[Ûˆ
+˜[YJHÂˆYˆ
+]˜[YJH™]\›ˆ´'t-t.4-ô,´-t`t`´/t/ˆŽÂˆÛÛœÝ]HH™]È]J˜[YJNÂˆYˆ
+[X™\‹š\Ó˜SŠ]K™Ù][YJ
+JJH™]\›ˆÝš[™Ê˜[YJNÂ‚ˆÛÛœÝ[YV›Û™HH\Ë—Ú\ÜÏË˜ÛÛ™šYÏË[YWÞ›Û™H[™Yš[™YÂˆžHÂˆ™]\›ˆ™]È[‘]U[YQ›Ü›X]
+œKT•H‹Âˆ[YV›Û™Kˆ^NˆŒ‹YYÚ]‹ˆ[ÛˆŒ‹YYÚ]‹ˆYX\ŽˆŒ‹YYÚ]‹ˆÝ\ŽˆŒ‹YYÚ]‹ˆZ[]NˆŒ‹YYÚ]‹ˆÙXÛÛ™ˆŒ‹YYÚ]‹ˆJK™›Ü›X]
+]JNÂˆHØ]Ú
+ÊHÂˆ™]\›ˆ]KÓØØ[TÝš[™ÊœKT•HŠNÂˆBˆNÂ‚ˆ[™[œ›ÝÝ\K—Ù›Ü›X]™[]]™HH[˜Ý[Ûˆ
+˜[YJHÂˆYˆ
+]˜[YJH™]\›ˆˆŽÂˆÛÛœÝ]HH™]È]J˜[YJNÂˆYˆ
+[X™\‹š\Ó˜SŠ]K™Ù][YJ
+JJH™]\›ˆˆŽÂˆÛÛœÝ[HHX]›X^
+X]œ›Ý[™
+
+]K››ÝÊ
+HH]K™Ù][YJ
+JHÈL
+JNÂˆYˆ
+[HŒ
+H™]\›ˆ	Ù[_H4`H4/t,4-ô,4-ÂˆYˆ
+[HÍŒ
+H™]\›ˆ	ÓX]™›ÛÜŠ[HÈŒ
+_H4/4.4/H4/t,4-ô,4-ÂˆYˆ
+[H
+H™]\›ˆ	ÓX]™›ÛÜŠ[HÈÍŒ
+_H4aÈ4/t,4-ô,4-Âˆ™]\›ˆ	ÓX]™›ÛÜŠ[HÈ
+_H4-4/H4/t,4-ô,4-ÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ù›Ü›X]H[˜Ý[Ûˆ
+]šXÙKÙ^K˜[˜XÚÈH¸ %ŠHÂˆÛÛœÝÝ]SØšˆH\Ë—ÜÝ]J]šXÙKÙ^JNÂˆYˆ
+ˆÝ]SØšˆ	‰‚ˆÝ]SØš‹œÝ]HOOH[˜]˜Z[X›Hˆ	‰‚ˆÝ]SØš‹œÝ]HOOH[šÛ›ÝÛˆˆ	‰‚ˆ
+Ù^HOOH™]WÝ[Y\Ý[\ˆÙ^HOOH›\ÝÜÝXØÙ\ÜÙ[Ý\]HŠBˆ
+HÂˆ™]\›ˆ\Ë—Ù›Ü›X]]U[YJÝ]SØš‹œÝ]JNÂˆBˆ™]\›ˆ˜\ÙQ›Ü›X]˜Ø[
+\Ë]šXÙKÙ^K˜[˜XÚÊNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ù]™[X™[H[˜Ý[Ûˆ
+˜]ÊHÂˆÛÛœÝX™[ÈHÂˆ˜]\žWÛ[ÙWÙ[\™Yˆ´'ô-t`4-tb4dt.È4/t,4,t,4`´,4`4-tcˆ‹ˆ˜]\žWÛ[ÙWÙ^]Yˆ´$´bôb4-t.È4.4-È4`4-t-´.4/4,4$4&´$H‹ˆ[[Y]žWÛÜÝˆ´(´-t.ô-t/4-t`´`4.4cÈ4/ô/´`´-t`4cô/t,‹ˆ[[Y]žWÜ™\ÝÜ™Yˆ´(´-t.ô-t/4-t`´`4.4cÈ4,´/´`t`t`´,4/t/´,´.ô-t/t,‹ˆ^[™YÝ[[Y]žWÛÜÝˆ´(4,4`tb4.4`4-t/t/t,4cÈ4`´-t.ô-t/4-t`´`4.4cÈ4/ô/´`´-t`4cô/t,‹ˆ^[™YÝ[[Y]žWÜ™\ÝÜ™Yˆ´(4,4`tb4.4`4-t/t/t,4cÈ4`´-t.ô-t/4-t`´`4.4cÈ4,´/´`t`t`´,4/t/´,´.ô-t/t,‹ˆ]WÜÝ[Nˆ´%4,4/t/tbô-H4`ô`t`´,4`4-t.ô.‹ˆ]WÙœ™\Úˆ´%4,4/t/tbô-H4`t/t/´,´,4`t,´-t-´.4-H‹ˆ˜][Û[ÙWÙ[\™Yˆ´$4,´,4`4.4.t/tbô.H4`4-t-´.4/‹ˆ˜][Û[ÙWØÛX\™Yˆ´$4,´,4`4.4.t/tbô.H4`4-t-´.4/4`t/tcô`ˆ‹ˆNÂˆ™]\›ˆX™[ÖÜ˜]×H˜]ÎÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ù]™[›ÝÈH[˜Ý[Ûˆ
+]šXÙKÙ^KX™[
+HÂˆÛÛœÝ[]RYH\Ë—Ù[]RY
+]šXÙKÙ^JNÂˆYˆ
+Y[]RY
+H™]\›ˆˆŽÂˆÛÛœÝÝ]SØšˆH\Ë—ÜÝ]J]šXÙKÙ^JNÂˆÛÛœÝ]˜Z[X›HH\Ë—Ø]˜Z[X›JÝ]SØšŠNÂˆÛÛœÝ˜]ÈHÝ]SØšË˜]šX]\ÏË™]™[Ý\H
+]˜Z[X›HÈÝ]SØš‹œÝ]Hˆ´'t-H4,tbô.ô/ˆ4`t/´,tbô`´.4.HŠNÂˆÛÛœÝ™[]]™HH]˜Z[X›HÈ\Ë—Ù›Ü›X]™[]]™JÝ]SØš‹›\ÝØÚ[™ÙY
+HˆˆŽÂˆÛÛœÝXœÛÛ]HH]˜Z[X›HÈ\Ë—Ù›Ü›X]]U[YJÝ]SØš‹›\ÝØÚ[™ÙY
+HˆˆŽÂˆ™]\›ˆ]ˆÛ\ÜÏH™]™[\›ÝÈ]™[\›ÝË]Œˆˆ]KY[]OH‰Ù\ØÊ[]RY
+_H‚ˆÜ[‰Ù\ØÊX™[
+_OÜÜ[‚ˆ]ˆÛ\ÜÏH™]™[XÛÜH‚ˆÝ›Û™Ï‰Ù\ØÊ\Ë—Ù]™[X™[
+˜]ÊJ_OÜÝ›Û™Ï‚ˆ	Ü™[]]™HÈÛX[]OH‰Ù\ØÊXœÛÛ]J_H‰Ù\ØÊ™[]]™J_OÜÛX[˜ˆˆŸBˆÙ]‚ˆÙ]˜ÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\’\ÝÜžHH[˜Ý[Ûˆ
+
+HÂˆ™]\›ˆˆÙXÝ[ÛˆÛ\ÜÏHš\ÝÜžKYÜšY‚ˆ	Ý\Ë—Ù]šXÙ\Ë›X\
+
+]šXÙJHOˆˆ\XÛHÛ\ÜÏHš\ÝÜžKXØ\™‚ˆ]ˆÛ\ÜÏH˜Ø\™ZXYÛÛ\XÝ‚ˆ]]ˆÛ\ÜÏH™^YXœ›ÝÈ´&4`t`´/´`4.4cÏÙ]‰Ù\ØÊ]šXÙK›˜[YJ_OÚÙ]‚ˆÜ[ˆÛ\ÜÏHš\ÝÜžK\Ý]H‰Ù\ØÊ\Ë—Û[ÙSX™[
+]šXÙJJ_OÜÜ[‚ˆÙ]‚ˆ]ˆÛ\ÜÏHš\ÝÜžK[Y]šXÜÈ‚ˆ	ÒTÕÔ–WÒUST×ÕŒŒ›X\
+
+ÚÙ^KX™[XÛÛ—JHOˆÂˆÛÛœÝ[]RYH\Ë—Ù[]RY
+]šXÙKÙ^JNÂˆYˆ
+Y[]RY
+H™]\›ˆˆŽÂˆ™]\›ˆ]ÛˆÛ\ÜÏHš\ÝÜžK[[šÈˆ]KY[]OH‰Ù\ØÊ[]RY
+_H‚ˆKZXÛÛˆXÛÛH‰ÚXÛÛŸHÚKZXÛÛ‚ˆÜ[‰Ù\ØÊX™[
+_OÜÜ[‚ˆÝ›Û™Ï‰Ù\ØÊ\Ë—Ù›Ü›X]
+]šXÙKÙ^JJ_OÜÝ›Û™Ï‚ˆKZXÛÛˆXÛÛH›YN˜Ú\[[™HÚKZXÛÛ‚ˆØ]Û˜ÂˆJKš›Ú[ŠˆŠ_BˆÙ]‚ˆ]ˆÛ\ÜÏH™]™[\Ý[[X\žH‚ˆÏ´'ô/´`t.ô-t-4/t.4-H4`t/´,tbô`´.4cÏÚÏ‚ˆ	Ý\Ë—Ù]™[›ÝÊ]šXÙK˜˜]\žWÛ[ÙWÙ]™[È‹´(4-t-´.4/4$4&´$HŠ_Bˆ	Ý\Ë—Ù]™[›ÝÊ]šXÙK˜ÛÝYÝ[[Y]žWÙ]™[È‹´'´,t.ô,4.´/ˆŠ_Bˆ	Ý\Ë—Ù]™[›ÝÊ]šXÙK™]WÙœ™\Ú™\Ü×Ù]™[È‹´(t,´-t-´-t`t`´c4-4,4/t/tbôaHŠ_Bˆ	Ý\Ë—Ù]™[›ÝÊ]šXÙK™˜][Û[ÙWÙ]™[È‹´$4,´,4`4.4.t/tbô.H4`4-t-´.4/Š_BˆÙ]‚ˆØ\XÛO˜
+Kš›Ú[ŠˆŠ_BˆÜÙXÝ[Û‚ˆÛ\ÜÏHš[´'ô/´.´,4-ô,4`´-t.ô.4/´`´.´`4bô,´,4c´`ˆ4b4`´,4`´/t`ôcˆ4.4`t`´/´`4.4cˆÛYH\ÜÚ\Ý[ˆ4%4.ôcÈ4a4,4.´`´.4aô-t`t.´.4aH4`t`ôbt/t/´`t`´-t.H4`t/´at`4,4/tcô-t`´`tcÈÛ™È™\ÜÈ8¡¤ˆ[Ü™KZ[™›ËÜ˜ÂˆNÂ‚ˆ[™[œ›ÝÝ\K—ÜÝ[\ÈH[˜Ý[Ûˆ
+
+HÂˆ™]\›ˆ	Ø˜\ÙTÝ[\Ë˜Ø[
+\Ê_BˆšÜÝÈÛÛÜ‹\ØÚ[YNˆYÚ\šÎÈBˆ™XYÛ›ÜÝXË\›ÝÈÝ›Û™ÈÈ›Û]˜\šX[[[Y\šXÎˆX[\‹[[\ÎÈBˆš\ÝÜžK\Ý]HÂˆÛÛÜŽˆ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÂˆ›Û\Ú^™NˆLœÂˆ›Û]ÙZYÚˆŒÂˆÚ]K\ÜXÙNˆ›ÝÜ˜\ÂˆBˆ™]™[\›ÝË]ŒˆÈ[YÛ‹Z][\ÎˆÙ[\ŽÈBˆ™]™[XÛÜHÂˆ\Ü^Nˆ›^Âˆ›^Y\™XÝ[ÛŽˆÛÛ[[ŽÂˆ[YÛ‹Z][\Îˆ›^Y[™ÂˆØ\ˆÜÂˆX^]ÚYˆ	NÂˆZ[‹]ÚYˆÂˆBˆ™]™[XÛÜHÝ›Û™ÈÂˆX^]ÚYˆL	NÂˆ^X[YÛŽˆšYÚÂˆÝ™\™›ÝË]Ü˜\ˆ[ž]Ú\™NÂˆBˆ™]™[XÛÜHÛX[ÂˆÛÛÜŽˆ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÂˆ›Û\Ú^™NˆLÂˆ›Û]ÙZYÚˆLÂˆÚ]K\ÜXÙNˆ›ÝÜ˜\ÂˆBˆYYXH
+X^]ÚYˆÌ
+HÂˆ™XYÛ›ÜÝXË\›ÝÈÈØ\ˆÈBˆ™XYÛ›ÜÝXË\›ÝÈÜ[ˆÈX^]ÚYˆM	NÈBˆ™XYÛ›ÜÝXË\›ÝÈÝ›Û™ÈÈX^]ÚYˆ‰NÈBˆBˆÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ˜\ÙT™[™\‹˜Ø[
+\ÊNÂˆÛÛœÝÝX]HH\ËœÚYÝÔ›ÛÝËœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[H•TÈ0­ÈRHŒŒ‹ŒŽÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒŒšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒŒKšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒŒJHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒŒHHYNÂ‚ˆÛÛœÝ˜\ÙT™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂˆÛÛœÝ˜\ÙTÝ[\ÈH[™[œ›ÝÝ\K—ÜÝ[\ÎÂ‚ˆ[™[œ›ÝÝ\K—Û˜]šYØ]P˜XÚÈH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝ˜[˜XÚÈH‹Ù\Ú›Ø\™Z[™œ˜\ÝXÝ\™KÛÝ™\šY]ÈŽÂˆÚ[™ÝËš\ÝÜžKœ\ÚÝ]JÚ[™ÝËš\ÝÜžKœÝ]Kˆ‹˜[˜XÚÊNÂˆÚ[™ÝË™\Ü]Ú]™[
+ˆ™]ÈÝ\ÝÛQ]™[
+›ØØ][Û‹XÚ[™ÙY‹ÂˆX˜›\ÎˆYKˆÛÛ\ÜÙYˆYKˆ]Z[ˆÈ™\XÙNˆYHKˆJBˆ
+NÂˆNÂ‚ˆ[™[œ›ÝÝ\K—ÜÝ[\ÈH[˜Ý[Ûˆ
+
+HÂˆ™]\›ˆ	Ø˜\ÙTÝ[\Ë˜Ø[
+\Ê_BˆšXY\‹[XZ[ˆÂˆ\Ü^Nˆ›^Âˆ[YÛ‹Z][\ÎˆÙ[\ŽÂˆØ\ˆÂˆZ[‹]ÚYˆÂˆBˆ˜˜XÚÈÂˆÚYˆÂˆZ[‹]ÚYˆÂˆZYÚˆÂˆ›Ü™\ŽˆÂˆ›Ü™\‹\˜Y]\ÎˆMÂˆ˜XÚÙÜ›Ý[™ˆ˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠNÂˆÛÛÜŽˆ˜\ŠK\š[X\žK]^XÛÛÜŠNÂˆ\Ü^NˆÜšYÂˆXÙKZ][\ÎˆÙ[\ŽÂˆ›Þ\ÚYÝÎˆ˜\ŠKZKXØ\™X›Þ\ÚYÝË\Ü™Ø˜JŒMJJNÂˆBˆ˜˜XÚÈKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™Nˆ\ÈBˆYYXH
+X^]ÚYˆÌ
+HÂˆšXY\‹[XZ[ˆÈØ\ˆÜÈBˆ˜˜XÚÈÈÚYˆœÈZ[‹]ÚYˆœÈZYÚˆœÈ›Ü™\‹\˜Y]\ÎˆLÜÈBˆ˜\ZXY\ˆ]KZXÛÛˆÈÚYˆœÈZYÚˆœÈ›Ü™\‹\˜Y]\ÎˆMÈBˆ˜\ZXY\ˆ]K]Ü˜\ÈØ\ˆ\ÈBˆ˜\ZXY\ˆHÈ›Û\Ú^™NˆÈBˆBˆÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ˜\ÙT™[™\‹˜Ø[
+\ÊNÂ‚ˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆÛÛœÝXY\ˆH›ÛÝËœ]Y\žTÙ[XÝÜŠ‹˜\ZXY\ˆŠNÂˆÛÛœÝ]UÜ˜\HXY\Ëœ]Y\žTÙ[XÝÜŠ‹]K]Ü˜\ŠNÂˆYˆ
+ZXY\ˆ]]UÜ˜\
+H™]\›ŽÂ‚ˆÛÛœÝÝX]HH]UÜ˜\œ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[H•TÈ0­ÈRHŒŒ‹ŒHŽÂ‚ˆYˆ
+XY\‹œ]Y\žTÙ[XÝÜŠ‹šXY\‹[XZ[ˆŠJH™]\›ŽÂ‚ˆÛÛœÝÜ›Ý\HØÝ[Y[˜Ü™X]Q[[Y[
+™]ˆŠNÂˆÜ›Ý\˜Û\ÜÓ˜[YHHšXY\‹[XZ[ˆŽÂˆXY\‹š[œÙ\™Y›Ü™JÜ›Ý\]UÜ˜\
+NÂ‚ˆÛÛœÝ]ÛˆHØÝ[Y[˜Ü™X]Q[[Y[
+˜]ÛˆŠNÂˆ]Û‹˜Û\ÜÓ˜[YHH˜˜XÚÈŽÂˆ]Û‹\HH˜]ÛˆŽÂˆ]Û‹œÙ]]šX]J˜\šXK[X™[‹´'t,4-ô,4-ŠNÂˆ]Û‹œÙ]]šX]J]H‹´'t,4-ô,4-ŠNÂˆ]Û‹š[›™\’SH	ÏKZXÛÛˆXÛÛH›YN˜\œ›ÝË[YÚKZXÛÛ‰ÎÂˆ]Û‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆ\Ë—Û˜]šYØ]P˜XÚÊ
+JNÂ‚ˆÜ›Ý\˜\[™
+]Û‹]UÜ˜\
+NÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒŒKšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒÌšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒŒËŒŽÂ˜ÛÛœÝT‘S•Ô“ÕUHH‹Ù\Ú›Ø\™Z[™œ˜\ÝXÝ\™KÛÝ™\šY]ÈŽÂ‚˜ÛÛœÝU—ÒUSTÈHÂˆÝ™\šY]ÎˆÈ›YNšY]ËY\Ú›Ø\™[Ý][™H‹´'´,t-ô/´`—KˆXYÛ›ÜÝXÜÎˆÈ›YNœÝ]ÜØÛÜH‹´%4.4,4,ô/t/´`t`´.4.´,—Kˆ\ÝÜžNˆÈ›YN˜Ú\[[™H‹´&4`t`´/´`4.4cÈ—KŸNÂ‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒÌ
+HÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒÌHYNÂ‚ˆÛÛœÝ˜\ÙT™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂˆÛÛœÝ˜\ÙTÝ[\ÈH[™[œ›ÝÝ\K—ÜÝ[\ÎÂ‚ˆ[™[œ›ÝÝ\K—Û˜]šYØ]UÈH[˜Ý[Ûˆ
+]
+HÂˆÛÛœÝœ›ÛHH	ÝÚ[™ÝË›ØØ][Û‹œ]˜[Y_IÝÚ[™ÝË›ØØ][Û‹œÙX\˜ÚIÝÚ[™ÝË›ØØ][Û‹š\ÚXÂˆÚ[™ÝËš\ÝÜžKœ\ÚÝ]JÈœ›ÛHKˆ‹]
+NÂˆÚ[™ÝË™\Ü]Ú]™[
+ˆ™]ÈÝ\ÝÛQ]™[
+›ØØ][Û‹XÚ[™ÙY‹ÂˆX˜›\ÎˆYKˆÛÛ\ÜÙYˆYKˆ]Z[ˆÈ™\XÙNˆ˜[ÙHKˆJBˆ
+NÂˆNÂ‚ˆËÈšZØTÈ\XØ][ÛˆÛÛ˜XÝˆ˜XÚÈ\È[ˆ^XÚ]\™[˜]šYØ][ÛˆXÝ[Û‹ˆËÈ™]™\ˆœ›ÝÜÙ\‹Z\ÝÜžH˜]™\œØ[‚ˆ[™[œ›ÝÝ\K—Û˜]šYØ]P˜XÚÈH[˜Ý[Ûˆ
+
+HÂˆ\Ë—Û˜]šYØ]UÊT‘S•Ô“ÕUJNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—ÜÝ[\ÈH[˜Ý[Ûˆ
+
+HÂˆ™]\›ˆ	Ø˜\ÙTÝ[\Ë˜Ø[
+\Ê_Bˆ˜\ÂˆY[™ËX›ÝÛNˆØ[ÊMœ
+È[ŠØY™KX\™XKZ[œÙ]X›ÝÛJJNÂˆBˆXœË˜›ÝÛK[˜]ˆÂˆÜÚ][ÛŽˆš^YÂˆYˆL	NÂˆšYÚˆ]]ÎÂˆ›ÝÛNˆÂˆ‹Z[™^ˆLÂˆÚYˆZ[ŠL	KŒŒ
+NÂˆ˜[œÙ›Ü›Nˆ˜[œÛ]V
+ML	JNÂˆÜšY][\]KXÛÛ[[œÎˆ™\X]
+ËZ[›X^
+YœŠJNÂˆØ\ˆÂˆX\™Ú[ŽˆÂˆY[™ÎˆÜX^
+[ŠØY™KX\™XKZ[œÙ]\šYÚ
+JHØ[ÊÜ
+È[ŠØY™KX\™XKZ[œÙ]X›ÝÛJJHX^
+[ŠØY™KX\™XKZ[œÙ][Y
+JNÂˆ›Ü™\‹\˜Y]\ÎˆNNÂˆ›Ü™\Žˆ\ÛÛYÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKY]šY\‹XÛÛÜŠHÌ	K˜[œÜ\™[
+NÂˆ›Ü™\‹X›ÝÛNˆÂˆ˜XÚÙÜ›Ý[™ˆÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠHM	K˜[œÜ\™[
+NÂˆ›Þ\ÚYÝÎˆMœ™Ø˜JŒ
+NÂˆ˜XÚÙ›ÜYš[\Žˆ›\ŠŒ
+HØ]\˜]JMIJNÂˆ]ÙXšÚ]X˜XÚÙ›ÜYš[\Žˆ›\ŠŒ
+HØ]\˜]JMIJNÂˆBˆ˜›ÝÛK[˜]ˆXˆÂˆZ[‹]ÚYˆÂˆZYÚˆ]]ÎÂˆZ[‹ZZYÚˆNÂˆ›Ü™\‹\˜Y]\ÎˆMÂˆ\Ü^Nˆ›^Âˆ›^Y\™XÝ[ÛŽˆÛÛ[[ŽÂˆ[YÛ‹Z][\ÎˆÙ[\ŽÂˆ\ÝYžKXÛÛ[ˆÙ[\ŽÂˆØ\ˆÜÂˆY[™ÎˆœÂˆ›Û\Ú^™NˆLÂˆ[™KZZYÚˆKŒNÂˆBˆ˜›ÝÛK[˜]ˆXˆKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NˆŒœÈBˆ˜›ÝÛK[˜]ˆX‹˜XÝ]™HÂˆÛÛÜŽˆ˜\ŠK\š[X\žKXÛÛÜŠNÂˆ˜XÚÙÜ›Ý[™ˆÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\š[X\žKXÛÛÜŠHL	K˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠJNÂˆ›Þ\ÚYÝÎˆ›Û™NÂˆBˆ˜›ÝÛK[˜]ˆXŽ˜XÝ]™HÈ˜[œÙ›Ü›NˆØØ[JŽMÊNÈBˆYYXH
+Z[‹]ÚYˆÍŒ
+HÂˆXœË˜›ÝÛK[˜]ˆÈÚYˆZ[ŠŒŒØ[ÊL	HHÌœ
+JNÈBˆBˆYYXH
+X^]ÚYˆÌ
+HÂˆ˜\ZXY\ˆÈX\™Ú[‹X›ÝÛNˆLœÈBˆ˜›ÝÛK[˜]ˆXˆÈZ[‹ZZYÚˆMœÈBˆBˆÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ˜\ÙT™[™\‹˜Ø[
+\ÊNÂ‚ˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆÛÛœÝXZ[ˆH›ÛÝËœ]Y\žTÙ[XÝÜŠ›XZ[‹˜\ŠNÂˆÛÛœÝ˜]ˆH›ÛÝËœ]Y\žTÙ[XÝÜŠ‹XœÈŠNÂˆYˆ
+\›ÛÝ[XZ[ˆ[˜]ŠH™]\›ŽÂ‚ˆÛÛœÝÝX]HH›ÛÝœ]Y\žTÙ[XÝÜŠ‹˜\ZXY\ˆœÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂ‚ˆ˜]‹˜Û\ÜÓ\Ý˜Y
+˜›ÝÛK[˜]ˆŠNÂˆ˜]‹œÙ]]šX]J˜\šXK[X™[‹´(4,4-ô-4-t.ôbÈÝ\šÈÛÛ\”ÝÙ\ˆŠNÂ‚ˆ˜]‹œ]Y\žTÙ[XÝÜ[
+˜]Û–Ù]K]šY]×HŠK™›Ü‘XXÚ
+
+]ÛŠHOˆÂˆÛÛœÝ][HHU—ÒUSTÖØ]Û‹™]\Ù]šY]×NÂˆYˆ
+Z][JH™]\›ŽÂˆÛÛœÝÚXÛÛ‹X™[HH][NÂˆ]Û‹š[›™\’SHKZXÛÛˆXÛÛH‰ÚXÛÛŸHÚKZXÛÛÜ[‰ÛX™[OÜÜ[˜Âˆ]Û‹œÙ]]šX]J˜\šXK[X™[‹X™[
+NÂˆYˆ
+]Û‹˜Û\ÜÓ\Ý˜ÛÛZ[œÊ˜XÝ]™HŠJH]Û‹œÙ]]šX]J˜\šXKXÝ\œ™[‹œYÙHŠNÂˆ[ÙH]Û‹œ™[[Ý™P]šX]J˜\šXKXÝ\œ™[ŠNÂˆJNÂ‚ˆËÈ[Ýš[™ÈH[™XYKX›Ý[™˜]šYØ][ÛˆÙY\È]ÈÛXÚÈ[™\œÈ[™XÙ\ÂˆËÈHš[X\žHÙXÝ[ÛˆÝÚ]Ú\ˆ[ˆH[Xˆ›Û™K™[ÝÈ[YÙHÛÛ[‚ˆXZ[‹˜\[™
+˜]ŠNÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒÌšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒÌKšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒŒËŒHŽÂ‚™[˜Ý[Ûˆ\ØÊ˜[YJHÂˆ™]\›ˆÝš[™Ê˜[YHÏÈˆŠBˆœ™\XÙP[
+‰ˆ‹‰˜[\ÈŠBˆœ™\XÙP[
+‹‰›ÈŠBˆœ™\XÙP[
+ˆ‹‰™ÝÈŠBˆœ™\XÙP[
+	È‰Ë‰œ][ÝÈŠBˆœ™\XÙP[
+‰È‹‰ˆÌÎNÈŠNÂŸB‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒÌJHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒÌHHYNÂ‚ˆÛÛœÝ˜\ÙT™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—ÜÙ[XÝY\ÒYH[˜Ý[Ûˆ
+
+HÂˆ™]\›ˆ\Ë—ÙXYÛ›ÜÝXÑ]šXÙRY\Ë—Ù]šXÙ\ÏË–ÌOËšY[ÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Üš[Üš]^™TÙ[XÝY\ÈH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝÙ[XÝYYH\Ë—ÜÙ[XÝY\ÒY
+
+NÂˆYˆ
+\Ù[XÝYYP\œ˜^Kš\Ð\œ˜^J\Ë—Ù]šXÙ\ÊH\Ë—Ù]šXÙ\Ë›[™ÝŠH™]\›ŽÂˆÛÛœÝ[™^H\Ë—Ù]šXÙ\Ë™š[™[™^
+
+]šXÙJHOˆ]šXÙKšYOOHÙ[XÝYY
+NÂˆYˆ
+[™^H
+H™]\›ŽÂˆÛÛœÝÙ[XÝYH\Ë—Ù]šXÙ\ÖÚ[™^NÂˆ\Ë—Ù]šXÙ\ÈHÜÙ[XÝY‹‹\Ë—Ù]šXÙ\Ë™š[\Š
+]šXÙJHOˆ]šXÙKšYOOHÙ[XÝYY
+WNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ú[œÝ[]šXÙPÛÛ^H[˜Ý[Ûˆ
+
+HÂˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆÛÛœÝXY\ˆH›ÛÝËœ]Y\žTÙ[XÝÜŠ‹˜\ZXY\ˆŠNÂˆYˆ
+\›ÛÝZXY\ˆ]\Ë—Ù]šXÙ\ÏË›[™Ý
+H™]\›ŽÂ‚ˆËÈXYÛ›ÜÝXÜÈY]ÈÝÛˆØØ[ÝÚ]Ú\ˆ[ˆHš\œÝRH™]š\Ú[ÛœË‚ˆËÈHšZØTÈ\Ú[›ÝÈÝÛœÈÛ™H]šXÙKXÛÛ^Ù[XÝÜˆÚ\™YžH[šY]ÜË‚ˆ›ÛÝœ]Y\žTÙ[XÝÜ[
+‹™]šXÙK\ÝÚ]Ú\ˆŠK™›Ü‘XXÚ
+
+›ÙJHOˆ›ÙKœ™[[Ý™J
+JNÂˆ›ÛÝœ]Y\žTÙ[XÝÜŠ‹™ÛØ˜[Y]šXÙKXÛÛ^ŠOËœ™[[Ý™J
+NÂ‚ˆYˆ
+\›ÛÝœ]Y\žTÙ[XÝÜŠœÝ[VÙ]K\Ý\šËY]šXÙKXÛÛ^HŠJHÂˆÛÛœÝÝ[HHØÝ[Y[˜Ü™X]Q[[Y[
+œÝ[HŠNÂˆÝ[K™]\Ù]œÝ\šÑ]šXÙPÛÛ^HYHŽÂˆÝ[K^ÛÛ[Hˆ™ÛØ˜[Y]šXÙKXÛÛ^Âˆ\Ü^NˆÜšYÂˆÜšY][\]KXÛÛ[[œÎˆ™\X]
+˜\ŠK]\ËXÛÝ[
+KZ[›X^
+YœŠJNÂˆØ\ˆÂˆX\™Ú[ŽˆœLœÂˆBˆ™ÛØ˜[Y]šXÙKXÛÛ^]ÛˆÂˆZ[‹]ÚYˆÂˆZ[‹ZZYÚˆÂˆ›Ü™\Žˆ\ÛÛY˜\ŠKY]šY\‹XÛÛÜŠNÂˆ›Ü™\‹\˜Y]\ÎˆM\ÂˆY[™ÎˆÜ\Âˆ\Ü^Nˆ›^Âˆ[YÛ‹Z][\ÎˆÙ[\ŽÂˆ\ÝYžKXÛÛ[ˆÙ[\ŽÂˆØ\ˆÜÂˆ˜XÚÙÜ›Ý[™ˆ˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠNÂˆÛÛÜŽˆ˜\ŠK\š[X\žK]^XÛÛÜŠNÂˆ›Ûˆ[š\š]Âˆ›Û\Ú^™NˆLœÂˆ›Û]ÙZYÚˆLÂˆ[™KZZYÚˆKŒMNÂˆ^X[YÛŽˆÙ[\ŽÂˆ]ÙXšÚ]]\ZYÚYÚXÛÛÜŽˆ˜[œÜ\™[ÂˆBˆ™ÛØ˜[Y]šXÙKXÛÛ^]Û‹˜XÝ]™HÂˆ›Ü™\‹XÛÛÜŽˆ˜\ŠK\š[X\žKXÛÛÜŠNÂˆÛÛÜŽˆ˜\ŠK\š[X\žKXÛÛÜŠNÂˆ˜XÚÙÜ›Ý[™ˆÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\š[X\žKXÛÛÜŠHÉK˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠJNÂˆ›Û]ÙZYÚˆÍLÂˆBˆ™ÛØ˜[Y]šXÙKXÛÛ^]ÛŽ˜XÝ]™HÈ˜[œÙ›Ü›NˆØØ[JŽN
+NÈBˆ™]šXÙKZX[YÝÂˆÚYˆÂˆZYÚˆÂˆ›^ˆÂˆ›Ü™\‹\˜Y]\ÎˆL	NÂˆ˜XÚÙÜ›Ý[™ˆ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÂˆBˆ™]šXÙKZX[YÝ™ÛÛÙÈ˜XÚÙÜ›Ý[™ˆ˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™MÙÌŠNÈBˆ™]šXÙKZX[YÝØ\›ˆÈ˜XÚÙÜ›Ý[™ˆ˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙY˜ÌŠNÈBˆ™]šXÙKZX[YÝ˜˜YÈ˜XÚÙÜ›Ý[™ˆ˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙÌ™Œ™ŠNÈBˆ™ÛØ˜[Y]šXÙKXÛÛ^™]šXÙK[˜[YHÂˆZ[‹]ÚYˆÂˆÝ™\™›ÝË]Ü˜\ˆ[ž]Ú\™NÂˆBˆYYXH
+X^]ÚYˆÎ
+HÂˆ™ÛØ˜[Y]šXÙKXÛÛ^ÈØ\ˆœÈX\™Ú[‹[YˆÈX\™Ú[‹\šYÚˆÈBˆ™ÛØ˜[Y]šXÙKXÛÛ^]ÛˆÈY[™ÎˆœÈ›Û\Ú^™NˆL\ÈBˆBˆÂˆ›ÛÝ˜\[™
+Ý[JNÂˆB‚ˆÛÛœÝÙ[XÝYYH\Ë—ÜÙ[XÝY\ÒY
+
+NÂˆÛÛœÝÙ[XÝÜˆHØÝ[Y[˜Ü™X]Q[[Y[
+™]ˆŠNÂˆÙ[XÝÜ‹˜Û\ÜÓ˜[YHH™ÛØ˜[Y]šXÙKXÛÛ^ŽÂˆÙ[XÝÜ‹œÙ]]šX]J˜\šXK[X™[‹´$´bô,t/´`TÈŠNÂˆÙ[XÝÜ‹œÝ[KœÙ]›Ü\J‹K]\ËXÛÝ[‹Ýš[™ÊX]›X^
+K\Ë—Ù]šXÙ\Ë›[™Ý
+JJNÂˆÙ[XÝÜ‹š[›™\’SH\Ë—Ù]šXÙ\Âˆ›X\
+
+]šXÙJHOˆÂˆÛÛœÝÛ™HH\Ë—ÜÝ]\ÏËŠ]šXÙJOËÛ™H˜˜YŽÂˆÛÛœÝXÝ]™HH]šXÙKšYOOHÙ[XÝYYÂˆ™]\›ˆ]Ûˆ\OH˜]Ûˆˆ]K]\ËY]šXÙOH‰Ù\ØÊ]šXÙKšY
+_HˆÛ\ÜÏH‰ØXÝ]™HÈ˜XÝ]™HˆˆˆŸHˆ\šXK\™\ÜÙYH‰ØXÝ]™HÈYHˆˆ™˜[ÙHŸH‚ˆÜ[ˆÛ\ÜÏH™]šXÙKZX[YÝ	Ù\ØÊÛ™J_Hˆ\šXKZY[HYHÜÜ[‚ˆÜ[ˆÛ\ÜÏH™]šXÙK[˜[YH‰Ù\ØÊ]šXÙK›˜[YJ_OÜÜ[‚ˆØ]Û˜ÂˆJBˆš›Ú[ŠˆŠNÂ‚ˆXY\‹š[œÙ\Y˜XÙ[[[Y[
+˜Y\™[™‹Ù[XÝÜŠNÂ‚ˆÙ[XÝÜ‹œ]Y\žTÙ[XÝÜ[
+˜]Û–Ù]K]\ËY]šXÙWHŠK™›Ü‘XXÚ
+
+]ÛŠHOˆÂˆ]Û‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂˆÛÛœÝ]šXÙRYH]Û‹™]\Ù]\Ñ]šXÙNÂˆYˆ
+Y]šXÙRY]šXÙRYOOH\Ë—ÜÙ[XÝY\ÒY
+
+JH™]\›ŽÂˆ\Ë—ÙXYÛ›ÜÝXÑ]šXÙRYH]šXÙRYÂˆ\Ë—Üš[Üš]^™TÙ[XÝY\Ê
+NÂˆ\Ë—Ü]Y]YT™[™\Š
+NÂˆJNÂˆJNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ\Ë—Üš[Üš]^™TÙ[XÝY\Ê
+NÂˆ˜\ÙT™[™\‹˜Ø[
+\ÊNÂ‚ˆÛÛœÝÝX]HH\ËœÚYÝÔ›ÛÝËœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂ‚ˆ\Ë—Ú[œÝ[]šXÙPÛÛ^
+
+NÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒÌKšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒÌ‹šœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒŒËŒˆŽÂ‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒÌŠHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒÌˆHYNÂ‚ˆËÈ]šXÙHÜ™\ˆ\ÈHÝX›HRHÛÛ˜XÝˆTÈ[\›™]Ý^\Èš\œÝTÈ›Ú[\ˆÙXÛÛ™‚ˆËÈÙ[XÝ[ÛˆÚ[™Ù\ÈÛ›HXÝ]™HÝ]H[™ÛÛ[ÛÛ^È]™]™\ˆ™[Ü™\œÈÛÛ›ÛË‚ˆ[™[œ›ÝÝ\K—Üš[Üš]^™TÙ[XÝY\ÈH[˜Ý[Ûˆ
+
+HßNÂ‚ˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂ‚ˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆYˆ
+\›ÛÝ
+H™]\›ŽÂ‚ˆÛÛœÝÝX]HH›ÛÝœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂ‚ˆËÈRHÝ[™\™ŒKŒŽˆ›ÈXÛÜ˜]]™Hœ˜[™Ù]šXÙHXÛÛˆ[ˆHXY\ˆ[™ˆËÈ]H\ÈÙ[ÛY]šXØ[HÙ[\™YYØZ[œÝÞ[[Y]šXÈ˜XÚËÔ™Yœ™\Ú›Û™\Ë‚ˆ›ÛÝœ]Y\žTÙ[XÝÜŠ‹]KZXÛÛˆŠOËœ™[[Ý™J
+NÂ‚ˆYˆ
+\›ÛÝœ]Y\žTÙ[XÝÜŠœÝ[VÙ]K\Ý\šË]ZK]ŒÌ—HŠJHÂˆÛÛœÝÝ[HHØÝ[Y[˜Ü™X]Q[[Y[
+œÝ[HŠNÂˆÝ[K™]\Ù]œÝ\šÕZUŒÌˆHYHŽÂˆÝ[K^ÛÛ[Hˆ˜\ZXY\ˆÂˆ\Ü^NˆÜšYZ[\Ü[ÂˆÜšY][\]KXÛÛ[[œÎˆLœZ[›X^
+YœŠHLœZ[\Ü[Âˆ[YÛ‹Z][\ÎˆÙ[\ˆZ[\Ü[ÂˆØ\ˆZ[\Ü[ÂˆBˆšXY\‹[XZ[ˆÈ\Ü^NˆÛÛ[ÈZ[\Ü[ÈBˆ˜˜XÚÈÂˆÜšYXÛÛ[[ŽˆHZ[\Ü[Âˆ\ÝYžK\Ù[ŽˆÝ\Z[\Ü[ÂˆÚYˆZ[\Ü[ÂˆZ[‹]ÚYˆZ[\Ü[ÂˆZYÚˆZ[\Ü[ÂˆBˆ]K]Ü˜\ÂˆÜšYXÛÛ[[ŽˆˆZ[\Ü[ÂˆZ[‹]ÚYˆZ[\Ü[Âˆ\Ü^Nˆ›ØÚÈZ[\Ü[Âˆ^X[YÛŽˆÙ[\ˆZ[\Ü[ÂˆBˆ]K]Ü˜\ˆ]ˆÈZ[‹]ÚYˆZ[\Ü[ÈBˆ˜\ZXY\ˆHÂˆX\™Ú[ŽˆZ[\Ü[ÂˆÝ™\™›ÝÎˆY[ˆZ[\Ü[Âˆ^[Ý™\™›ÝÎˆ[\Ú\ÈZ[\Ü[ÂˆÚ]K\ÜXÙNˆ›ÝÜ˜\Z[\Ü[Âˆ^X[YÛŽˆÙ[\ˆZ[\Ü[ÂˆBˆœÝX]HÈ^X[YÛŽˆÙ[\ˆZ[\Ü[ÈBˆœ™Yœ™\ÚÂˆÜšYXÛÛ[[ŽˆÈZ[\Ü[Âˆ\ÝYžK\Ù[Žˆ[™Z[\Ü[ÂˆÚYˆZ[\Ü[ÂˆZ[‹]ÚYˆZ[\Ü[ÂˆB‚ˆ™ÛØ˜[Y]šXÙKXÛÛ^ÂˆÜšY][\]KXÛÛ[[œÎˆ™\X]
+˜\ŠK]\ËXÛÝ[
+KZ[›X^
+YœŠJHZ[\Ü[ÂˆBˆ™ÛØ˜[Y]šXÙKXÛÛ^]ÛˆÂˆZ[‹ZZYÚˆZ[\Ü[ÂˆB‚ˆYYXH
+X^]ÚYˆÌ
+HÂˆ˜\ZXY\ˆÂˆÜšY][\]KXÛÛ[[œÎˆZ[›X^
+YœŠHZ[\Ü[ÂˆBˆ˜\ZXY\ˆHÈ›Û\Ú^™NˆŒÜZ[\Ü[ÈBˆBˆÂˆ›ÛÝ˜\[™
+Ý[JNÂˆB‚ˆËÈ][KY]šXÙHÛÛ[›ÛÝÜÈXYÛ›ÜÝXÜÎˆÛ™HÙ[XÝY\ÚXØ[TÈÛ›K‚ˆËÈHÙ[XÝÜˆÝ^\È[ˆ]Èš^YÜ™\ˆX›Ý™NÈÛ›HHXÝ]™HÛÛ[Ú[™Ù\Ë‚ˆÛÛœÝÙ[XÝYYH\Ë—ÜÙ[XÝY\ÒYËŠ
+NÂˆÛÛœÝÙ[XÝY[™^H\œ˜^Kš\Ð\œ˜^J\Ë—Ù]šXÙ\ÊBˆÈ\Ë—Ù]šXÙ\Ë™š[™[™^
+
+]šXÙJHOˆ]šXÙKšYOOHÙ[XÝYY
+BˆˆLNÂ‚ˆYˆ
+Ù[XÝY[™^H
+HÂˆYˆ
+\Ë—ÝšY]ÈOOH›Ý™\šY]ÈŠHÂˆ›ÛÝœ]Y\žTÙ[XÝÜ[
+‹›Ý™\šY]ËYÜšYˆ\ËXØ\™ŠK™›Ü‘XXÚ
+
+Ø\™[™^
+HOˆÂˆYˆ
+[™^OOHÙ[XÝY[™^
+HØ\™œ™[[Ý™J
+NÂˆJNÂˆBˆYˆ
+\Ë—ÝšY]ÈOOHš\ÝÜžHŠHÂˆ›ÛÝœ]Y\žTÙ[XÝÜ[
+‹š\ÝÜžKYÜšYˆš\ÝÜžKXØ\™ŠK™›Ü‘XXÚ
+
+Ø\™[™^
+HOˆÂˆYˆ
+[™^OOHÙ[XÝY[™^
+HØ\™œ™[[Ý™J
+NÂˆJNÂˆBˆBˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒÌ‹šœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒÌËšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[ŒÌÈHÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓ—ÕŒÌÈHŒŒËŒÈŽÂ‚šYˆ
+[™[ŒÌÈ	‰ˆT[™[ŒÌËœ›ÝÝ\K—×ÜÝ\šÕZUŒÌÊHÂˆ[™[ŒÌËœ›ÝÝ\K—×ÜÝ\šÕZUŒÌÈHYNÂˆÛÛœÝ™]š[Ý\Ô™[™\•ŒÌÈH[™[ŒÌËœ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[ŒÌËœ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\•ŒÌË˜Ø[
+\ÊNÂˆÛÛœÝÝX]HH\ËœÚYÝÔ›ÛÝËœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈ0­ÈRH‰ÕRWÕ‘T”ÒSÓ—ÕŒÌßXÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒÌËšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒÍšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒŒËŽÂ‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒÍ
+HÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒÍHYNÂ‚ˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂ‚ˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆYˆ
+\›ÛÝ
+H™]\›ŽÂ‚ˆÛÛœÝÝX]HH›ÛÝœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂ‚ˆYˆ
+›ÛÝœ]Y\žTÙ[XÝÜŠœÝ[VÙ]K\Ý\šË]ZK]ŒÍHŠJH™]\›ŽÂ‚ˆÛÛœÝÝ[HHØÝ[Y[˜Ü™X]Q[[Y[
+œÝ[HŠNÂˆÝ[K™]\Ù]œÝ\šÕZUŒÍHYHŽÂˆÝ[K^ÛÛ[HˆÊˆ[Øš[KYš\œÝ\ÙÜ˜\H\ÜÈ›ÜˆTÛ™H›ÈX^ˆ^[Ý]\È[˜Ú[™ÙYˆ
+‹ÂˆœÝX]HÂˆ›Û\Ú^™NˆMZ[\Ü[Âˆ[™KZZYÚˆKŒHZ[\Ü[ÂˆBˆ™ÛØ˜[Y]šXÙKXÛÛ^]ÛˆÂˆ›Û\Ú^™NˆMœZ[\Ü[Âˆ[™KZZYÚˆKŒˆZ[\Ü[Âˆ›Û]ÙZYÚˆLZ[\Ü[ÂˆBˆ™ÛØ˜[Y]šXÙKXÛÛ^]Û‹˜XÝ]™HÂˆ›Û]ÙZYÚˆÍLZ[\Ü[ÂˆBˆ™]šXÙKZX[YÝÂˆÚYˆ\Z[\Ü[ÂˆZYÚˆ\Z[\Ü[Âˆ›^X˜\Ú\Îˆ\Z[\Ü[ÂˆBˆ™^YXœ›ÝÈÂˆ›Û\Ú^™NˆLÜZ[\Ü[Âˆ[™KZZYÚˆKŒHZ[\Ü[ÂˆBˆœÝ]\ÈÂˆ›Û\Ú^™NˆM\Z[\Ü[Âˆ[™KZZYÚˆKŒˆZ[\Ü[ÂˆBˆ™›ÝË[›ÙHÜ[‹ˆ™›ÝË]\ÈÜ[ˆÂˆ›Û\Ú^™NˆMZ[\Ü[Âˆ[™KZZYÚˆKŒˆZ[\Ü[ÂˆBˆ™›ÝË[›ÙHÝ›Û™Ëˆ™›ÝË]\ÈÝ›Û™ÈÂˆ›Û\Ú^™NˆMÜZ[\Ü[Âˆ[™KZZYÚˆKŒˆZ[\Ü[ÂˆBˆ˜˜\‹]]HÂˆ›Û\Ú^™NˆM\Z[\Ü[Âˆ[™KZZYÚˆKŒHZ[\Ü[ÂˆBˆ\ÝÂˆ›Û\Ú^™NˆM\Z[\Ü[Âˆ[™KZZYÚˆKŒÍHZ[\Ü[ÂˆBˆ›Y]šXË[X™[Âˆ›Û\Ú^™NˆMZ[\Ü[Âˆ[™KZZYÚˆKŒˆZ[\Ü[ÂˆBˆ›Y]šXÈÝ›Û™ÈÂˆ›Û\Ú^™NˆMœZ[\Ü[Âˆ[™KZZYÚˆKŒHZ[\Ü[ÂˆBˆœÛÝ\˜ÙK\Ý[[X\žHÜ[‹ˆœÛÝ\˜ÙK\Ý[[X\žHÝ›Û™ÈÂˆ›Û\Ú^™NˆM\Z[\Ü[Âˆ[™KZZYÚˆKŒÈZ[\Ü[ÂˆBˆ™XYÛ›ÜÝXËYÜ›Ý\Ëˆ™]™[\Ý[[X\žHÈÂˆ›Û\Ú^™NˆNZ[\Ü[Âˆ[™KZZYÚˆKŒHZ[\Ü[ÂˆBˆ™XYÛ›ÜÝXË\›ÝÈÜ[‹ˆ™XYÛ›ÜÝXË\›ÝÈÝ›Û™ÈÂˆ›Û\Ú^™NˆMœZ[\Ü[Âˆ[™KZZYÚˆKŒÍHZ[\Ü[ÂˆBˆš\ÝÜžK\Ý]HÂˆ›Û\Ú^™NˆM\Z[\Ü[ÂˆBˆš\ÝÜžK[[šÈÜ[ˆÂˆ›Û\Ú^™NˆM\Z[\Ü[Âˆ[™KZZYÚˆKŒHZ[\Ü[ÂˆBˆš\ÝÜžK[[šÈÝ›Û™ÈÂˆ›Û\Ú^™NˆMœZ[\Ü[Âˆ[™KZZYÚˆKŒHZ[\Ü[ÂˆBˆ™]™[\›ÝÈˆÜ[ˆÂˆ›Û\Ú^™NˆM\Z[\Ü[Âˆ[™KZZYÚˆKŒHZ[\Ü[ÂˆBˆ™]™[XÛÜHÝ›Û™ÈÂˆ›Û\Ú^™NˆMœZ[\Ü[Âˆ[™KZZYÚˆKŒÈZ[\Ü[ÂˆBˆ™]™[XÛÜHÛX[Âˆ›Û\Ú^™NˆMZ[\Ü[Âˆ[™KZZYÚˆKŒˆZ[\Ü[ÂˆBˆš[Âˆ›Û\Ú^™NˆMZ[\Ü[Âˆ[™KZZYÚˆKHZ[\Ü[ÂˆBˆ˜›ÝÛK[˜]ˆXˆÂˆ›Û\Ú^™NˆMZ[\Ü[Âˆ[™KZZYÚˆKŒHZ[\Ü[Âˆ›Û]ÙZYÚˆLZ[\Ü[ÂˆBˆ˜›ÝÛK[˜]ˆXˆKZXÛÛˆÂˆK[YËZXÛÛ‹\Ú^™NˆZ[\Ü[ÂˆB‚ˆYYXH
+X^]ÚYˆÌ
+HÂˆ™ÛØ˜[Y]šXÙKXÛÛ^]ÛˆÂˆZ[‹ZZYÚˆLœZ[\Ü[ÂˆY[™ÎˆLZ[\Ü[ÂˆBˆœÝÙ\‹Y›ÝÈÂˆX\™Ú[‹X›ÝÛNˆNZ[\Ü[ÂˆBˆ™›ÝË[›ÙKˆ™›ÝË]\ÈÂˆZ[‹ZZYÚˆMœZ[\Ü[ÂˆBˆ›Y]šXÈÂˆZ[‹ZZYÚˆŒZ[\Ü[ÂˆBˆ™XYÛ›ÜÝXË\›ÝÈÂˆZ[‹ZZYÚˆZ[\Ü[ÂˆBˆš\ÝÜžK[[šÈÂˆZ[‹ZZYÚˆNZ[\Ü[ÂˆBˆ™]™[\›ÝÈÂˆZ[‹ZZYÚˆLZ[\Ü[ÂˆBˆBˆÂˆ›ÛÝ˜\[™
+Ý[JNÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒÍšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒÍKšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒŒËHŽÂ‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒÍJHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒÍHHYNÂ‚ˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂ‚ˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆYˆ
+\›ÛÝ
+H™]\›ŽÂ‚ˆÛÛœÝÝX]HH›ÛÝœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂ‚ˆËÈšZØTÈ[YÜ˜][Ûˆ[™[[\]HŒKŒˆXY\ˆ˜XÚÈ\ÈXÛÛ‹[Û›K‚ˆ›ÛÝœ]Y\žTÙ[XÝÜ[
+‹˜˜XÚÈÜ[ˆŠK™›Ü‘XXÚ
+
+›ÙJHOˆ›ÙKœ™[[Ý™J
+JNÂˆÛÛœÝ˜XÚÈH›ÛÝœ]Y\žTÙ[XÝÜŠ‹˜˜XÚÈŠNÂˆYˆ
+˜XÚÊHÂˆ˜XÚËœÙ]]šX]J˜\šXK[X™[‹´'t,4-ô,4-ŠNÂˆ˜XÚËœÙ]]šX]J]H‹´'t,4-ô,4-ŠNÂˆB‚ˆYˆ
+›ÛÝœ]Y\žTÙ[XÝÜŠœÝ[VÙ]K\Ý\šË]ZK]ŒÍWHŠJH™]\›ŽÂ‚ˆÛÛœÝÝ[HHØÝ[Y[˜Ü™X]Q[[Y[
+œÝ[HŠNÂˆÝ[K™]\Ù]œÝ\šÕZUŒÍHHYHŽÂˆÝ[K^ÛÛ[HˆÊˆšZØTÈ[YÜ˜][Ûˆ[™[[\]HŒKŒÚ[[YÛ›Y[ˆ
+‹ÂˆšÜÝÂˆÚYˆL	NÂˆX^]ÚYˆL	NÂˆÝ™\™›ÝË^ˆY[ˆZ[\Ü[ÂˆBˆ˜\ÂˆÚYˆL	HZ[\Ü[ÂˆX^]ÚYˆLZ[\Ü[ÂˆX\™Ú[Žˆ]]ÈZ[\Ü[ÂˆY[™ÎˆX^
+Lœ[ŠØY™KX\™XKZ[œÙ]\šYÚ
+JHØ[ÊN
+È[ŠØY™KX\™XKZ[œÙ]X›ÝÛJJHX^
+Lœ[ŠØY™KX\™XKZ[œÙ][Y
+JHZ[\Ü[ÂˆÝ™\™›ÝË^ˆY[ˆZ[\Ü[ÂˆB‚ˆÊˆXY\ŽˆLˆÈYœˆÈL‹Ù[\™Y]KXÛÛ‹[Û›H˜XÚËÛ™H™Yœ™\ÚXÝ[Û‹ˆ
+‹Âˆ˜\ZXY\ˆÂˆ\Ü^NˆÜšYZ[\Ü[ÂˆÜšY][\]KXÛÛ[[œÎˆLœZ[›X^
+YœŠHLœZ[\Ü[Âˆ[YÛ‹Z][\ÎˆÙ[\ˆZ[\Ü[ÂˆZ[‹ZZYÚˆŒœZ[\Ü[ÂˆØ\ˆZ[\Ü[ÂˆX\™Ú[ŽˆLœZ[\Ü[ÂˆY[™ÎˆX^
+\[ŠØY™KX\™XKZ[œÙ]]Ü
+JH\Z[\Ü[ÂˆBˆšXY\‹[XZ[ˆÈ\Ü^NˆÛÛ[ÈZ[\Ü[ÈBˆ˜˜XÚËˆœ™Yœ™\ÚÂˆÚYˆZ[\Ü[ÂˆZ[‹]ÚYˆZ[\Ü[ÂˆZYÚˆZ[\Ü[ÂˆZ[‹ZZYÚˆZ[\Ü[Âˆ›Ü™\ŽˆZ[\Ü[Âˆ›Ü™\‹\˜Y]\ÎˆMZ[\Ü[Âˆ˜XÚÙÜ›Ý[™ˆ˜[œÜ\™[Z[\Ü[Âˆ›Þ\ÚYÝÎˆ›Û™HZ[\Ü[Âˆ\Ü^NˆÜšYZ[\Ü[ÂˆXÙKZ][\ÎˆÙ[\ˆZ[\Ü[ÂˆY[™ÎˆZ[\Ü[ÂˆBˆ˜˜XÚÈÂˆÜšYXÛÛ[[ŽˆHZ[\Ü[Âˆ\ÝYžK\Ù[ŽˆÝ\Z[\Ü[ÂˆÛÛÜŽˆ˜\ŠK\š[X\žK]^XÛÛÜŠHZ[\Ü[ÂˆBˆœ™Yœ™\ÚÂˆÜšYXÛÛ[[ŽˆÈZ[\Ü[Âˆ\ÝYžK\Ù[Žˆ[™Z[\Ü[ÂˆÛÛÜŽˆ˜\ŠK\š[X\žKXÛÛÜŠHZ[\Ü[ÂˆBˆ˜˜XÚÈKZXÛÛ‹ˆœ™Yœ™\ÚKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™Nˆ\Z[\Ü[ÈBˆ]K]Ü˜\ÂˆÜšYXÛÛ[[ŽˆˆZ[\Ü[ÂˆZ[‹]ÚYˆZ[\Ü[Âˆ\Ü^Nˆ›ØÚÈZ[\Ü[Âˆ^X[YÛŽˆÙ[\ˆZ[\Ü[ÂˆBˆ]K]Ü˜\ˆ]ˆÈZ[‹]ÚYˆZ[\Ü[ÈBˆ˜\ZXY\ˆHÂˆX\™Ú[ŽˆZ[\Ü[Âˆ›Û\Ú^™NˆNZ[\Ü[Âˆ[™KZZYÚˆKŒLˆZ[\Ü[Âˆ›Û]ÙZYÚˆÍŒZ[\Ü[Âˆ]\‹\ÜXÚ[™ÎˆZ[\Ü[Âˆ^X[YÛŽˆÙ[\ˆZ[\Ü[ÂˆÝ™\™›ÝÎˆY[ˆZ[\Ü[Âˆ^[Ý™\™›ÝÎˆ[\Ú\ÈZ[\Ü[ÂˆÚ]K\ÜXÙNˆ›ÝÜ˜\Z[\Ü[ÂˆBˆœÝX]HÂˆX\™Ú[‹]ÜˆÜZ[\Ü[Âˆ›Û\Ú^™NˆMZ[\Ü[Âˆ[™KZZYÚˆKŒˆZ[\Ü[Âˆ^X[YÛŽˆÙ[\ˆZ[\Ü[ÂˆÝ™\™›ÝÎˆY[ˆZ[\Ü[Âˆ^[Ý™\™›ÝÎˆ[\Ú\ÈZ[\Ü[ÂˆÚ]K\ÜXÙNˆ›ÝÜ˜\Z[\Ü[ÂˆB‚ˆÊˆ]šXÙHÛÛ^™[XZ[œÈÝX›H[™]\Ýš]Û™HTÛ™H›ÝËˆ
+‹Âˆ™ÛØ˜[Y]šXÙKXÛÛ^ÂˆÚYˆL	HZ[\Ü[ÂˆZ[‹]ÚYˆZ[\Ü[ÂˆÜšY][\]KXÛÛ[[œÎˆ™\X]
+˜\ŠK]\ËXÛÝ[
+KZ[›X^
+YœŠJHZ[\Ü[ÂˆØ\ˆLZ[\Ü[ÂˆX\™Ú[ŽˆLœZ[\Ü[ÂˆBˆ™ÛØ˜[Y]šXÙKXÛÛ^]ÛˆÂˆZ[‹]ÚYˆZ[\Ü[ÂˆZ[‹ZZYÚˆLœZ[\Ü[Âˆ›Ü™\‹\˜Y]\ÎˆŒZ[\Ü[ÂˆY[™ÎˆLZ[\Ü[Âˆ›Û\Ú^™NˆMœZ[\Ü[Âˆ[™KZZYÚˆKŒˆZ[\Ü[ÂˆBˆ™ÛØ˜[Y]šXÙKXÛÛ^™]šXÙK[˜[YHÂˆZ[‹]ÚYˆZ[\Ü[ÂˆÝ™\™›ÝÎˆY[ˆZ[\Ü[Âˆ^[Ý™\™›ÝÎˆ[\Ú\ÈZ[\Ü[ÂˆÚ]K\ÜXÙNˆ›ÝÜ˜\Z[\Ü[ÂˆB‚ˆÊˆ™]™[Û™È[Øš[H˜[Y\ËÜÝ]\Ù\Èœ›ÛHÚY[š[™ÈHšY]ÜÜˆ
+‹Âˆ›Ý™\šY]ËYÜšYˆš\ÝÜžKYÜšYˆ\ËXØ\™ˆ™XYÛ›ÜÝXËXØ\™ˆš\ÝÜžKXØ\™ˆ˜Ø\™ZXYˆœ]ZXÚËYÜšYˆœÛÝ\˜ÙK\Ý[[X\žKˆ™XYÛ›ÜÝXË\›ÝËˆš\ÝÜžK[[šËˆ™]™[\›ÝÈÂˆZ[‹]ÚYˆZ[\Ü[ÂˆX^]ÚYˆL	HZ[\Ü[ÂˆBˆ›Ý™\šY]ËYÜšYˆš\ÝÜžKYÜšYÂˆÜšY][\]KXÛÛ[[œÎˆZ[›X^
+YœŠHZ[\Ü[ÂˆBˆ˜Ø\™ZXYˆ]Ž™š\œÝXÚ[ÈZ[‹]ÚYˆZ[\Ü[ÈBˆ˜Ø\™ZXYˆÂˆX^]ÚYˆL	HZ[\Ü[ÂˆÝ™\™›ÝË]Ü˜\ˆ[ž]Ú\™HZ[\Ü[ÂˆBˆœÝ]\ÈÂˆ›^ˆH]]ÈZ[\Ü[ÂˆZ[‹]ÚYˆZ[\Ü[ÂˆX^]ÚYˆ	HZ[\Ü[ÂˆÚ]K\ÜXÙNˆ›Ü›X[Z[\Ü[Âˆ^X[YÛŽˆšYÚZ[\Ü[Âˆ\ÝYžKXÛÛ[ˆ›^Y[™Z[\Ü[ÂˆBˆœÝ]\ÈÜ[ˆÈÝ™\™›ÝË]Ü˜\ˆ[ž]Ú\™HZ[\Ü[ÈBˆœÝÙ\‹Y›ÝÈÈZ[‹]ÚYˆZ[\Ü[ÈBˆ™›ÝË[›ÙHÝ›Û™Ëˆ™›ÝË]\ÈÝ›Û™ÈÂˆ›Û\Ú^™NˆÛ[\
+M\ËMÜ
+HZ[\Ü[ÂˆÚ]K\ÜXÙNˆ›Ü›X[Z[\Ü[ÂˆÝ™\™›ÝË]Ü˜\ˆ[ž]Ú\™HZ[\Ü[Âˆ^[Ý™\™›ÝÎˆÛ\Z[\Ü[ÂˆBˆ›Y]šXËXÛÜKˆ›Y]šXÈÝ›Û™ËˆœÛÝ\˜ÙK\Ý[[X\žHÜ[‹ˆœÛÝ\˜ÙK\Ý[[X\žHÝ›Û™Ëˆ™XYÛ›ÜÝXË\›ÝÈÜ[‹ˆ™XYÛ›ÜÝXË\›ÝÈÝ›Û™Ëˆš\ÝÜžK[[šÈÜ[‹ˆš\ÝÜžK[[šÈÝ›Û™Ëˆ™]™[\›ÝÈÜ[‹ˆ™]™[XÛÜKˆ™]™[XÛÜHÝ›Û™ÈÂˆZ[‹]ÚYˆZ[\Ü[ÂˆBˆ™XYÛ›ÜÝXË\›ÝÈÝ›Û™Ëˆ™]™[XÛÜHÝ›Û™Ëˆš\ÝÜžK[[šÈÝ›Û™ÈÂˆÝ™\™›ÝË]Ü˜\ˆ[ž]Ú\™HZ[\Ü[ÂˆBˆš\ÝÜžK[[šÈÂˆÜšY][\]KXÛÛ[[œÎˆŽZ[›X^
+YœŠHZ[›X^
+]]ÊHŒœZ[\Ü[ÂˆB‚ˆÊˆ›ÝÛH˜]šYØ][ÛŽˆ[]ÚYš^YYÙKX]XÚY™]™\ˆH›Ø][™È[ˆ
+‹ÂˆXœË˜›ÝÛK[˜]ˆÂˆÜÚ][ÛŽˆš^YZ[\Ü[ÂˆYˆZ[\Ü[ÂˆšYÚˆZ[\Ü[Âˆ›ÝÛNˆZ[\Ü[Âˆ˜[œÙ›Ü›Nˆ›Û™HZ[\Ü[ÂˆÚYˆL	HZ[\Ü[ÂˆX^]ÚYˆ›Û™HZ[\Ü[ÂˆÜšY][\]KXÛÛ[[œÎˆ™\X]
+ËZ[›X^
+YœŠJHZ[\Ü[ÂˆØ\ˆœZ[\Ü[ÂˆX\™Ú[ŽˆZ[\Ü[ÂˆY[™ÎˆœX^
+œ[ŠØY™KX\™XKZ[œÙ]\šYÚ
+JHØ[Êœ
+È[ŠØY™KX\™XKZ[œÙ]X›ÝÛJJHX^
+œ[ŠØY™KX\™XKZ[œÙ][Y
+JHZ[\Ü[Âˆ›Ü™\ŽˆZ[\Ü[Âˆ›Ü™\‹]Üˆ\ÛÛY˜\ŠKY]šY\‹XÛÛÜŠHZ[\Ü[Âˆ›Ü™\‹\˜Y]\ÎˆZ[\Ü[Âˆ˜XÚÙÜ›Ý[™ˆ˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠHZ[\Ü[Âˆ›Þ\ÚYÝÎˆLÜMÛÛÜ‹[Z^
+[ˆÜ™Ø‹ÌÉK˜[œÜ\™[
+HZ[\Ü[Âˆ˜XÚÙ›ÜYš[\Žˆ›Û™HZ[\Ü[Âˆ]ÙXšÚ]X˜XÚÙ›ÜYš[\Žˆ›Û™HZ[\Ü[Âˆ‹Z[™^ˆLZ[\Ü[ÂˆBˆ˜›ÝÛK[˜]ˆXˆÂˆZ[‹]ÚYˆZ[\Ü[ÂˆZ[‹ZZYÚˆNZ[\Ü[ÂˆZYÚˆ]]ÈZ[\Ü[Âˆ›Ü™\‹\˜Y]\ÎˆMZ[\Ü[ÂˆY[™ÎˆœZ[\Ü[ÂˆØ\ˆœZ[\Ü[Âˆ›Û\Ú^™NˆMZ[\Ü[Âˆ[™KZZYÚˆKŒHZ[\Ü[Âˆ›Û]ÙZYÚˆÌZ[\Ü[ÂˆÝ™\™›ÝÎˆY[ˆZ[\Ü[ÂˆBˆ˜›ÝÛK[˜]ˆXˆÜ[ˆÂˆ\Ü^Nˆ›ØÚÈZ[\Ü[ÂˆX^]ÚYˆL	HZ[\Ü[ÂˆÝ™\™›ÝÎˆY[ˆZ[\Ü[Âˆ^[Ý™\™›ÝÎˆ[\Ú\ÈZ[\Ü[ÂˆÚ]K\ÜXÙNˆ›ÝÜ˜\Z[\Ü[ÂˆBˆ˜›ÝÛK[˜]ˆXˆKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NˆZ[\Ü[ÈBˆ˜›ÝÛK[˜]ˆX‹˜XÝ]™HÂˆÛÛÜŽˆ˜\ŠK\š[X\žKXÛÛÜŠHZ[\Ü[Âˆ˜XÚÙÜ›Ý[™ˆÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\š[X\žKXÛÛÜŠHLIK˜[œÜ\™[
+HZ[\Ü[Âˆ›Þ\ÚYÝÎˆ›Û™HZ[\Ü[ÂˆB‚ˆYYXH
+X^]ÚYˆÌ
+HÂˆ˜\ZXY\ˆÂˆÜšY][\]KXÛÛ[[œÎˆLœZ[›X^
+YœŠHLœZ[\Ü[ÂˆBˆ\ËXØ\™ˆ™XYÛ›ÜÝXËXØ\™ˆš\ÝÜžKXØ\™ÂˆÚYˆL	HZ[\Ü[ÂˆY[™ÎˆMœZ[\Ü[ÂˆBˆœ]ZXÚËYÜšYˆ˜˜\œÈÈÜšY][\]KXÛÛ[[œÎˆ™\X]
+‹Z[›X^
+YœŠJHZ[\Ü[ÈBˆœÝÙ\‹Y›ÝÈÂˆÜšY][\]KXÛÛ[[œÎˆZ[›X^
+ÍYœŠHZ[›X^
+œYœŠHZ[›X^
+ÍYœŠHZ[\Ü[ÂˆØ\ˆœZ[\Ü[ÂˆBˆ™›ÝË[[™HKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NˆMÜZ[\Ü[ÈBˆB‚ˆYYXH
+X^]ÚYˆÎL
+HÂˆ˜\ÂˆY[™Ë[YˆX^
+L[ŠØY™KX\™XKZ[œÙ][Y
+JHZ[\Ü[ÂˆY[™Ë\šYÚˆX^
+L[ŠØY™KX\™XKZ[œÙ]\šYÚ
+JHZ[\Ü[ÂˆBˆ˜\ZXY\ˆÂˆÜšY][\]KXÛÛ[[œÎˆZ[›X^
+YœŠHZ[\Ü[ÂˆBˆ™ÛØ˜[Y]šXÙKXÛÛ^ÈØ\ˆZ[\Ü[ÈBˆ™ÛØ˜[Y]šXÙKXÛÛ^]ÛˆÂˆZ[‹ZZYÚˆLZ[\Ü[ÂˆY[™ÎˆÜZ[\Ü[Âˆ›Û\Ú^™NˆM\Z[\Ü[ÂˆBˆœÝÙ\‹Y›ÝÈÂˆÜšY][\]KXÛÛ[[œÎˆZ[›X^
+ŽYœŠHŒZ[›X^
+ÍœYœŠHŒZ[›X^
+ŽYœŠHZ[\Ü[ÂˆBˆ˜›ÝÛK[˜]ˆXˆÈZ[‹ZZYÚˆMœZ[\Ü[ÈBˆB‚ˆYYXH
+Z[‹]ÚYˆÍŒ
+HÂˆ˜\ÈY[™Ë[YˆŒZ[\Ü[ÈY[™Ë\šYÚˆŒZ[\Ü[ÈBˆXœË˜›ÝÛK[˜]ˆÈÚYˆL	HZ[\Ü[ÈX^]ÚYˆ›Û™HZ[\Ü[ÈBˆ›Ý™\šY]ËYÜšYˆš\ÝÜžKYÜšYˆ™XYÛ›ÜÝXËXØ\™ÂˆÚYˆZ[ŠL	KŒ
+HZ[\Ü[ÂˆX\™Ú[‹[Yˆ]]ÈZ[\Ü[ÂˆX\™Ú[‹\šYÚˆ]]ÈZ[\Ü[ÂˆBˆBˆÂˆ›ÛÝ˜\[™
+Ý[JNÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒÍKšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒŒŽÂ‚™[˜Ý[Ûˆ\ØÊ˜[YJHÂˆ™]\›ˆÝš[™Ê˜[YHÏÈˆŠBˆœ™\XÙP[
+‰ˆ‹‰˜[\ÈŠBˆœ™\XÙP[
+‹‰›ÈŠBˆœ™\XÙP[
+ˆ‹‰™ÝÈŠBˆœ™\XÙP[
+	È‰Ë‰œ][ÝÈŠBˆœ™\XÙP[
+‰È‹‰ˆÌÎNÈŠNÂŸB‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒ
+HÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒHYNÂ‚ˆ[™[œ›ÝÝ\K—ÛÝ™\šY]ÒXY[™HH[˜Ý[Ûˆ
+]šXÙJHÂˆÛÛœÝÝ]\ÈH\Ë—ÜÝ]\Ê]šXÙJNÂˆÛÛœÝ[ÙHH\Ë—Û[ÙJ]šXÙJNÂˆÛÛœÝÛÝYH\Ë—Ú\ÓÛŠ]šXÙK˜ÛÝYØÛÛ›™XÝYŠNÂˆÛÛœÝÝ[HH\Ë—Ú\ÓÛŠ]šXÙK™]WÜÝ[HŠNÂ‚ˆYˆ
+ÛÝYOOH˜[ÙJHÂˆ™]\›ˆÈ]Nˆ´'t-t`ˆ4`´-t.ô-t/4-t`´`4.4.‹]Z[ˆ”ÛÛ\”ÝÙ\ˆ4/t-t-4/´`t`´`ô/ô-t/H‹Û™Nˆ˜˜YˆNÂˆBˆYˆ
+ÛÝYOOH[
+HÂˆ™]\›ˆÈ]Nˆ´(t/´`t`´/´cô/t.4-H4/t-t.4-ô,´-t`t`´/t/ˆ‹]Z[ˆ´'t-t`ˆ4-4/´`t`´/´,´-t`4/t/´,ô/ˆ4`t/´`t`´/´cô/t.4cÈ4/´,t.ô,4aô/t/´,ô/ˆ4.´,4/t,4.ô,‹Û™Nˆ[šÛ›ÝÛˆˆNÂˆBˆYˆ
+Ý[HOOHYJHÂˆ™]\›ˆÈ]Nˆ´%4,4/t/tbô-H4`ô`t`´,4`4-t.ô.‹]Z[ˆ´'ô/´`t.ô-t-4/t.4.H4-4/´`t`´/´,´-t`4/tbô.HÛ˜\ÚÝ4`t`´,4`4b4-Hˆ4/4.4/t`ô`ˆ‹Û™NˆØ\›ˆˆNÂˆBˆYˆ
+Ý[HOOH[
+HÂˆ™]\›ˆÈ]Nˆ´(t,´-t-´-t`t`´c4/t-t.4-ô,´-t`t`´/t,‹]Z[ˆ´$´/´-ô`4,4`t`ˆ4a4,4.´`´.4aô-t`t.´.4aH4-4,4/t/tbôaH4/´/ô`4-t-4-t.ô.4`´c4/t-t.ôc4-ôcÈ‹Û™Nˆ[šÛ›ÝÛˆˆNÂˆBˆYˆ
+[ÙHOOH˜˜]\žWÛ[ÙHŠHÂˆ™]\›ˆÈ]Nˆ´'´`ˆ4,t,4`´,4`4-t.‹]Z[ˆ´'t,4,ô`4`ô-ô.´,4/ô.4`´,4-t`´`tcÈ4/´`ˆ4$4&´$H‹Û™NˆØ\›ˆˆNÂˆBˆYˆ
+[ÙHOOH™˜][Û[ÙHŠHÂˆ™]\›ˆÈ]Nˆ´$4,´,4`4.4.t/tbô.H4`4-t-´.4/‹]Z[ˆ•TÈ4`t/´/´,tbt,4-t`ˆ4/ô/´-4`´,´-t`4-´-4dt/t/tbô.H˜][[ÙH‹Û™Nˆ˜˜YˆNÂˆBˆYˆ
+[ÙHOOH›[™WÛ[ÙHˆ	‰ˆÝ]\ËÛ™HOOH™ÛÛÙŠHÂˆ™]\›ˆÈ]Nˆ´'´`ˆ4`t-t`´.0­È4't/´`4/4,4.ôc4/t/ˆ‹]Z[ˆ•TÈ4/ô.4`´,4-t`ˆ4/t,4,ô`4`ô-ô.´`È‹Û™Nˆ™ÛÛÙˆNÂˆBˆ™]\›ˆÂˆ]NˆÝ]\Ë›X™[ˆ]Z[ˆ4(´-t.´`ôbt.4.H4`4-t-´.4/ˆ	Ý\Ë—Û[ÙSX™[
+]šXÙJ_XˆÛ™NˆÝ]\ËÛ™HOOH™ÛÛÙˆÈ™ÛÛÙˆˆÝ]\ËÛ™HOOHØ\›ˆˆÈØ\›ˆˆˆ[šÛ›ÝÛˆ‹ˆNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—ÛÝ™\šY]ÓÛ›[™P˜YÙHH[˜Ý[Ûˆ
+]šXÙJHÂˆÛÛœÝÛÝYH\Ë—Ú\ÓÛŠ]šXÙK˜ÛÝYØÛÛ›™XÝYŠNÂˆÛÛœÝÝ[HH\Ë—Ú\ÓÛŠ]šXÙK™]WÜÝ[HŠNÂˆÛÛœÝYÙHH\Ë—Ù›Ü›X]
+]šXÙK™]WØYÙH‹´'t-t.4-ô,´-t`t`´/t/ˆŠNÂ‚ˆYˆ
+ÛÝYOOH˜[ÙJH™]\›ˆÈX™[ˆ´'t-t`ˆ4/´,t.ô,4.´,‹]Z[ˆ´'t-t`ˆ4`t,´-t-´.4aH4-4,4/t/tbôaH‹Û™Nˆ˜˜Y‹XÛÛŽˆ›YN˜ÛÝY[Ù™‹[Ý][™HˆNÂˆYˆ
+ÛÝYOOH[
+H™]\›ˆÈX™[ˆ´'t-t.4-ô,´-t`t`´/t/ˆ‹]Z[ˆ´&4`t`´/´aô/t.4.ˆ4/t-H4/ô/´-4`´,´-t`4-´-4dt/H‹Û™Nˆ[šÛ›ÝÛˆ‹XÛÛŽˆ›YN˜ÛÝY\]Y\Ý[Û‹[Ý][™HˆNÂˆYˆ
+Ý[HOOHYJH™]\›ˆÈX™[ˆ´(ô`t`´,4`4-t.ô/ˆ‹]Z[ˆ4$´/´-ô`4,4`t`ˆ	ØYÙ_XÛ™NˆØ\›ˆ‹XÛÛŽˆ›YN˜ÛØÚËX[\[Ý][™HˆNÂˆYˆ
+Ý[HOOH[
+H™]\›ˆÈX™[ˆ´'t-t.4-ô,´-t`t`´/t/ˆ‹]Z[ˆ´(t,´-t-´-t`t`´c4/t-H4/ô/´-4`´,´-t`4-´-4-t/t,‹Û™Nˆ[šÛ›ÝÛˆ‹XÛÛŽˆ›YN˜ÛØÚË\]Y\Ý[Û‹[Ý][™HˆNÂˆ™]\›ˆÈX™[ˆ´'´/t.ô,4.t/H‹]Z[ˆ4%4,4/t/tbô-H	ØYÙ_H4/t,4-ô,4-Û™Nˆ™ÛÛÙ‹XÛÛŽˆ›YN˜ÛÝYXÚXÚË[Ý][™HˆNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—ÛÝ™\šY]ÔÝ]U[HH[˜Ý[Ûˆ
+]šXÙKÚ[™
+HÂˆÛÛœÝÛÝYH\Ë—Ú\ÓÛŠ]šXÙK˜ÛÝYØÛÛ›™XÝYŠNÂˆÛÛœÝÝ[HH\Ë—Ú\ÓÛŠ]šXÙK™]WÜÝ[HŠNÂˆÛÛœÝ[ÙHH\Ë—Û[ÙJ]šXÙJNÂˆÛÛœÝ˜]\žHH\Ë—Û[Y\šXÊ]šXÙK˜˜]\žWØØ\XÚ]HŠNÂˆÛÛœÝ[œ]›ÛYÙHH\Ë—Û[Y\šXÊ]šXÙKš[œ]Ý›ÛYÙHŠNÂˆÛÛœÝYÙHH\Ë—Ù›Ü›X]
+]šXÙK™]WØYÙH‹´'t-t.4-ô,´-t`t`´/t/ˆŠNÂ‚ˆYˆ
+Ú[™OOH™ÜšYŠHÂˆÛÛœÝ]˜Z[X›HH[œ]›ÛYÙHOOH[ÂˆÛÛœÝÛ™HH]˜Z[X›HÈ™ÛÛÙˆˆ[ÙHOOH˜˜]\žWÛ[ÙHˆÈØ\›ˆˆˆ[šÛ›ÝÛˆŽÂˆÛÛœÝš[X\žHH]˜Z[X›HÈ´%t`t`´c4/ô.4`´,4/t.4-Hˆˆ[ÙHOOH˜˜]\žWÛ[ÙHˆÈ´'t-t`ˆ4,´at/´-4,ˆˆ´'t-t.4-ô,´-t`t`´/t/ˆŽÂˆÛÛœÝÙXÛÛ™\žHH]˜Z[X›HÈ\Ë—Ù›Ü›X]
+]šXÙKš[œ]Ý›ÛYÙHŠHˆ[ÙHOOH˜˜]\žWÛ[ÙHˆÈ´(4,4,t/´`´,4/´`ˆ4$4&´$Hˆˆ´'t-t`ˆ4-4,4/t/tbôaHŽÂˆ™]\›ˆÈXÛÛŽˆ›YN˜[œÛZ\ÜÚ[Û‹]ÝÙ\ˆ‹]Nˆ´(t-t`´c‹š[X\žKÙXÛÛ™\žKÛ™K[]Nˆ\Ë—Ù[]RY
+]šXÙKš[œ]Ý›ÛYÙHŠHNÂˆBˆYˆ
+Ú[™OOH˜˜]\žHŠHÂˆÛÛœÝÛ™HH˜]\žHOOH[È[šÛ›ÝÛˆˆˆ˜]\žHHŒÈ˜˜Yˆˆ˜]\žHHÈØ\›ˆˆˆ™ÛÛÙŽÂˆÛÛœÝš[X\žHH˜]\žHOOH[È´'t-t`ˆ4-4,4/t/tbôaHˆˆ	ÓX]œ›Ý[™
+˜]\žJ_H	XÂˆÛÛœÝÙXÛÛ™\žHH[ÙHOOH˜˜]\žWÛ[ÙHˆÈ´'ô.4`´,4-t`ˆ4/t,4,ô`4`ô-ô.´`Èˆˆ˜]\žHOOH[È´(t/´`t`´/´cô/t.4-H4/t-t.4-ô,´-t`t`´/t/ˆˆˆ´%ô,4`4cô-´-t/HŽÂˆ™]\›ˆÈXÛÛŽˆ›YN˜˜]\žH‹]Nˆ´$4&´$H‹š[X\žKÙXÛÛ™\žKÛ™K[]Nˆ\Ë—Ù[]RY
+]šXÙK˜˜]\žWØØ\XÚ]HŠHNÂˆBˆYˆ
+Ú[™OOH˜ÛÝYŠHÂˆÛÛœÝÛ™HHÛÝYOOHYHÈ™ÛÛÙˆˆÛÝYOOH˜[ÙHÈ˜˜Yˆˆ[šÛ›ÝÛˆŽÂˆÛÛœÝš[X\žHHÛÝYOOHYHÈ´'´/t.ô,4.t/HˆˆÛÝYOOH˜[ÙHÈ´'t-t-4/´`t`´`ô/ô/t/ˆˆˆ´'t-t.4-ô,´-t`t`´/t/ˆŽÂˆÛÛœÝÙXÛÛ™\žHHÛÝYOOHYHÈ”ÛÛ\”ÝÙ\ˆˆˆÛÝYOOH˜[ÙHÈ´'t-t`ˆ4`t,´cô-ô.ˆˆ´'t-t`ˆ4-4,4/t/tbôaHŽÂˆ™]\›ˆÈXÛÛŽˆ›YN˜ÛÝY‹]Nˆ´'´,t.ô,4.´/ˆ‹š[X\žKÙXÛÛ™\žKÛ™K[]Nˆ\Ë—Ù[]RY
+]šXÙK˜ÛÝYØÛÛ›™XÝYŠHNÂˆB‚ˆÛÛœÝÛ™HHÝ[HOOH˜[ÙHÈ™ÛÛÙˆˆÝ[HOOHYHÈØ\›ˆˆˆ[šÛ›ÝÛˆŽÂˆÛÛœÝš[X\žHHÝ[HOOH˜[ÙHÈ´(t,´-t-´.4-HˆˆÝ[HOOHYHÈ´(ô`t`´,4`4-t.ô.ˆˆ´'t-t.4-ô,´-t`t`´/t/ˆŽÂˆÛÛœÝÙXÛÛ™\žHHÝ[HOOH[È´'t-t`ˆ4,´/´-ô`4,4`t`´,ˆˆYÙNÂˆ™]\›ˆÈXÛÛŽˆ›YN˜ÛØÚË[Ý][™H‹]Nˆ´%4,4/t/tbô-H‹š[X\žKÙXÛÛ™\žKÛ™K[]Nˆ\Ë—Ù[]RY
+]šXÙK™]WØYÙHŠHNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\“Ý™\šY]ÔÝ]U[HH[˜Ý[Ûˆ
+[JHÂˆÛÛœÝ[]HH[K™[]HÈ]KY[]OH‰Ù\ØÊ[K™[]J_H˜ˆˆŽÂˆ™]\›ˆ]ˆÛ\ÜÏH›Ý™\šY]Ë\Ý]K][H	Ù\ØÊ[KÛ™J_H‰Ù[]_O‚ˆKZXÛÛˆXÛÛH‰Ù\ØÊ[KšXÛÛŠ_HÚKZXÛÛ‚ˆ]ˆÛ\ÜÏH›Ý™\šY]Ë\Ý]KXÛÜH‚ˆÝ›Û™Ï‰Ù\ØÊ[K]J_OÜÝ›Û™Ï‚ˆÜ[‰Ù\ØÊ[Kœš[X\žJ_OÜÜ[‚ˆÛX[‰Ù\ØÊ[KœÙXÛÛ™\žJ_OÜÛX[‚ˆÙ]‚ˆÙ]˜ÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\“Ý™\šY]Ò\›ÈH[˜Ý[Ûˆ
+]šXÙJHÂˆÛÛœÝXY[™HH\Ë—ÛÝ™\šY]ÒXY[™J]šXÙJNÂˆÛÛœÝ˜YÙHH\Ë—ÛÝ™\šY]ÓÛ›[™P˜YÙJ]šXÙJNÂˆÛÛœÝ[ÙHH\Ë—Û[ÙJ]šXÙJNÂˆÛÛœÝÛ˜]\žHH[ÙHOOH˜˜]\žWÛ[ÙHˆ\Ë—Ú\ÓÛŠ]šXÙK›Û—Ø˜]\žHŠHOOHYNÂˆÛÛœÝ[œ]H\Ë—Ù›Ü›X]
+]šXÙKš[œ]Ý›ÛYÙHŠNÂˆÛÛœÝÝ]]H\Ë—Ù›Ü›X]
+]šXÙK›Ý]]Ý›ÛYÙHŠNÂˆÛÛœÝ˜]\žHH\Ë—Û[Y\šXÊ]šXÙK˜˜]\žWØØ\XÚ]HŠNÂˆÛÛœÝØYH\Ë—Û[Y\šXÊ]šXÙK›Ý]]ÛØYŠNÂ‚ˆÛÛœÝ[œ][]HH\Ë—Ù[]RY
+]šXÙKš[œ]Ý›ÛYÙHŠNÂˆÛÛœÝÝ]][]HH\Ë—Ù[]RY
+]šXÙK›Ý]]Ý›ÛYÙHŠNÂˆÛÛœÝ˜]\žQ[]HH\Ë—Ù[]RY
+]šXÙK˜˜]\žWØØ\XÚ]HŠNÂˆÛÛœÝØY[]HH\Ë—Ù[]RY
+]šXÙK›Ý]]ÛØYŠNÂˆÛÛœÝ[ÙQ[]HH\Ë—Ù[]RY
+]šXÙK›[ÙHŠNÂ‚ˆÛÛœÝ›ÝÐÛ\ÜÈHÛ˜]\žHÈ˜˜]\žKY›ÝÈˆˆ›[™KY›ÝÈŽÂ‚ˆ™]\›ˆ\XÛHÛ\ÜÏH\ËZ\›Ë]ŒØ\™]Œ	Ù\ØÊXY[™KÛ™J_H‚ˆ]ˆÛ\ÜÏHš\›Ë]ŒZXY‚ˆ]ˆÛ\ÜÏHš\›Ë]ŒXÛÜH‚ˆ]ˆÛ\ÜÏHš\›Ë]ŒZÚXÚÙ\ˆ´(t'´(t(´'´+ô't&4%H4(t&4(t(´%t'4*ÏÙ]‚ˆ‰Ù\ØÊXY[™K]J_OÚ‚ˆ‰Ù\ØÊXY[™K™]Z[
+_OÜ‚ˆÙ]‚ˆ]ˆÛ\ÜÏHš\›Ë[Û›[™KX˜YÙH	Ù\ØÊ˜YÙKÛ™J_H‚ˆÜ[KZXÛÛˆXÛÛH‰Ù\ØÊ˜YÙKšXÛÛŠ_HÚKZXÛÛ‰Ù\ØÊ˜YÙK›X™[
+_OÜÜ[‚ˆÛX[‰Ù\ØÊ˜YÙK™]Z[
+_OÜÛX[‚ˆÙ]‚ˆÙ]‚‚ˆ]ˆÛ\ÜÏH\Ë\ÝÙ\‹YXYÜ˜[H	Ù›ÝÐÛ\ÜßHˆ\šXK[X™[H´(tat-t/4,4/ô.4`´,4/t.4cÈTÈ‚ˆ]ˆÛ\ÜÏH™XYÜ˜[K[›ÙHÜšY[›ÙH	ÛÛ˜]\žHÈš[˜XÝ]™Hˆˆ˜XÝ]™HŸHˆ	Ú[œ][]HÈ]KY[]OH‰Ù\ØÊ[œ][]J_H˜ˆˆŸO‚ˆKZXÛÛˆXÛÛH›YN˜[œÛZ\ÜÚ[Û‹]ÝÙ\ˆÚKZXÛÛ‚ˆÜ[´(t-t`´cÜÜ[‚ˆÝ›Û™Ï‰Ù\ØÊ[œ]
+_OÜÝ›Û™Ï‚ˆÙ]‚ˆ]ˆÛ\ÜÏH™XYÜ˜[K[[šÈÜšY[[šÈÜ[ÜÜ[KZXÛÛˆXÛÛH›YN˜Ú]œ›Û‹\šYÚÚKZXÛÛÙ]‚ˆ]ˆÛ\ÜÏH™XYÜ˜[K[›ÙH\Ë[›ÙHXÝ]™Hˆ	Û[ÙQ[]HÈ]KY[]OH‰Ù\ØÊ[ÙQ[]J_H˜ˆˆŸO‚ˆKZXÛÛˆXÛÛH›YN˜˜]\žKXÚ\™Ú[™ÈÚKZXÛÛ‚ˆÝ›Û™Ï•TÏÜÝ›Û™Ï‚ˆÜ[‰Ù\ØÊ\Ë—Û[ÙSX™[
+]šXÙJJ_OÜÜ[‚ˆÙ]‚ˆ]ˆÛ\ÜÏH™XYÜ˜[K[[šÈÝ]][[šÈÜ[ÜÜ[KZXÛÛˆXÛÛH›YN˜Ú]œ›Û‹\šYÚÚKZXÛÛÙ]‚ˆ]ˆÛ\ÜÏH™XYÜ˜[K[›ÙHØY[›ÙHXÝ]™Hˆ	ÛÝ]][]HÈ]KY[]OH‰Ù\ØÊÝ]][]J_H˜ˆˆŸO‚ˆKZXÛÛˆXÛÛH›YNœÝÙ\‹\YÈÚKZXÛÛ‚ˆÜ[´'t,4,ô`4`ô-ô.´,ÜÜ[‚ˆÝ›Û™Ï‰Ù\ØÊÝ]]
+_OÜÝ›Û™Ï‚ˆÙ]‚ˆ]ˆÛ\ÜÏH˜˜]\žKXœ˜[˜Ú	ÛÛ˜]\žHÈ˜XÝ]™Hˆˆœ™XYHŸH‚ˆ]ˆÛ\ÜÏH˜˜]\žK[[šÈÜ[ÜÜ[‰ÛÛ˜]\žHÈ	ÏKZXÛÛˆXÛÛH›YN˜Ú]œ›Û‹]\ÚKZXÛÛ‰ÈˆˆŸOÙ]‚ˆ]ˆÛ\ÜÏH˜˜]\žK[›ÙHˆ	Ø˜]\žQ[]HÈ]KY[]OH‰Ù\ØÊ˜]\žQ[]J_H˜ˆˆŸO‚ˆKZXÛÛˆXÛÛH›YN˜˜]\žHÚKZXÛÛ‚ˆ]Ü[´$4&´$OÜÜ[Ý›Û™Ï‰Ø˜]\žHOOH[È¸ %ˆˆ	ÓX]œ›Ý[™
+˜]\žJ_H	XOÜÝ›Û™ÏÛX[‰ÛÛ˜]\žHÈ´'ô.4`´,4-t`ˆ4/t,4,ô`4`ô-ô.´`Èˆˆ´%ô,4`4cô-´-t/HŸOÜÛX[Ù]‚ˆÙ]‚ˆÙ]‚ˆÙ]‚‚ˆ]ˆÛ\ÜÏHš\›Ë[Y]šXÜË]Œ‚ˆ]ˆÛ\ÜÏHš\›Ë[Y]šXË]Œˆ	Ú[œ][]HÈ]KY[]OH‰Ù\ØÊ[œ][]J_H˜ˆˆŸOKZXÛÛˆXÛÛH›YN™›\ÚÚKZXÛÛ]Ü[´$´at/´-4/t/´-H4/t,4/ô`4cô-´-t/t.4-OÜÜ[Ý›Û™Ï‰Ù\ØÊ[œ]
+_OÜÝ›Û™ÏÙ]Ù]‚ˆ]ˆÛ\ÜÏHš\›Ë[Y]šXË]Œˆ	ÛÝ]][]HÈ]KY[]OH‰Ù\ØÊÝ]][]J_H˜ˆˆŸOKZXÛÛˆXÛÛH›YNœÝÙ\‹\YÈÚKZXÛÛ]Ü[´$´bôat/´-4/t/´-H4/t,4/ô`4cô-´-t/t.4-OÜÜ[Ý›Û™Ï‰Ù\ØÊÝ]]
+_OÜÝ›Û™ÏÙ]Ù]‚ˆ]ˆÛ\ÜÏHš\›Ë[Y]šXË]Œˆ	Ø˜]\žQ[]HÈ]KY[]OH‰Ù\ØÊ˜]\žQ[]J_H˜ˆˆŸOKZXÛÛˆXÛÛH›YN˜˜]\žHÚKZXÛÛ]Ü[´%ô,4`4cô-4$4&´$OÜÜ[Ý›Û™Ï‰Ø˜]\žHOOH[È¸ %ˆˆ	ÓX]œ›Ý[™
+˜]\žJ_H	XOÜÝ›Û™ÏÙ]Ù]‚ˆ]ˆÛ\ÜÏHš\›Ë[Y]šXË]Œˆ	ÛØY[]HÈ]KY[]OH‰Ù\ØÊØY[]J_H˜ˆˆŸOKZXÛÛˆXÛÛH›YN™Ø]YÙHÚKZXÛÛ]Ü[´'t,4,ô`4`ô-ô.´,ÜÜ[Ý›Û™Ï‰ÛØYOOH[È¸ %ˆˆ	ÓX]œ›Ý[™
+ØY
+_H	XOÜÝ›Û™ÏÙ]Ù]‚ˆÙ]‚ˆØ\XÛO˜ÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\“Ý™\šY]Ñ]™[ÈH[˜Ý[Ûˆ
+]šXÙJHÂˆ™]\›ˆ\XÛHÛ\ÜÏH›Ý™\šY]ËY]™[Ë]ŒØ\™]Œ‚ˆ]ˆÛ\ÜÏHœÙXÝ[Û‹]]K]Œ´'ô'´(t&ô%t%4't&4%H4(t'´$t*ô(´&4+ÏÙ]‚ˆ]ˆÛ\ÜÏH›Ý™\šY]ËY]™[Ë[\Ý‚ˆ	Ý\Ë—Ù]™[›ÝÊ]šXÙK˜˜]\žWÛ[ÙWÙ]™[È‹´(4-t-´.4/4$4&´$HŠ_Bˆ	Ý\Ë—Ù]™[›ÝÊ]šXÙK˜ÛÝYÝ[[Y]žWÙ]™[È‹´'´,t.ô,4.´/ˆŠ_Bˆ	Ý\Ë—Ù]™[›ÝÊ]šXÙK™]WÙœ™\Ú™\Ü×Ù]™[È‹´(t,´-t-´-t`t`´c4-4,4/t/tbôaHŠ_Bˆ	Ý\Ë—Ù]™[›ÝÊ]šXÙK™˜][Û[ÙWÙ]™[È‹´$4,´,4`4.4.t/tbô.H4`4-t-´.4/Š_BˆÙ]‚ˆØ\XÛO˜ÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\“Ý™\šY]ÈH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝÙ[XÝYYH\Ë—ÜÙ[XÝY\ÒYËŠ
+NÂˆÛÛœÝ]šXÙHH\Ë—Ù]šXÙ\Ë™š[™
+
+][JHOˆ][KšYOOHÙ[XÝYY
+H\Ë—Ù]šXÙ\ÖÌNÂˆYˆ
+Y]šXÙJH™]\›ˆ\Ë—Ù[\J•TÈ4/t-H4/t,4.t-4-t/tbÈŠNÂ‚ˆÛÛœÝ[\ÈHÈ™ÜšY‹˜˜]\žH‹˜ÛÝY‹™œ™\Ú™\ÜÈ—K›X\
+
+Ú[™
+HOˆ\Ë—ÛÝ™\šY]ÔÝ]U[J]šXÙKÚ[™
+JNÂ‚ˆ™]\›ˆÙXÝ[ÛˆÛ\ÜÏH›Ý™\šY]Ë]Œ‚ˆ	Ý\Ë—Ü™[™\“Ý™\šY]Ò\›Ê]šXÙJ_Bˆ\XÛHÛ\ÜÏH›Ý™\šY]Ë\Ý]\Ë]ŒØ\™]Œ‚ˆ]ˆÛ\ÜÏHœÙXÝ[Û‹]]K]Œ´(t'´(t(´'´+ô't&4+ÏÙ]‚ˆ]ˆÛ\ÜÏH›Ý™\šY]Ë\Ý]KYÜšY]Œ‰Ý[\Ë›X\
+
+[JHOˆ\Ë—Ü™[™\“Ý™\šY]ÔÝ]U[J[JJKš›Ú[ŠˆŠ_OÙ]‚ˆØ\XÛO‚ˆ	Ý\Ë—Ü™[™\“Ý™\šY]Ñ]™[Ê]šXÙJ_BˆÜÙXÝ[Û‚ˆÛ\ÜÏHš[[]Œ´'t,4-´/4.4`´-H4.4`ô-4-t`4-´.4,´,4.t`´-H4a4,4.´`´.4aô-t`t.´.4.H4/ô/´.´,4-ô,4`´-t.ôc4aô`´/´,tbÈ4/´`´.´`4bô`´c4b4`´,4`´/tbô.H[Ü™KZ[™›ÈÛYH\ÜÚ\Ý[Ü˜ÂˆNÂ‚ˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆYˆ
+\›ÛÝ
+H™]\›ŽÂ‚ˆÛÛœÝÝX]HH›ÛÝœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂ‚ˆYˆ
+›ÛÝœ]Y\žTÙ[XÝÜŠœÝ[VÙ]K\Ý\šË]ZK]ŒHŠJH™]\›ŽÂˆÛÛœÝÝ[HHØÝ[Y[˜Ü™X]Q[[Y[
+œÝ[HŠNÂˆÝ[K™]\Ù]œÝ\šÕZUŒHYHŽÂˆÝ[K^ÛÛ[Hˆ›Ý™\šY]Ë]ŒÈÚY›Z[ŠL	KŒ
+NÈX\™Ú[ŽŒ]]ÎÈ\Ü^N™ÜšYÈØ\ŒMÈBˆ˜Ø\™]ŒÈZ[‹]ÚYŒÈ›Ü™\ŽŒ\ÛÛY˜\ŠKY]šY\‹XÛÛÜŠNÈ›Ü™\‹\˜Y]\ÎŒŒœÈ˜XÚÙÜ›Ý[™˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠNÈ›Þ\ÚYÝÎ˜\ŠKZKXØ\™X›Þ\ÚYÝË›Û™JNÈBˆ\ËZ\›Ë]ŒÈY[™ÎŒNÈÝ™\™›ÝÎšY[ŽÈBˆš\›Ë]ŒZXYÈ\Ü^N™ÜšYÈÜšY][\]KXÛÛ[[œÎ›Z[›X^
+YœŠH]]ÎÈØ\ŒMÈ[YÛ‹Z][\ÎœÝ\ÈBˆš\›Ë]ŒXÛÜHÈZ[‹]ÚYŒÈBˆš\›Ë]ŒZÚXÚÙ\‹œÙXÝ[Û‹]]K]ŒÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈ›Û\Ú^™NŒMÈ[™KZZYÚŒKŒŽÈ›Û]ÙZYÚÍLÈ]\‹\ÜXÚ[™Î‹ŒMY[NÈBˆš\›Ë]ŒXÛÜHˆÈX\™Ú[ŽŽÈ›Û\Ú^™N˜Û[\
+œÝËÍ
+NÈ[™KZZYÚŒKŒNÈ]\‹\ÜXÚ[™Î‹KŒ™[NÈÝ™\™›ÝË]Ü˜\˜[ž]Ú\™NÈBˆš\›Ë]ŒXÛÜHÈX\™Ú[ŽŽÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈ›Û\Ú^™NŒMœÈ[™KZZYÚŒKŒÍNÈBˆš\›Ë[Û›[™KX˜YÙHÈZ[‹]ÚYŒLNÈX^]ÚYŒMLÈ^X[YÛŽœšYÚÈBˆš\›Ë[Û›[™KX˜YÙOœÜ[ˆÈZ[‹ZZYÚÈ\Ü^Nš[›[™KY›^È[YÛ‹Z][\Î˜Ù[\ŽÈ\ÝYžKXÛÛ[˜Ù[\ŽÈØ\ÜÈ›Ü™\‹\˜Y]\ÎŽNN\ÈY[™ÎŽLÜÈ›Û\Ú^™NŒMœÈ›Û]ÙZYÚÍLÈÚ]K\ÜXÙN››ÝÜ˜\ÈBˆš\›Ë[Û›[™KX˜YÙOœÜ[ˆKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NŒNÈBˆš\›Ë[Û›[™KX˜YÙHÛX[È\Ü^N˜›ØÚÎÈX\™Ú[‹]ÜœÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈ›Û\Ú^™NŒMÈ[™KZZYÚŒKŒŽÈÚ]K\ÜXÙN››Ü›X[ÈBˆš\›Ë[Û›[™KX˜YÙK™ÛÛÙœÜ[ˆÈÛÛÜŽ˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™MÙÌŠNÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™MÙÌŠHLIK˜[œÜ\™[
+NÈBˆš\›Ë[Û›[™KX˜YÙKØ\›œÜ[ˆÈÛÛÜŽ˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙY˜ÌŠNÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙY˜ÌŠHL‰K˜[œÜ\™[
+NÈBˆš\›Ë[Û›[™KX˜YÙK˜˜YœÜ[ˆÈÛÛÜŽ˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙÌ™Œ™ŠNÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙÌ™Œ™ŠHLIK˜[œÜ\™[
+NÈBˆš\›Ë[Û›[™KX˜YÙK[šÛ›ÝÛœÜ[ˆÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠHL	K˜[œÜ\™[
+NÈB‚ˆ\Ë\ÝÙ\‹YXYÜ˜[HÈÜÚ][ÛŽœ™[]]™NÈX\™Ú[ŽŒŽŒœÈ\Ü^N™ÜšYÈÜšY][\]KXÛÛ[[œÎ›Z[›X^
+YœŠHÎZ[›X^
+MœYœŠHÎZ[›X^
+YœŠNÈÜšY][\]K\›ÝÜÎ˜]]È]]ÎÈ[YÛ‹Z][\Î˜Ù[\ŽÈØ\ŒÜÈBˆ™XYÜ˜[K[›ÙHÈZ[‹]ÚYŒÈZ[‹ZZYÚŒLLœÈ›Ü™\‹\˜Y]\ÎŒŒÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\š[X\žKXÛÛÜŠHÉK˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠJNÈ\Ü^N™›^È›^Y\™XÝ[ÛŽ˜ÛÛ[[ŽÈ\ÝYžKXÛÛ[˜Ù[\ŽÈ[YÛ‹Z][\Î˜Ù[\ŽÈØ\\ÈY[™ÎŒLœÈ^X[YÛŽ˜Ù[\ŽÈBˆ™XYÜ˜[K[›ÙHKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NŒÌ\ÈÛÛÜŽ˜\ŠK\š[X\žKXÛÛÜŠNÈBˆ™XYÜ˜[K[›ÙHÜ[ˆÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈ›Û\Ú^™NŒM\È[™KZZYÚŒKŒMNÈBˆ™XYÜ˜[K[›ÙHÝ›Û™ÈÈX^]ÚYŒL	NÈ›Û\Ú^™NŒNÈ[™KZZYÚŒKŒMNÈÝ™\™›ÝË]Ü˜\˜[ž]Ú\™NÈBˆ™XYÜ˜[K[[šÈÈZ[‹]ÚYŒÈ\Ü^N™›^È[YÛ‹Z][\Î˜Ù[\ŽÈÛÛÜŽ˜\ŠK\š[X\žKXÛÛÜŠNÈBˆ™XYÜ˜[K[[šÈÜ[ˆÈZYÚŒÜÈ›^ŒNÈ›Ü™\‹\˜Y]\ÎŽNN\È˜XÚÙÜ›Ý[™˜Ý\œ™[ÛÛÜŽÈBˆ™XYÜ˜[K[[šÈKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NŒŒ\ÈX\™Ú[‹[Y‹M\ÈBˆ˜˜]\žKXœ˜[˜ÚÈÜšYXÛÛ[[ŽŒÎÈÜšY\›ÝÎŒŽÈ\ÝYžK\Ù[Ž˜Ù[\ŽÈÚY›Z[ŠL	KML
+NÈ\Ü^N™ÜšYÈ\ÝYžKZ][\Î˜Ù[\ŽÈX\™Ú[‹]ÜŒÈBˆ˜˜]\žK[[šÈÈÚYŒœÈZYÚŒÎÈ\Ü^N™›^È›^Y\™XÝ[ÛŽ˜ÛÛ[[ŽÈ[YÛ‹Z][\Î˜Ù[\ŽÈ\ÝYžKXÛÛ[™›^\Ý\ÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈBˆ˜˜]\žK[[šÈÜ[ˆÈÚYŒÜÈZYÚŒL	NÈ›Ü™\‹\˜Y]\ÎŽNN\È˜XÚÙÜ›Ý[™˜Ý\œ™[ÛÛÜŽÈÜXÚ]N‹NÈBˆ˜˜]\žK[[šÈKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NŒŒÈX\™Ú[‹]Ü‹N\ÈBˆ˜˜]\žK[›ÙHÈÚYŒL	NÈZ[‹ZZYÚŒLÈ\Ü^N™›^È[YÛ‹Z][\Î˜Ù[\ŽÈ\ÝYžKXÛÛ[˜Ù[\ŽÈØ\ŒLÈ›Ü™\‹\˜Y]\ÎŒŒÈY[™ÎŒLÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙY˜ÌŠHIK˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠJNÈBˆ˜˜]\žK[›ÙHKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NŒÌÈÛÛÜŽ˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙY˜ÌŠNÈBˆ˜˜]\žK[›ÙHÜ[‹˜˜]\žK[›ÙHÝ›Û™Ë˜˜]\žK[›ÙHÛX[È\Ü^N˜›ØÚÎÈBˆ˜˜]\žK[›ÙHÜ[ˆÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈ›Û\Ú^™NŒM\ÈBˆ˜˜]\žK[›ÙHÝ›Û™ÈÈ›Û\Ú^™NŒŒÈ[™KZZYÚŒKŒNÈBˆ˜˜]\žK[›ÙHÛX[ÈX\™Ú[‹]ÜÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈ›Û\Ú^™NŒLÜÈBˆ˜˜]\žKXœ˜[˜Ú˜XÝ]™H˜˜]\žK[[šÈÈÛÛÜŽ˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙY˜ÌŠNÈBˆ˜˜]\žKY›ÝÈ™ÜšY[›ÙHÈÜXÚ]N‹NÈBˆ˜˜]\žKY›ÝÈ™ÜšY[[šÈÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈÜXÚ]N‹ÈBˆ˜˜]\žKY›ÝÈ›Ý]][[šÈÈÛÛÜŽ˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙY˜ÌŠNÈBˆ˜˜]\žKY›ÝÈ\Ë[›ÙHKZXÛÛ‹˜˜]\žKY›ÝÈ›ØY[›ÙHKZXÛÛˆÈÛÛÜŽ˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙY˜ÌŠNÈB‚ˆš\›Ë[Y]šXÜË]ŒÈ\Ü^N™ÜšYÈÜšY][\]KXÛÛ[[œÎœ™\X]
+‹Z[›X^
+YœŠJNÈ›Ü™\ŽŒ\ÛÛY˜\ŠKY]šY\‹XÛÛÜŠNÈ›Ü™\‹\˜Y]\ÎŒNÈÝ™\™›ÝÎšY[ŽÈBˆš\›Ë[Y]šXË]ŒÈZ[‹]ÚYŒÈZ[‹ZZYÚÍœÈ\Ü^N™›^È[YÛ‹Z][\Î˜Ù[\ŽÈØ\ŒL\ÈY[™ÎŒLœMÈ›Ü™\‹\šYÚŒ\ÛÛY˜\ŠKY]šY\‹XÛÛÜŠNÈ›Ü™\‹X›ÝÛNŒ\ÛÛY˜\ŠKY]šY\‹XÛÛÜŠNÈBˆš\›Ë[Y]šXË]Œ›XÚ[
+›ŠHÈ›Ü™\‹\šYÚŒÈBˆš\›Ë[Y]šXË]Œ›[\ÝXÚ[
+[ŠÌŠHÈ›Ü™\‹X›ÝÛNŒÈBˆš\›Ë[Y]šXË]ŒKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NŒ\ÈÛÛÜŽ˜\ŠK\š[X\žKXÛÛÜŠNÈ›^Œ]]ÎÈBˆš\›Ë[Y]šXË]Œ›XÚ[
+ÊHKZXÛÛ‹š\›Ë[Y]šXË]Œ›XÚ[
+
+HKZXÛÛˆÈÛÛÜŽ˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙY˜ÌŠNÈBˆš\›Ë[Y]šXË]Œ™]ˆÈZ[‹]ÚYŒÈBˆš\›Ë[Y]šXË]ŒÜ[‹š\›Ë[Y]šXË]ŒÝ›Û™ÈÈ\Ü^N˜›ØÚÎÈBˆš\›Ë[Y]šXË]ŒÜ[ˆÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈ›Û\Ú^™NŒM\È[™KZZYÚŒKŒŽÈBˆš\›Ë[Y]šXË]ŒÝ›Û™ÈÈX\™Ú[‹]ÜŒÜÈ›Û\Ú^™NŒN\È[™KZZYÚŒKŒMNÈÝ™\™›ÝË]Ü˜\˜[ž]Ú\™NÈB‚ˆ›Ý™\šY]Ë\Ý]\Ë]Œ›Ý™\šY]ËY]™[Ë]ŒÈY[™ÎŒNÈBˆ›Ý™\šY]Ë\Ý]KYÜšY]ŒÈX\™Ú[‹]ÜŒMÈ\Ü^N™ÜšYÈÜšY][\]KXÛÛ[[œÎœ™\X]
+‹Z[›X^
+YœŠJNÈØ\ŒLÈBˆ›Ý™\šY]Ë\Ý]K][HÈZ[‹]ÚYŒÈZ[‹ZZYÚŒLÈ\Ü^N™›^È[YÛ‹Z][\Î˜Ù[\ŽÈØ\ŒLœÈ›Ü™\ŽŒ\ÛÛY˜\ŠKY]šY\‹XÛÛÜŠNÈ›Ü™\‹\˜Y]\ÎŒNÈY[™ÎŒLÜÈBˆ›Ý™\šY]Ë\Ý]K][HKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NŒŽ\È›^Œ]]ÎÈBˆ›Ý™\šY]Ë\Ý]K][K™ÛÛÙKZXÛÛˆÈÛÛÜŽ˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™MÙÌŠNÈBˆ›Ý™\šY]Ë\Ý]K][KØ\›ˆKZXÛÛˆÈÛÛÜŽ˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙY˜ÌŠNÈBˆ›Ý™\šY]Ë\Ý]K][K˜˜YKZXÛÛˆÈÛÛÜŽ˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙÌ™Œ™ŠNÈBˆ›Ý™\šY]Ë\Ý]K][K[šÛ›ÝÛˆKZXÛÛˆÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈBˆ›Ý™\šY]Ë\Ý]KXÛÜHÈZ[‹]ÚYŒÈBˆ›Ý™\šY]Ë\Ý]KXÛÜHÝ›Û™Ë›Ý™\šY]Ë\Ý]KXÛÜHÜ[‹›Ý™\šY]Ë\Ý]KXÛÜHÛX[È\Ü^N˜›ØÚÎÈBˆ›Ý™\šY]Ë\Ý]KXÛÜHÝ›Û™ÈÈ›Û\Ú^™NŒMœÈBˆ›Ý™\šY]Ë\Ý]KXÛÜHÜ[ˆÈX\™Ú[‹]ÜÈ›Û\Ú^™NŒMœÈ›Û]ÙZYÚÌÈÝ™\™›ÝË]Ü˜\˜[ž]Ú\™NÈBˆ›Ý™\šY]Ë\Ý]KXÛÜHÛX[ÈX\™Ú[‹]ÜŒÜÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈ›Û\Ú^™NŒMÈ[™KZZYÚŒKŒŽÈÝ™\™›ÝË]Ü˜\˜[ž]Ú\™NÈB‚ˆ›Ý™\šY]ËY]™[Ë[\ÝÈX\™Ú[‹]ÜŒLÈBˆ›Ý™\šY]ËY]™[Ë]Œ™]™[\›ÝÈÈZ[‹ZZYÚNZ[\Ü[ÈY[™ÎŒLœZ[\Ü[ÈBˆ›Ý™\šY]ËY]™[Ë]Œ™]™[\›ÝÏœÜ[ˆÈ›Û\Ú^™NŒM\Z[\Ü[ÈBˆ›Ý™\šY]ËY]™[Ë]Œ™]™[XÛÜHÝ›Û™ÈÈ›Û\Ú^™NŒMœZ[\Ü[ÈBˆ›Ý™\šY]ËY]™[Ë]Œ™]™[XÛÜHÛX[È›Û\Ú^™NŒMZ[\Ü[ÈBˆš[]ŒÈÚY›Z[ŠL	KŒ
+NÈX\™Ú[ŽŒ]]ÎÈY[™ËX›ÝÛNÈB‚ˆYYXH
+X^]ÚYÌ
+HÂˆ\ËZ\›Ë]Œ›Ý™\šY]Ë\Ý]\Ë]Œ›Ý™\šY]ËY]™[Ë]ŒÈY[™ÎŒMœÈBˆš\›Ë]ŒZXYÈÜšY][\]KXÛÛ[[œÎ›Z[›X^
+YœŠHLÈØ\ŒLÈBˆš\›Ë[Û›[™KX˜YÙHÈZ[‹]ÚYŒÈX^]ÚYŒLÈBˆš\›Ë[Û›[™KX˜YÙOœÜ[ˆÈZ[‹ZZYÚœÈY[™ÎÜLÈ›Û\Ú^™NŒM\ÈBˆš\›Ë[Û›[™KX˜YÙHÛX[È›Û\Ú^™NŒLÜÈBˆ\Ë\ÝÙ\‹YXYÜ˜[HÈÜšY][\]KXÛÛ[[œÎ›Z[›X^
+œYœŠHZ[›X^
+LœYœŠHZ[›X^
+œYœŠNÈX\™Ú[‹]ÜŒÈBˆ™XYÜ˜[K[›ÙHÈZ[‹ZZYÚŒLÈY[™ÎŽ\\ÈBˆ™XYÜ˜[K[›ÙHÜ[ˆÈ›Û\Ú^™NŒMÈBˆ™XYÜ˜[K[›ÙHÝ›Û™ÈÈ›Û\Ú^™NŒMÜÈBˆ™XYÜ˜[K[[šÈKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NŒNÈBˆ˜˜]\žKXœ˜[˜ÚÈÚY›Z[ŠL	KLÍœ
+NÈBˆ˜˜]\žK[›ÙHÈZ[‹ZZYÚŽNÈY[™ÎŽ\ÈBˆBˆYYXH
+X^]ÚYŒÎL
+HÂˆš\›Ë]ŒZXYÈÜšY][\]KXÛÛ[[œÎ›Z[›X^
+YœŠHLLœÈBˆš\›Ë]ŒXÛÜHˆÈ›Û\Ú^™NŒ\ÈBˆš\›Ë]ŒXÛÜHÈ›Û\Ú^™NŒM\ÈBˆš\›Ë[Û›[™KX˜YÙOœÜ[ˆÈ›Û\Ú^™NŒMÈY[™Ë[YŽÈY[™Ë\šYÚŽÈBˆ\Ë\ÝÙ\‹YXYÜ˜[HÈÜšY][\]KXÛÛ[[œÎ›Z[›X^
+ÌYœŠHNZ[›X^
+œYœŠHNZ[›X^
+ÌYœŠNÈBˆ™XYÜ˜[K[›ÙHÈZ[‹ZZYÚŒLœÈ›Ü™\‹\˜Y]\ÎŒMÜÈBˆ™XYÜ˜[K[›ÙHKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NŒÜÈBˆ™XYÜ˜[K[›ÙHÝ›Û™ÈÈ›Û\Ú^™NŒMœÈBˆ˜˜]\žKXœ˜[˜ÚÈÚY›Z[ŠL	KLœ
+NÈBˆš\›Ë[Y]šXË]ŒÈY[™ÎŒL\LÈØ\ŽÈBˆš\›Ë[Y]šXË]ŒÜ[ˆÈ›Û\Ú^™NŒMÈBˆš\›Ë[Y]šXË]ŒÝ›Û™ÈÈ›Û\Ú^™NŒNÈBˆ›Ý™\šY]Ë\Ý]K][HÈY[™ÎŒL\ÈØ\Ž\ÈBˆ›Ý™\šY]Ë\Ý]K][HKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NŒ\ÈBˆBˆYYXH
+Z[‹]ÚYÍŒ
+HÂˆš\›Ë]ŒXÛÜHˆÈ›Û\Ú^™NŒÍÈBˆ›Ý™\šY]Ë\Ý]KYÜšY]ŒÈÜšY][\]KXÛÛ[[œÎœ™\X]
+Z[›X^
+YœŠJNÈBˆBˆÂˆ›ÛÝ˜\[™
+Ý[JNÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]Œ\Ù[X[XÜËšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒÙ[X[XÜÊHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒÙ[X[XÜÈHYNÂ‚ˆÛÛœÝ™]š[Ý\ÔÝ]U[HH[™[œ›ÝÝ\K—ÛÝ™\šY]ÔÝ]U[NÂ‚ˆ[™[œ›ÝÝ\K—ÛÝ™\šY]ÔÝ]U[HH[˜Ý[Ûˆ
+]šXÙKÚ[™
+HÂˆYˆ
+Ú[™OOH™ÜšYŠHÂˆÛÛœÝ[ÙHH\Ë—Û[ÙJ]šXÙJNÂˆÛÛœÝ[œ]›ÛYÙHH\Ë—Û[Y\šXÊ]šXÙKš[œ]Ý›ÛYÙHŠNÂˆYˆ
+[ÙHOOH˜˜]\žWÛ[ÙHŠHÂˆ™]\›ˆÂˆXÛÛŽˆ›YN˜[œÛZ\ÜÚ[Û‹]ÝÙ\‹[Ù™ˆ‹ˆ]Nˆ´(t-t`´c‹ˆš[X\žNˆ´'t-t`ˆ4,´at/´-4,‹ˆÙXÛÛ™\žNˆ\Ë—Ù›Ü›X]
+]šXÙKš[œ]Ý›ÛYÙH‹ŒˆŠKˆÛ™NˆØ\›ˆ‹ˆ[]Nˆ\Ë—Ù[]RY
+]šXÙKš[œ]Ý›ÛYÙHŠKˆNÂˆBˆYˆ
+[œ]›ÛYÙHOOH[	‰ˆ[œ]›ÛYÙHˆ
+HÂˆ™]\›ˆÂˆXÛÛŽˆ›YN˜[œÛZ\ÜÚ[Û‹]ÝÙ\ˆ‹ˆ]Nˆ´(t-t`´c‹ˆš[X\žNˆ´%t`t`´c4/ô.4`´,4/t.4-H‹ˆÙXÛÛ™\žNˆ\Ë—Ù›Ü›X]
+]šXÙKš[œ]Ý›ÛYÙHŠKˆÛ™Nˆ™ÛÛÙ‹ˆ[]Nˆ\Ë—Ù[]RY
+]šXÙKš[œ]Ý›ÛYÙHŠKˆNÂˆBˆ™]\›ˆÂˆXÛÛŽˆ›YN˜[œÛZ\ÜÚ[Û‹]ÝÙ\ˆ‹ˆ]Nˆ´(t-t`´c‹ˆš[X\žNˆ´'t-t.4-ô,´-t`t`´/t/ˆ‹ˆÙXÛÛ™\žNˆ´'t-t`ˆ4-4/´`t`´/´,´-t`4/tbôaH4-4,4/t/tbôaH‹ˆÛ™Nˆ[šÛ›ÝÛˆ‹ˆ[]Nˆ\Ë—Ù[]RY
+]šXÙKš[œ]Ý›ÛYÙHŠKˆNÂˆB‚ˆYˆ
+Ú[™OOH˜˜]\žHŠHÂˆÛÛœÝ[HH™]š[Ý\ÔÝ]U[K˜Ø[
+\Ë]šXÙKÚ[™
+NÂˆÛÛœÝ˜]\žHH\Ë—Û[Y\šXÊ]šXÙK˜˜]\žWØØ\XÚ]HŠNÂˆÛÛœÝ[ÙHH\Ë—Û[ÙJ]šXÙJNÂˆYˆ
+[ÙHOOH˜˜]\žWÛ[ÙHˆ	‰ˆ˜]\žHOOH[
+HÂˆ[KœÙXÛÛ™\žHH˜]\žHHMHÈ´%ô,4`4cô-´-t/Hˆˆ´%4/´`t`´`ô/ô-t/HŽÂˆBˆ™]\›ˆ[NÂˆB‚ˆ™]\›ˆ™]š[Ý\ÔÝ]U[K˜Ø[
+\Ë]šXÙKÚ[™
+NÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]Œ\Ù[X[XÜËšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒKšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒŒHŽÂ˜ÛÛœÝT‘S•Ô“ÕUHH‹Ù\Ú›Ø\™Z[™œ˜\ÝXÝ\™KÛÝ™\šY]ÈŽÂ‚™[˜Ý[Ûˆ\ØÊ˜[YJHÂˆ™]\›ˆÝš[™Ê˜[YHÏÈˆŠBˆœ™\XÙP[
+‰ˆ‹‰˜[\ÈŠBˆœ™\XÙP[
+‹‰›ÈŠBˆœ™\XÙP[
+ˆ‹‰™ÝÈŠBˆœ™\XÙP[
+	È‰Ë‰œ][ÝÈŠBˆœ™\XÙP[
+‰È‹‰ˆÌÎNÈŠNÂŸB‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒJHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒHHYNÂ‚ˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—ÛY[SÜ[ˆH˜[ÙNÂ‚ˆ[™[œ›ÝÝ\K—ÛY[S˜]šYØ]T\™[H[˜Ý[Ûˆ
+
+HÂˆYˆ
+\[Ùˆ\Ë—Û˜]šYØ]UÈOOH™[˜Ý[ÛˆŠHÂˆ\Ë—Û˜]šYØ]UÊT‘S•Ô“ÕUJNÂˆ™]\›ŽÂˆBˆ\ÝÜžKœ\ÚÝ]J[ˆ‹T‘S•Ô“ÕUJNÂˆÚ[™ÝË™\Ü]Ú]™[
+™]È]™[
+›ØØ][Û‹XÚ[™ÙYŠJNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—ÛY[SX\šÝ\ŒHH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝÙ[XÝYYH\Ë—ÜÙ[XÝY\ÒYËŠ
+H\Ë—Ù]šXÙ\ÏË–ÌOËšY[ÂˆÛÛœÝ]šXÙ\ÈH\œ˜^Kš\Ð\œ˜^J\Ë—Ù]šXÙ\ÊHÈ\Ë—Ù]šXÙ\Èˆ×NÂ‚ˆ™]\›ˆˆ]ˆÛ\ÜÏH›Y[KX˜XÚÙ›Ü]ŒH	Ý\Ë—ÛY[SÜ[ˆÈ›Ü[ˆˆˆˆŸHˆ]K[Y[KXÛÜÙH\šXKZY[H‰Ý\Ë—ÛY[SÜ[ˆÈ™˜[ÙHˆˆYHŸHÙ]‚ˆ\ÚYHÛ\ÜÏH›Y[KY˜]Ù\‹]ŒH	Ý\Ë—ÛY[SÜ[ˆÈ›Ü[ˆˆˆˆŸHˆ\šXKZY[H‰Ý\Ë—ÛY[SÜ[ˆÈ™˜[ÙHˆˆYHŸHˆ\šXK[X™[H´'4-t/tcˆÝ\šÈÛÛ\”ÝÙ\ˆ‚ˆ]ˆÛ\ÜÏH›Y[KZXY]ŒH‚ˆÝ›Û™Ï´'4-t/tcÜÝ›Û™Ï‚ˆ]Ûˆ\OH˜]ÛˆˆÛ\ÜÏH›Y[KXÛÜÙK]ŒHˆ]K[Y[KXÛÜÙH\šXK[X™[H´%ô,4.´`4bô`´c4/4-t/tcˆKZXÛÛˆXÛÛH›YN˜ÛÜÙHÚKZXÛÛØ]Û‚ˆÙ]‚‚ˆ]Ûˆ\OH˜]ÛˆˆÛ\ÜÏH›Y[K\›ÝË]ŒH\™[ˆ]K[Y[K\\™[‚ˆKZXÛÛˆXÛÛH›YNšÛYK[Ý][™HÚKZXÛÛ‚ˆÜ[´&4/ta4`4,4`t`´`4`ô.´`´`ô`4,ÜÜ[‚ˆKZXÛÛˆÛ\ÜÏH˜Ú]œ›ÛˆˆXÛÛH›YN˜Ú]œ›Û‹\šYÚÚKZXÛÛ‚ˆØ]Û‚‚ˆ]ˆÛ\ÜÏH›Y[KY]šY\‹]ŒHÙ]‚ˆ]ˆÛ\ÜÏH›Y[K\ÙXÝ[Û‹[X™[]ŒH´&4$t'ÏÙ]‚‚ˆ	Ù]šXÙ\Ë›X\
+
+]šXÙJHOˆÂˆÛÛœÝXÝ]™HH]šXÙKšYOOHÙ[XÝYYÂˆÛÛœÝÛ™HH\Ë—ÜÝ]\ÏËŠ]šXÙJOËÛ™H˜˜YŽÂˆ™]\›ˆ]Ûˆ\OH˜]ÛˆˆÛ\ÜÏH›Y[K\›ÝË]ŒH]šXÙH	ØXÝ]™HÈ˜XÝ]™HˆˆˆŸHˆ]K[Y[KY]šXÙOH‰Ù\ØÊ]šXÙKšY
+_H‚ˆKZXÛÛˆXÛÛH›YN˜˜]\žKXÚ\™Ú[™ÈÚKZXÛÛ‚ˆÜ[ˆÛ\ÜÏH›Y[KY]šXÙK[˜[YK]ŒHHÛ\ÜÏH›Y[KYÝ]ŒH	Ù\ØÊÛ™J_HÚO‰Ù\ØÊ]šXÙK›˜[YJ_OÜÜ[‚ˆKZXÛÛˆÛ\ÜÏH˜Ú]œ›ÛˆˆXÛÛH›YN˜Ú]œ›Û‹\šYÚÚKZXÛÛ‚ˆØ]Û˜ÂˆJKš›Ú[ŠˆŠ_B‚ˆ]ˆÛ\ÜÏH›Y[KY]šY\‹]ŒHÙ]‚‚ˆ]Ûˆ\OH˜]ÛˆˆÛ\ÜÏH›Y[K\›ÝË]ŒHˆ]K[Y[K\™Yœ™\Ú‚ˆKZXÛÛˆXÛÛH›YNœ™Yœ™\ÚÚKZXÛÛ‚ˆÜ[´'´,t/t/´,´.4`´c4,´`t-H4&4$t'ÏÜÜ[‚ˆØ]Û‚‚ˆ]ˆÛ\ÜÏH›Y[KY›ÛÝ\‹]ŒH‚ˆÝ›Û™Ï”Ý\šÈÛÛ\”ÝÙ\ÜÝ›Û™Ï‚ˆÜ[•RH‰ÕRWÕ‘T”ÒSÓŸH0­È4`´/´.ôc4.´/ˆ4aô`´-t/t.4-OÜÜ[‚ˆÙ]‚ˆØ\ÚYO˜ÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ú[œÝ[Y[UŒHH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆYˆ
+\›ÛÝ
+H™]\›ŽÂ‚ˆÛÛœÝÛ˜XÚÈH›ÛÝœ]Y\žTÙ[XÝÜŠ‹˜˜XÚÈŠNÂˆYˆ
+Û˜XÚÊHÂˆÛÛœÝšYÙÙ\ˆHÛ˜XÚË˜ÛÛ™S›ÙJYJNÂˆšYÙÙ\‹˜Û\ÜÓ\Ý˜Y
+›Y[K]šYÙÙ\‹]ŒHŠNÂˆšYÙÙ\‹œÙ]]šX]J˜\šXK[X™[‹´'4-t/tcˆŠNÂˆšYÙÙ\‹œÙ]]šX]J]H‹´'4-t/tcˆŠNÂˆšYÙÙ\‹œÙ]]šX]J˜\šXKY^[™Y‹\Ë—ÛY[SÜ[ˆÈYHˆˆ™˜[ÙHŠNÂˆšYÙÙ\‹š[›™\’SH	ÏKZXÛÛˆXÛÛH›YN›Y[HÚKZXÛÛ‰ÎÂˆÛ˜XÚËœ™\XÙUÚ]
+šYÙÙ\ŠNÂˆšYÙÙ\‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂˆ\Ë—ÛY[SÜ[ˆHYNÂˆ\Ë—Ü]Y]YT™[™\Š
+NÂˆJNÂˆB‚ˆ›ÛÝœ]Y\žTÙ[XÝÜ[
+‹›Y[KX˜XÚÙ›Ü]ŒK›Y[KY˜]Ù\‹]ŒHŠK™›Ü‘XXÚ
+
+›ÙJHOˆ›ÙKœ™[[Ý™J
+JNÂˆ›ÛÝš[œÙ\Y˜XÙ[S
+˜™Y›Ü™Y[™‹\Ë—ÛY[SX\šÝ\ŒJ
+JNÂ‚ˆ›ÛÝœ]Y\žTÙ[XÝÜ[
+–Ù]K[Y[KXÛÜÙWHŠK™›Ü‘XXÚ
+
+[[Y[
+HOˆÂˆ[[Y[˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂˆ\Ë—ÛY[SÜ[ˆH˜[ÙNÂˆ\Ë—Ü]Y]YT™[™\Š
+NÂˆJNÂˆJNÂ‚ˆ›ÛÝœ]Y\žTÙ[XÝÜŠ–Ù]K[Y[K\\™[HŠOË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂˆ\Ë—ÛY[SÜ[ˆH˜[ÙNÂˆ\Ë—ÛY[S˜]šYØ]T\™[
+
+NÂˆJNÂ‚ˆ›ÛÝœ]Y\žTÙ[XÝÜ[
+–Ù]K[Y[KY]šXÙWHŠK™›Ü‘XXÚ
+
+]ÛŠHOˆÂˆ]Û‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂˆÛÛœÝ]šXÙRYH]Û‹™]\Ù]›Y[Q]šXÙNÂˆYˆ
+]šXÙRY
+H\Ë—ÙXYÛ›ÜÝXÑ]šXÙRYH]šXÙRYÂˆ\Ë—ÛY[SÜ[ˆH˜[ÙNÂˆ\Ë—Ü]Y]YT™[™\Š
+NÂˆJNÂˆJNÂ‚ˆ›ÛÝœ]Y\žTÙ[XÝÜŠ–Ù]K[Y[K\™Yœ™\ÚHŠOË˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂˆ\Ë—ÛY[SÜ[ˆH˜[ÙNÂˆ›ÛÝœ]Y\žTÙ[XÝÜŠ‹œ™Yœ™\ÚŠOË˜ÛXÚÊ
+NÂˆ\Ë—Ü]Y]YT™[™\Š
+NÂˆJNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂ‚ˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆYˆ
+\›ÛÝ
+H™]\›ŽÂ‚ˆÛÛœÝÝX]HH›ÛÝœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂ‚ˆYˆ
+\›ÛÝœ]Y\žTÙ[XÝÜŠœÝ[VÙ]K\Ý\šË]ZK]ŒWHŠJHÂˆÛÛœÝÝ[HHØÝ[Y[˜Ü™X]Q[[Y[
+œÝ[HŠNÂˆÝ[K™]\Ù]œÝ\šÕZUŒHHYHŽÂˆÝ[K^ÛÛ[Hˆ›Y[K]šYÙÙ\‹]ŒHÂˆÛÛÜŽˆ˜\ŠK\š[X\žK]^XÛÛÜŠHZ[\Ü[ÂˆBˆ›Y[KX˜XÚÙ›Ü]ŒHÂˆÜÚ][ÛŽˆš^YÂˆ[œÙ]ˆÂˆ‹Z[™^ˆÂˆ˜XÚÙÜ›Ý[™ˆ™Ø˜JŒŒŠNÂˆÜXÚ]NˆÂˆÚ[\‹Y]™[Îˆ›Û™NÂˆ˜[œÚ][ÛŽˆÜXÚ]HŒNÈX\ÙNÂˆBˆ›Y[KX˜XÚÙ›Ü]ŒK›Ü[ˆÂˆÜXÚ]NˆNÂˆÚ[\‹Y]™[Îˆ]]ÎÂˆBˆ›Y[KY˜]Ù\‹]ŒHÂˆÜÚ][ÛŽˆš^YÂˆ‹Z[™^ˆNÂˆÜˆÂˆ›ÝÛNˆÂˆYˆÂˆÚYˆZ[ŠËÍ
+NÂˆY[™ÎˆØ[ÊN
+È[ŠØY™KX\™XKZ[œÙ]]Ü
+JHMØ[ÊN
+È[ŠØY™KX\™XKZ[œÙ]X›ÝÛJJNÂˆ˜XÚÙÜ›Ý[™ˆ˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠNÂˆÛÛÜŽˆ˜\ŠK\š[X\žK]^XÛÛÜŠNÂˆ›Ü™\‹\šYÚˆ\ÛÛY˜\ŠKY]šY\‹XÛÛÜŠNÂˆ›Þ\ÚYÝÎˆLœÌœ™Ø˜JŒMJNÂˆ˜[œÙ›Ü›Nˆ˜[œÛ]V
+LL‰JNÂˆ˜[œÚ][ÛŽˆ˜[œÙ›Ü›HŒœÈX\ÙNÂˆÝ™\™›ÝË^Nˆ]]ÎÂˆÝ™\œØÜ›ÛX™Z]š[ÜŽˆÛÛZ[ŽÂˆBˆ›Y[KY˜]Ù\‹]ŒK›Ü[ˆÂˆ˜[œÙ›Ü›Nˆ˜[œÛ]V
+
+NÂˆBˆ›Y[KZXY]ŒHÂˆZ[‹ZZYÚˆMÂˆ\Ü^Nˆ›^Âˆ[YÛ‹Z][\ÎˆÙ[\ŽÂˆ\ÝYžKXÛÛ[ˆÜXÙKX™]ÙY[ŽÂˆØ\ˆLœÂˆY[™ÎˆLÂˆBˆ›Y[KZXY]ŒHˆÝ›Û™ÈÂˆ›Û\Ú^™NˆŒœÂˆ[™KZZYÚˆKŒŽÂˆBˆ›Y[KXÛÜÙK]ŒHÂˆÚYˆÂˆZYÚˆÂˆZ[‹]ÚYˆÂˆ›Ü™\Žˆ\ÛÛY˜\ŠKY]šY\‹XÛÛÜŠNÂˆ›Ü™\‹\˜Y]\ÎˆL	NÂˆ˜XÚÙÜ›Ý[™ˆ˜[œÜ\™[ÂˆÛÛÜŽˆ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÂˆ\Ü^NˆÜšYÂˆXÙKZ][\ÎˆÙ[\ŽÂˆBˆ›Y[KXÛÜÙK]ŒHKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NˆŒÜÈBˆ›Y[K\ÙXÝ[Û‹[X™[]ŒHÂˆY[™ÎˆœLœœÂˆÛÛÜŽˆ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÂˆ›Û\Ú^™NˆLœÂˆ›Û]ÙZYÚˆÌÂˆ]\‹\ÜXÚ[™ÎˆŒ™[NÂˆ^]˜[œÙ›Ü›Nˆ\\˜Ø\ÙNÂˆBˆ›Y[K\›ÝË]ŒHÂˆÚYˆL	NÂˆZ[‹ZZYÚˆMœÂˆ›Ü™\ŽˆÂˆ›Ü™\‹\˜Y]\ÎˆMœÂˆ˜XÚÙÜ›Ý[™ˆ˜[œÜ\™[ÂˆÛÛÜŽˆ˜\ŠK\š[X\žK]^XÛÛÜŠNÂˆ\Ü^NˆÜšYÂˆÜšY][\]KXÛÛ[[œÎˆÌZ[›X^
+YœŠHŒœÂˆ[YÛ‹Z][\ÎˆÙ[\ŽÂˆØ\ˆ\ÂˆY[™ÎˆLÂˆ^X[YÛŽˆYÂˆ›Ûˆ[š\š]Âˆ›Û\Ú^™NˆMœÂˆBˆ›Y[K\›ÝË]ŒHˆKZXÛÛŽ™š\œÝXÚ[ÂˆÛÛÜŽˆ˜\ŠK\š[X\žKXÛÛÜŠNÂˆK[YËZXÛÛ‹\Ú^™NˆÂˆBˆ›Y[K\›ÝË]ŒH˜Ú]œ›ÛˆÂˆÛÛÜŽˆ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÂˆK[YËZXÛÛ‹\Ú^™NˆŒÂˆBˆ›Y[K\›ÝË]ŒN››Ý
+œ\™[
+N››Ý
+™]šXÙJH˜Ú]œ›ÛˆÈš\ÚXš[]NˆY[ŽÈBˆ›Y[K\›ÝË]ŒK˜XÝ]™HÂˆÛÛÜŽˆ˜\ŠK\š[X\žKXÛÛÜŠNÂˆ˜XÚÙÜ›Ý[™ˆÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\š[X\žKXÛÛÜŠHL	K˜[œÜ\™[
+NÂˆ›Û]ÙZYÚˆÍLÂˆBˆ›Y[KY]šXÙK[˜[YK]ŒHÂˆZ[‹]ÚYˆÂˆ\Ü^Nˆ›^Âˆ[YÛ‹Z][\ÎˆÙ[\ŽÂˆØ\ˆÂˆÝ™\™›ÝÎˆY[ŽÂˆ^[Ý™\™›ÝÎˆ[\Ú\ÎÂˆÚ]K\ÜXÙNˆ›ÝÜ˜\ÂˆBˆ›Y[KYÝ]ŒHÂˆÚYˆÂˆZYÚˆÂˆ›^ˆÂˆ›Ü™\‹\˜Y]\ÎˆL	NÂˆ˜XÚÙÜ›Ý[™ˆ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÂˆBˆ›Y[KYÝ]ŒK™ÛÛÙÈ˜XÚÙÜ›Ý[™ˆ˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™MÙÌŠNÈBˆ›Y[KYÝ]ŒKØ\›ˆÈ˜XÚÙÜ›Ý[™ˆ˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙY˜ÌŠNÈBˆ›Y[KYÝ]ŒK˜˜YÈ˜XÚÙÜ›Ý[™ˆ˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙÌ™Œ™ŠNÈBˆ›Y[KY]šY\‹]ŒHÂˆZYÚˆ\ÂˆX\™Ú[ŽˆLÂˆ˜XÚÙÜ›Ý[™ˆ˜\ŠKY]šY\‹XÛÛÜŠNÂˆBˆ›Y[KY›ÛÝ\‹]ŒHÂˆX\™Ú[‹]ÜˆNÂˆY[™ÎˆLœÂˆÛÛÜŽˆ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÂˆ›Û\Ú^™NˆLÜÂˆ[™KZZYÚˆKÂˆBˆ›Y[KY›ÛÝ\‹]ŒHÝ›Û™Ëˆ›Y[KY›ÛÝ\‹]ŒHÜ[ˆÈ\Ü^Nˆ›ØÚÎÈBˆ›Y[KY›ÛÝ\‹]ŒHÝ›Û™ÈÂˆÛÛÜŽˆ˜\ŠK\š[X\žK]^XÛÛÜŠNÂˆ›Û\Ú^™NˆMÂˆX\™Ú[‹X›ÝÛNˆœÂˆBˆYYXH
+X^]ÚYˆÎL
+HÂˆ›Y[KY˜]Ù\‹]ŒHÈÚYˆZ[ŠËÌŽ
+NÈBˆBˆYYXH
+™Y™\œË\™YXÙY[[Ý[ÛŽˆ™YXÙJHÂˆ›Y[KX˜XÚÙ›Ü]ŒKˆ›Y[KY˜]Ù\‹]ŒHÈ˜[œÚ][ÛŽˆ›Û™NÈBˆBˆÂˆ›ÛÝ˜\[™
+Ý[JNÂˆB‚ˆ\Ë—Ú[œÝ[Y[UŒJ
+NÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒKšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]Œ‹šœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒŒˆŽÂ‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒŠHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒˆHYNÂ‚ˆËÈÛYH\ÜÚ\Ý[ÝÛœÈHÜ[YY[KˆH[™[]\Ý™\]Y\ÝH˜]]™BˆËÈHÚYX˜\‹ÜÞ\Ý[HY[H[œÝXYÙˆ™[™\š[™È]ÈÝÛˆ\XØ][Ûˆ˜]Ù\‹‚ˆ[™[œ›ÝÝ\K—Ú[œÝ[Y[UŒHH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆYˆ
+\›ÛÝ
+H™]\›ŽÂ‚ˆ›ÛÝœ]Y\žTÙ[XÝÜ[
+‹›Y[KX˜XÚÙ›Ü]ŒK›Y[KY˜]Ù\‹]ŒHŠK™›Ü‘XXÚ
+
+›ÙJHOˆ›ÙKœ™[[Ý™J
+JNÂˆ\Ë—ÛY[SÜ[ˆH˜[ÙNÂ‚ˆÛÛœÝÛšYÙÙ\ˆH›ÛÝœ]Y\žTÙ[XÝÜŠ‹˜˜XÚË›Y[K]šYÙÙ\‹]ŒKšK[Y[K]šYÙÙ\‹]ŒˆŠNÂˆYˆ
+[ÛšYÙÙ\ŠH™]\›ŽÂ‚ˆÛÛœÝšYÙÙ\ˆHÛšYÙÙ\‹˜ÛÛ™S›ÙJYJNÂˆšYÙÙ\‹˜Û\ÜÓ\Ýœ™[[Ý™J›Y[K]šYÙÙ\‹]ŒHŠNÂˆšYÙÙ\‹˜Û\ÜÓ\Ý˜Y
+šK[Y[K]šYÙÙ\‹]ŒˆŠNÂˆšYÙÙ\‹œÙ]]šX]J˜\šXK[X™[‹´'4-t/tcˆÛYH\ÜÚ\Ý[ŠNÂˆšYÙÙ\‹œÙ]]šX]J]H‹´'4-t/tcˆÛYH\ÜÚ\Ý[ŠNÂˆšYÙÙ\‹œ™[[Ý™P]šX]J˜\šXKY^[™YŠNÂˆšYÙÙ\‹š[›™\’SH	ÏKZXÛÛˆXÛÛH›YN›Y[HÚKZXÛÛ‰ÎÂˆÛšYÙÙ\‹œ™\XÙUÚ]
+šYÙÙ\ŠNÂ‚ˆšYÙÙ\‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂˆ\Ë™\Ü]Ú]™[
+ˆ™]ÈÝ\ÝÛQ]™[
+š\ÜË]ÙÙÛK[Y[H‹ÂˆX˜›\ÎˆYKˆÛÛ\ÜÙYˆYKˆJBˆ
+NÂˆJNÂˆNÂ‚ˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂ‚ˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆYˆ
+\›ÛÝ
+H™]\›ŽÂ‚ˆÛÛœÝÝX]HH›ÛÝœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂ‚ˆËÈY™[œÚ]™HÛX[\›Üˆ[ˆ[‹\XÙHœ›Û[™\]Hœ›ÛHRHŒK‚ˆ›ÛÝœ]Y\žTÙ[XÝÜ[
+‹›Y[KX˜XÚÙ›Ü]ŒK›Y[KY˜]Ù\‹]ŒHŠK™›Ü‘XXÚ
+
+›ÙJHOˆ›ÙKœ™[[Ý™J
+JNÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]Œ‹šœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒËšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒŒÈŽÂ‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒÊHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒÈHYNÂ‚ˆÛÛœÝ™]š[Ý\ÒÙ^Qœ›ÛU[š\]YRYH[™[œ›ÝÝ\K—ÚÙ^Qœ›ÛU[š\]YRYÂˆÛÛœÝ™]š[Ý\Ñ^[™Y]˜Z[X›HH[™[œ›ÝÝ\K—Ù^[™Y]˜Z[X›NÂˆÛÛœÝ™]š[Ý\ÒXY[™HH[™[œ›ÝÝ\K—ÛÝ™\šY]ÒXY[™NÂˆÛÛœÝ™]š[Ý\Ðš[™]™[ÈH[™[œ›ÝÝ\K—Øš[™]™[ÎÂˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆËÈRHŒÈ\™[š[™ÎˆÈÝ]\È\ÈH™X[˜XÚÙ[™XYÛ›ÜÝXÈ[]H[™ˆËÈ]\Ý\XÚ\]H[ˆHœ›Û[™[]HX\]™[ˆÝYÚÛ\ˆ[™\ÈYˆËÈ›Ý[˜ÛYH][ˆS•UWÒÑVTË‚ˆ[™[œ›ÝÝ\K—ÚÙ^Qœ›ÛU[š\]YRYH[˜Ý[Ûˆ
+[š\]YRY
+HÂˆYˆ
+[š\]YRYË™[™ÕÚ]
+—Ü˜×ÜÝ]\ÈŠJH™]\›ˆœ˜×ÜÝ]\ÈŽÂˆ™]\›ˆ™]š[Ý\ÒÙ^Qœ›ÛU[š\]YRY˜Ø[
+\Ë[š\]YRY
+NÂˆNÂ‚ˆËÈÈ›Ý[™™\ˆ^[™YXÚ[›™[X[œ›ÛHÛ›H™YH˜[Y\Ëˆ™X]BˆËÈ]Z[Y[[Y]žHÝ\™˜XÙH\È]˜Z[X›HÚ[ˆ[žHÛÛ™š\›YY^[™YšY[ˆËÈ\È]™H›ÜˆHÙ[XÝYTË‚ˆ[™[œ›ÝÝ\K—Ù^[™Y]˜Z[X›HH[˜Ý[Ûˆ
+]šXÙJHÂˆÛÛœÝÙ^\ÈHÂˆœÜÚ]]™WØ\×Ý›ÛYÙH‹ˆ›™YØ]]™WØ\×Ý›ÛYÙH‹ˆ\×Ý[\\˜]\™H‹ˆœ˜×Ý[\\˜]\™H‹ˆ˜[XšY[Ý[\\˜]\™H‹ˆ˜Ú\™Ù\—Ý[\\˜]\™H‹ˆ˜˜]\žWÜYXÙWÛ[X™\ˆ‹ˆ˜˜]\žWÙÜ›Ý\Û[X™\ˆ‹ˆ˜˜]\žWÜ™[XZ[—Ý[YH‹ˆœ›ÝØÛÛÚY‹ˆ™ÝÙ×ÜÝ]\È‹ˆœ˜×ÜÝ]\È‹ˆš[™\\—ÜÝ]\È‹ˆš[œ]Ü™[^WÜÝ]\È‹ˆ›Ý]]Ü™[^WÜÝ]\È‹ˆNÂˆYˆ
+Ù^\ËœÛÛYJ
+Ù^JHOˆ\Ë—Ø]˜Z[X›J\Ë—ÜÝ]J]šXÙKÙ^JJJJH™]\›ˆYNÂˆ™]\›ˆ™]š[Ý\Ñ^[™Y]˜Z[X›K˜Ø[
+\Ë]šXÙJNÂˆNÂ‚ˆËÈH˜XÚÙ[™ÝÛœÈHÝ[H™\ÚÛˆHRHÛ›H™\ÜÈHÝ\œ™[ˆËÈÝ[HÝ]H[™ØœÙ\™YYÙKÛÈH]\™H™\ÚÛÚ[™ÙHØ[››ÝXZÙHBˆËÈ^[˜]ÜžH^YK‚ˆ[™[œ›ÝÝ\K—ÛÝ™\šY]ÒXY[™HH[˜Ý[Ûˆ
+]šXÙJHÂˆÛÛœÝXY[™HH™]š[Ý\ÒXY[™K˜Ø[
+\Ë]šXÙJNÂˆYˆ
+\Ë—Ú\ÓÛŠ]šXÙK™]WÜÝ[HŠHOOHYJHÂˆÛÛœÝYÙHH\Ë—Ù›Ü›X]
+]šXÙK™]WØYÙH‹´'t-t.4-ô,´-t`t`´/t/ˆŠNÂˆXY[™K™]Z[HYÙHOOH´'t-t.4-ô,´-t`t`´/t/ˆ‚ˆÈ´$´/´-ô`4,4`t`ˆ4/ô/´`t.ô-t-4/t-t,ô/ˆÛ˜\ÚÝ4/t-t.4-ô,´-t`t`´-t/H‚ˆˆ4'ô/´`t.ô-t-4/t.4.HÛ˜\ÚÝˆ	ØYÙ_H4/t,4-ô,4-ÂˆBˆ™]\›ˆXY[™NÂˆNÂ‚ˆ[™[œ›ÝÝ\K—ÜÙ]™Yœ™\Ú™YY˜XÚÕŒÈH[˜Ý[Ûˆ
+Ý]JHÂˆ\Ë—Ü™Yœ™\Ú™YY˜XÚÕŒÈHÝ]NÂˆÛÛœÝ]ÛˆH\ËœÚYÝÔ›ÛÝËœ]Y\žTÙ[XÝÜŠ‹œ™Yœ™\ÚŠNÂˆYˆ
+X]ÛŠH™]\›ŽÂ‚ˆ]Û‹˜Û\ÜÓ\ÝÙÙÛJš\Ë\™Yœ™\Ú[™Ë]ŒÈ‹Ý]HOOH˜\ÞHŠNÂˆ]Û‹˜Û\ÜÓ\ÝÙÙÛJš\Ë[ÚË]ŒÈ‹Ý]HOOH›ÚÈŠNÂˆ]Û‹˜Û\ÜÓ\ÝÙÙÛJš\ËY\œ›Ü‹]ŒÈ‹Ý]HOOH™\œ›ÜˆŠNÂˆ]Û‹™\ØX›YHÝ]HOOH˜\ÞHŽÂˆ]Û‹œÙ]]šX]J˜\šXKX\ÞH‹Ý]HOOH˜\ÞHˆÈYHˆˆ™˜[ÙHŠNÂ‚ˆÛÛœÝXÛÛˆH]Û‹œ]Y\žTÙ[XÝÜŠšKZXÛÛˆŠNÂˆYˆ
+XÛÛŠHÂˆXÛÛ‹œÙ]]šX]JˆšXÛÛˆ‹ˆÝ]HOOH˜\ÞH‚ˆÈ›YN›ØY[™È‚ˆˆÝ]HOOH›ÚÈ‚ˆÈ›YN˜ÚXÚÈ‚ˆˆÝ]HOOH™\œ›Üˆ‚ˆÈ›YN˜[\XÚ\˜ÛK[Ý][™H‚ˆˆ›YNœ™Yœ™\Ú‚ˆ
+NÂˆB‚ˆÛÛœÝX™[HÝ]HOOH˜\ÞH‚ˆÈ´'´,t/t/´,´.ô-t/t.4-HTø )ˆ‚ˆˆÝ]HOOH›ÚÈ‚ˆÈ´%ô,4/ô`4/´`H4/´,t/t/´,´.ô-t/t.4cÈ4/ô`4.4/tcô`ˆ‚ˆˆÝ]HOOH™\œ›Üˆ‚ˆÈ´'´b4.4,t.´,4/´,t/t/´,´.ô-t/t.4cÈTÈ‚ˆˆ´'´,t/t/´,´.4`´c4,´`t-H4&4$t'ÈŽÂˆ]Û‹œÙ]]šX]J˜\šXK[X™[‹X™[
+NÂˆ]Û‹œÙ]]šX]J]H‹X™[
+NÂˆNÂ‚ˆËÈ™\XÙHHÛš\™KX[™Y›Ü™Ù]™Yœ™\Ú\Ý[™\ˆÚ]HÚ[™ÛH\Ý[™\‚ˆËÈ]›ÝšY\Èš\ÝX[›ÙÜ™\ÜËÜÝXØÙ\ÜËÙ\œ›Üˆ™YY˜XÚÈ[™™]™[È™\X]YˆËÈ\ÈÚ[HHÛÛÜ™[˜]Üˆ™Yœ™\Ú\È[ˆ›YÚ‚ˆ[™[œ›ÝÝ\K—Øš[™]™[ÈH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ðš[™]™[Ë˜Ø[
+\ÊNÂ‚ˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆÛÛœÝÛ]ÛˆH›ÛÝËœ]Y\žTÙ[XÝÜŠ‹œ™Yœ™\ÚŠNÂˆYˆ
+\›ÛÝ[Û]ÛŠH™]\›ŽÂ‚ˆÛÛœÝ]ÛˆHÛ]Û‹˜ÛÛ™S›ÙJYJNÂˆÛ]Û‹œ™\XÙUÚ]
+]ÛŠNÂˆ\Ë—ÜÙ]™Yœ™\Ú™YY˜XÚÕŒÊ\Ë—Ü™Yœ™\Ú™YY˜XÚÕŒÈ[
+NÂ‚ˆ]Û‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹\Þ[˜È
+
+HOˆÂˆYˆ
+\Ë—Ü™Yœ™\Ú™YY˜XÚÕŒÈOOH˜\ÞHˆ]\Ë—Ú\ÜÊH™]\›ŽÂˆÛÛœÝ[]RYH\Ë—Ù]šXÙ\Âˆ›X\
+
+]šXÙJHOˆ\Ë—Ù[]RY
+]šXÙKœ™Yœ™\ÚÛ›ÝÈŠJBˆ™š[™
+
+Ø[™Y]JHOˆÂˆÛÛœÝÝ]HHØ[™Y]HÈ\Ë—Ú\ÜËœÝ]\ÏË–ØØ[™Y]WHˆ[Âˆ™]\›ˆÝ]H	‰ˆVÈ[šÛ›ÝÛˆ‹[˜]˜Z[X›H—Kš[˜ÛY\ÊÝš[™ÊÝ]KœÝ]JKÓÝÙ\Ø\ÙJ
+JNÂˆJNÂˆYˆ
+Y[]RY
+HÂˆ\Ë—ÜÙ]™Yœ™\Ú™YY˜XÚÕŒÊ™\œ›ÜˆŠNÂˆÚ[™ÝËœÙ][Y[Ý]
+
+
+HOˆÂˆYˆ
+\Ë—Ü™Yœ™\Ú™YY˜XÚÕŒÈOOH™\œ›ÜˆŠH™]\›ŽÂˆ\Ë—ÜÙ]™Yœ™\Ú™YY˜XÚÕŒÊ[
+NÂˆKM
+NÂˆ™]\›ŽÂˆB‚ˆ\Ë—ÜÙ]™Yœ™\Ú™YY˜XÚÕŒÊ˜\ÞHŠNÂˆžHÂˆ]ØZ]\Ë—Ú\ÜË˜Ø[Ù\šXÙJ˜]Ûˆ‹œ™\ÜÈ‹È[]WÚYˆ[]RYJNÂˆ\Ë—ÜÙ]™Yœ™\Ú™YY˜XÚÕŒÊ›ÚÈŠNÂˆÚ[™ÝËœÙ][Y[Ý]
+
+
+HOˆÂˆYˆ
+\Ë—Ü™Yœ™\Ú™YY˜XÚÕŒÈOOH›ÚÈŠH™]\›ŽÂˆ\Ë—ÜÙ]™Yœ™\Ú™YY˜XÚÕŒÊ[
+NÂˆKL
+NÂˆHØ]Ú
+\œŠHÂˆÛÛœÛÛKØ\›Š”Ý\šÈÛÛ\”ÝÙ\ˆ™Yœ™\Ú˜Z[Y‹\œŠNÂˆ\Ë—ÜÙ]™Yœ™\Ú™YY˜XÚÕŒÊ™\œ›ÜˆŠNÂˆÚ[™ÝËœÙ][Y[Ý]
+
+
+HOˆÂˆYˆ
+\Ë—Ü™Yœ™\Ú™YY˜XÚÕŒÈOOH™\œ›ÜˆŠH™]\›ŽÂˆ\Ë—ÜÙ]™Yœ™\Ú™YY˜XÚÕŒÊ[
+NÂˆKM
+NÂˆBˆJNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\‘š[™Ù\œš[ŒÈH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝ]šXÙ\ÈH\œ˜^Kš\Ð\œ˜^J\Ë—Ù]šXÙ\ÊHÈ\Ë—Ù]šXÙ\Èˆ×NÂˆÛÛœÝÝ]\ÈH×NÂˆ›Üˆ
+ÛÛœÝ]šXÙHÙˆ]šXÙ\ÊHÂˆÛÛœÝ[]Y\ÈH]šXÙOË™[]Y\ÈßNÂˆ›Üˆ
+ÛÛœÝÚÙ^K[]RYHÙˆØš™XÝ™[šY\Ê[]Y\ÊJHÂˆÛÛœÝÝ]SØšˆH\Ë—Ú\ÜÏËœÝ]\ÏË–Ù[]RYNÂˆÝ]\Ëœ\Ú
+Âˆ]šXÙKšYˆÙ^Kˆ[]RYˆÝ]SØšËœÝ]HÏÈ[ˆÝ]SØšË›\ÝÝ\]YÏÈ[ˆÝ]SØšË˜]šX]\ÏË™]™[Ý\HÏÈ[ˆÝ]SØšË˜]šX]\ÏË[š]ÛÙ—ÛYX\Ý\™[Y[ÏÈ[ˆJNÂˆBˆBˆ™]\›ˆ”ÓÓ‹œÝš[™ÚYžJÂˆ\Ë—ÝšY]Ëˆ\Ë—ÙXYÛ›ÜÝXÑ]šXÙRYˆ\Ë—ÛØY[™Ô™YÚ\ÝžKˆ\Ë—Ü™YÚ\ÝžSØYYˆ\Ë—Ü™YÚ\ÝžQ\œ›Ü‹ˆ]šXÙ\Ë›X\
+
+]šXÙJHOˆÙ]šXÙKšY]šXÙK›˜[YK]šXÙK›[Ù[JKˆÝ]\ËˆJNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆËÈÛYH\ÜÚ\Ý[X^H\]H[™™YÈÙˆ[œ™[]Y[]Y\ÈÚ[H\ÂˆËÈ[™[\ÈÜ[‹ˆ]›ÚY™XZ[[™ÈHÛÛ\]HÚYÝÈÓH[›\ÜÈBˆËÈÙ[XÝYšY]ËÙ]šXÙHÜˆHÝ\šÈ[]HXÝX[HÚ[™ÙY‚ˆÛÛœÝš[™Ù\œš[H\Ë—Ü™[™\‘š[™Ù\œš[ŒÊ
+NÂˆYˆ
+\Ë—Ü™[™\‘š[™Ù\œš[ØXÚUŒÈOOHš[™Ù\œš[	‰ˆ\ËœÚYÝÔ›ÛÝË˜Ú[[[Y[ÛÝ[
+HÂˆ™]\›ŽÂˆBˆ\Ë—Ü™[™\‘š[™Ù\œš[ØXÚUŒÈHš[™Ù\œš[Â‚ˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂ‚ˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆYˆ
+\›ÛÝ
+H™]\›ŽÂ‚ˆÛÛœÝÝX]HH›ÛÝœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂ‚ˆËÈ˜]\žHÛÜH]\Ý\ØÜšX™HHØœÙ\™YØ\XÚ]K›ÝX™[]™\žBˆËÈ›Û‹X˜]\žK[[ÙHÝ]H\È[HÚ\™ÙY‚ˆYˆ
+\Ë—ÝšY]ÈOOH›Ý™\šY]ÈŠHÂˆÛÛœÝÙ[XÝYYH\Ë—ÜÙ[XÝY\ÒYËŠ
+NÂˆÛÛœÝ]šXÙHH\Ë—Ù]šXÙ\Ë™š[™
+
+][JHOˆ][KšYOOHÙ[XÝYY
+H\Ë—Ù]šXÙ\ÖÌNÂˆÛÛœÝ˜]\žHH]šXÙHÈ\Ë—Û[Y\šXÊ]šXÙK˜˜]\žWØØ\XÚ]HŠHˆ[ÂˆÛÛœÝ[ÙHH]šXÙHÈ\Ë—Û[ÙJ]šXÙJHˆ[ÂˆÛÛœÝÛÜHH›ÛÝœ]Y\žTÙ[XÝÜŠ‹›Ý™\šY]Ë]Œ˜˜]\žK[›ÙHÛX[ŠNÂˆYˆ
+ÛÜJHÂˆÛÜK^ÛÛ[H[ÙHOOH˜˜]\žWÛ[ÙH‚ˆÈ´'ô.4`´,4-t`ˆ4/t,4,ô`4`ô-ô.´`È‚ˆˆ˜]\žHOOH[ˆÈ´(t/´`t`´/´cô/t.4-H4/t-t.4-ô,´-t`t`´/t/ˆ‚ˆˆ˜]\žHHMBˆÈ´%ô,4`4cô-´-t/H‚ˆˆ´%4/´`t`´`ô/ô-t/HŽÂˆBˆB‚ˆYˆ
+\›ÛÝœ]Y\žTÙ[XÝÜŠœÝ[VÙ]K\Ý\šË]ZK]Œ×HŠJHÂˆÛÛœÝÝ[HHØÝ[Y[˜Ü™X]Q[[Y[
+œÝ[HŠNÂˆÝ[K™]\Ù]œÝ\šÕZUŒÈHYHŽÂˆÝ[K^ÛÛ[HˆÊˆ›Ü›X[]HÝ^\È™]]˜[ˆÙ[X[XÈÛÛÜœÈ\™H™\Ù\™Y›ÜˆÝ]\Ëˆ
+‹Âˆ\ËZ\›Ë]Œ™ÛÛÙˆ›Ý™\šY]Ë\Ý]K][K™ÛÛÙÂˆÛÛÜŽˆ˜\ŠK\š[X\žK]^XÛÛÜŠHZ[\Ü[ÂˆBˆš\›Ë[Y]šXË]Œ›XÚ[
+ÊHKZXÛÛ‹ˆš\›Ë[Y]šXË]Œ›XÚ[
+
+HKZXÛÛˆÂˆÛÛÜŽˆ˜\ŠK\š[X\žKXÛÛÜŠHZ[\Ü[ÂˆBˆ˜˜]\žK[›ÙHÂˆ˜XÚÙÜ›Ý[™ˆÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\š[X\žKXÛÛÜŠHÉK˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠJHZ[\Ü[ÂˆBˆ˜˜]\žK[›ÙHKZXÛÛˆÂˆÛÛÜŽˆ˜\ŠK\š[X\žKXÛÛÜŠHZ[\Ü[ÂˆBˆ˜˜]\žKY›ÝÈ˜˜]\žK[›ÙHÂˆ˜XÚÙÜ›Ý[™ˆÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙY˜ÌŠHIK˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠJHZ[\Ü[ÂˆBˆ˜˜]\žKY›ÝÈ˜˜]\žK[›ÙHKZXÛÛˆÂˆÛÛÜŽˆ˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙY˜ÌŠHZ[\Ü[ÂˆB‚ˆÊˆÛÛ\XÝH\›ÈÚ]Ý]™YXÚ[™È[Øš[K\™XYX›H\ÙÜ˜\Kˆ
+‹Âˆ\Ë\ÝÙ\‹YXYÜ˜[HÈX\™Ú[‹]ÜˆŒœZ[\Ü[ÈX\™Ú[‹X›ÝÛNˆNZ[\Ü[ÈBˆ™XYÜ˜[K[›ÙHÈZ[‹ZZYÚˆLœZ[\Ü[ÈBˆ˜˜]\žK[[šÈÈZYÚˆÌZ[\Ü[ÈBˆ˜˜]\žK[›ÙHÈZ[‹ZZYÚˆMZ[\Ü[ÈBˆš\›Ë[Y]šXË]ŒÈZ[‹ZZYÚˆÌZ[\Ü[ÈB‚ˆœ™Yœ™\Úš\Ë\™Yœ™\Ú[™Ë]ŒÈKZXÛÛˆÂˆ[š[X][ÛŽˆÝ\šË\™Yœ™\Ú\Ü[‹]ŒÈŽÈ[™X\ˆ[™š[š]NÂˆBˆœ™Yœ™\Úš\Ë[ÚË]ŒÈÈÛÛÜŽˆ˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™MÙÌŠHZ[\Ü[ÈBˆœ™Yœ™\Úš\ËY\œ›Ü‹]ŒÈÈÛÛÜŽˆ˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙÌ™Œ™ŠHZ[\Ü[ÈBˆÙ^Yœ˜[Y\ÈÝ\šË\™Yœ™\Ú\Ü[‹]ŒÈÈÈÈ˜[œÙ›Ü›Nˆ›Ý]JÍŒYÊNÈHB‚ˆYYXH
+X^]ÚYÌ
+HÂˆ™XYÜ˜[K[›ÙHÈZ[‹ZZYÚˆNZ[\Ü[ÈBˆ˜˜]\žK[›ÙHÈZ[‹ZZYÚˆLZ[\Ü[ÈBˆš\›Ë[Y]šXË]ŒÈZ[‹ZZYÚˆŽZ[\Ü[ÈBˆBˆYYXH
+™Y™\œË\™YXÙY[[Ý[ÛŽˆ™YXÙJHÂˆœ™Yœ™\Úš\Ë\™Yœ™\Ú[™Ë]ŒÈKZXÛÛˆÈ[š[X][ÛŽˆ›Û™HZ[\Ü[ÈBˆBˆÂˆ›ÛÝ˜\[™
+Ý[JNÂˆB‚ˆ\Ë—ÜÙ]™Yœ™\Ú™YY˜XÚÕŒÊ\Ë—Ü™Yœ™\Ú™YY˜XÚÕŒÈ[
+NÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒËšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒLšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒKŒŽÂ˜ÛÛœÝT×ÐT•ÓÔ’ÈBˆ‹ÜÝ\š×ÜÛÛ\œÝÙ\—Ü[™[Ø\ÜÙ]ËÜÝ\šËXÛÝ[žKLL[Û›[™Kœ™ÏÝLKŒŽÂ‚™[˜Ý[Ûˆ\ØÊ˜[YJHÂˆ™]\›ˆÝš[™Ê˜[YHÏÈˆŠBˆœ™\XÙP[
+‰ˆ‹‰˜[\ÈŠBˆœ™\XÙP[
+‹‰›ÈŠBˆœ™\XÙP[
+ˆ‹‰™ÝÈŠBˆœ™\XÙP[
+	È‰Ë‰œ][ÝÈŠBˆœ™\XÙP[
+‰È‹‰ˆÌÎNÈŠNÂŸB‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒL
+HÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒLHYNÂ‚ˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—Û[™T]X[]UŒLH[˜Ý[Ûˆ
+›ÛYÙK\ÝY
+HÂˆYˆ
+]\ÝY›ÛYÙHOOH[
+HÂˆ™]\›ˆÈX™[ˆ´'t-H4/ô/´-4`´,´-t`4-´-4-t/t/ˆ‹Û™Nˆ[šÛ›ÝÛˆˆNÂˆBˆYˆ
+›ÛYÙHHŒL	‰ˆ›ÛYÙHHŒÌ
+HÂˆ™]\›ˆÈX™[ˆ´'t/´`4/4,‹Û™Nˆ™ÛÛÙˆNÂˆBˆYˆ
+
+›ÛYÙHHŒH	‰ˆ›ÛYÙHŒL
+H
+›ÛYÙHˆŒÌ	‰ˆ›ÛYÙHHŒÍJJHÂˆ™]\›ˆÈX™[ˆ´$´/t.4/4,4/t.4-H‹Û™NˆØ\›ˆˆNÂˆBˆYˆ
+
+›ÛYÙHHNN	‰ˆ›ÛYÙHŒJH
+›ÛYÙHˆŒÍH	‰ˆ›ÛYÙHHŠJHÂˆ™]\›ˆÈX™[ˆ´'´`´.´.ô/´/t-t/t.4-H‹Û™NˆØ\›ˆˆNÂˆBˆ™]\›ˆÈX™[ˆ´$4,´,4`4.4cÈ‹Û™Nˆ˜˜YˆNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ùœ™\Ú™\ÜÕŒLH[˜Ý[Ûˆ
+]šXÙJHÂˆÛÛœÝÛÝYH\Ë—Ú\ÓÛŠ]šXÙK˜ÛÝYØÛÛ›™XÝYŠNÂˆÛÛœÝÝ[HH\Ë—Ú\ÓÛŠ]šXÙK™]WÜÝ[HŠNÂˆÛÛœÝYÙHH\Ë—Ù›Ü›X]
+]šXÙK™]WØYÙH‹´'t-t.4-ô,´-t`t`´/t/ˆŠNÂ‚ˆYˆ
+ÛÝYOOH˜[ÙJHÂˆ™]\›ˆÂˆX™[ˆ´&4`t`´/´aô/t.4.ˆ4/t-t-4/´`t`´`ô/ô-t/H‹ˆÛ™Nˆ˜˜Y‹ˆXÛÛŽˆ›YN˜ÛÝY[Ù™‹[Ý][™H‹ˆNÂˆBˆYˆ
+ÛÝYOOH[
+HÂˆ™]\›ˆÂˆX™[ˆ´&4`t`´/´aô/t.4.ˆ4/t-t.4-ô,´-t`t`´-t/H‹ˆÛ™Nˆ[šÛ›ÝÛˆ‹ˆXÛÛŽˆ›YN˜ÛÝY\]Y\Ý[Û‹[Ý][™H‹ˆNÂˆBˆYˆ
+Ý[HOOHYJHÂˆ™]\›ˆÂˆX™[ˆ´%4,4/t/tbô-H4`ô`t`´,4`4-t.ô.‹ˆÛ™NˆØ\›ˆ‹ˆXÛÛŽˆ›YN˜ÛØÚËX[\[Ý][™H‹ˆNÂˆBˆYˆ
+Ý[HOOH[
+HÂˆ™]\›ˆÂˆX™[ˆ´(t,´-t-´-t`t`´c4/t-t.4-ô,´-t`t`´/t,‹ˆÛ™Nˆ[šÛ›ÝÛˆ‹ˆXÛÛŽˆ›YN˜ÛØÚË\]Y\Ý[Û‹[Ý][™H‹ˆNÂˆBˆ™]\›ˆÂˆX™[ˆYÙHOOH´'t-t.4-ô,´-t`t`´/t/ˆˆÈ´%4,4/t/tbô-H4,4.´`´`ô,4.ôc4/tbÈˆˆ4'´,t/t/´,´.ô-t/t/ˆ	ØYÙ_H4/t,4-ô,4-ˆÛ™Nˆ™ÛÛÙ‹ˆXÛÛŽˆ›YN˜ÛØÚËXÚXÚË[Ý][™H‹ˆNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ú\›ÐÛÜUŒLH[˜Ý[Ûˆ
+]šXÙJHÂˆÛÛœÝXY[™HH\Ë—ÛÝ™\šY]ÒXY[™J]šXÙJNÂˆÛÛœÝ[ÙHH\Ë—Û[ÙJ]šXÙJNÂˆÛÛœÝ˜]\žHH\Ë—Û[Y\šXÊ]šXÙK˜˜]\žWØØ\XÚ]HŠNÂ‚ˆYˆ
+[ÙHOOH›[™WÛ[ÙHˆ	‰ˆXY[™KÛ™HOOH™ÛÛÙŠHÂˆÛÛœÝ˜]\žPÛÜHBˆ˜]\žHOOH[ˆÈ´(t/´`t`´/´cô/t.4-H4$4&´$H4/t-t.4-ô,´-t`t`´/t/ˆ‚ˆˆ˜]\žHHMBˆÈ´$4&´$H4-ô,4`4cô-´-t/t,‚ˆˆ4$4&´$H	ÓX]œ›Ý[™
+˜]\žJ_H	XÂˆ™]\›ˆÂˆ]Nˆ´'´`ˆ4`t-t`´.‹ˆ]Z[ˆ4$´bôat/´-4`t`´,4,t.4.ô-t/H0­È	Ø˜]\žPÛÜ_XˆÛ™Nˆ™ÛÛÙ‹ˆNÂˆBˆ™]\›ˆXY[™NÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™\Ù\™UŒLH[˜Ý[Ûˆ
+]šXÙK\ÝY
+HÂˆÛÛœÝ[ÙHH\Ë—Û[ÙJ]šXÙJNÂˆÛÛœÝ˜]\žHH\Ë—Û[Y\šXÊ]šXÙK˜˜]\žWØØ\XÚ]HŠNÂˆÛÛœÝÛ˜]\žHH[ÙHOOH˜˜]\žWÛ[ÙHˆ\Ë—Ú\ÓÛŠ]šXÙK›Û—Ø˜]\žHŠHOOHYNÂ‚ˆYˆ
+]\ÝY
+HÂˆ™]\›ˆÂˆX™[ˆ´'´a´-t/t.´,4`4-t-ô-t`4,´,4/t-t-4/´`t`´`ô/ô/t,‹ˆÛ™Nˆ[šÛ›ÝÛˆ‹ˆXÛÛŽˆ›YN˜˜]\žK][šÛ›ÝÛˆ‹ˆNÂˆBˆYˆ
+˜]\žHOOH[
+HÂˆ™]\›ˆÂˆX™[ˆ´(t/´`t`´/´cô/t.4-H4`4-t-ô-t`4,´,4/t-t.4-ô,´-t`t`´/t/ˆ‹ˆÛ™Nˆ[šÛ›ÝÛˆ‹ˆXÛÛŽˆ›YN˜˜]\žK][šÛ›ÝÛˆ‹ˆNÂˆBˆYˆ
+Û˜]\žJHÂˆ™]\›ˆÂˆX™[ˆ4'ô.4`´,4/t.4-H4/´`ˆ4$4&´$H0­È	ÓX]œ›Ý[™
+˜]\žJ_H	XˆÛ™Nˆ˜]\žHHŒÈ˜˜YˆˆØ\›ˆ‹ˆXÛÛŽˆ›YN˜˜]\žKX\œ›ÝËYÝÛ‹[Ý][™H‹ˆNÂˆBˆYˆ
+˜]\žHHŒ
+HÂˆ™]\›ˆÂˆX™[ˆ4't.4-ô.´.4.H4-ô,4`4cô-0­È	ÓX]œ›Ý[™
+˜]\žJ_H	XˆÛ™Nˆ˜˜Y‹ˆXÛÛŽˆ›YN˜˜]\žKX[\]˜\šX[[Ý][™H‹ˆNÂˆBˆ™]\›ˆÂˆX™[ˆ4(4-t-ô-t`4,ˆ4,ô/´`´/´,ˆ0­È4$4&´$H	ÓX]œ›Ý[™
+˜]\žJ_H	XˆÛ™Nˆ™ÛÛÙ‹ˆXÛÛŽˆ›YN˜˜]\žKXÚXÚË[Ý][™H‹ˆNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—ÛY]šXÐØ\™ŒLH[˜Ý[Ûˆ
+]šXÙKÙ^KX™[XÛÛ‹Ø\[Û’Ù^JHÂˆÛÛœÝ[]RYH\Ë—Ù[]RY
+]šXÙKÙ^JNÂˆÛÛœÝØ\[ÛˆHØ\[Û’Ù^HÈ\Ë—Ù›Ü›X]
+]šXÙKØ\[Û’Ù^JHˆˆŽÂˆ™]\›ˆ]ˆÛ\ÜÏH›Y]šXËXØ\™]ŒLˆ	Ù[]RYÈ]KY[]OH‰Ù\ØÊ[]RY
+_H˜ˆˆŸO‚ˆ]ˆÛ\ÜÏH›Y]šXËZXÛÛ‹]ŒLKZXÛÛˆXÛÛH‰Ù\ØÊXÛÛŠ_HÚKZXÛÛÙ]‚ˆ]ˆÛ\ÜÏH›Y]šXËXÛÜK]ŒL‚ˆÜ[‰Ù\ØÊX™[
+_OÜÜ[‚ˆÝ›Û™Ï‰Ù\ØÊ\Ë—Ù›Ü›X]
+]šXÙKÙ^JJ_OÜÝ›Û™Ï‚ˆ	ØØ\[ÛˆÈÛX[‰Ù\ØÊØ\[ÛŠ_OÜÛX[˜ˆˆŸBˆÙ]‚ˆÙ]˜ÂˆNÂ‚ˆ[™[œ›ÝÝ\K—ÜÝ]T[ŒLH[˜Ý[Ûˆ
+X™[Û™JHÂˆ™]\›ˆÜ[ˆÛ\ÜÏHœÝ]K\[]ŒL	Ù\ØÊÛ™J_HOÚO‰Ù\ØÊX™[
+_OÜÜ[˜ÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\”Ý]TÝ[[X\žUŒLH[˜Ý[Ûˆ
+]šXÙK\ÝYÛ˜]\žJHÂˆÛÛœÝ[œ]›ÛYÙHH\Ë—Û[Y\šXÊ]šXÙKš[œ]Ý›ÛYÙHŠNÂˆÛÛœÝ˜]\žHH\Ë—Û[Y\šXÊ]šXÙK˜˜]\žWØØ\XÚ]HŠNÂˆÛÛœÝ]X[]HH\Ë—Û[™T]X[]UŒL
+[œ]›ÛYÙK\ÝY	‰ˆ[Û˜]\žJNÂ‚ˆÛÛœÝ[™TÝ]HH]\ÝYˆÈÈX™[ˆ´'t-H4/ô/´-4`´,´-t`4-´-4-t/t,‹Û™Nˆ[šÛ›ÝÛˆˆBˆˆÛ˜]\žBˆÈÈX™[ˆ´'t-t`ˆ4,´at/´-4,‹Û™NˆØ\›ˆˆBˆˆ[œ]›ÛYÙHOOH[ˆÈÈX™[ˆ´'t-t.4-ô,´-t`t`´/t,‹Û™Nˆ[šÛ›ÝÛˆˆBˆˆÈX™[ˆ´$4.´`´.4,´/t,‹Û™Nˆ™ÛÛÙˆNÂ‚ˆÛÛœÝ˜]\žTÝ]HH]\ÝYˆÈÈX™[ˆ´'t-H4/ô/´-4`´,´-t`4-´-4-t/t,‹Û™Nˆ[šÛ›ÝÛˆˆBˆˆ˜]\žHOOH[ˆÈÈX™[ˆ´'t-t.4-ô,´-t`t`´/t,‹Û™Nˆ[šÛ›ÝÛˆˆBˆˆÛ˜]\žBˆÈÈX™[ˆ´'ô.4`´,4-t`ˆ4/t,4,ô`4`ô-ô.´`È‹Û™Nˆ˜]\žHHŒÈ˜˜YˆˆØ\›ˆˆBˆˆ˜]\žHHŒˆÈÈX™[ˆ´'t.4-ô.´.4.H4-ô,4`4cô-‹Û™Nˆ˜˜YˆBˆˆÈX™[ˆ´(4-t-ô-t`4,ˆ4,ô/´`´/´,ˆ‹Û™Nˆ™ÛÛÙˆNÂ‚ˆÛÛœÝ[œ][]HH\Ë—Ù[]RY
+]šXÙKš[œ]Ý›ÛYÙHŠNÂˆÛÛœÝ˜]\žQ[]HH\Ë—Ù[]RY
+]šXÙK˜˜]\žWØØ\XÚ]HŠNÂ‚ˆ™]\›ˆ\XÛHÛ\ÜÏHœÝ]KXØ\™]ŒLØ\™]ŒL‚ˆÏ´(t/´`t`´/´cô/t.4-OÚÏ‚ˆ]ˆÛ\ÜÏHœÝ]K\›ÝË]ŒL[™Hˆ	Ú[œ][]HÈ]KY[]OH‰Ù\ØÊ[œ][]J_H˜ˆˆŸO‚ˆ]ˆÛ\ÜÏHœÝ]K\›ÝËZXY]ŒL‚ˆ]KZXÛÛˆXÛÛH›YN˜[œÛZ\ÜÚ[Û‹]ÝÙ\ˆÚKZXÛÛÝ›Û™Ï´'t-t/´`´.´.ôc´aô,4-t/4,4cÈ4.ô.4/t.4cÏÜÝ›Û™ÏÙ]‚ˆ	Ý\Ë—ÜÝ]T[ŒL
+[™TÝ]K›X™[[™TÝ]KÛ™J_BˆÙ]‚ˆ]ˆÛ\ÜÏHœÝ]K]˜[Y\Ë]ŒL™YH‚ˆ]Ü[´'t,4/ô`4cô-´-t/t.4-OÜÜ[Ý›Û™Ï‰Ù\ØÊ\Ë—Ù›Ü›X]
+]šXÙKš[œ]Ý›ÛYÙHŠJ_OÜÝ›Û™ÏÙ]‚ˆ]Ü[´)ô,4`t`´/´`´,ÜÜ[Ý›Û™Ï‰Ù\ØÊ\Ë—Ù›Ü›X]
+]šXÙKš[œ]Ùœ™\]Y[˜ÞHŠJ_OÜÝ›Û™ÏÙ]‚ˆ]Ü[´&´,4aô-t`t`´,´/ÜÜ[Ý›Û™ÈÛ\ÜÏHÛ™KIÙ\ØÊ]X[]KÛ™J_H‰Ù\ØÊ]X[]K›X™[
+_OÜÝ›Û™ÏÙ]‚ˆÙ]‚ˆÙ]‚ˆ]ˆÛ\ÜÏHœÝ]K\›ÝË]ŒL˜]\žHˆ	Ø˜]\žQ[]HÈ]KY[]OH‰Ù\ØÊ˜]\žQ[]J_H˜ˆˆŸO‚ˆ]ˆÛ\ÜÏHœÝ]K\›ÝËZXY]ŒL‚ˆ]KZXÛÛˆXÛÛH›YN˜˜]\žHÚKZXÛÛÝ›Û™Ï´$4&´$OÜÝ›Û™ÏÙ]‚ˆ	Ý\Ë—ÜÝ]T[ŒL
+˜]\žTÝ]K›X™[˜]\žTÝ]KÛ™J_BˆÙ]‚ˆ]ˆÛ\ÜÏHœÝ]K]˜[Y\Ë]ŒL™YH‚ˆ]Ü[´%ô,4`4cô-ÜÜ[Ý›Û™Ï‰Ø˜]\žHOOH[È¸ %ˆˆ	ÓX]œ›Ý[™
+˜]\žJ_H	XOÜÝ›Û™ÏÙ]‚ˆ]Ü[´'t,4/ô`4cô-´-t/t.4-OÜÜ[Ý›Û™Ï‰Ù\ØÊ\Ë—Ù›Ü›X]
+]šXÙK˜˜]\žWÝ›ÛYÙHŠJ_OÜÝ›Û™ÏÙ]‚ˆ]Ü[´(4-t-´.4/ÜÜ[Ý›Û™Ï‰Ù\ØÊ\Ë—Û[ÙSX™[
+]šXÙJJ_OÜÝ›Û™ÏÙ]‚ˆÙ]‚ˆÙ]‚ˆØ\XÛO˜ÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\“Ý™\šY]ÈH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝÙ[XÝYYH\Ë—ÜÙ[XÝY\ÒYËŠ
+NÂˆÛÛœÝ]šXÙHH\Ë—Ù]šXÙ\Ë™š[™
+
+][JHOˆ][KšYOOHÙ[XÝYY
+H\Ë—Ù]šXÙ\ÖÌNÂˆYˆ
+Y]šXÙJH™]\›ˆ\Ë—Ù[\J•TÈ4/t-H4/t,4.t-4-t/tbÈŠNÂ‚ˆÛÛœÝXY[™HH\Ë—Ú\›ÐÛÜUŒL
+]šXÙJNÂˆÛÛœÝœ™\Ú™\ÜÈH\Ë—Ùœ™\Ú™\ÜÕŒL
+]šXÙJNÂˆÛÛœÝÛÝYH\Ë—Ú\ÓÛŠ]šXÙK˜ÛÝYØÛÛ›™XÝYŠNÂˆÛÛœÝÝ[HH\Ë—Ú\ÓÛŠ]šXÙK™]WÜÝ[HŠNÂˆÛÛœÝ\ÝYHÛÝYOOHYH	‰ˆÝ[HOOH˜[ÙNÂˆÛÛœÝ[ÙHH\Ë—Û[ÙJ]šXÙJNÂˆÛÛœÝÛ˜]\žHH[ÙHOOH˜˜]\žWÛ[ÙHˆ\Ë—Ú\ÓÛŠ]šXÙK›Û—Ø˜]\žHŠHOOHYNÂˆÛÛœÝ™\Ù\™HH\Ë—Ü™\Ù\™UŒL
+]šXÙK\ÝY
+NÂˆÛÛœÝ˜]\žHH\Ë—Û[Y\šXÊ]šXÙK˜˜]\žWØØ\XÚ]HŠNÂˆÛÛœÝØYH\Ë—Û[Y\šXÊ]šXÙK›Ý]]ÛØYŠNÂ‚ˆÛÛœÝ[œ][]HH\Ë—Ù[]RY
+]šXÙKš[œ]Ý›ÛYÙHŠNÂˆÛÛœÝÝ]][]HH\Ë—Ù[]RY
+]šXÙK›Ý]]Ý›ÛYÙHŠNÂˆÛÛœÝ˜]\žQ[]HH\Ë—Ù[]RY
+]šXÙK˜˜]\žWØØ\XÚ]HŠNÂˆÛÛœÝØY[]HH\Ë—Ù[]RY
+]šXÙK›Ý]]ÛØYŠNÂˆÛÛœÝ[ÙQ[]HH\Ë—Ù[]RY
+]šXÙK›[ÙHŠNÂ‚ˆ™]\›ˆÙXÝ[ÛˆÛ\ÜÏH›Ý™\šY]Ë]ŒL‚ˆ\XÛHÛ\ÜÏH\ËZ\›Ë]ŒLØ\™]ŒL	Ù\ØÊXY[™KÛ™J_H‚ˆ]ˆÛ\ÜÏHš\›ËZXY]ŒL‚ˆ]ˆÛ\ÜÏHš\›ËXÛÜK]ŒL‚ˆÜ[´'ô&4(´$4't&4%OÜÜ[‚ˆ‰Ù\ØÊXY[™K]J_OÚ‚ˆ‰Ù\ØÊXY[™K™]Z[
+_OÜ‚ˆÙ]‚ˆ]ˆÛ\ÜÏH™œ™\Ú™\ÜË]ŒL	Ù\ØÊœ™\Ú™\ÜËÛ™J_H‚ˆKZXÛÛˆXÛÛH‰Ù\ØÊœ™\Ú™\ÜËšXÛÛŠ_HÚKZXÛÛ‚ˆÜ[‰Ù\ØÊœ™\Ú™\ÜË›X™[
+_OÜÜ[‚ˆÙ]‚ˆÙ]‚‚ˆ]ˆÛ\ÜÏHš\›Ë\ØÙ[™K]ŒL	ÛÛ˜]\žHÈ˜˜]\žKY›ÝË]ŒLˆˆ›[™KY›ÝË]ŒLŸH‚ˆ]ˆÛ\ÜÏHœØÙ[™K]Ú[™ÝË]ŒLˆ\šXKZY[HYHÙ]‚ˆ]ˆÛ\ÜÏHœØÙ[™K\˜XÚË]ŒLˆ\šXKZY[HYHOÚOOÚOOÚOOÚOÙ]‚ˆÝ™ÈÛ\ÜÏH™›ÝË[[™\Ë]ŒLˆšY]Ð›ÞHŒLLˆ™\Ù\™P\ÜXÝ˜][ÏH››Û™Hˆ\šXKZY[HYH‚ˆ]Û\ÜÏH›[™KYÜšY]ŒLˆH“LMÈÈÎMÈLHHˆÏ‚ˆ]Û\ÜÏH›[™K[Ý]]]ŒLˆH“MLHLHMˆMMˆÈŒˆÈÈˆÏ‚ˆ]Û\ÜÏH›[™KX˜]\žK]ŒLˆH“MLˆˆÏ‚ˆÜÝ™Ï‚ˆ]ˆÛ\ÜÏHœØÙ[™K[›ÙK]ŒLÜšYˆ	Ú[œ][]HÈ]KY[]OH‰Ù\ØÊ[œ][]J_H˜ˆˆŸO‚ˆKZXÛÛˆXÛÛH›YN˜[œÛZ\ÜÚ[Û‹]ÝÙ\ˆÚKZXÛÛ‚ˆ]Ü[´&ô.4/t.4cÏÜÜ[Ý›Û™Ï‰Ù\ØÊ\Ë—Ù›Ü›X]
+]šXÙKš[œ]Ý›ÛYÙHŠJ_OÜÝ›Û™ÏÙ]‚ˆÙ]‚ˆ]ˆÛ\ÜÏHœØÙ[™K[›ÙK]ŒLØYˆ	ÛØY[]HÈ]KY[]OH‰Ù\ØÊØY[]J_H˜ˆˆŸO‚ˆKZXÛÛˆXÛÛH›YN›[Ûš]Ü‹Y\Ú›Ø\™ÚKZXÛÛ‚ˆ]Ü[´'t,4,ô`4`ô-ô.´,ÜÜ[Ý›Û™Ï‰ÛØYOOH[È¸ %ˆˆ	ÓX]œ›Ý[™
+ØY
+_H	XOÜÝ›Û™ÏÙ]‚ˆÙ]‚ˆ[YÈÛ\ÜÏH\ËX\]ŒLˆÜ˜ÏH‰ÕT×ÐT•ÓÔ’ßHˆ[H”Ý\šÈÛÝ[žHLÓ“S‘H
+MJHˆØY[™ÏH™XYÙ\ˆˆXÛÙ[™ÏH˜\Þ[˜Èˆ	Û[ÙQ[]HÈ]KY[]OH‰Ù\ØÊ[ÙQ[]J_H˜ˆˆŸO‚ˆ]ˆÛ\ÜÏHœØÙ[™K[›ÙK]ŒL˜]\žHˆ	Ø˜]\žQ[]HÈ]KY[]OH‰Ù\ØÊ˜]\žQ[]J_H˜ˆˆŸO‚ˆKZXÛÛˆXÛÛH›YN˜˜]\žHÚKZXÛÛ‚ˆ]Ü[´$4&´$OÜÜ[Ý›Û™Ï‰Ø˜]\žHOOH[È¸ %ˆˆ	ÓX]œ›Ý[™
+˜]\žJ_H	XOÜÝ›Û™ÏÙ]‚ˆÙ]‚ˆÙ]‚‚ˆ]ˆÛ\ÜÏHœ™\Ù\™K\Ýš\]ŒL	Ù\ØÊ™\Ù\™KÛ™J_Hˆ	Ø˜]\žQ[]HÈ]KY[]OH‰Ù\ØÊ˜]\žQ[]J_H˜ˆˆŸO‚ˆKZXÛÛˆXÛÛH‰Ù\ØÊ™\Ù\™KšXÛÛŠ_HÚKZXÛÛ‚ˆÝ›Û™Ï‰Ù\ØÊ™\Ù\™K›X™[
+_OÜÝ›Û™Ï‚ˆÙ]‚ˆØ\XÛO‚‚ˆ]ˆÛ\ÜÏH›Y]šXÜË\›ÝË]ŒL‚ˆ	Ý\Ë—ÛY]šXÐØ\™ŒL
+]šXÙKš[œ]Ý›ÛYÙH‹´$´)t'´%‹›YNœÝÙ\‹\YÈ‹š[œ]Ùœ™\]Y[˜ÞHŠ_Bˆ	Ý\Ë—ÛY]šXÐØ\™ŒL
+]šXÙK›Ý]]Ý›ÛYÙH‹´$´*ô)t'´%‹›YNœÚ[™K]Ø]™H‹›Ý]]Ùœ™\]Y[˜ÞHŠ_Bˆ	Ý\Ë—ÛY]šXÐØ\™ŒL
+]šXÙK›Ý]]ÛØY‹´'t$4$ô(4(ô%ô&´$‹›YN™Ø]YÙH‹›Ý]]ØÝ\œ™[Š_BˆÙ]‚‚ˆ	Ý\Ë—Ü™[™\”Ý]TÝ[[X\žUŒL
+]šXÙK\ÝYÛ˜]\žJ_B‚ˆ\XÛHÛ\ÜÏH™]™[ËXØ\™]ŒLØ\™]ŒL‚ˆ]ˆÛ\ÜÏHœÙXÝ[Û‹ZXY]ŒLÏ´'ô/´`t.ô-t-4/t.4-H4`t/´,tbô`´.4cÏÚÏÜ[œ™XY[Û›OÜÜ[Ù]‚ˆ]ˆÛ\ÜÏH›Ý™\šY]ËY]™[Ë[\Ý‚ˆ	Ý\Ë—Ù]™[›ÝÊ]šXÙK˜˜]\žWÛ[ÙWÙ]™[È‹´(4-t-´.4/4$4&´$HŠ_Bˆ	Ý\Ë—Ù]™[›ÝÊ]šXÙK˜ÛÝYÝ[[Y]žWÙ]™[È‹´'´,t.ô,4.´/ˆŠ_Bˆ	Ý\Ë—Ù]™[›ÝÊ]šXÙK™]WÙœ™\Ú™\Ü×Ù]™[È‹´(t,´-t-´-t`t`´c4-4,4/t/tbôaHŠ_Bˆ	Ý\Ë—Ù]™[›ÝÊ]šXÙK™˜][Û[ÙWÙ]™[È‹´$4,´,4`4.4.t/tbô.H4`4-t-´.4/Š_BˆÙ]‚ˆØ\XÛO‚ˆÜÙXÝ[Û‚ˆÛ\ÜÏHš[[]ŒL´'t,4-´/4.4`´-H4.4`ô-4-t`4-´.4,´,4.t`´-H4/ô/´.´,4-ô,4`´-t.ôc4aô`´/´,tbÈ4/´`´.´`4bô`´c4b4`´,4`´/tbô.H[Ü™KZ[™›ÈÛYH\ÜÚ\Ý[Ü˜ÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂ‚ˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆYˆ
+\›ÛÝ
+H™]\›ŽÂ‚ˆÛÛœÝÝX]HH›ÛÝœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂ‚ˆYˆ
+\›ÛÝœ]Y\žTÙ[XÝÜŠœÝ[VÙ]K\Ý\šË]ZK]ŒLHŠJHÂˆÛÛœÝÝ[HHØÝ[Y[˜Ü™X]Q[[Y[
+œÝ[HŠNÂˆÝ[K™]\Ù]œÝ\šÕZUŒLHYHŽÂˆÝ[K^ÛÛ[HˆšÜÝÂˆK\Ý\šËZXÙNˆÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\š[X\žKXÛÛÜŠHIK˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠJNÂˆK\Ý\šË[[™NˆÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\š[X\žKXÛÛÜŠHÍ	KÍMYÙ™ŠNÂˆÛÛÜ‹\ØÚ[YNˆYÚ\šÎÂˆBˆ˜\Âˆ˜XÚÙÜ›Ý[™ˆ˜\ŠK\š[X\žKX˜XÚÙÜ›Ý[™XÛÛÜŠNÂˆY[™Ë]ÜˆZ[\Ü[ÂˆBˆ˜\ZXY\ˆÂˆZ[‹ZZYÚˆÍZ[\Ü[ÂˆX\™Ú[‹X›ÝÛNˆLœZ[\Ü[Âˆ›Ü™\‹X›ÝÛNˆ\ÛÛYÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKY]šY\‹XÛÛÜŠHMIK˜[œÜ\™[
+NÂˆBˆ˜\ZXY\ˆHÈ›Û\Ú^™NˆŒÜZ[\Ü[È›Û]ÙZYÚˆZ[\Ü[È]\‹\ÜXÚ[™ÎˆKŒY[HZ[\Ü[ÈBˆœÝX]HÈ›Û\Ú^™NˆMZ[\Ü[È›Û]ÙZYÚˆMŒZ[\Ü[ÈBˆ˜˜XÚËœ™Yœ™\ÚÂˆ›Ü™\Žˆ\ÛÛYÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKY]šY\‹XÛÛÜŠHÌ‰K˜[œÜ\™[
+HZ[\Ü[Âˆ›Ü™\‹\˜Y]\ÎˆMœZ[\Ü[Âˆ˜XÚÙÜ›Ý[™ˆ˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠHZ[\Ü[Âˆ›Þ\ÚYÝÎˆÜŒ™Ø˜JŒËKÍ‹Œ
+HZ[\Ü[ÂˆBˆ™ÛØ˜[Y]šXÙKXÛÛ^ÂˆØ\ˆZ[\Ü[ÂˆY[™ÎˆÜZ[\Ü[Âˆ›Ü™\Žˆ\ÛÛY˜\ŠKY]šY\‹XÛÛÜŠNÂˆ›Ü™\‹\˜Y]\ÎˆŒœZ[\Ü[ÂˆÝ™\™›ÝÎˆY[ŽÂˆ˜XÚÙÜ›Ý[™ˆ˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠNÂˆ›Þ\ÚYÝÎˆ\Mœ™Ø˜JŒËKÍ‹ŒJNÂˆBˆ™ÛØ˜[Y]šXÙKXÛÛ^]ÛˆÂˆ›Ü™\ŽˆZ[\Ü[Âˆ›Ü™\‹\˜Y]\ÎˆNZ[\Ü[Âˆ˜XÚÙÜ›Ý[™ˆ˜[œÜ\™[Z[\Ü[ÂˆBˆ™ÛØ˜[Y]šXÙKXÛÛ^]Û‹˜XÝ]™HÂˆ˜XÚÙÜ›Ý[™ˆ˜\ŠK\Ý\šËZXÙJHZ[\Ü[Âˆ›Þ\ÚYÝÎˆ[œÙ]\ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\š[X\žKXÛÛÜŠHŒ‰K˜[œÜ\™[
+NÂˆBˆ™]šXÙKZX[YÝÈÚYˆZ[\Ü[ÈZYÚˆZ[\Ü[È›^X˜\Ú\ÎˆZ[\Ü[ÈB‚ˆ›Ý™\šY]Ë]ŒLÈÚYˆZ[ŠL	KŒ
+NÈX\™Ú[Žˆ]]ÎÈ\Ü^NˆÜšYÈØ\ˆMÈBˆ˜Ø\™]ŒLÂˆZ[‹]ÚYˆÂˆ›Ü™\Žˆ\ÛÛYÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKY]šY\‹XÛÛÜŠH	K˜[œÜ\™[
+NÂˆ›Ü™\‹\˜Y]\ÎˆŽÂˆ˜XÚÙÜ›Ý[™ˆ˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠNÂˆ›Þ\ÚYÝÎˆLÌ™Ø˜JŒËKÍ‹ŒJNÂˆBˆ\ËZ\›Ë]ŒLÂˆÜÚ][ÛŽˆ™[]]™NÂˆÝ™\™›ÝÎˆY[ŽÂˆY[™ÎˆNÂˆ˜XÚÙÜ›Ý[™‚ˆ˜YX[YÜ˜YY[
+Ú\˜ÛH]L‰HÉKÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\š[X\žKXÛÛÜŠHL	K˜[œÜ\™[
+HM	K˜[œÜ\™[MIJKˆ[™X\‹YÜ˜YY[
+MYYËÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\š[X\žKXÛÛÜŠHIK˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠJK˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠH	KÛÛÜ‹[Z^
+[ˆÜ™Ø‹Î™ˆL	K˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠJJNÂˆBˆš\›ËZXY]ŒLÈÜÚ][ÛŽˆ™[]]™NÈ‹Z[™^ˆÈ\Ü^NˆÜšYÈÜšY][\]KXÛÛ[[œÎˆZ[›X^
+YœŠH]]ÎÈØ\ˆLœÈ[YÛ‹Z][\ÎˆÝ\ÈBˆš\›ËXÛÜK]ŒLÈZ[‹]ÚYˆÈBˆš\›ËXÛÜK]ŒLœÜ[ˆÈ\Ü^Nˆ›ØÚÎÈÛÛÜŽˆ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈ›Û\Ú^™NˆMÈ[™KZZYÚˆKŒŽÈ›Û]ÙZYÚˆÈ]\‹\ÜXÚ[™ÎˆŒÍY[NÈBˆš\›ËXÛÜK]ŒLˆÈX\™Ú[ŽˆÜÈ›Û\Ú^™NˆÛ[\
+Í]Ëœ
+NÈ[™KZZYÚˆNÈ]\‹\ÜXÚ[™ÎˆKŒ[NÈÝ™\™›ÝË]Ü˜\ˆ[ž]Ú\™NÈBˆš\›ËXÛÜK]ŒLÈX\™Ú[ŽˆÜÈÛÛÜŽˆ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈ›Û\Ú^™NˆMœÈ[™KZZYÚˆKŒÎÈBˆ\ËZ\›Ë]ŒL™ÛÛÙš\›ËXÛÜK]ŒLˆÈÛÛÜŽˆ˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™XYMMJNÈBˆ\ËZ\›Ë]ŒLØ\›ˆš\›ËXÛÜK]ŒLˆÈÛÛÜŽˆ˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙYŒ
+NÈBˆ\ËZ\›Ë]ŒL˜˜Yš\›ËXÛÜK]ŒLˆÈÛÛÜŽˆ˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙLØŒØŠNÈBˆ™œ™\Ú™\ÜË]ŒLÈZ[‹ZZYÚˆœÈX^]ÚYˆŒLÈ\Ü^Nˆ[›[™KY›^È[YÛ‹Z][\ÎˆÙ[\ŽÈØ\ˆÜÈY[™ÎˆLœÈ›Ü™\Žˆ\ÛÛYÛÛÜ‹[Z^
+[ˆÜ™Ø‹Ý\œ™[ÛÛÜˆN	K˜[œÜ\™[
+NÈ›Ü™\‹\˜Y]\ÎˆNN\È˜XÚÙÜ›Ý[™ˆÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠH‰K˜[œÜ\™[
+NÈ›Þ\ÚYÝÎˆ\Mœ™Ø˜JŒËKÍ‹ŒMJNÈ›Û\Ú^™NˆMÈ[™KZZYÚˆKŒŽÈ›Û]ÙZYÚˆÌÈ^X[YÛŽˆšYÚÈBˆ™œ™\Ú™\ÜË]ŒLKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NˆN\È›^ˆ]]ÎÈBˆ™œ™\Ú™\ÜË]ŒL™ÛÛÙÈÛÛÜŽˆ˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™XYMMJNÈBˆ™œ™\Ú™\ÜË]ŒLØ\›ˆÈÛÛÜŽˆ˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙYŒ
+NÈBˆ™œ™\Ú™\ÜË]ŒL˜˜YÈÛÛÜŽˆ˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙLØŒØŠNÈBˆ™œ™\Ú™\ÜË]ŒL[šÛ›ÝÛˆÈÛÛÜŽˆ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈB‚ˆš\›Ë\ØÙ[™K]ŒLÈÜÚ][ÛŽˆ™[]]™NÈZYÚˆÍœÈX\™Ú[ŽˆLLNÈÝ™\™›ÝÎˆY[ŽÈ\ÛÛ][ÛŽˆ\ÛÛ]NÈBˆš\›Ë\ØÙ[™K]ŒLŽ˜™Y›Ü™HÈÛÛ[ˆˆŽÈÜÚ][ÛŽ˜XœÛÛ]NÈ[œÙ]ŒÍ	HÈ‹Z[™^‹LÎÈ˜XÚÙÜ›Ý[™ˆ[™X\‹YÜ˜YY[
+NYË˜[œÜ\™[ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\š[X\žKXÛÛÜŠH	K˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠJJNÈ›Ü™\‹]Üˆ\ÛÛYÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKY]šY\‹XÛÛÜŠHÍIK˜[œÜ\™[
+NÈBˆœØÙ[™K]Ú[™ÝË]ŒLÈÜÚ][ÛŽ˜XœÛÛ]NÈYŒÉNÈÜŒM‰NÈÚYŒ	NÈZYÚŒ‰NÈ‹Z[™^‹LŽÈ›Ü™\‹\˜Y]\ÎÈÜXÚ]N‹ŒŽÈ˜XÚÙÜ›Ý[™ˆ[™X\‹YÜ˜YY[
+LYË˜[œÜ\™[	K™Ø˜JMKMKMKÌŠHIHL‰K˜[œÜ\™[LÉJK[™X\‹YÜ˜YY[
+YË˜[œÜ\™[	K™Ø˜JMKMKMKÌŠHIHL‰K˜[œÜ\™[LÉJK[™X\‹YÜ˜YY[
+MYYË™Ø˜JŒLMKÍ
+K™Ø˜JMKMKMKŒÍJJNÈ›Þ\ÚYÝÎˆ[œÙ]\™Ø˜JMKMKMKN
+NÈBˆœØÙ[™K\˜XÚË]ŒLÈÜÚ][ÛŽ˜XœÛÛ]NÈšYÚŒ‰NÈÜŽ	NÈÚYŒŒ‰NÈZYÚÌÉNÈ‹Z[™^‹LŽÈY[™ÎŽ\ÜÈ\Ü^N™ÜšYÈÜšY][\]K\›ÝÜÎœ™\X]
+YœŠNÈØ\ŽÈ›Ü™\‹\˜Y]\ÎÜÈ›Ü™\ŽŒœÛÛYÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠHN	K˜[œÜ\™[
+NÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠHÉK˜[œÜ\™[
+NÈÜXÚ]N‹NÈBˆœØÙ[™K\˜XÚË]ŒLHÈ\Ü^N˜›ØÚÎÈ›Ü™\‹\˜Y]\ÎŒÜÈ˜XÚÙÜ›Ý[™œ™\X][™Ë[[™X\‹YÜ˜YY[
+YËÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠHMIK˜[œÜ\™[
+Hœ˜[œÜ\™[œ\
+NÈ›Ü™\ŽŒ\ÛÛYÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠHLIK˜[œÜ\™[
+NÈBˆ™›ÝË[[™\Ë]ŒLÈÜÚ][ÛŽ˜XœÛÛ]NÈ[œÙ]ŒÈ‹Z[™^ŒNÈÚYŒL	NÈZYÚŒL	NÈÝ™\™›ÝÎš\ÚX›NÈÚ[\‹Y]™[Î››Û™NÈBˆ™›ÝË[[™\Ë]ŒL]Èš[››Û™NÈÝ›ÚÙN˜\ŠK\Ý\šË[[™JNÈÝ›ÚÙK]ÚYŒKŒNÈ™XÝÜ‹YY™™XÝ››Û‹\ØØ[[™Ë\Ý›ÚÙNÈÝ›ÚÙK[[™XØ\œ›Ý[™Èš[\Ž™›Ü\ÚYÝÊÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\š[X\žKXÛÛÜŠH	K˜[œÜ\™[
+JNÈBˆ™›ÝË[[™\Ë]ŒL›[™KX˜]\žK]ŒLÈÝ›ÚÙN˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™XYMMJHÍ‰KÍŽYŒYJNÈBˆ˜˜]\žKY›ÝË]ŒL›[™KYÜšY]ŒLÈÝ›ÚÙN˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈÜXÚ]N‹ŒÍNÈš[\Ž››Û™NÈBˆ˜˜]\žKY›ÝË]ŒL›[™K[Ý]]]ŒL˜˜]\žKY›ÝË]ŒL›[™KX˜]\žK]ŒLÈÝ›ÚÙN˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙYŒ
+NÈBˆ\ËX\]ŒLÈÜÚ][ÛŽ˜XœÛÛ]NÈ‹Z[™^ŒŽÈYL	NÈ›ÝÛNŒÌÈÚY›Z[ŠÉKŽ
+NÈX^ZZYÚÍÉNÈØš™XÝYš]˜ÛÛZ[ŽÈ˜[œÙ›Ü›N˜[œÛ]V
+ML	JNÈš[\Ž™›Ü\ÚYÝÊMœM™Ø˜JÎKMËŒNJJNÈ\Ù\‹\Ù[XÝ››Û™NÈ]ÙXšÚ]]\Ù\‹Y˜YÎ››Û™NÈBˆœØÙ[™K[›ÙK]ŒLÈÜÚ][ÛŽ˜XœÛÛ]NÈ‹Z[™^ŒÎÈZ[‹]ÚYŒLÌÈZ[‹ZZYÚÌœÈ\Ü^N™›^È[YÛ‹Z][\Î˜Ù[\ŽÈØ\Ž\ÈY[™ÎŒLLœÈ›Ü™\ŽŒ\ÛÛY™Ø˜JMKMKMKÎ
+NÈ›Ü™\‹\˜Y]\ÎŒN\È˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠH‰K˜[œÜ\™[
+NÈ›Þ\ÚYÝÎŒ™Ø˜JŒËKÍ‹ŒMJNÈ˜XÚÙ›ÜYš[\Ž˜›\Š
+NÈ]ÙXšÚ]X˜XÚÙ›ÜYš[\Ž˜›\Š
+NÈBˆœØÙ[™K[›ÙK]ŒL™ÜšYÈYŒ‰NÈÜŒÍ	NÈBˆœØÙ[™K[›ÙK]ŒL›ØYÈšYÚŒ‰NÈÜŒÍ	NÈBˆœØÙ[™K[›ÙK]ŒL˜˜]\žHÈYL	NÈ›ÝÛN\È˜[œÙ›Ü›N˜[œÛ]V
+ML	JNÈZ[‹]ÚYŒMœÈBˆœØÙ[™K[›ÙK]ŒLKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NŒŽÈÛÛÜŽ˜\ŠK\š[X\žKXÛÛÜŠNÈ›^Œ]]ÎÈBˆœØÙ[™K[›ÙK]ŒL˜˜]\žHKZXÛÛˆÈÛÛÜŽ˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™XYMMJNÈBˆ˜˜]\žKY›ÝË]ŒLœØÙ[™K[›ÙK]ŒL˜˜]\žHKZXÛÛˆÈÛÛÜŽ˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙYŒ
+NÈBˆœØÙ[™K[›ÙK]ŒLÜ[‹œØÙ[™K[›ÙK]ŒLÝ›Û™ÈÈ\Ü^N˜›ØÚÎÈBˆœØÙ[™K[›ÙK]ŒLÜ[ˆÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈ›Û\Ú^™NŒMÈ[™KZZYÚŒKŒMNÈBˆœØÙ[™K[›ÙK]ŒLÝ›Û™ÈÈX\™Ú[‹]ÜŒœÈ›Û\Ú^™NŒNÈ[™KZZYÚŒKŒMNÈBˆœ™\Ù\™K\Ýš\]ŒLÈZ[‹ZZYÚNÈ\Ü^N™›^È[YÛ‹Z][\Î˜Ù[\ŽÈØ\ŒLœÈY[™ÎŒLMœÈ›Ü™\ŽŒ\ÛÛYÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\š[X\žKXÛÛÜŠHŽ	K˜[œÜ\™[
+NÈ›Ü™\‹\˜Y]\ÎŒŒÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\š[X\žKXÛÛÜŠHÉK˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠJNÈÛÛÜŽ˜\ŠK\š[X\žKXÛÛÜŠNÈBˆœ™\Ù\™K\Ýš\]ŒLKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NŒŽÈBˆœ™\Ù\™K\Ýš\]ŒLÝ›Û™ÈÈ›Û\Ú^™NŒMÜÈ[™KZZYÚŒKŒŽÈBˆœ™\Ù\™K\Ýš\]ŒL™ÛÛÙÈÛÛÜŽ˜\ŠK\š[X\žKXÛÛÜŠNÈBˆœ™\Ù\™K\Ýš\]ŒLØ\›ˆÈÛÛÜŽ˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙYŒ
+NÈ›Ü™\‹XÛÛÜŽ˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙYŒ
+HÌ	K˜[œÜ\™[
+NÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙYŒ
+H	K˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠJNÈBˆœ™\Ù\™K\Ýš\]ŒL˜˜YÈÛÛÜŽ˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙLØŒØŠNÈ›Ü™\‹XÛÛÜŽ˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙLØŒØŠHŽ	K˜[œÜ\™[
+NÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙLØŒØŠHÉK˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠJNÈBˆœ™\Ù\™K\Ýš\]ŒL[šÛ›ÝÛˆÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈ›Ü™\‹XÛÛÜŽ˜\ŠKY]šY\‹XÛÛÜŠNÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠHIK˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠJNÈB‚ˆ›Y]šXÜË\›ÝË]ŒLÈ\Ü^N™ÜšYÈÜšY][\]KXÛÛ[[œÎœ™\X]
+ËZ[›X^
+YœŠJNÈØ\ŒLÈBˆ›Y]šXËXØ\™]ŒLÈZ[‹]ÚYŒÈZ[‹ZZYÚŒLMœÈ\Ü^N™›^È[YÛ‹Z][\Î˜Ù[\ŽÈØ\ŒL\ÈY[™ÎŒMÈ›Ü™\ŽŒ\ÛÛY˜\ŠKY]šY\‹XÛÛÜŠNÈ›Ü™\‹\˜Y]\ÎŒŒÜÈ˜XÚÙÜ›Ý[™˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠNÈ›Þ\ÚYÝÎŒÜŒœ™Ø˜JŒËKÍ‹ŒMJNÈBˆ›Y]šXËZXÛÛ‹]ŒLÈÚYÈZYÚÈ›^ŒÈ\Ü^N™ÜšYÈXÙKZ][\Î˜Ù[\ŽÈ›Ü™\‹\˜Y]\ÎL	NÈ˜XÚÙÜ›Ý[™˜\ŠK\Ý\šËZXÙJNÈÛÛÜŽ˜\ŠK\š[X\žKXÛÛÜŠNÈBˆ›Y]šXËZXÛÛ‹]ŒLKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NŒÜÈBˆ›Y]šXËXÛÜK]ŒLÈZ[‹]ÚYŒÈBˆ›Y]šXËXÛÜK]ŒLÜ[‹›Y]šXËXÛÜK]ŒLÝ›Û™Ë›Y]šXËXÛÜK]ŒLÛX[È\Ü^N˜›ØÚÎÈBˆ›Y]šXËXÛÜK]ŒLÜ[ˆÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈ›Û\Ú^™NŒMÈ›Û]ÙZYÚŽÈ[™KZZYÚŒKŒMNÈBˆ›Y]šXËXÛÜK]ŒLÝ›Û™ÈÈX\™Ú[‹]Ü\È›Û\Ú^™NŒÈ[™KZZYÚŒNÈ]\‹\ÜXÚ[™Î‹KŒ™[NÈÝ™\™›ÝË]Ü˜\˜[ž]Ú\™NÈBˆ›Y]šXËXÛÜK]ŒLÛX[ÈX\™Ú[‹]ÜœÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈ›Û\Ú^™NŒMÈ[™KZZYÚŒKŒŽÈÝ™\™›ÝË]Ü˜\˜[ž]Ú\™NÈB‚ˆœÝ]KXØ\™]ŒL™]™[ËXØ\™]ŒLÈY[™ÎŒNÈBˆœÝ]KXØ\™]ŒLËœÙXÝ[Û‹ZXY]ŒLÈÈX\™Ú[ŽŒÈ›Û\Ú^™NŒÈ[™KZZYÚŒKŒMNÈ]\‹\ÜXÚ[™Î‹KŒ™[NÈBˆœÝ]K\›ÝË]ŒLÈX\™Ú[‹]ÜŒMÈY[™ÎŒM\MœÈ›Ü™\ŽŒ\ÛÛY˜\ŠKY]šY\‹XÛÛÜŠNÈ›Ü™\‹\˜Y]\ÎŒŒ\ÈBˆœÝ]K\›ÝË]ŒL›[™HÈ›Ü™\‹XÛÛÜŽ˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\š[X\žKXÛÛÜŠH‰K˜\ŠKY]šY\‹XÛÛÜŠJNÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\š[X\žKXÛÛÜŠHÉK˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠJNÈBˆœÝ]K\›ÝËZXY]ŒLÈ\Ü^N™›^È[YÛ‹Z][\Î˜Ù[\ŽÈ\ÝYžKXÛÛ[œÜXÙKX™]ÙY[ŽÈØ\ŒLœÈBˆœÝ]K\›ÝËZXY]ŒL™]ˆÈZ[‹]ÚYŒÈ\Ü^N™›^È[YÛ‹Z][\Î˜Ù[\ŽÈØ\Ž\ÈBˆœÝ]K\›ÝËZXY]ŒL™]ˆKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NŒ\ÈÛÛÜŽ˜\ŠK\š[X\žKXÛÛÜŠNÈ›^Œ]]ÎÈBˆœÝ]K\›ÝË]ŒL˜˜]\žHœÝ]K\›ÝËZXY]ŒL™]ˆKZXÛÛˆÈÛÛÜŽ˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™XYMMJNÈBˆœÝ]K\›ÝËZXY]ŒL™]ˆÝ›Û™ÈÈ›Û\Ú^™NŒNÈ[™KZZYÚŒKŒŽÈÝ™\™›ÝË]Ü˜\˜[ž]Ú\™NÈBˆœÝ]K\[]ŒLÈZ[‹ZZYÚŒÍÈ›^Œ]]ÎÈ\Ü^Nš[›[™KY›^È[YÛ‹Z][\Î˜Ù[\ŽÈØ\ÜÈY[™ÎœL\È›Ü™\‹\˜Y]\ÎŽNN\È›Û\Ú^™NŒMÈ›Û]ÙZYÚÌÈÚ]K\ÜXÙN››ÝÜ˜\ÈBˆœÝ]K\[]ŒLHÈÚYŽÈZYÚŽÈ›Ü™\‹\˜Y]\ÎL	NÈ˜XÚÙÜ›Ý[™˜Ý\œ™[ÛÛÜŽÈBˆœÝ]K\[]ŒL™ÛÛÙÈÛÛÜŽ˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™XYMMJNÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™XYMMJHL	K˜[œÜ\™[
+NÈBˆœÝ]K\[]ŒLØ\›ˆÈÛÛÜŽ˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙYŒ
+NÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙYŒ
+HLIK˜[œÜ\™[
+NÈBˆœÝ]K\[]ŒL˜˜YÈÛÛÜŽ˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙLØŒØŠNÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙLØŒØŠHL	K˜[œÜ\™[
+NÈBˆœÝ]K\[]ŒL[šÛ›ÝÛˆÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠHIK˜[œÜ\™[
+NÈBˆœÝ]K]˜[Y\Ë]ŒLÈX\™Ú[‹]ÜŒMÈ\Ü^N™ÜšYÈØ\ŒÈBˆœÝ]K]˜[Y\Ë]ŒL™YHÈÜšY][\]KXÛÛ[[œÎœ™\X]
+ËZ[›X^
+YœŠJNÈBˆœÝ]K]˜[Y\Ë]ŒL™]ˆÈZ[‹]ÚYŒÈY[™ÎŒLœÈ›Ü™\‹[YŒ\ÛÛY˜\ŠKY]šY\‹XÛÛÜŠNÈBˆœÝ]K]˜[Y\Ë]ŒL™]Ž™š\œÝXÚ[ÈY[™Ë[YŒÈ›Ü™\‹[YŒÈBˆœÝ]K]˜[Y\Ë]ŒL™]Ž›\ÝXÚ[ÈY[™Ë\šYÚŒÈBˆœÝ]K]˜[Y\Ë]ŒLÜ[‹œÝ]K]˜[Y\Ë]ŒLÝ›Û™ÈÈ\Ü^N˜›ØÚÎÈBˆœÝ]K]˜[Y\Ë]ŒLÜ[ˆÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈ›Û\Ú^™NŒMÈ[™KZZYÚŒKŒŽÈBˆœÝ]K]˜[Y\Ë]ŒLÝ›Û™ÈÈX\™Ú[‹]ÜÈ›Û\Ú^™NŒNÈ[™KZZYÚŒKŒŽÈÝ™\™›ÝË]Ü˜\˜[ž]Ú\™NÈBˆÛ™KYÛÛÙÈÛÛÜŽ˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™XYMMJNÈBˆÛ™K]Ø\›ˆÈÛÛÜŽ˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙYŒ
+NÈBˆÛ™KX˜YÈÛÛÜŽ˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙLØŒØŠNÈBˆÛ™K][šÛ›ÝÛˆÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈBˆœÙXÝ[Û‹ZXY]ŒLÈ\Ü^N™›^È[YÛ‹Z][\Î˜Ù[\ŽÈ\ÝYžKXÛÛ[œÜXÙKX™]ÙY[ŽÈØ\ŒLœÈBˆœÙXÝ[Û‹ZXY]ŒLœÜ[ˆÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈ›Û\Ú^™NŒMÈBˆ™]™[ËXØ\™]ŒL›Ý™\šY]ËY]™[Ë[\ÝÈX\™Ú[‹]ÜŒLÈBˆ™]™[ËXØ\™]ŒL™]™[\›ÝÈÈZ[‹ZZYÚNZ[\Ü[ÈY[™ÎŒLœZ[\Ü[ÈBˆš[]ŒLÈÚY›Z[ŠL	KŒ
+NÈX\™Ú[ŽŒ]]ÎÈY[™ËX›ÝÛN\ÈB‚ˆ™XYÛ›ÜÝXËXØ\™š\ÝÜžKXØ\™È›Ü™\‹\˜Y]\ÎŒZ[\Ü[È›Þ\ÚYÝÎŒœ™Ø˜JŒËKÍ‹ŒŠHZ[\Ü[ÈBˆXœË˜›ÝÛK[˜]ˆÈ›Þ\ÚYÝÎŒM\Œœ™Ø˜JŒËKÍ‹Œ
+HZ[\Ü[ÈBˆ˜›ÝÛK[˜]ˆX‹˜XÝ]™HÈ˜XÚÙÜ›Ý[™˜\ŠK\Ý\šËZXÙJHZ[\Ü[ÈB‚ˆYYXH
+X^]ÚYŒŒ
+HÂˆš\›ËZXY]ŒLÈÜšY][\]KXÛÛ[[œÎ›Z[›X^
+YœŠNÈBˆ™œ™\Ú™\ÜË]ŒLÈ\ÝYžK\Ù[ŽœÝ\ÈX^]ÚYŒL	NÈZ[‹ZZYÚŒÎÈBˆš\›Ë\ØÙ[™K]ŒLÈZYÚŒÌÌÈX\™Ú[‹]ÜÈBˆ›Y]šXÜË\›ÝË]ŒLÈÜšY][\]KXÛÛ[[œÎœ™\X]
+ËZ[›X^
+YœŠJNÈØ\ŽÈBˆ›Y]šXËXØ\™]ŒLÈZ[‹ZZYÚŒLMÈ›^Y\™XÝ[ÛŽ˜ÛÛ[[ŽÈ[YÛ‹Z][\Î™›^\Ý\ÈØ\ŽÈY[™ÎŒLœÈBˆ›Y]šXËZXÛÛ‹]ŒLÈÚYœÈZYÚœÈ›^X˜\Ú\ÎœÈBˆ›Y]šXËXÛÜK]ŒLÝ›Û™ÈÈ›Û\Ú^™NŒŒ\ÈBˆBˆYYXH
+X^]ÚYÌ
+HÂˆ˜\ÈY[™Ë[Y›X^
+L[ŠØY™KX\™XKZ[œÙ][Y
+JHZ[\Ü[ÈY[™Ë\šYÚ›X^
+L[ŠØY™KX\™XKZ[œÙ]\šYÚ
+JHZ[\Ü[ÈBˆ˜\ZXY\ˆHÈ›Û\Ú^™NŒŒ\Z[\Ü[ÈBˆœÝX]HÈ›Û\Ú^™NŒLÜZ[\Ü[ÈBˆ\ËZ\›Ë]ŒLÈY[™ÎŒM\È›Ü™\‹\˜Y]\ÎŒ\ÈBˆš\›ËXÛÜK]ŒLˆÈ›Û\Ú^™NŒÎÈBˆš\›ËXÛÜK]ŒLÈ›Û\Ú^™NŒM\ÈBˆš\›Ë\ØÙ[™K]ŒLÈZYÚŒÌœÈX\™Ú[‹[Y‹LM\ÈX\™Ú[‹\šYÚ‹LM\ÈBˆ\ËX\]ŒLÈÚY‰NÈX^ZZYÚÍ	NÈ›ÝÛNŒŽÈBˆœØÙ[™K[›ÙK]ŒLÈZ[‹]ÚYŒLLœÈZ[‹ZZYÚ\ÈØ\ÜÈY[™ÎŽ\È›Ü™\‹\˜Y]\ÎŒMÜÈBˆœØÙ[™K[›ÙK]ŒL™ÜšYÈYŒINÈÜŒÍ	NÈBˆœØÙ[™K[›ÙK]ŒL›ØYÈšYÚŒINÈÜŒÍ	NÈBˆœØÙ[™K[›ÙK]ŒL˜˜]\žHÈZ[‹]ÚYŒLœÈ›ÝÛNŒÜÈBˆœØÙ[™K[›ÙK]ŒLKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NŒÈBˆœØÙ[™K[›ÙK]ŒLÜ[ˆÈ›Û\Ú^™NŒLÜÈBˆœØÙ[™K[›ÙK]ŒLÝ›Û™ÈÈ›Û\Ú^™NŒMœÈBˆœ™\Ù\™K\Ýš\]ŒLÈZ[‹ZZYÚMÈY[™ÎŽ\LÜÈBˆœ™\Ù\™K\Ýš\]ŒLÝ›Û™ÈÈ›Û\Ú^™NŒMœÈBˆ›Y]šXÜË\›ÝË]ŒLÈØ\ÜÈBˆ›Y]šXËXØ\™]ŒLÈZ[‹ZZYÚŒLÈ›Ü™\‹\˜Y]\ÎŒŒÈY[™ÎŒLÈBˆ›Y]šXËZXÛÛ‹]ŒLÈÚYŒÎ\ÈZYÚŒÎ\È›^X˜\Ú\ÎŒÎ\ÈBˆ›Y]šXËZXÛÛ‹]ŒLKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NŒŒÜÈBˆ›Y]šXËXÛÜK]ŒLÜ[‹›Y]šXËXÛÜK]ŒLÛX[È›Û\Ú^™NŒLÜÈBˆ›Y]šXËXÛÜK]ŒLÝ›Û™ÈÈ›Û\Ú^™NŒN\ÈBˆœÝ]KXØ\™]ŒL™]™[ËXØ\™]ŒLÈY[™ÎŒM\È›Ü™\‹\˜Y]\ÎŒuïmú¶‰žËkºwµçKÝXÚ\ÎÂˆÛÛœÝZYÚ[HÝXÚZYÚ[
+š\œÝÙXÛÛ™šY]ÜÜ
+NÂˆÛÛœÝØØ[HHÛ[\ØØ[J[˜ÚœØØ[H
+ˆÝXÚ\Ý[˜ÙJš\œÝÙXÛÛ™
+HÈ[˜Ú™\Ý[˜ÙJNÂˆ\Ë—×ÜÝ\šÖ›ÛÛUŒMHØØ[NÂˆÛÛ[œÝ[Kž›ÛÛHHÝš[™ÊØØ[JNÂˆšY]ÜÜœØÜ›ÛYHX]›X^
+[˜Ú˜ÛÛ[
+ˆØØ[HHZYÚ[ž
+NÂˆšY]ÜÜœØÜ›ÛÜHX]›X^
+[˜Ú˜ÛÛ[H
+ˆØØ[HHZYÚ[žJNÂˆ]™[œ™]™[Y˜][
+
+NÂˆKÈ\ÜÚ]™Nˆ˜[ÙHJNÂ‚ˆÛÛœÝš[š\Ú[˜ÚH
+
+HOˆÂˆYˆ
+\[˜Ú
+H™]\›ŽÂˆ[˜ÚH[Âˆ\Ë—ÜÝÜ™V›ÛÛUŒMËŠ
+NÂˆNÂˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚ[™‹š[š\Ú[˜ÚÈ\ÜÚ]™NˆYHJNÂˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚØ[˜Ù[‹š[š\Ú[˜ÚÈ\ÜÚ]™NˆYHJNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂ‚ˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆYˆ
+\›ÛÝ
+H™]\›ŽÂ‚ˆÛÛœÝÝX]HH›ÛÝœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂ‚ˆ\Ë—Ü™[[Ý™V›ÛÛTÚ[ÕŒMJ
+NÂˆ\Ë—Ú[œÝ[[˜ÚšY]ÜÜŒMJ
+NÂ‚ˆYˆ
+\›ÛÝœ]Y\žTÙ[XÝÜŠœÝ[VÙ]K\Ý\šË]ZK]ŒMWHŠJHÂˆÛÛœÝÝ[HHØÝ[Y[˜Ü™X]Q[[Y[
+œÝ[HŠNÂˆÝ[K™]\Ù]œÝ\šÕZUŒMHHYHŽÂˆÝ[K^ÛÛ[HˆÊˆRHKNˆÙ\Ý\™K[Û›H›ÛÛK^XÝHÛ™HÛÜšÈšY]ÜÜˆ
+‹Âˆž›ÛÛK]ÛÛ˜\‹]ŒMÈ\Ü^N››Û™HZ[\Ü[ÈBˆž›ÛÛK]šY]ÜÜ]ŒMHÂˆÚYŒL	NÂˆX^]ÚYŒL	NÂˆZ[‹ZZYÚŒNÂˆX^ZZYÚ˜Ø[ÊLšHNH[ŠØY™KX\™XKZ[œÙ]]Ü
+HH[ŠØY™KX\™XKZ[œÙ]X›ÝÛK
+JNÂˆÝ™\™›ÝÎ˜]]ÎÂˆÝ™\œØÜ›ÛX™Z]š[ÜŽ˜ÛÛZ[ŽÂˆÝXÚXXÝ[ÛŽœ[‹^[‹^NÂˆ]ÙXšÚ][Ý™\™›ÝË\ØÜ›Û[™ÎÝXÚÂˆBˆž›ÛÛKXÛÛ[]ŒMHÂˆÚYŒL	NÂˆZ[‹]ÚYŒL	NÂˆ˜[œÙ›Ü›K[ÜšYÚ[ŽŒÂˆBˆž›ÛÛKXÛÛ[]ŒMHˆ›\ÝXÚ[ÈX\™Ú[‹X›ÝÛNŽÈB‚ˆYYXH
+X^]ÚYÌ
+HÂˆž›ÛÛK]šY]ÜÜ]ŒMHÂˆX^ZZYÚ˜Ø[ÊLšHNH[ŠØY™KX\™XKZ[œÙ]]Ü
+HH[ŠØY™KX\™XKZ[œÙ]X›ÝÛK
+JNÂˆBˆBˆYYXH
+Z[‹]ÚYÍŒ
+HÂˆž›ÛÛK]šY]ÜÜ]ŒMHÈX^ZZYÚ˜Ø[ÊLšHN
+NÈBˆBˆÂˆ›ÛÝ˜\[™
+Ý[JNÂˆBˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒMKšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒM‹šœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒKˆŽÂ˜ÛÛœÝÓTÓRSˆHŽMÎÂ˜ÛÛœÝÓTÓPVHKŒÎÂ˜ÛÛœÝÕP“WÕTÑSVWÓTÈHÍŒÂ˜ÛÛœÝTÑTUSÓ—ÓTÈHŽÂ˜ÛÛœÝTÓSÕ‘WÔHMÂ‚™[˜Ý[ÛˆZYÚ[
+š\œÝÙXÛÛ™
+HÂˆ™]\›ˆÂˆˆ
+š\œÝ˜ÛY[
+ÈÙXÛÛ™˜ÛY[
+HÈ‹ˆNˆ
+š\œÝ˜ÛY[H
+ÈÙXÛÛ™˜ÛY[JHÈ‹ˆNÂŸB‚™[˜Ý[ÛˆÚ[\Ý[˜ÙJš\œÝÙXÛÛ™
+HÂˆ™]\›ˆX]š\Ý
+ÙXÛÛ™žHš\œÝžÙXÛÛ™žHHš\œÝžJNÂŸB‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒMŠHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒMˆHYNÂ‚ˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—Ú[œÝ[Þ\Ý[SY[UŒMˆH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆÛÛœÝÛÛÛ›ÛH›ÛÝËœ]Y\žTÙ[XÝÜŠˆ‹˜\ZXY\ˆœÚ[X˜XÚË]ŒM˜\ZXY\ˆ˜˜XÚË˜\ZXY\ˆ›Y[K]šYÙÙ\‹]ŒH‚ˆ
+NÂˆYˆ
+\›ÛÝ[ÛÛÛ›Û
+H™]\›ŽÂ‚ˆÛÛœÝY[HHÛÛÛ›Û˜ÛÛ™S›ÙJYJNÂˆY[K˜Û\ÜÓ\Ýœ™[[Ý™JœÚ[X˜XÚË]ŒM‹˜˜XÚÈ‹›Y[K]šYÙÙ\‹]ŒHŠNÂˆY[K˜Û\ÜÓ\Ý˜Y
+œÞ\Ý[K[Y[K]ŒMˆŠNÂˆY[KœÙ]]šX]J˜\šXK[X™[‹´'´`´.´`4bô`´c4/4-t/tcˆÛYH\ÜÚ\Ý[ŠNÂˆY[KœÙ]]šX]J]H‹´'4-t/tcˆÛYH\ÜÚ\Ý[ŠNÂˆY[Kœ™[[Ý™P]šX]J˜\šXKY^[™YŠNÂˆY[Kš[›™\’SH	ÏKZXÛÛˆXÛÛH›YN›Y[HÚKZXÛÛ‰ÎÂˆÛÛÛ›Ûœ™\XÙUÚ]
+Y[JNÂ‚ˆY[K˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆÂˆ\Ë™\Ü]Ú]™[
+™]ÈÝ\ÝÛQ]™[
+š\ÜË]ÙÙÛK[Y[H‹ÂˆX˜›\ÎˆYKˆÛÛ\ÜÙYˆYKˆJJNÂˆJNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—ÜÚÝÖ›ÛÛT™\Ù]ŒMˆH[˜Ý[Ûˆ
+šY]ÜÜ
+HÂˆ]Ø\ÝHšY]ÜÜœ]Y\žTÙ[XÝÜŠŽœØÛÜHˆž›ÛÛK\™\Ù]]Ø\Ý]ŒMˆŠNÂˆYˆ
+]Ø\Ý
+HÂˆØ\ÝHØÝ[Y[˜Ü™X]Q[[Y[
+™]ˆŠNÂˆØ\Ý˜Û\ÜÓ˜[YHHž›ÛÛK\™\Ù]]Ø\Ý]ŒMˆŽÂˆØ\ÝœÙ]]šX]Jœ›ÛH‹œÝ]\ÈŠNÂˆØ\ÝœÙ]]šX]J˜\šXK[]™H‹œÛ]HŠNÂˆšY]ÜÜœ™\[™
+Ø\Ý
+NÂˆBˆØ\Ý^ÛÛ[H´'4,4`tb4`´,4,HL	HŽÂˆØ\Ý˜Û\ÜÓ\Ýœ™[[Ý™Jš\ÚX›HŠNÂˆ™\]Y\Ý[š[X][Û‘œ˜[YJ
+
+HOˆØ\Ý˜Û\ÜÓ\Ý˜Y
+š\ÚX›HŠJNÂˆÚ[™ÝË˜ÛX\•[Y[Ý]
+\Ë—×ÜÝ\šÖ›ÛÛUØ\Ý[Y\•ŒMŠNÂˆ\Ë—×ÜÝ\šÖ›ÛÛUØ\Ý[Y\•ŒMˆHÚ[™ÝËœÙ][Y[Ý]
+
+
+HOˆÂˆØ\ÝË˜Û\ÜÓ\Ýœ™[[Ý™Jš\ÚX›HŠNÂˆKLL
+NÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™\Ù]›ÛÛUŒMˆH[˜Ý[Ûˆ
+šY]ÜÜÛÛ[›ÝYžHHYJHÂˆ\Ë—×ÜÝ\šÖ›ÛÛUŒMHNÂˆÛÛ[œÝ[Kž›ÛÛHHŒHŽÂˆšY]ÜÜœØÜ›ÛÊÈYˆÜˆ™Z]š[ÜŽˆœÛ[ÛÝˆJNÂˆ\Ë—ÜÝÜ™V›ÛÛUŒMËŠ
+NÂˆYˆ
+›ÝYžJH\Ë—ÜÚÝÖ›ÛÛT™\Ù]ŒMŠšY]ÜÜ
+NÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ú[œÝ[›ÛÛT™\Ù]ŒMˆH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝšY]ÜÜH\ËœÚYÝÔ›ÛÝËœ]Y\žTÙ[XÝÜŠ‹ž›ÛÛK]šY]ÜÜ]ŒMHŠNÂˆÛÛœÝÛÛ[HšY]ÜÜËœ]Y\žTÙ[XÝÜŠŽœØÛÜHˆž›ÛÛKXÛÛ[]ŒMHŠNÂˆYˆ
+]šY]ÜÜXÛÛ[
+H™]\›ŽÂ‚ˆ]Ù\Ý\™HH[ÂˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚÝ\‹
+]™[
+HOˆÂˆYˆ
+]™[ÝXÚ\Ë›[™ÝOOHŠH™]\›ŽÂˆÛÛœÝÙš\œÝÙXÛÛ™HH]™[ÝXÚ\ÎÂˆÙ\Ý\™HHÂˆÝ\Y]ˆ\™›Ü›X[˜ÙK››ÝÊ
+KˆZYÚ[ˆZYÚ[
+š\œÝÙXÛÛ™
+Kˆ\Ý[˜ÙNˆX]š\Ý
+ÙXÛÛ™˜ÛY[Hš\œÝ˜ÛY[ÙXÛÛ™˜ÛY[HHš\œÝ˜ÛY[JKˆ[Ý™Yˆ˜[ÙKˆNÂˆKÈ\ÜÚ]™NˆYHJNÂ‚ˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚ[Ý™H‹
+]™[
+HOˆÂˆYˆ
+YÙ\Ý\™H]™[ÝXÚ\Ë›[™ÝOOHŠH™]\›ŽÂˆÛÛœÝÙš\œÝÙXÛÛ™HH]™[ÝXÚ\ÎÂˆÛÛœÝÝ\œ™[ZYÚ[HZYÚ[
+š\œÝÙXÛÛ™
+NÂˆÛÛœÝÝ\œ™[\Ý[˜ÙHHX]š\Ý
+ÙXÛÛ™˜ÛY[Hš\œÝ˜ÛY[ÙXÛÛ™˜ÛY[HHš\œÝ˜ÛY[JNÂˆYˆ
+ˆÚ[\Ý[˜ÙJÙ\Ý\™K›ZYÚ[Ý\œ™[ZYÚ[
+HˆTÓSÕ‘WÔˆX]˜XœÊÝ\œ™[\Ý[˜ÙHHÙ\Ý\™K™\Ý[˜ÙJHˆTÓSÕ‘WÔˆ
+HÂˆÙ\Ý\™K›[Ý™YHYNÂˆBˆKÈ\ÜÚ]™NˆYHJNÂ‚ˆÛÛœÝš[š\ÚÙ\Ý\™HH
+]™[
+HOˆÂˆYˆ
+YÙ\Ý\™H]™[ÝXÚ\Ë›[™ÝOOH
+H™]\›ŽÂˆÛÛœÝÛÛ\]YHÙ\Ý\™NÂˆÙ\Ý\™HH[ÂˆÛÛœÝ›ÝÈH\™›Ü›X[˜ÙK››ÝÊ
+NÂˆÛÛœÝØØ[HH[X™\Š\Ë—×ÜÝ\šÖ›ÛÛUŒMJNÂ‚ˆYˆ
+ØØ[HHÓTÓRSˆ	‰ˆØØ[HHÓTÓPV	‰ˆØØ[HOOHJHÂˆ\Ë—Ü™\Ù]›ÛÛUŒMŠšY]ÜÜÛÛ[YJNÂˆB‚ˆÛÛœÝ\ÕÛÑš[™Ù\•\HXÛÛ\]Y›[Ý™Y	‰ˆ›ÝÈHÛÛ\]YœÝ\Y]HTÑTUSÓ—ÓTÎÂˆYˆ
+Z\ÕÛÑš[™Ù\•\
+HÂˆ\Ë—×ÜÝ\šÓ\ÝÛÑš[™Ù\•\ŒMˆH[Âˆ™]\›ŽÂˆB‚ˆÛÛœÝ™]š[Ý\Õ\H\Ë—×ÜÝ\šÓ\ÝÛÑš[™Ù\•\ŒMŽÂˆYˆ
+ˆ™]š[Ý\Õ\	‰‚ˆ›ÝÈH™]š[Ý\Õ\˜]HÕP“WÕTÑSVWÓTÈ	‰‚ˆÚ[\Ý[˜ÙJ™]š[Ý\Õ\›ZYÚ[ÛÛ\]Y›ZYÚ[
+HHˆ
+HÂˆ\Ë—×ÜÝ\šÓ\ÝÛÑš[™Ù\•\ŒMˆH[Âˆ\Ë—Ü™\Ù]›ÛÛUŒMŠšY]ÜÜÛÛ[YJNÂˆ™]\›ŽÂˆB‚ˆ\Ë—×ÜÝ\šÓ\ÝÛÑš[™Ù\•\ŒMˆHÈ]ˆ›ÝËZYÚ[ˆÛÛ\]Y›ZYÚ[NÂˆNÂ‚ˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚ[™‹š[š\ÚÙ\Ý\™KÈ\ÜÚ]™NˆYHJNÂˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚØ[˜Ù[‹
+
+HOˆÂˆÙ\Ý\™HH[Âˆ\Ë—×ÜÝ\šÓ\ÝÛÑš[™Ù\•\ŒMˆH[ÂˆKÈ\ÜÚ]™NˆYHJNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—ÜÝ™[™Ý[˜]\žS[™UŒMˆH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝ[™HH\ËœÚYÝÔ›ÛÝËœ]Y\žTÙ[XÝÜŠ‹™›ÝË[[™\Ë]ŒLH›[™KX˜]\žK]ŒLHŠNÂˆYˆ
+[[™JH™]\›ŽÂˆËÈÛÛ[YH™[™X]›Ý[™Ú[Ø\™ÈÛÈHš\ÚX›HØ\™]™\ˆÛÚÜÂˆËÈ\ØÛÛ›™XÝYÚ[ˆ™\ÜÛœÚ]™HÙ[ÛY]žHÜˆ\Ù\ˆ›ÛÛHÚ[™Ù\Ë‚ˆ[™KœÙ]]šX]J™‹“MLMÈŒˆŠNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂ‚ˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆYˆ
+\›ÛÝ
+H™]\›ŽÂ‚ˆÛÛœÝÝX]HH›ÛÝœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂ‚ˆ\Ë—Ú[œÝ[Þ\Ý[SY[UŒMŠ
+NÂˆ\Ë—Ú[œÝ[›ÛÛT™\Ù]ŒMŠ
+NÂˆ\Ë—ÜÝ™[™Ý[˜]\žS[™UŒMŠ
+NÂ‚ˆYˆ
+\›ÛÝœ]Y\žTÙ[XÝÜŠœÝ[VÙ]K\Ý\šË]ZK]ŒM—HŠJHÂˆÛÛœÝÝ[HHØÝ[Y[˜Ü™X]Q[[Y[
+œÝ[HŠNÂˆÝ[K™]\Ù]œÝ\šÕZUŒMˆHYHŽÂˆÝ[K^ÛÛ[HˆÊˆRHKŽˆ˜]]™HHY[KÙ\Ý\™H™\Ù][™ÛÛ[[Ý\È˜]\žH]ˆ
+‹ÂˆœÞ\Ý[K[Y[K]ŒMˆÂˆÜšYXÛÛ[[ŽŒHZ[\Ü[Âˆ\ÝYžK\Ù[ŽœÝ\Z[\Ü[ÂˆÚYZ[\Ü[ÂˆZ[‹]ÚYZ[\Ü[ÂˆZYÚZ[\Ü[ÂˆZ[‹ZZYÚZ[\Ü[Âˆ\Ü^N™ÜšYZ[\Ü[ÂˆXÙKZ][\Î˜Ù[\ˆZ[\Ü[ÂˆY[™ÎŒZ[\Ü[Âˆ›Ü™\ŽŒ\ÛÛYÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKY]šY\‹XÛÛÜŠHÌ‰K˜[œÜ\™[
+HZ[\Ü[Âˆ›Ü™\‹\˜Y]\ÎŒMœZ[\Ü[Âˆ˜XÚÙÜ›Ý[™˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠHZ[\Ü[ÂˆÛÛÜŽ˜\ŠK\š[X\žK]^XÛÛÜŠHZ[\Ü[Âˆ›Þ\ÚYÝÎŒÜŒ™Ø˜JŒËKÍ‹Œ
+HZ[\Ü[ÂˆBˆœÞ\Ý[K[Y[K]ŒMˆKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NŒ\Z[\Ü[ÈBˆž›ÛÛK]šY]ÜÜ]ŒMHÈÜÚ][ÛŽœ™[]]™NÈBˆž›ÛÛK\™\Ù]]Ø\Ý]ŒMˆÂˆÜÚ][ÛŽœÝXÚÞNÂˆÜŒLÂˆ‹Z[™^ŒÌÂˆÚY›X^XÛÛ[ÂˆX^]ÚY˜Ø[ÊL	HH
+NÂˆX\™Ú[ŽŒLœLÍœ]]ÎÂˆY[™ÎŽLœÂˆ›Ü™\ŽŒ\ÛÛYÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\š[X\žKXÛÛÜŠHŒ‰K˜[œÜ\™[
+NÂˆ›Ü™\‹\˜Y]\ÎŽNN\Âˆ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠHL‰K˜[œÜ\™[
+NÂˆÛÛÜŽ˜\ŠK\š[X\žKXÛÛÜŠNÂˆ›Þ\ÚYÝÎŒ\N™Ø˜JŒËKÍ‹ŒLŠNÂˆ›Û\Ú^™NŒLÜÂˆ›Û]ÙZYÚÍLÂˆÚ[\‹Y]™[Î››Û™NÂˆÜXÚ]NŒÂˆ˜[œÙ›Ü›N˜[œÛ]VJMœ
+NÂˆ˜[œÚ][ÛŽ›ÜXÚ]HŒMœÈX\ÙK˜[œÙ›Ü›HŒMœÈX\ÙNÂˆ˜XÚÙ›ÜYš[\Ž˜›\ŠL
+NÂˆ]ÙXšÚ]X˜XÚÙ›ÜYš[\Ž˜›\ŠL
+NÂˆBˆž›ÛÛK\™\Ù]]Ø\Ý]ŒM‹š\ÚX›HÈÜXÚ]NŒNÈ˜[œÙ›Ü›N˜[œÛ]VJ
+NÈBˆ™›ÝË[[™\Ë]ŒLH]›[™KX˜]\žK]ŒLHÂˆÜXÚ]NŒHZ[\Ü[ÂˆÝ›ÚÙK]ÚYŒ‹ŒMHZ[\Ü[Âˆš[\Ž™›Ü\ÚYÝÊ\˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™XYMMJJH›Ü\ÚYÝÊœ™Ø˜JMKMKMKŽMJJNÂˆBˆ˜˜]\žKY›ÝË]ŒLH™›ÝË[[™\Ë]ŒLH]›[™KX˜]\žK]ŒLHÂˆš[\Ž™›Ü\ÚYÝÊ\˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙYŒ
+JH›Ü\ÚYÝÊœ™Ø˜JMKMKMKŽMJJNÂˆBˆÂˆ›ÛÝ˜\[™
+Ý[JNÂˆBˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒM‹šœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒMËšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒKÈŽÂ˜ÛÛœÝRS—ÔÐÐSHHÍNÂ˜ÛÛœÝPVÔÐÐSHHŽÂ˜ÛÛœÝÓTÓRSˆHŽMÎÂ˜ÛÛœÝÓTÓPVHKŒÎÂ˜ÛÛœÝÕP“WÕTÑSVWÓTÈHÍŒÂ˜ÛÛœÝTÑTUSÓ—ÓTÈHŽÂ˜ÛÛœÝTÓSÕ‘WÔHMÂ‚™[˜Ý[ÛˆÛ[\ØØ[J˜[YJHÂˆÛÛœÝ[X™\ˆH[X™\Š˜[YJNÂˆYˆ
+S[X™\‹š\Ñš[š]J[X™\ŠJH™]\›ˆNÂˆ™]\›ˆX]›Z[ŠPVÔÐÐSKX]›X^
+RS—ÔÐÐSK[X™\ŠJNÂŸB‚™[˜Ý[Ûˆ\Ý[˜ÙJš\œÝÙXÛÛ™
+HÂˆ™]\›ˆX]š\Ý
+ÙXÛÛ™˜ÛY[Hš\œÝ˜ÛY[ÙXÛÛ™˜ÛY[HHš\œÝ˜ÛY[JNÂŸB‚™[˜Ý[ÛˆÛY[ZYÚ[
+š\œÝÙXÛÛ™
+HÂˆ™]\›ˆÂˆˆ
+š\œÝ˜ÛY[
+ÈÙXÛÛ™˜ÛY[
+HÈ‹ˆNˆ
+š\œÝ˜ÛY[H
+ÈÙXÛÛ™˜ÛY[JHÈ‹ˆNÂŸB‚™[˜Ý[ÛˆšY]ÜÜZYÚ[
+š\œÝÙXÛÛ™šY]ÜÜ
+HÂˆÛÛœÝÚ[HÛY[ZYÚ[
+š\œÝÙXÛÛ™
+NÂˆÛÛœÝ™XÝHšY]ÜÜ™Ù]›Ý[™[™ÐÛY[™XÝ
+
+NÂˆ™]\›ˆÈˆÚ[žH™XÝ›YNˆÚ[žHH™XÝÜNÂŸB‚™[˜Ý[ÛˆÚ[\Ý[˜ÙJš\œÝÙXÛÛ™
+HÂˆ™]\›ˆX]š\Ý
+ÙXÛÛ™žHš\œÝžÙXÛÛ™žHHš\œÝžJNÂŸB‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒMÊHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒMÈHYNÂ‚ˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—Ü™[[Ý™V›ÛÛTÚ[ÕŒMÈH[˜Ý[Ûˆ
+
+HÂˆ\Ë—×ÜÝ\šÐØ[˜\Ô™\Ú^™SØœÙ\™\•ŒMÏË™\ØÛÛ›™XÝ
+
+NÂˆ\Ë—×ÜÝ\šÐØ[˜\Ô™\Ú^™SØœÙ\™\•ŒMÈH[Âˆ\Ë—×ÜÝ\šÐØ[˜\Ô™\Ú^™PÛX[\ŒMÏËŠ
+NÂˆ\Ë—×ÜÝ\šÐØ[˜\Ô™\Ú^™PÛX[\ŒMÈH[ÂˆÚ[™ÝË˜Ø[˜Ù[[š[X][Û‘œ˜[YJ\Ë—×ÜÝ\šÐØ[˜\Ñœ˜[YUŒMÊNÂ‚ˆÛÛœÝ\H\ËœÚYÝÔ›ÛÝËœ]Y\žTÙ[XÝÜŠ›XZ[‹˜\ŠNÂˆYˆ
+X\
+H™]\›ŽÂ‚ˆÛÛœÝÜ˜\\œÈH\œ˜^K™œ›ÛJˆ\œ]Y\žTÙ[XÝÜ[
+‹ž›ÛÛK]šY]ÜÜ]ŒMž›ÛÛK]šY]ÜÜ]ŒMKž›ÛÛK]šY]ÜÜ]ŒMÈŠBˆ
+Kœ™]™\œÙJ
+NÂ‚ˆÜ˜\\œË™›Ü‘XXÚ
+
+šY]ÜÜ
+HOˆÂˆÛÛœÝÛÛ[HšY]ÜÜ˜Û\ÜÓ\Ý˜ÛÛZ[œÊž›ÛÛK]šY]ÜÜ]ŒMÈŠBˆÈšY]ÜÜœ]Y\žTÙ[XÝÜŠŽœØÛÜHˆž›ÛÛK\ÝYÙK]ŒMÈˆž›ÛÛKXÛÛ[]ŒMÈŠBˆˆšY]ÜÜœ]Y\žTÙ[XÝÜŠŽœØÛÜHˆž›ÛÛKXÛÛ[]ŒMœØÛÜHˆž›ÛÛKXÛÛ[]ŒMHŠNÂˆYˆ
+ÛÛ[
+HÂˆÚ[H
+ÛÛ[™š\œÝÚ[
+HšY]ÜÜ˜™Y›Ü™JÛÛ[™š\œÝÚ[
+NÂˆBˆšY]ÜÜœ™[[Ý™J
+NÂˆJNÂ‚ˆ\œ]Y\žTÙ[XÝÜ[
+‹ž›ÛÛK]ÛÛ˜\‹]ŒMŠK™›Ü‘XXÚ
+
+ÛÛ˜\ŠHOˆÛÛ˜\‹œ™[[Ý™J
+JNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™]Z[‘š^YØ[˜\ÕŒMÈH[˜Ý[Ûˆ
+Ø[˜\ÊHÂˆÛÛœÝ\H\ËœÚYÝÔ›ÛÝËœ]Y\žTÙ[XÝÜŠ›XZ[‹˜\ŠNÂˆYˆ
+X\XØ[˜\ÊH™]\›ŽÂ‚ˆËÈÛ\ˆZ[][YH^Y\œÈÝ[™XÛÛ˜Ú[HZ\ˆ\ÝÜšXØ[Ü˜\\œÂˆËÈ™Y›Ü™H\È]Ú[œËˆ[Ü˜\Û›HÜÙH[\Ü˜\žH\™[ÈÚ[BˆËÈ™\Ù\š[™ÈH[Ý[YŒKÈØ[˜\Ë\Ý[™\œÈ[™ØÜ›ÛÜÚ][Û‹‚ˆÛÛœÝ[\Ü˜\žUÜ˜\\œÈH\œ˜^K™œ›ÛJˆ\œ]Y\žTÙ[XÝÜ[
+‹ž›ÛÛK]šY]ÜÜ]ŒMž›ÛÛK]šY]ÜÜ]ŒMHŠBˆ
+Kœ™]™\œÙJ
+NÂˆ[\Ü˜\žUÜ˜\\œË™›Ü‘XXÚ
+
+šY]ÜÜ
+HOˆÂˆÛÛœÝÛÛ[HšY]ÜÜœ]Y\žTÙ[XÝÜŠˆŽœØÛÜHˆž›ÛÛKXÛÛ[]ŒMœØÛÜHˆž›ÛÛKXÛÛ[]ŒMH‚ˆ
+NÂˆYˆ
+ÛÛ[
+HÂˆÚ[H
+ÛÛ[™š\œÝÚ[
+HšY]ÜÜ˜™Y›Ü™JÛÛ[™š\œÝÚ[
+NÂˆBˆšY]ÜÜœ™[[Ý™J
+NÂˆJNÂˆ\œ]Y\žTÙ[XÝÜ[
+‹ž›ÛÛK]ÛÛ˜\‹]ŒMŠK™›Ü‘XXÚ
+
+ÛÛ˜\ŠHOˆÛÛ˜\‹œ™[[Ý™J
+JNÂˆÛÛœÝ˜]ˆH\œ]Y\žTÙ[XÝÜŠŽœØÛÜHˆXœË˜›ÝÛK[˜]‹œØÛÜHˆXœÈŠNÂˆYˆ
+˜]ŠH\˜\[™
+˜]ŠNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ú[œÝ[š^YØ[˜\ÕŒMÈH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆÛÛœÝ\H›ÛÝËœ]Y\žTÙ[XÝÜŠ›XZ[‹˜\ŠNÂˆÛÛœÝXY\ˆH\Ëœ]Y\žTÙ[XÝÜŠŽœØÛÜHˆ˜\ZXY\ˆŠNÂˆÛÛœÝÙ[XÝÜˆH\Ëœ]Y\žTÙ[XÝÜŠŽœØÛÜHˆ™ÛØ˜[Y]šXÙKXÛÛ^ŠNÂˆÛÛœÝ˜]ˆH\Ëœ]Y\žTÙ[XÝÜŠŽœØÛÜHˆXœË˜›ÝÛK[˜]‹œØÛÜHˆXœÈŠNÂˆYˆ
+\›ÛÝX\ZXY\ˆ[˜]ŠH™]\›ŽÂ‚ˆÛÛœÝšY]ÜÜHØÝ[Y[˜Ü™X]Q[[Y[
+œÙXÝ[ÛˆŠNÂˆšY]ÜÜ˜Û\ÜÓ˜[YHHž›ÛÛK]šY]ÜÜ]ŒMÈŽÂˆšY]ÜÜœÙ]]šX]J˜\šXK[X™[‹´%t-4.4/t,4cÈ4/4,4`tb4`´,4,t.4`4`ô-t/4,4cÈ4`4,4,t/´aô,4cÈ4/´,t.ô,4`t`´cÝ\šÈÛÛ\”ÝÙ\ˆŠNÂ‚ˆÛÛœÝÝYÙHHØÝ[Y[˜Ü™X]Q[[Y[
+™]ˆŠNÂˆÝYÙK˜Û\ÜÓ˜[YHHž›ÛÛK\ÝYÙK]ŒMÈŽÂˆÛÛœÝÛÛ[HØÝ[Y[˜Ü™X]Q[[Y[
+™]ˆŠNÂˆÛÛ[˜Û\ÜÓ˜[YHHž›ÛÛKXÛÛ[]ŒMÈŽÂˆÝYÙK˜\[™
+ÛÛ[
+NÂˆšY]ÜÜ˜\[™
+ÝYÙJNÂ‚ˆÛÛœÝ^ÛYYH™]ÈÙ]
+ÚXY\‹Ù[XÝÜ‹˜]—JNÂˆ\œ˜^K™œ›ÛJ\˜Ú[™[ŠK™›Ü‘XXÚ
+
+Ú[
+HOˆÂˆYˆ
+Y^ÛYYš\ÊÚ[
+JHÛÛ[˜\[™
+Ú[
+NÂˆJNÂ‚ˆÛÛœÝ[˜ÚÜˆHÙ[XÝÜˆXY\ŽÂˆ[˜ÚÜ‹š[œÙ\Y˜XÙ[[[Y[
+˜Y\™[™‹šY]ÜÜ
+NÂˆ\˜\[™
+˜]ŠNÂ‚ˆ]ØØ[HHÛ[\ØØ[J\Ë—ÛØY›ÛÛUŒMËŠ
+H\Ë—×ÜÝ\šÖ›ÛÛUŒMJNÂˆ]˜\ÙUÚYHX]›X^
+KšY]ÜÜ˜ÛY[ÚYšY]ÜÜ™Ù]›Ý[™[™ÐÛY[™XÝ
+
+KÚY
+NÂˆ]˜\ÙRZYÚHNÂ‚ˆÛÛœÝÜš^›Û[Ù™œÙ]H
+\™Ù]ØØ[HHØØ[JHOˆX]›X^
+
+˜\ÙUÚYH˜\ÙUÚY
+ˆ\™Ù]ØØ[JHÈŠNÂ‚ˆÛÛœÝYX\Ý\™P˜\ÙHH
+
+HOˆÂˆÛÛœÝ™^ÚYHX]›X^
+KšY]ÜÜ˜ÛY[ÚYšY]ÜÜ™Ù]›Ý[™[™ÐÛY[™XÝ
+
+KÚY
+NÂˆYˆ
+X]˜XœÊ™^ÚYH˜\ÙUÚY
+HˆJHÂˆ˜\ÙUÚYH™^ÚYÂˆÛÛ[œÝ[KÚYH	Ø˜\ÙUÚY\ÂˆBˆ˜\ÙRZYÚHX]›X^
+KÛÛ[œØÜ›ÛZYÚ
+NÂˆNÂ‚ˆÛÛœÝ\QÙ[ÛY]žHH
+™[YX\Ý\™HH˜[ÙJHOˆÂˆYˆ
+™[YX\Ý\™JHYX\Ý\™P˜\ÙJ
+NÂˆÛÛœÝÙ™œÙ]HÜš^›Û[Ù™œÙ]
+
+NÂˆÝYÙKœÝ[KÚYH	ÓX]›X^
+˜\ÙUÚY˜\ÙUÚY
+ˆØØ[J_\ÂˆÝYÙKœÝ[KšZYÚH	ÓX]›X^
+K˜\ÙRZYÚ
+ˆØØ[J_\ÂˆÛÛ[œÝ[K›YH	ÛÙ™œÙ]\ÂˆÛÛ[œÝ[K˜[œÙ›Ü›HHØØ[J	ÜØØ[_JXÂˆ\Ë—×ÜÝ\šÖ›ÛÛUŒMHØØ[NÂˆNÂ‚ˆÛÛœÝÙ]ØØ[P]Ú[H
+™^ØØ[KÚ[\œÚ\ÝH˜[ÙJHOˆÂˆÛÛœÝ™]š[Ý\ÔØØ[HHØØ[NÂˆÛÛœÝ™]š[Ý\ÓÙ™œÙ]HÜš^›Û[Ù™œÙ]
+™]š[Ý\ÔØØ[JNÂˆÛÛœÝ›ØØ[HÚ[ÈˆšY]ÜÜ˜ÛY[ÚYÈ‹NˆšY]ÜÜ˜ÛY[ZYÚÈˆNÂˆÛÛœÝÛÛ[H
+šY]ÜÜœØÜ›ÛY
+È›ØØ[žH™]š[Ý\ÓÙ™œÙ]
+HÈ™]š[Ý\ÔØØ[NÂˆÛÛœÝÛÛ[HH
+šY]ÜÜœØÜ›ÛÜ
+È›ØØ[žJHÈ™]š[Ý\ÔØØ[NÂ‚ˆØØ[HHÛ[\ØØ[J™^ØØ[JNÂˆ\QÙ[ÛY]žJ˜[ÙJNÂˆÛÛœÝ™^Ù™œÙ]HÜš^›Û[Ù™œÙ]
+ØØ[JNÂˆšY]ÜÜœØÜ›ÛYHX]›X^
+ÛÛ[
+ˆØØ[H
+È™^Ù™œÙ]H›ØØ[ž
+NÂˆšY]ÜÜœØÜ›ÛÜHX]›X^
+ÛÛ[H
+ˆØØ[HH›ØØ[žJNÂˆYˆ
+\œÚ\Ý
+H\Ë—ÜÝÜ™V›ÛÛUŒMËŠ
+NÂˆNÂ‚ˆÛÛœÝ™\Ù]ØØ[HH
+›ÝYžHHYJHOˆÂˆØØ[HHNÂˆ\QÙ[ÛY]žJ˜[ÙJNÂˆ\Ë—×ÜÝ\šÖ›ÛÛUŒMHNÂˆ\Ë—ÜÝÜ™V›ÛÛUŒMËŠ
+NÂˆšY]ÜÜœØÜ›ÛÊÈYˆÜˆ™Z]š[ÜŽˆœÛ[ÛÝˆJNÂˆYˆ
+›ÝYžJH\Ë—ÜÚÝÖ›ÛÛT™\Ù]ŒMËŠšY]ÜÜ
+NÂˆNÂ‚ˆÛÛ[œÝ[KÚYH	Ø˜\ÙUÚY\ÂˆÛÛ[œÝ[Kž›ÛÛHHˆŽÂˆYX\Ý\™P˜\ÙJ
+NÂˆ\QÙ[ÛY]žJ˜[ÙJNÂ‚ˆÛÛœÝØÚY[SYX\Ý\™HH
+™\Ù]ÜšYÚ[ˆH˜[ÙJHOˆÂˆÚ[™ÝË˜Ø[˜Ù[[š[X][Û‘œ˜[YJ\Ë—×ÜÝ\šÐØ[˜\Ñœ˜[YUŒMÊNÂˆ\Ë—×ÜÝ\šÐØ[˜\Ñœ˜[YUŒMÈHÚ[™ÝËœ™\]Y\Ý[š[X][Û‘œ˜[YJ
+
+HOˆÂˆÛÛœÝ™]š[Ý\ÕÚYH˜\ÙUÚYÂˆYX\Ý\™P˜\ÙJ
+NÂˆ\QÙ[ÛY]žJ˜[ÙJNÂˆYˆ
+™\Ù]ÜšYÚ[ˆ	‰ˆX]˜XœÊ™]š[Ý\ÕÚYH˜\ÙUÚY
+HˆJHÂˆšY]ÜÜœØÜ›ÛYHÂˆšY]ÜÜœØÜ›ÛÜHÂˆBˆJNÂˆNÂ‚ˆYˆ
+\[Ùˆ™\Ú^™SØœÙ\™\ˆOOH™[˜Ý[ÛˆŠHÂˆÛÛœÝØœÙ\™\ˆH™]È™\Ú^™SØœÙ\™\Š
+
+HOˆØÚY[SYX\Ý\™J˜[ÙJJNÂˆØœÙ\™\‹›ØœÙ\™JÛÛ[
+NÂˆ\Ë—×ÜÝ\šÐØ[˜\Ô™\Ú^™SØœÙ\™\•ŒMÈHØœÙ\™\ŽÂˆB‚ˆÛÛœÝ[™UšY]ÜÜ™\Ú^™HH
+
+HOˆØÚY[SYX\Ý\™JYJNÂˆÚ[™ÝË˜Y]™[\Ý[™\Šœ™\Ú^™H‹[™UšY]ÜÜ™\Ú^™KÈ\ÜÚ]™NˆYHJNÂˆÚ[™ÝËš\ÝX[šY]ÜÜË˜Y]™[\Ý[™\Šœ™\Ú^™H‹[™UšY]ÜÜ™\Ú^™KÈ\ÜÚ]™NˆYHJNÂˆ\Ë—×ÜÝ\šÐØ[˜\Ô™\Ú^™PÛX[\ŒMÈH
+
+HOˆÂˆÚ[™ÝËœ™[[Ý™Q]™[\Ý[™\Šœ™\Ú^™H‹[™UšY]ÜÜ™\Ú^™JNÂˆÚ[™ÝËš\ÝX[šY]ÜÜËœ™[[Ý™Q]™[\Ý[™\Šœ™\Ú^™H‹[™UšY]ÜÜ™\Ú^™JNÂˆNÂˆÚ[™ÝËœ™\]Y\Ý[š[X][Û‘œ˜[YJ
+
+HOˆØÚY[SYX\Ý\™J˜[ÙJJNÂ‚ˆ][˜ÚH[Âˆ]\Ù\Ý\™HH[Â‚ˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚÝ\‹
+]™[
+HOˆÂˆYˆ
+]™[ÝXÚ\Ë›[™ÝOOHŠH™]\›ŽÂˆÛÛœÝÙš\œÝÙXÛÛ™HH]™[ÝXÚ\ÎÂˆÛÛœÝÚ[HšY]ÜÜZYÚ[
+š\œÝÙXÛÛ™šY]ÜÜ
+NÂˆ[˜ÚHÂˆ\Ý[˜ÙNˆX]›X^
+K\Ý[˜ÙJš\œÝÙXÛÛ™
+JKˆØØ[KˆÚ[ˆNÂˆ\Ù\Ý\™HHÂˆÝ\Y]ˆ\™›Ü›X[˜ÙK››ÝÊ
+KˆZYÚ[ˆÛY[ZYÚ[
+š\œÝÙXÛÛ™
+Kˆ\Ý[˜ÙNˆ\Ý[˜ÙJš\œÝÙXÛÛ™
+Kˆ[Ý™Yˆ˜[ÙKˆNÂˆ]™[œ™]™[Y˜][
+
+NÂˆKÈ\ÜÚ]™Nˆ˜[ÙHJNÂ‚ˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚ[Ý™H‹
+]™[
+HOˆÂˆYˆ
+\[˜Ú]™[ÝXÚ\Ë›[™ÝOOHŠH™]\›ŽÂˆÛÛœÝÙš\œÝÙXÛÛ™HH]™[ÝXÚ\ÎÂˆÛÛœÝÚ[HšY]ÜÜZYÚ[
+š\œÝÙXÛÛ™šY]ÜÜ
+NÂˆÛÛœÝÝ\œ™[\Ý[˜ÙHH\Ý[˜ÙJš\œÝÙXÛÛ™
+NÂˆÛÛœÝ™^ØØ[HH[˜ÚœØØ[H
+ˆÝ\œ™[\Ý[˜ÙHÈ[˜Ú™\Ý[˜ÙNÂˆÙ]ØØ[P]Ú[
+™^ØØ[KÚ[˜[ÙJNÂ‚ˆYˆ
+ˆ\Ù\Ý\™H	‰‚ˆ
+Ú[\Ý[˜ÙJ\Ù\Ý\™K›ZYÚ[ÛY[ZYÚ[
+š\œÝÙXÛÛ™
+JHˆTÓSÕ‘WÔˆX]˜XœÊÝ\œ™[\Ý[˜ÙHH\Ù\Ý\™K™\Ý[˜ÙJHˆTÓSÕ‘WÔ
+Bˆ
+HÂˆ\Ù\Ý\™K›[Ý™YHYNÂˆBˆ]™[œ™]™[Y˜][
+
+NÂˆKÈ\ÜÚ]™Nˆ˜[ÙHJNÂ‚ˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚ[™‹
+]™[
+HOˆÂˆYˆ
+]™[ÝXÚ\Ë›[™ÝOOH
+\[˜Ú	‰ˆ]\Ù\Ý\™JJH™]\›ŽÂˆÛÛœÝÛÛ\]Y\H\Ù\Ý\™NÂˆ[˜ÚH[Âˆ\Ù\Ý\™HH[ÂˆÛÛœÝ›ÝÈH\™›Ü›X[˜ÙK››ÝÊ
+NÂ‚ˆYˆ
+ØØ[HHÓTÓRSˆ	‰ˆØØ[HHÓTÓPV	‰ˆØØ[HOOHJHÂˆ™\Ù]ØØ[JYJNÂˆH[ÙHÂˆ\Ë—×ÜÝ\šÖ›ÛÛUŒMHØØ[NÂˆ\Ë—ÜÝÜ™V›ÛÛUŒMËŠ
+NÂˆB‚ˆÛÛœÝ\ÕÛÑš[™Ù\•\HÛÛ\]Y\	‰‚ˆXÛÛ\]Y\›[Ý™Y	‰‚ˆ›ÝÈHÛÛ\]Y\œÝ\Y]HTÑTUSÓ—ÓTÎÂˆYˆ
+Z\ÕÛÑš[™Ù\•\
+HÂˆ\Ë—×ÜÝ\šÓ\ÝÛÑš[™Ù\•\ŒMÈH[Âˆ™]\›ŽÂˆB‚ˆÛÛœÝ™]š[Ý\Õ\H\Ë—×ÜÝ\šÓ\ÝÛÑš[™Ù\•\ŒMÎÂˆYˆ
+ˆ™]š[Ý\Õ\	‰‚ˆ›ÝÈH™]š[Ý\Õ\˜]HÕP“WÕTÑSVWÓTÈ	‰‚ˆÚ[\Ý[˜ÙJ™]š[Ý\Õ\›ZYÚ[ÛÛ\]Y\›ZYÚ[
+HHˆ
+HÂˆ\Ë—×ÜÝ\šÓ\ÝÛÑš[™Ù\•\ŒMÈH[Âˆ™\Ù]ØØ[JYJNÂˆ™]\›ŽÂˆBˆ\Ë—×ÜÝ\šÓ\ÝÛÑš[™Ù\•\ŒMÈHÈ]ˆ›ÝËZYÚ[ˆÛÛ\]Y\›ZYÚ[NÂˆKÈ\ÜÚ]™NˆYHJNÂ‚ˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚØ[˜Ù[‹
+
+HOˆÂˆ[˜ÚH[Âˆ\Ù\Ý\™HH[Âˆ\Ë—×ÜÝ\šÓ\ÝÛÑš[™Ù\•\ŒMÈH[ÂˆKÈ\ÜÚ]™NˆYHJNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂ‚ˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆYˆ
+\›ÛÝ
+H™]\›ŽÂ‚ˆÛÛœÝÝX]HH›ÛÝœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂ‚ˆYˆ
+\›ÛÝœ]Y\žTÙ[XÝÜŠœÝ[VÙ]K\Ý\šË]ZK]ŒM×HŠJHÂˆÛÛœÝÝ[HHØÝ[Y[˜Ü™X]Q[[Y[
+œÝ[HŠNÂˆÝ[K™]\Ù]œÝ\šÕZUŒMÈHYHŽÂˆÝ[K^ÛÛ[HˆÊˆRHKÎˆÛ™Hš^Y[^[Ý]Ø[˜\ÈØØ[Y\ÈHÚ[™ÛH]™H[XYÙKˆ
+‹Âˆž›ÛÛK]šY]ÜÜ]ŒMÈÂˆÜÚ][ÛŽœ™[]]™NÂˆÚYŒL	NÂˆX^]ÚYŒL	NÂˆZ[‹ZZYÚŒNÂˆX^ZZYÚ˜Ø[ÊLšHNH[ŠØY™KX\™XKZ[œÙ]]Ü
+HH[ŠØY™KX\™XKZ[œÙ]X›ÝÛK
+JNÂˆÝ™\™›ÝÎ˜]]ÎÂˆÝ™\œØÜ›ÛX™Z]š[ÜŽ˜ÛÛZ[ŽÂˆÝXÚXXÝ[ÛŽœ[‹^[‹^NÂˆ]ÙXšÚ][Ý™\™›ÝË\ØÜ›Û[™ÎÝXÚÂˆBˆž›ÛÛK\ÝYÙK]ŒMÈÂˆÜÚ][ÛŽœ™[]]™NÂˆZ[‹]ÚYŒ\ÂˆZ[‹ZZYÚŒ\ÂˆÝ™\™›ÝÎš\ÚX›NÂˆBˆž›ÛÛKXÛÛ[]ŒMÈÂˆÜÚ][ÛŽ˜XœÛÛ]NÂˆÜŒÂˆÚYŒL	NÂˆZ[‹]ÚYŒÂˆ˜[œÙ›Ü›K[ÜšYÚ[ŽŒÂˆÚ[XÚ[™ÙN˜[œÙ›Ü›NÂˆÛÛZ[Ž›^[Ý]Ý[NÂˆBˆž›ÛÛKXÛÛ[]ŒMÈˆ›\ÝXÚ[ÈX\™Ú[‹X›ÝÛNŽÈB‚ˆYYXH
+X^]ÚYÌ
+HÂˆž›ÛÛK]šY]ÜÜ]ŒMÈÂˆX^ZZYÚ˜Ø[ÊLšHNH[ŠØY™KX\™XKZ[œÙ]]Ü
+HH[ŠØY™KX\™XKZ[œÙ]X›ÝÛK
+JNÂˆBˆBˆYYXH
+Z[‹]ÚYÍŒ
+HÂˆž›ÛÛK]šY]ÜÜ]ŒMÈÈX^ZZYÚ˜Ø[ÊLšHN
+NÈBˆBˆÂˆ›ÛÝ˜\[™
+Ý[JNÂˆB‚ˆËÈŒŒÈ[X™\˜][HÚÚ\ÈH˜\ÙHÓH™XZ[›Üˆ[œ™[]YHÝ]BˆËÈ\]\ËˆÙY\H^\Ý[™ÈØ[˜\È
+[™]ÈØÜ›ÛÜÚ][Û‹Û\Ý[™\œÊBˆËÈ[ˆ]Ø\ÙNÈ™XZ[Û›HY\ˆH™X[ÛXZ[‹ÝšY]È™[™\ˆ™\XÙY]‚ˆÛÛœÝ^\Ý[™ÐØ[˜\ÈH›ÛÝœ]Y\žTÙ[XÝÜŠ‹ž›ÛÛK]šY]ÜÜ]ŒMÈŠNÂˆYˆ
+^\Ý[™ÐØ[˜\ÊHÂˆ\Ë—Ü™]Z[‘š^YØ[˜\ÕŒMÊ^\Ý[™ÐØ[˜\ÊNÂˆH[ÙHÂˆ\Ë—Ü™[[Ý™V›ÛÛTÚ[ÕŒMÊ
+NÂˆ\Ë—Ú[œÝ[š^YØ[˜\ÕŒMÊ
+NÂˆBˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒMËšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒNšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒKŽŽÂ˜ÛÛœÝS—Õ‘TÒÓÔHNÂ˜ÛÛœÝÑTÕT‘WÑÕPT‘ÓTÈHÌÂ‚™[˜Ý[ÛˆØ[˜Ù[[]RÛ
+\™Ù]
+HÂˆÛÛœÝ[]HH\™Ù]Ë˜ÛÜÙ\ÝËŠ–Ù]KY[]WHŠNÂˆYˆ
+Y[]JH™]\›ŽÂˆÛÛœÝ]™[H\[ÙˆÚ[\‘]™[OOH™[˜Ý[Ûˆ‚ˆÈ™]ÈÚ[\‘]™[
+œÚ[\˜Ø[˜Ù[‹ÈX˜›\ÎˆYKÛÛ\ÜÙYˆYHJBˆˆ™]È]™[
+œÚ[\˜Ø[˜Ù[‹ÈX˜›\ÎˆYKÛÛ\ÜÙYˆYHJNÂˆ[]K™\Ü]Ú]™[
+]™[
+NÂŸB‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒN
+HÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒNHYNÂ‚ˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂˆÛÛœÝ™]š[Ý\ÔÚÝÓ[Ü™R[™›ÈH[™[œ›ÝÝ\K—ÜÚÝÓ[Ü™R[™›ÎÂ‚ˆ[™[œ›ÝÝ\K—ÜÚÝÓ[Ü™R[™›ÈH[˜Ý[Ûˆ
+[]RY
+HÂˆÛÛœÝÝX\™Y[[H[X™\Š\Ë—×ÜÝ\šÑÙ\Ý\™QÝX\™[[ŒN
+NÂˆYˆ
+ÝX\™Y[[OOH[X™\‹”ÔÒUU‘WÒS‘’S’UH\™›Ü›X[˜ÙK››ÝÊ
+HÝX\™Y[[
+H™]\›ŽÂˆ™]š[Ý\ÔÚÝÓ[Ü™R[™›Ë˜Ø[
+\Ë[]RY
+NÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ú[œÝ[Ø[˜\Ô[•ŒNH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆÛÛœÝšY]ÜÜH›ÛÝËœ]Y\žTÙ[XÝÜŠ‹ž›ÛÛK]šY]ÜÜ]ŒMÈŠNÂˆYˆ
+\›ÛÝ]šY]ÜÜšY]ÜÜ™]\Ù]œÝ\šÔ[•ŒNOOHYHŠH™]\›ŽÂˆšY]ÜÜ™]\Ù]œÝ\šÔ[•ŒNHYHŽÂ‚ˆ][ˆH[Âˆ]][UÝXÚXÝ]™HH˜[ÙNÂ‚ˆÛÛœÝ™YÚ[”[ˆH
+ÝXÚ\™Ù]
+HOˆÂˆ[ˆHÂˆˆÝXÚ˜ÛY[ˆNˆÝXÚ˜ÛY[KˆØÜ›ÛYˆšY]ÜÜœØÜ›ÛYˆØÜ›ÛÜˆšY]ÜÜœØÜ›ÛÜˆ\™Ù]ˆ[Ý™Yˆ˜[ÙKˆNÂˆNÂ‚ˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚÝ\‹
+]™[
+HOˆÂˆYˆ
+]™[ÝXÚ\Ë›[™ÝHŠHÂˆ][UÝXÚXÝ]™HHYNÂˆ[ˆH[Âˆ\Ë—×ÜÝ\šÑÙ\Ý\™QÝX\™[[ŒNH[X™\‹”ÔÒUU‘WÒS‘’S’UNÂˆ\œ˜^K™œ›ÛJ]™[ÝXÚ\ÊK™›Ü‘XXÚ
+
+ÝXÚ
+HOˆÂˆÛÛœÝ\™Ù]H›ÛÝ™[[Y[œ›ÛTÚ[ËŠÝXÚ˜ÛY[ÝXÚ˜ÛY[JHˆØÝ[Y[™[[Y[œ›ÛTÚ[
+ÝXÚ˜ÛY[ÝXÚ˜ÛY[JNÂˆØ[˜Ù[[]RÛ
+\™Ù]
+NÂˆJNÂˆ™]\›ŽÂˆBˆYˆ
+]™[ÝXÚ\Ë›[™ÝOOHH	‰ˆ[][UÝXÚXÝ]™JHÂˆ™YÚ[”[Š]™[ÝXÚ\ÖÌK]™[\™Ù]
+NÂˆBˆKÈ\ÜÚ]™NˆYHJNÂ‚ˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚ[Ý™H‹
+]™[
+HOˆÂˆYˆ
+]™[ÝXÚ\Ë›[™ÝHŠHÂˆ][UÝXÚXÝ]™HHYNÂˆ[ˆH[Âˆ\Ë—×ÜÝ\šÑÙ\Ý\™QÝX\™[[ŒNH[X™\‹”ÔÒUU‘WÒS‘’S’UNÂˆ™]\›ŽÂˆBˆYˆ
+\[ˆ]™[ÝXÚ\Ë›[™ÝOOHJH™]\›ŽÂ‚ˆÛÛœÝÝXÚH]™[ÝXÚ\ÖÌNÂˆÛÛœÝHÝXÚ˜ÛY[H[‹žÂˆÛÛœÝHHÝXÚ˜ÛY[HH[‹žNÂˆYˆ
+\[‹›[Ý™Y	‰ˆX]š\Ý
+JHS—Õ‘TÒÓÔ
+H™]\›ŽÂ‚ˆYˆ
+\[‹›[Ý™Y
+HÂˆ[‹›[Ý™YHYNÂˆ\Ë—×ÜÝ\šÑÙ\Ý\™QÝX\™[[ŒNH[X™\‹”ÔÒUU‘WÒS‘’S’UNÂˆØ[˜Ù[[]RÛ
+[‹\™Ù]
+NÂˆB‚ˆšY]ÜÜœØÜ›ÛYH[‹œØÜ›ÛYHÂˆšY]ÜÜœØÜ›ÛÜH[‹œØÜ›ÛÜHNÂˆ]™[œ™]™[Y˜][
+
+NÂˆKÈ\ÜÚ]™Nˆ˜[ÙHJNÂ‚ˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚ[™‹
+]™[
+HOˆÂˆYˆ
+][UÝXÚXÝ]™JHÂˆYˆ
+]™[ÝXÚ\Ë›[™ÝOOHJHÂˆ™YÚ[”[Š]™[ÝXÚ\ÖÌK]™[\™Ù]
+NÂˆ™]\›ŽÂˆBˆYˆ
+]™[ÝXÚ\Ë›[™ÝOOH
+HÂˆ][UÝXÚXÝ]™HH˜[ÙNÂˆ[ˆH[Âˆ\Ë—×ÜÝ\šÑÙ\Ý\™QÝX\™[[ŒNH\™›Ü›X[˜ÙK››ÝÊ
+H
+ÈÑTÕT‘WÑÕPT‘ÓTÎÂˆBˆ™]\›ŽÂˆB‚ˆYˆ
+]™[ÝXÚ\Ë›[™ÝOOH	‰ˆ[ŠHÂˆYˆ
+[‹›[Ý™Y
+HÂˆ\Ë—×ÜÝ\šÑÙ\Ý\™QÝX\™[[ŒNH\™›Ü›X[˜ÙK››ÝÊ
+H
+ÈÑTÕT‘WÑÕPT‘ÓTÎÂˆBˆ[ˆH[ÂˆBˆKÈ\ÜÚ]™NˆYHJNÂ‚ˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚØ[˜Ù[‹
+
+HOˆÂˆ][UÝXÚXÝ]™HH˜[ÙNÂˆ[ˆH[Âˆ\Ë—×ÜÝ\šÑÙ\Ý\™QÝX\™[[ŒNH\™›Ü›X[˜ÙK››ÝÊ
+H
+ÈÑTÕT‘WÑÕPT‘ÓTÎÂˆKÈ\ÜÚ]™NˆYHJNÂ‚ˆšY]ÜÜ˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+]™[
+HOˆÂˆÛÛœÝÝX\™Y[[H[X™\Š\Ë—×ÜÝ\šÑÙ\Ý\™QÝX\™[[ŒN
+NÂˆYˆ
+ÝX\™Y[[OOH[X™\‹”ÔÒUU‘WÒS‘’S’UH\™›Ü›X[˜ÙK››ÝÊ
+HÝX\™Y[[
+HÂˆ]™[œ™]™[Y˜][
+
+NÂˆ]™[œÝÜ[[YYX]T›ÜYØ][ÛŠ
+NÂˆBˆKÈØ\\™NˆYHJNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂ‚ˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆYˆ
+\›ÛÝ
+H™]\›ŽÂ‚ˆÛÛœÝÝX]HH›ÛÝœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂ‚ˆYˆ
+\›ÛÝœ]Y\žTÙ[XÝÜŠœÝ[VÙ]K\Ý\šË]ZK]ŒNHŠJHÂˆÛÛœÝÝ[HHØÝ[Y[˜Ü™X]Q[[Y[
+œÝ[HŠNÂˆÝ[K™]\Ù]œÝ\šÕZUŒNHYHŽÂˆÝ[K^ÛÛ[HˆÊˆRHKŽˆ]\›Z[š\ÝXÈÛ™KYš[™Ù\ˆØ[˜\È[ˆ[™Ù\Ý\™HÝX\™Ëˆ
+‹Âˆž›ÛÛK]šY]ÜÜ]ŒMÈÂˆÝXÚXXÝ[ÛŽ››Û™HZ[\Ü[ÂˆÝ\œÛÜŽ™Ü˜XŽÂˆBˆž›ÛÛK]šY]ÜÜ]ŒMÎ˜XÝ]™HÈÝ\œÛÜŽ™Ü˜X˜š[™ÎÈBˆÂˆ›ÛÝ˜\[™
+Ý[JNÂˆB‚ˆ\Ë—Ú[œÝ[Ø[˜\Ô[•ŒN
+
+NÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒNšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒNKšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒKŽHŽÂ‚™[˜Ý[ÛˆÛ[\ØØ[J˜[YJHÂˆÛÛœÝ[X™\ˆH[X™\Š˜[YJNÂˆYˆ
+S[X™\‹š\Ñš[š]J[X™\ŠJH™]\›ˆNÂˆ™]\›ˆX]›Z[Š‹X]›X^
+ÍK[X™\ŠJNÂŸB‚™[˜Ý[Ûˆ™[™\™YØØ[JÛÛ[˜[˜XÚÈHJHÂˆÛÛœÝX]ÚHÝš[™ÊÛÛ[ËœÝ[OË˜[œÙ›Ü›HˆŠK›X]Ú
+ÜØØ[W
+
+×ŠWJÊW
+KÊNÂˆ™]\›ˆÛ[\ØØ[JX]ÚÈX]ÚÌWHˆ˜[˜XÚÊNÂŸB‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒNJHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒNHHYNÂ‚ˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—ØØ[˜\ÕšY]ÒÙ^UŒNHH[˜Ý[Ûˆ
+
+HÂˆ™]\›ˆ\Ë—ÜÙ[XÝY\ÒYËŠ
+H\Ë—ÙXYÛ›ÜÝXÑ]šXÙRY\Ë—Ù]šXÙ\ÏË–ÌOËšY™Y˜][ŽÂˆNÂ‚ˆ[™[œ›ÝÝ\K—ØØ\\™PØ[˜\ÕšY]ÕŒNHH[˜Ý[Ûˆ
+šY]ÜÜ
+HÂˆÛÛœÝÛÛ[HšY]ÜÜËœ]Y\žTÙ[XÝÜŠŽœØÛÜHˆž›ÛÛK\ÝYÙK]ŒMÈˆž›ÛÛKXÛÛ[]ŒMÈŠNÂˆYˆ
+]šY]ÜÜXÛÛ[
+H™]\›ˆ[Â‚ˆÛÛœÝØØ[HH™[™\™YØØ[JÛÛ[\Ë—×ÜÝ\šÖ›ÛÛUŒMJNÂˆÛÛœÝÙ™œÙ]H[X™\‹œ\œÙQ›Ø]
+ÛÛ[œÝ[K›YŒŠHÂˆÛÛœÝ›ØØ[HšY]ÜÜ˜ÛY[ÚYÈŽÂˆÛÛœÝ›ØØ[HHšY]ÜÜ˜ÛY[ZYÚÈŽÂˆÛÛœÝÝ]HHÂˆØØ[KˆÛÛ[ˆ
+šY]ÜÜœØÜ›ÛY
+È›ØØ[HÙ™œÙ]
+HÈØØ[KˆÛÛ[Nˆ
+šY]ÜÜœØÜ›ÛÜ
+È›ØØ[JHÈØØ[KˆØÜ›ÛYˆšY]ÜÜœØÜ›ÛYˆØÜ›ÛÜˆšY]ÜÜœØÜ›ÛÜˆNÂ‚ˆÛÛœÝÙ^HHšY]ÜÜ™]\Ù]œÝ\šÕšY]ÒÙ^UŒNH\Ë—ØØ[˜\ÕšY]ÒÙ^UŒNJ
+NÂˆ\Ë—×ÜÝ\šÐØ[˜\ÕšY]ÜÕŒNHH™]ÈX\
+
+NÂˆ\Ë—×ÜÝ\šÐØ[˜\ÕšY]ÜÕŒNKœÙ]
+Ù^KÝ]JNÂˆ™]\›ˆÝ]NÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™\ÝÜ™PØ[˜\ÕšY]ÕŒNHH[˜Ý[Ûˆ
+šY]ÜÜÝ]JHÂˆÛÛœÝÛÛ[HšY]ÜÜËœ]Y\žTÙ[XÝÜŠŽœØÛÜHˆž›ÛÛK\ÝYÙK]ŒMÈˆž›ÛÛKXÛÛ[]ŒMÈŠNÂˆYˆ
+]šY]ÜÜXÛÛ[\Ý]JH™]\›ŽÂ‚ˆÛÛœÝØØ[HH™[™\™YØØ[JÛÛ[Ý]KœØØ[JNÂˆÛÛœÝÙ™œÙ]H[X™\‹œ\œÙQ›Ø]
+ÛÛ[œÝ[K›YŒŠHÂˆÛÛœÝ›ØØ[HšY]ÜÜ˜ÛY[ÚYÈŽÂˆÛÛœÝ›ØØ[HHšY]ÜÜ˜ÛY[ZYÚÈŽÂˆÛÛœÝYHÝ]K˜ÛÛ[
+ˆØØ[H
+ÈÙ™œÙ]H›ØØ[ÂˆÛÛœÝÜHÝ]K˜ÛÛ[H
+ˆØØ[HH›ØØ[NÂ‚ˆšY]ÜÜœØÜ›ÛYHX]›X^
+[X™\‹š\Ñš[š]JY
+HÈYˆÝ]KœØÜ›ÛY
+NÂˆšY]ÜÜœØÜ›ÛÜHX]›X^
+[X™\‹š\Ñš[š]JÜ
+HÈÜˆÝ]KœØÜ›ÛÜ
+NÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝÛšY]ÜÜH\ËœÚYÝÔ›ÛÝËœ]Y\žTÙ[XÝÜŠ‹ž›ÛÛK]šY]ÜÜ]ŒMÈŠNÂˆYˆ
+ÛšY]ÜÜ
+H\Ë—ØØ\\™PØ[˜\ÕšY]ÕŒNJÛšY]ÜÜ
+NÂ‚ˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂ‚ˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆYˆ
+\›ÛÝ
+H™]\›ŽÂ‚ˆÛÛœÝÝX]HH›ÛÝœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂ‚ˆÛÛœÝšY]ÜÜH›ÛÝœ]Y\žTÙ[XÝÜŠ‹ž›ÛÛK]šY]ÜÜ]ŒMÈŠNÂˆYˆ
+]šY]ÜÜ
+H™]\›ŽÂ‚ˆÛÛœÝÙ^HH\Ë—ØØ[˜\ÕšY]ÒÙ^UŒNJ
+NÂˆšY]ÜÜ™]\Ù]œÝ\šÕšY]ÒÙ^UŒNHHÙ^NÂ‚ˆËÈH[[Y]žH\]HX^HYÚ][X][H™XZ[H]™HÓKˆ™\ÝÜ™HBˆËÈØ[YHÙÚXØ[Ú[Y\ˆH™\XÙ[Y[Ø[˜\È\ÈYX\Ý\™Y]ÈÝYÙK‚ˆYˆ
+ÛšY]ÜÜ	‰ˆÛšY]ÜÜOOHšY]ÜÜ
+HÂˆÛÛœÝÝ]HH\Ë—×ÜÝ\šÐØ[˜\ÕšY]ÜÕŒNOË™Ù]
+Ù^JNÂˆYˆ
+\Ý]JH™]\›ŽÂ‚ˆ\Ë—Ü™\ÝÜ™PØ[˜\ÕšY]ÕŒNJšY]ÜÜÝ]JNÂˆÚ[™ÝËœ™\]Y\Ý[š[X][Û‘œ˜[YJ
+
+HOˆÂˆ\Ë—Ü™\ÝÜ™PØ[˜\ÕšY]ÕŒNJšY]ÜÜÝ]JNÂˆÚ[™ÝËœ™\]Y\Ý[š[X][Û‘œ˜[YJ
+
+HOˆ\Ë—Ü™\ÝÜ™PØ[˜\ÕšY]ÕŒNJšY]ÜÜÝ]JJNÂˆJNÂˆBˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒNKšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒŒšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒ‹ŒŽÂ˜ÛÛœÝRS—ÔÐÐSHHÍNÂ˜ÛÛœÝPVÔÐÐSHHŽÂ˜ÛÛœÝÓTÓRSˆHŽMÎÂ˜ÛÛœÝÓTÓPVHKŒÎÂ˜ÛÛœÝS—Õ‘TÒÓÔHNÂ˜ÛÛœÝÑTÕT‘WÑÕPT‘ÓTÈHÌÂ˜ÛÛœÝÕP“WÕTÑSVWÓTÈHÍŒÂ˜ÛÛœÝTÑTUSÓ—ÓTÈHŽÂ˜ÛÛœÝTÓSÕ‘WÔHMÂ‚™[˜Ý[ÛˆÛ[\ØØ[J˜[YJHÂˆÛÛœÝ[X™\ˆH[X™\Š˜[YJNÂˆYˆ
+S[X™\‹š\Ñš[š]J[X™\ŠJH™]\›ˆNÂˆ™]\›ˆX]›Z[ŠPVÔÐÐSKX]›X^
+RS—ÔÐÐSK[X™\ŠJNÂŸB‚™[˜Ý[Ûˆ\Ý[˜ÙJš\œÝÙXÛÛ™
+HÂˆ™]\›ˆX]š\Ý
+ÙXÛÛ™˜ÛY[Hš\œÝ˜ÛY[ÙXÛÛ™˜ÛY[HHš\œÝ˜ÛY[JNÂŸB‚™[˜Ý[ÛˆZYÚ[
+š\œÝÙXÛÛ™šY]ÜÜH[
+HÂˆÛÛœÝÚ[HÂˆˆ
+š\œÝ˜ÛY[
+ÈÙXÛÛ™˜ÛY[
+HÈ‹ˆNˆ
+š\œÝ˜ÛY[H
+ÈÙXÛÛ™˜ÛY[JHÈ‹ˆNÂˆYˆ
+]šY]ÜÜ
+H™]\›ˆÚ[ÂˆÛÛœÝ™XÝHšY]ÜÜ™Ù]›Ý[™[™ÐÛY[™XÝ
+
+NÂˆ™]\›ˆÈˆÚ[žH™XÝ›YNˆÚ[žHH™XÝÜNÂŸB‚™[˜Ý[ÛˆÚ[\Ý[˜ÙJš\œÝÙXÛÛ™
+HÂˆ™]\›ˆX]š\Ý
+ÙXÛÛ™žHš\œÝžÙXÛÛ™žHHš\œÝžJNÂŸB‚™[˜Ý[ÛˆØ[˜Ù[[]RÛ
+\™Ù]
+HÂˆÛÛœÝ[]HH\™Ù]Ë˜ÛÜÙ\ÝËŠ–Ù]KY[]WHŠNÂˆYˆ
+Y[]JH™]\›ŽÂˆÛÛœÝ]™[H\[ÙˆÚ[\‘]™[OOH™[˜Ý[Ûˆ‚ˆÈ™]ÈÚ[\‘]™[
+œÚ[\˜Ø[˜Ù[‹ÈX˜›\ÎˆYKÛÛ\ÜÙYˆYHJBˆˆ™]È]™[
+œÚ[\˜Ø[˜Ù[‹ÈX˜›\ÎˆYKÛÛ\ÜÙYˆYHJNÂˆ[]K™\Ü]Ú]™[
+]™[
+NÂŸB‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒŒ
+HÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒŒHYNÂ‚ˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—ØØ[˜\ÔÝ]RÙ^UŒŒH[˜Ý[Ûˆ
+
+HÂˆ™]\›ˆ\Ë—ÜÙ[XÝY\ÒYËŠ
+H\Ë—ÙXYÛ›ÜÝXÑ]šXÙRY\Ë—Ù]šXÙ\ÏË–ÌOËšY™Y˜][ŽÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[Y[X™\Ø[˜\ÔÝ]UŒŒH[˜Ý[Ûˆ
+Ù^KÝ]JHÂˆ\Ë—×ÜÝ\šÐØ[˜\ÔÝ]\ÕŒŒH™]ÈX\
+
+NÂˆ\Ë—×ÜÝ\šÐØ[˜\ÔÝ]\ÕŒŒœÙ]
+Ù^KÈ‹‹œÝ]HJNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ú[œÝ[˜[œÙ›Ü›T[•ŒŒH[˜Ý[Ûˆ
+ÛÝ\˜ÙUšY]ÜÜ
+HÂˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆÛÛœÝÛÝYÙHHÛÝ\˜ÙUšY]ÜÜËœ]Y\žTÙ[XÝÜŠŽœØÛÜHˆž›ÛÛK\ÝYÙK]ŒMÈŠNÂˆÛÛœÝÛÛ[HÛÝYÙOËœ]Y\žTÙ[XÝÜŠŽœØÛÜHˆž›ÛÛKXÛÛ[]ŒMÈŠNÂˆYˆ
+\›ÛÝ\ÛÝ\˜ÙUšY]ÜÜ[ÛÝYÙHXÛÛ[
+H™]\›ˆ[Â‚ˆËÈ]XÚ]™\žH[›Ûž[[Ý\È\Ý[™\ˆœ›ÛHHØÜ›ÛX˜\ÙY[™Ú[™\ÈÚ[BˆËÈ™]Z[š[™ÈH]™HÛÜšÈÓKˆ]\™HÛÛ\]Xš[]H^Y\œÈÙYHHØ[YBˆËÈ\ÝÜšXØ[Û\ÜÈ]ÚÚ\[œÝ[[™ÈZ\ˆ[ˆ[™\ˆšXHHX\šÙ\‹‚ˆ\Ë—×ÜÝ\šÐØ[˜\Ô™\Ú^™SØœÙ\™\•ŒMÏË™\ØÛÛ›™XÝ
+
+NÂˆ\Ë—×ÜÝ\šÐØ[˜\Ô™\Ú^™SØœÙ\™\•ŒMÈH[Âˆ\Ë—×ÜÝ\šÐØ[˜\Ô™\Ú^™PÛX[\ŒMÏËŠ
+NÂˆ\Ë—×ÜÝ\šÐØ[˜\Ô™\Ú^™PÛX[\ŒMÈH[ÂˆÚ[™ÝË˜Ø[˜Ù[[š[X][Û‘œ˜[YJ\Ë—×ÜÝ\šÐØ[˜\Ñœ˜[YUŒMÊNÂ‚ˆ\Ë—×ÜÝ\šÐØ[˜\Ô™\Ú^™SØœÙ\™\•ŒŒË™\ØÛÛ›™XÝ
+
+NÂˆ\Ë—×ÜÝ\šÐØ[˜\Ô™\Ú^™SØœÙ\™\•ŒŒH[Âˆ\Ë—×ÜÝ\šÐØ[˜\Ô™\Ú^™PÛX[\ŒŒËŠ
+NÂˆ\Ë—×ÜÝ\šÐØ[˜\Ô™\Ú^™PÛX[\ŒŒH[Â‚ˆÛÛœÝšY]ÜÜHÛÝ\˜ÙUšY]ÜÜ˜ÛÛ™S›ÙJ˜[ÙJNÂˆšY]ÜÜ˜Û\ÜÓ˜[YHHž›ÛÛK]šY]ÜÜ]ŒMÈ›ÛÛK]šY]ÜÜ]ŒŒŽÂˆšY]ÜÜ™]\Ù]œÝ\šÔ[•ŒNHYHŽÂˆšY]ÜÜ™]\Ù]œÝ\šÕ˜[œÙ›Ü›T[•ŒŒHYHŽÂˆšY]ÜÜœÙ]]šX]J˜\šXK[X™[‹´%t-4.4/t,4cÈ4/4,4`tb4`´,4,t.4`4`ô-t/4,4cÈ4.4/ô-t`4-t/4-tbt,4-t/4,4cÈ4`4,4,t/´aô,4cÈ4/´,t.ô,4`t`´cÝ\šÈÛÛ\”ÝÙ\ˆŠNÂ‚ˆÛÛœÝÝYÙHHÛÝYÙK˜ÛÛ™S›ÙJ˜[ÙJNÂˆÝYÙK˜Û\ÜÓ˜[YHHž›ÛÛK\ÝYÙK]ŒMÈ›ÛÛK\ÝYÙK]ŒŒŽÂˆÝYÙK˜\[™
+ÛÛ[
+NÂˆšY]ÜÜ˜\[™
+ÝYÙJNÂˆÛÝ\˜ÙUšY]ÜÜœ™\XÙUÚ]
+šY]ÜÜ
+NÂ‚ˆÛÛœÝÙ^HH\Ë—ØØ[˜\ÔÝ]RÙ^UŒŒ
+
+NÂˆšY]ÜÜ™]\Ù]œÝ\šÔÝ]RÙ^UŒŒHÙ^NÂˆÛÛœÝÝÜ™YH\Ë—×ÜÝ\šÐØ[˜\ÔÝ]\ÕŒŒË™Ù]
+Ù^JNÂˆÛÛœÝÝ]HHÂˆØØ[NˆÛ[\ØØ[JÝÜ™YËœØØ[HÏÈ\Ë—ÛØY›ÛÛUŒMËŠ
+HÏÈ\Ë—×ÜÝ\šÖ›ÛÛUŒMÏÈJKˆˆ[X™\‹š\Ñš[š]JÝÜ™YËž
+HÈÝÜ™YžˆˆNˆ[X™\‹š\Ñš[š]JÝÜ™YËžJHÈÝÜ™YžHˆˆNÂ‚ˆ]˜\ÙUÚYHNÂˆ]˜\ÙRZYÚHNÂ‚ˆÛÛœÝYX\Ý\™HH
+
+HOˆÂˆ˜\ÙUÚYHX]›X^
+KšY]ÜÜ˜ÛY[ÚYšY]ÜÜ™Ù]›Ý[™[™ÐÛY[™XÝ
+
+KÚY
+NÂˆÛÛ[œÝ[KÚYH	Ø˜\ÙUÚY\Âˆ˜\ÙRZYÚHX]›X^
+KÛÛ[œØÜ›ÛZYÚÛÛ[™Ù]›Ý[™[™ÐÛY[™XÝ
+
+KšZYÚÈÝ]KœØØ[JNÂˆNÂ‚ˆÛÛœÝÛ[\ÜÚ][ÛˆH
+
+HOˆÂˆÛÛœÝšY]ÜÜÚYHX]›X^
+KšY]ÜÜ˜ÛY[ÚY
+NÂˆÛÛœÝšY]ÜÜZYÚHX]›X^
+KšY]ÜÜ˜ÛY[ZYÚ
+NÂˆÛÛœÝØØ[YÚYH˜\ÙUÚY
+ˆÝ]KœØØ[NÂˆÛÛœÝØØ[YZYÚH˜\ÙRZYÚ
+ˆÝ]KœØØ[NÂ‚ˆYˆ
+ØØ[YÚYHšY]ÜÜÚY
+HÝ]KžH
+šY]ÜÜÚYHØØ[YÚY
+HÈŽÂˆ[ÙHÝ]KžHX]›Z[ŠX]›X^
+šY]ÜÜÚYHØØ[YÚYÝ]Kž
+JNÂ‚ˆYˆ
+ØØ[YZYÚHšY]ÜÜZYÚ
+HÝ]KžHHÂˆ[ÙHÝ]KžHHX]›Z[ŠX]›X^
+šY]ÜÜZYÚHØØ[YZYÚÝ]KžJJNÂˆNÂ‚ˆÛÛœÝ\HH
+™[YX\Ý\™HH˜[ÙJHOˆÂˆYˆ
+™[YX\Ý\™JHYX\Ý\™J
+NÂˆÛ[\ÜÚ][ÛŠ
+NÂˆÝYÙKœÝ[KÚYH	ÓX]›X^
+˜\ÙUÚYšY]ÜÜ˜ÛY[ÚY
+_\ÂˆÝYÙKœÝ[KšZYÚH	ÓX]›X^
+˜\ÙRZYÚšY]ÜÜ˜ÛY[ZYÚ
+_\ÂˆÛÛ[œÝ[K›YHŒŽÂˆÛÛ[œÝ[K˜[œÙ›Ü›HH˜[œÛ]LÙ
+	ÜÝ]Kž\	ÜÝ]Kž_\
+HØØ[J	ÜÝ]KœØØ[_JXÂˆ\Ë—×ÜÝ\šÖ›ÛÛUŒMHÝ]KœØØ[NÂˆ\Ë—Ü™[Y[X™\Ø[˜\ÔÝ]UŒŒ
+Ù^KÝ]JNÂˆNÂ‚ˆÛÛœÝ\œÚ\ÝH
+
+HOˆÂˆ\Ë—×ÜÝ\šÖ›ÛÛUŒMHÝ]KœØØ[NÂˆ\Ë—ÜÝÜ™V›ÛÛUŒMËŠ
+NÂˆ\Ë—Ü™[Y[X™\Ø[˜\ÔÝ]UŒŒ
+Ù^KÝ]JNÂˆNÂ‚ˆÛÛœÝ™\Ù]H
+›ÝYžHHYJHOˆÂˆÝ]KœØØ[HHNÂˆÝ]KžHÂˆÝ]KžHHÂˆ\J˜[ÙJNÂˆ\œÚ\Ý
+
+NÂˆYˆ
+›ÝYžJH\Ë—ÜÚÝÖ›ÛÛT™\Ù]ŒMËŠšY]ÜÜ
+NÂˆNÂ‚ˆÛÛ[œÝ[Kž›ÛÛHHˆŽÂˆÛÛ[œÝ[K˜[œÙ›Ü›SÜšYÚ[ˆHŒŽÂˆYX\Ý\™J
+NÂˆ\J˜[ÙJNÂ‚ˆ][ˆH[Âˆ][˜ÚH[Âˆ]\Ù\Ý\™HH[Âˆ]][UÝXÚXÝ]™HH˜[ÙNÂ‚ˆÛÛœÝ™YÚ[”[ˆH
+ÝXÚ\™Ù]
+HOˆÂˆ[ˆHÂˆÛY[ˆÝXÚ˜ÛY[ˆÛY[NˆÝXÚ˜ÛY[KˆˆÝ]KžˆNˆÝ]KžKˆ\™Ù]ˆ[Ý™Yˆ˜[ÙKˆNÂˆNÂ‚ˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚÝ\‹
+]™[
+HOˆÂˆYˆ
+]™[ÝXÚ\Ë›[™ÝHŠHÂˆÛÛœÝÙš\œÝÙXÛÛ™HH]™[ÝXÚ\ÎÂˆÛÛœÝÚ[HZYÚ[
+š\œÝÙXÛÛ™šY]ÜÜ
+NÂˆ][UÝXÚXÝ]™HHYNÂˆ[ˆH[Âˆ[˜ÚHÂˆ\Ý[˜ÙNˆX]›X^
+K\Ý[˜ÙJš\œÝÙXÛÛ™
+JKˆØØ[NˆÝ]KœØØ[KˆÛÛ[ˆ
+Ú[žHÝ]Kž
+HÈÝ]KœØØ[KˆÛÛ[Nˆ
+Ú[žHHÝ]KžJHÈÝ]KœØØ[KˆNÂˆ\Ù\Ý\™HHÂˆÝ\Y]ˆ\™›Ü›X[˜ÙK››ÝÊ
+KˆZYÚ[ˆZYÚ[
+š\œÝÙXÛÛ™
+Kˆ\Ý[˜ÙNˆ\Ý[˜ÙJš\œÝÙXÛÛ™
+Kˆ[Ý™Yˆ˜[ÙKˆNÂˆ\Ë—×ÜÝ\šÑÙ\Ý\™QÝX\™[[ŒNH[X™\‹”ÔÒUU‘WÒS‘’S’UNÂˆ\œ˜^K™œ›ÛJ]™[ÝXÚ\ÊK™›Ü‘XXÚ
+
+ÝXÚ
+HOˆÂˆÛÛœÝ\™Ù]H›ÛÝ™[[Y[œ›ÛTÚ[ËŠÝXÚ˜ÛY[ÝXÚ˜ÛY[JHˆØÝ[Y[™[[Y[œ›ÛTÚ[
+ÝXÚ˜ÛY[ÝXÚ˜ÛY[JNÂˆØ[˜Ù[[]RÛ
+\™Ù]
+NÂˆJNÂˆ]™[œ™]™[Y˜][
+
+NÂˆ™]\›ŽÂˆB‚ˆYˆ
+]™[ÝXÚ\Ë›[™ÝOOHH	‰ˆ[][UÝXÚXÝ]™JHÂˆ™YÚ[”[Š]™[ÝXÚ\ÖÌK]™[\™Ù]
+NÂˆBˆKÈ\ÜÚ]™Nˆ˜[ÙHJNÂ‚ˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚ[Ý™H‹
+]™[
+HOˆÂˆYˆ
+]™[ÝXÚ\Ë›[™ÝHˆ	‰ˆ[˜Ú
+HÂˆÛÛœÝÙš\œÝÙXÛÛ™HH]™[ÝXÚ\ÎÂˆÛÛœÝÚ[HZYÚ[
+š\œÝÙXÛÛ™šY]ÜÜ
+NÂˆÛÛœÝÝ\œ™[\Ý[˜ÙHH\Ý[˜ÙJš\œÝÙXÛÛ™
+NÂˆÝ]KœØØ[HHÛ[\ØØ[J[˜ÚœØØ[H
+ˆÝ\œ™[\Ý[˜ÙHÈ[˜Ú™\Ý[˜ÙJNÂˆÝ]KžHÚ[žH[˜Ú˜ÛÛ[
+ˆÝ]KœØØ[NÂˆÝ]KžHHÚ[žHH[˜Ú˜ÛÛ[H
+ˆÝ]KœØØ[NÂˆ\J˜[ÙJNÂ‚ˆYˆ
+ˆ\Ù\Ý\™H	‰‚ˆ
+Ú[\Ý[˜ÙJ\Ù\Ý\™K›ZYÚ[ZYÚ[
+š\œÝÙXÛÛ™
+JHˆTÓSÕ‘WÔˆX]˜XœÊÝ\œ™[\Ý[˜ÙHH\Ù\Ý\™K™\Ý[˜ÙJHˆTÓSÕ‘WÔ
+Bˆ
+HÂˆ\Ù\Ý\™K›[Ý™YHYNÂˆBˆ]™[œ™]™[Y˜][
+
+NÂˆ™]\›ŽÂˆB‚ˆYˆ
+\[ˆ]™[ÝXÚ\Ë›[™ÝOOHJH™]\›ŽÂˆÛÛœÝÝXÚH]™[ÝXÚ\ÖÌNÂˆÛÛœÝHÝXÚ˜ÛY[H[‹˜ÛY[ÂˆÛÛœÝHHÝXÚ˜ÛY[HH[‹˜ÛY[NÂˆYˆ
+\[‹›[Ý™Y	‰ˆX]š\Ý
+JHS—Õ‘TÒÓÔ
+H™]\›ŽÂ‚ˆYˆ
+\[‹›[Ý™Y
+HÂˆ[‹›[Ý™YHYNÂˆ\Ë—×ÜÝ\šÑÙ\Ý\™QÝX\™[[ŒNH[X™\‹”ÔÒUU‘WÒS‘’S’UNÂˆØ[˜Ù[[]RÛ
+[‹\™Ù]
+NÂˆBˆÝ]KžH[‹ž
+ÈÂˆÝ]KžHH[‹žH
+ÈNÂˆ\J˜[ÙJNÂˆ]™[œ™]™[Y˜][
+
+NÂˆKÈ\ÜÚ]™Nˆ˜[ÙHJNÂ‚ˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚ[™‹
+]™[
+HOˆÂˆYˆ
+][UÝXÚXÝ]™H	‰ˆ]™[ÝXÚ\Ë›[™ÝOOHJHÂˆ[˜ÚH[Âˆ™YÚ[”[Š]™[ÝXÚ\ÖÌK]™[\™Ù]
+NÂˆ™]\›ŽÂˆB‚ˆYˆ
+]™[ÝXÚ\Ë›[™ÝOOH
+H™]\›ŽÂˆÛÛœÝÛÛ\]Y\H\Ù\Ý\™NÂˆÛÛœÝØ\Ó][UÝXÚH][UÝXÚXÝ]™NÂˆÛÛœÝ[“[Ý™YH›ÛÛX[Š[Ë›[Ý™Y
+NÂˆ][UÝXÚXÝ]™HH˜[ÙNÂˆ[˜ÚH[Âˆ\Ù\Ý\™HH[Âˆ[ˆH[Â‚ˆYˆ
+Ý]KœØØ[HHÓTÓRSˆ	‰ˆÝ]KœØØ[HHÓTÓPV	‰ˆÝ]KœØØ[HOOHJHÂˆ™\Ù]
+YJNÂˆH[ÙHÂˆ\J˜[ÙJNÂˆ\œÚ\Ý
+
+NÂˆB‚ˆÛÛœÝ›ÝÈH\™›Ü›X[˜ÙK››ÝÊ
+NÂˆYˆ
+Ø\Ó][UÝXÚ
+HÂˆ\Ë—×ÜÝ\šÑÙ\Ý\™QÝX\™[[ŒNH›ÝÈ
+ÈÑTÕT‘WÑÕPT‘ÓTÎÂˆÛÛœÝ\ÕÛÑš[™Ù\•\HÛÛ\]Y\	‰ˆXÛÛ\]Y\›[Ý™Y	‰‚ˆ›ÝÈHÛÛ\]Y\œÝ\Y]HTÑTUSÓ—ÓTÎÂˆYˆ
+\ÕÛÑš[™Ù\•\
+HÂˆÛÛœÝ™]š[Ý\Õ\H\Ë—×ÜÝ\šÓ\ÝÛÑš[™Ù\•\ŒŒÂˆYˆ
+ˆ™]š[Ý\Õ\	‰ˆ›ÝÈH™]š[Ý\Õ\˜]HÕP“WÕTÑSVWÓTÈ	‰‚ˆÚ[\Ý[˜ÙJ™]š[Ý\Õ\›ZYÚ[ÛÛ\]Y\›ZYÚ[
+HHˆ
+HÂˆ\Ë—×ÜÝ\šÓ\ÝÛÑš[™Ù\•\ŒŒH[Âˆ™\Ù]
+YJNÂˆH[ÙHÂˆ\Ë—×ÜÝ\šÓ\ÝÛÑš[™Ù\•\ŒŒHÈ]ˆ›ÝËZYÚ[ˆÛÛ\]Y\›ZYÚ[NÂˆBˆH[ÙHÂˆ\Ë—×ÜÝ\šÓ\ÝÛÑš[™Ù\•\ŒŒH[ÂˆBˆH[ÙHYˆ
+[“[Ý™Y
+HÂˆ\Ë—×ÜÝ\šÑÙ\Ý\™QÝX\™[[ŒNH›ÝÈ
+ÈÑTÕT‘WÑÕPT‘ÓTÎÂˆBˆKÈ\ÜÚ]™NˆYHJNÂ‚ˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚØ[˜Ù[‹
+
+HOˆÂˆ][UÝXÚXÝ]™HH˜[ÙNÂˆ[˜ÚH[Âˆ\Ù\Ý\™HH[Âˆ[ˆH[Âˆ\J˜[ÙJNÂˆ\œÚ\Ý
+
+NÂˆ\Ë—×ÜÝ\šÑÙ\Ý\™QÝX\™[[ŒNH\™›Ü›X[˜ÙK››ÝÊ
+H
+ÈÑTÕT‘WÑÕPT‘ÓTÎÂˆKÈ\ÜÚ]™NˆYHJNÂ‚ˆšY]ÜÜ˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+]™[
+HOˆÂˆÛÛœÝÝX\™Y[[H[X™\Š\Ë—×ÜÝ\šÑÙ\Ý\™QÝX\™[[ŒN
+NÂˆYˆ
+ÝX\™Y[[OOH[X™\‹”ÔÒUU‘WÒS‘’S’UH\™›Ü›X[˜ÙK››ÝÊ
+HÝX\™Y[[
+HÂˆ]™[œ™]™[Y˜][
+
+NÂˆ]™[œÝÜ[[YYX]T›ÜYØ][ÛŠ
+NÂˆBˆKÈØ\\™NˆYHJNÂ‚ˆYˆ
+\[Ùˆ™\Ú^™SØœÙ\™\ˆOOH™[˜Ý[ÛˆŠHÂˆÛÛœÝØœÙ\™\ˆH™]È™\Ú^™SØœÙ\™\Š
+
+HOˆ\JYJJNÂˆØœÙ\™\‹›ØœÙ\™JÛÛ[
+NÂˆ\Ë—×ÜÝ\šÐØ[˜\Ô™\Ú^™SØœÙ\™\•ŒŒHØœÙ\™\ŽÂˆB‚ˆÛÛœÝ[™T™\Ú^™HH
+
+HOˆ\JYJNÂˆÚ[™ÝË˜Y]™[\Ý[™\Šœ™\Ú^™H‹[™T™\Ú^™KÈ\ÜÚ]™NˆYHJNÂˆÚ[™ÝËš\ÝX[šY]ÜÜË˜Y]™[\Ý[™\Šœ™\Ú^™H‹[™T™\Ú^™KÈ\ÜÚ]™NˆYHJNÂˆ\Ë—×ÜÝ\šÐØ[˜\Ô™\Ú^™PÛX[\ŒŒH
+
+HOˆÂˆÚ[™ÝËœ™[[Ý™Q]™[\Ý[™\Šœ™\Ú^™H‹[™T™\Ú^™JNÂˆÚ[™ÝËš\ÝX[šY]ÜÜËœ™[[Ý™Q]™[\Ý[™\Šœ™\Ú^™H‹[™T™\Ú^™JNÂˆNÂˆÚ[™ÝËœ™\]Y\Ý[š[X][Û‘œ˜[YJ
+
+HOˆ\JYJJNÂ‚ˆ™]\›ˆšY]ÜÜÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝÛšY]ÜÜH\ËœÚYÝÔ›ÛÝËœ]Y\žTÙ[XÝÜŠ‹ž›ÛÛK]šY]ÜÜ]ŒŒŠNÂˆYˆ
+ÛšY]ÜÜ
+HÂˆÛÛœÝÙ^HHÛšY]ÜÜ™]\Ù]œÝ\šÔÝ]RÙ^UŒŒ\Ë—ØØ[˜\ÔÝ]RÙ^UŒŒ
+
+NÂˆÛÛœÝÝÜ™YH\Ë—×ÜÝ\šÐØ[˜\ÔÝ]\ÕŒŒË™Ù]
+Ù^JNÂˆYˆ
+ÝÜ™Y
+H\Ë—Ü™[Y[X™\Ø[˜\ÔÝ]UŒŒ
+Ù^KÝÜ™Y
+NÂˆB‚ˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂ‚ˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆYˆ
+\›ÛÝ
+H™]\›ŽÂˆÛÛœÝÝX]HH›ÛÝœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂ‚ˆÛÛœÝšY]ÜÜH›ÛÝœ]Y\žTÙ[XÝÜŠ‹ž›ÛÛK]šY]ÜÜ]ŒMÈŠNÂˆYˆ
+]šY]ÜÜ
+H™]\›ŽÂˆYˆ
+]šY]ÜÜ˜Û\ÜÓ\Ý˜ÛÛZ[œÊž›ÛÛK]šY]ÜÜ]ŒŒŠJHÂˆ\Ë—Ú[œÝ[˜[œÙ›Ü›T[•ŒŒ
+šY]ÜÜ
+NÂˆB‚ˆYˆ
+\›ÛÝœ]Y\žTÙ[XÝÜŠœÝ[VÙ]K\Ý\šË]ZK]ŒŒHŠJHÂˆÛÛœÝÝ[HHØÝ[Y[˜Ü™X]Q[[Y[
+œÝ[HŠNÂˆÝ[K™]\Ù]œÝ\šÕZUŒŒHYHŽÂˆÝ[K^ÛÛ[HˆÊˆRH‹Œˆ˜[œÙ›Ü›K[ÝÛ™Y[ŽÈ›Èœ›ÝÜÙ\ˆØÜ›ÛÜX˜™\‹X˜[™Ý]Kˆ
+‹Âˆž›ÛÛK]šY]ÜÜ]ŒŒÂˆÜÚ][ÛŽœ™[]]™NÂˆÝ™\™›ÝÎšY[ˆZ[\Ü[ÂˆÝ™\œØÜ›ÛX™Z]š[ÜŽ››Û™HZ[\Ü[ÂˆÝ™\™›ÝËX[˜ÚÜŽ››Û™HZ[\Ü[ÂˆÝXÚXXÝ[ÛŽ››Û™HZ[\Ü[ÂˆBˆž›ÛÛK\ÝYÙK]ŒŒÂˆÜÚ][ÛŽœ™[]]™NÂˆÝ™\™›ÝÎšY[ˆZ[\Ü[ÂˆBˆž›ÛÛK\ÝYÙK]ŒŒˆž›ÛÛKXÛÛ[]ŒMÈÂˆÜÚ][ÛŽ˜XœÛÛ]NÂˆÜŒÂˆ˜[œÙ›Ü›K[ÜšYÚ[ŽŒZ[\Ü[ÂˆÚ[XÚ[™ÙN˜[œÙ›Ü›NÂˆÝ™\™›ÝËX[˜ÚÜŽ››Û™HZ[\Ü[ÂˆBˆÂˆ›ÛÝ˜\[™
+Ý[JNÂˆBˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒŒšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒŒKšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒ‹ŒHŽÂ‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒŒJHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒŒHHYNÂ‚ˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂ‚ˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆYˆ
+\›ÛÝ
+H™]\›ŽÂ‚ˆÛÛœÝÝX]HH›ÛÝœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂ‚ˆËÈ[œ]Ý]][™ØY[™XYH^\Ý[ˆH]™H\›È[™H˜XÝX[ˆËÈÝ]HÝ[[X\žKˆ™[[Ý™HH™\X]YÝ™\šY]È›ÝÈœ›ÛH›Ý^[Ý][™ˆËÈH[]H[\˜XÝ[ÛˆÝ\™˜XÙK‚ˆ›ÛÝœ]Y\žTÙ[XÝÜŠ‹›Ý™\šY]Ë]ŒLHˆ›Y]šXÜË\›ÝË]ŒLHŠOËœ™[[Ý™J
+NÂ‚ˆYˆ
+\›ÛÝœ]Y\žTÙ[XÝÜŠœÝ[VÙ]K\Ý\šË]ZK]ŒŒWHŠJHÂˆÛÛœÝÝ[HHØÝ[Y[˜Ü™X]Q[[Y[
+œÝ[HŠNÂˆÝ[K™]\Ù]œÝ\šÕZUŒŒHHYHŽÂˆÝ[K^ÛÛ[HˆÊˆRH‹ŒNˆÛ™K\ØÜ™Y[ˆ[Øš[HÝ™\šY]ÈÚ]Ý]™\X]YY]šXÜËˆ
+‹Âˆ›Ý™\šY]Ë]ŒLHÈØ\ŽZ[\Ü[ÈBˆ›Ý™\šY]Ë]ŒLHˆ›Y]šXÜË\›ÝË]ŒLHÈ\Ü^N››Û™HZ[\Ü[ÈB‚ˆš\›ËZXY]ŒLHÈZ[‹ZZYÚÎZ[\Ü[ÈBˆš\›Ë\ØÙ[™K]ŒLHÈZYÚŒŒM\Z[\Ü[ÈBˆœØÙ[™K[›ÙK]ŒLK˜˜]\žHÈ›ÝÛNŽZ[\Ü[ÈBˆœ™\Ù\™K\Ýš\]ŒLHÂˆZ[‹ZZYÚZ[\Ü[ÂˆY[™Ë]ÜœZ[\Ü[ÂˆY[™ËX›ÝÛNœZ[\Ü[ÂˆB‚ˆ›Ý™\šY]Ë]ŒLHˆœÝ]KXØ\™]ŒLHÈY[™ÎŽZ[\Ü[ÈBˆ›Ý™\šY]Ë]ŒLHˆœÝ]KXØ\™]ŒLHÈÂˆX\™Ú[‹X›ÝÛNÜZ[\Ü[Âˆ›Û\Ú^™NŒMÜZ[\Ü[ÂˆBˆ›Ý™\šY]Ë]ŒLHˆœÝ]KXØ\™]ŒLHœÝ]K\›ÝË]ŒLHÂˆY[™ÎÜZ[\Ü[Âˆ›Ü™\‹\˜Y]\ÎŒM\Z[\Ü[ÂˆBˆ›Ý™\šY]Ë]ŒLHˆœÝ]KXØ\™]ŒLHœÝ]K\›ÝË]ŒLH
+ÈœÝ]K\›ÝË]ŒLHÂˆX\™Ú[‹]ÜœZ[\Ü[ÂˆBˆ›Ý™\šY]Ë]ŒLHˆœÝ]KXØ\™]ŒLHœÝ]K]˜[Y\Ë]ŒLHÂˆX\™Ú[‹]Ü\Z[\Ü[ÂˆB‚ˆYYXH
+X^]ÚYÌ
+HÂˆ\ËZ\›Ë]ŒLHÈY[™ÎŒLœZ[\Ü[ÈBˆš\›Ë\ØÙ[™K]ŒLHÂˆZYÚŒŒZ[\Ü[ÂˆX\™Ú[‹[Y‹NZ[\Ü[ÂˆX\™Ú[‹\šYÚ‹NZ[\Ü[ÂˆBˆœØÙ[™K[›ÙK]ŒLK˜˜]\žHÈ›ÝÛNÜZ[\Ü[ÈBˆœ™\Ù\™K\Ýš\]ŒLHÈZ[‹ZZYÚÜZ[\Ü[ÈBˆBˆÂˆ›ÛÝ˜\[™
+Ý[JNÂˆBˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒŒKšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒŒ‹šœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒ‹ŒˆŽÂ‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒŒŠHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒŒˆHYNÂ‚ˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂ‚ˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆYˆ
+\›ÛÝ
+H™]\›ŽÂ‚ˆÛÛœÝÝX]HH›ÛÝœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂ‚ˆÛÛœÝÝ™\šY]ÈH›ÛÝœ]Y\žTÙ[XÝÜŠ‹›Ý™\šY]Ë]ŒLHŠNÂˆÛÛœÝ\›ÈHÝ™\šY]ÏËœ]Y\žTÙ[XÝÜŠŽœØÛÜHˆ\ËZ\›Ë]ŒLHŠNÂˆÛÛœÝ™\Ù\™HH\›ÏËœ]Y\žTÙ[XÝÜŠŽœØÛÜHˆœ™\Ù\™K\Ýš\]ŒLHŠNÂˆYˆ
+\›È	‰ˆ™\Ù\™JH\›Ëš[œÙ\Y˜XÙ[[[Y[
+˜Y\™[™‹™\Ù\™JNÂ‚ˆËÈH˜]\žH›ÙH›ÝÈÚ]ÈX›Ý™HHTËÛÈ]È]™H][œÈÝÛ‚ˆËÈœ›ÛHHÚ\™ÙHØ\™ÝØ\™HØXš[™][œÝXYÙˆ™[ÝÈHØXš[™]‚ˆÛÛœÝ˜]\žS[™HH›ÛÝœ]Y\žTÙ[XÝÜŠ‹™›ÝË[[™\Ë]ŒLH›[™KX˜]\žK]ŒLHŠNÂˆYˆ
+˜]\žS[™JH˜]\žS[™KœÙ]]šX]J™‹“MLŒˆŒÎŠNÂ‚ˆYˆ
+\›ÛÝœ]Y\žTÙ[XÝÜŠœÝ[VÙ]K\Ý\šË]ZK]ŒŒ—HŠJHÂˆÛÛœÝÝ[HHØÝ[Y[˜Ü™X]Q[[Y[
+œÝ[HŠNÂˆÝ[K™]\Ù]œÝ\šÕZUŒŒˆHYHŽÂˆÝ[K^ÛÛ[HˆÊˆRH‹ŒŽˆ[\ˆÝÙÜ˜\XÈØÙ[™HÚ]›ÛÜ‹[[Ý[YTËˆ
+‹Âˆ\ËZ\›Ë]ŒLHÂˆ˜XÚÙÜ›Ý[™\ÜÚ][ÛŽ˜Ù[\ˆM	HZ[\Ü[ÂˆBˆš\›Ë\ØÙ[™K]ŒLHÂˆZYÚŒŒZ[\Ü[ÂˆBˆ\ËX\]ŒLHÂˆÚY›Z[ŠM	KŒÌ
+HZ[\Ü[ÂˆX^ZZYÚŽIHZ[\Ü[Âˆ›ÝÛN\Z[\Ü[ÂˆBˆœØÙ[™K[›ÙK]ŒLK™ÜšYˆœØÙ[™K[›ÙK]ŒLK›ØYÂˆÜ‰HZ[\Ü[ÂˆBˆœØÙ[™K[›ÙK]ŒLK˜˜]\žHÂˆÜZ[\Ü[Âˆ›ÝÛN˜]]ÈZ[\Ü[ÂˆBˆ›Ý™\šY]Ë]ŒLHˆœ™\Ù\™K\Ýš\]ŒLHÂˆÚYŒL	NÂˆZ[‹ZZYÚZ[\Ü[Âˆ›Þ\Ú^š[™Î˜›Ü™\‹X›ÞÂˆY[™ÎÜMZ[\Ü[Âˆ›Ü™\‹\˜Y]\ÎŒMÜÂˆ˜XÚÙÜ›Ý[™˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠHZ[\Ü[Âˆ›Þ\ÚYÝÎŒ\N™Ø˜JŒËKÍ‹ŒJNÂˆB‚ˆYYXH
+X^]ÚYÌ
+HÂˆš\›Ë\ØÙ[™K]ŒLHÂˆZYÚŒLœZ[\Ü[ÂˆBˆ\ËX\]ŒLHÂˆÚY›Z[ŠMIKŒŒœ
+HZ[\Ü[ÂˆX^ZZYÚŽ	HZ[\Ü[Âˆ›ÝÛNZ[\Ü[ÂˆBˆœØÙ[™K[›ÙK]ŒLK˜˜]\žHÈÜŒÜZ[\Ü[ÈBˆ›Ý™\šY]Ë]ŒLHˆœ™\Ù\™K\Ýš\]ŒLHÂˆZ[‹ZZYÚÜZ[\Ü[ÂˆY[™ÎœLœZ[\Ü[ÂˆBˆBˆÂˆ›ÛÝ˜\[™
+Ý[JNÂˆBˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒŒ‹šœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒŒËšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒ‹ŒÈŽÂ˜ÛÛœÝT“×ÒS•T“‘UBˆ‹ÜÝ\š×ÜÛÛ\œÝÙ\—Ü[™[Ø\ÜÙ]ËÜÝ\šËZ\›ËZ[\›™]]ŒŒËÙXœÝL‹ŒÈŽÂ˜ÛÛœÝT“×Ð“ÒSTˆBˆ‹ÜÝ\š×ÜÛÛ\œÝÙ\—Ü[™[Ø\ÜÙ]ËÜÝ\šËZ\›ËX›Ú[\‹]ŒŒËÙXœÝL‹ŒÈŽÂ‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒŒÊHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒŒÈHYNÂ‚ˆËÈŒ‹ŒÈ\Ù\ÈÛX[‹YÙK\ØY™HÛÛ^]\Ëˆ\ÈÝ™\œšYH\È[œÝ[YˆËÈ™Y›Ü™HH[š\š]Y™[™\™\ˆ[œËÛÈ›ÈÝ[H˜XÚÙÜ›Ý[™›\Ú\Èš\œÝ‚ˆ[™[œ›ÝÝ\K—Ú\›Ð˜XÚÙÜ›Ý[™ŒLHH[˜Ý[Ûˆ
+]šXÙJHÂˆ™]\›ˆ]šXÙOË›˜[YOËÓØØ[SÝÙ\Ø\ÙJœHŠKš[˜ÛY\Ê´.´/´`ˆŠBˆÈT“×Ð“ÒST‚ˆˆT“×ÒS•T“‘UÂˆNÂ‚ˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂ‚ˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆYˆ
+\›ÛÝ
+H™]\›ŽÂ‚ˆÛÛœÝÝX]HH›ÛÝœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂ‚ˆËÈ™\Ù\™H™XY[™\ÜÈ\È[™XYH™\™\Ù[Y[ˆH˜XÝX[˜]\žH›ÝË‚ˆËÈ™[[Ý™HH™\X]YÝš\[™Ú]™H]ÈZYÚ˜XÚÈÈHÝÙÜ˜\‚ˆ›ÛÝœ]Y\žTÙ[XÝÜŠ‹›Ý™\šY]Ë]ŒLHˆœ™\Ù\™K\Ýš\]ŒLHŠOËœ™[[Ý™J
+NÂˆ›ÛÝœ]Y\žTÙ[XÝÜŠ‹\ËZ\›Ë]ŒLHˆœ™\Ù\™K\Ýš\]ŒLHŠOËœ™[[Ý™J
+NÂ‚ˆËÈHY]šXÈØ\™È™[XZ[ˆ[\˜XÝ]™NÈÛ›HHXÛÜ˜]]™H›ÝÈ˜]Ú[™ÂˆËÈ\È™[[Ý™YÈÙY\HÝÙÜ˜\XÈÛÛ\ÜÚ][ÛˆØ[H[™[˜Û]\™Y‚ˆ›ÛÝœ]Y\žTÙ[XÝÜŠ‹™›ÝË[[™\Ë]ŒLHŠOËœ™[[Ý™J
+NÂ‚ˆYˆ
+\›ÛÝœ]Y\žTÙ[XÝÜŠœÝ[VÙ]K\Ý\šË]ZK]ŒŒ×HŠJHÂˆÛÛœÝÝ[HHØÝ[Y[˜Ü™X]Q[[Y[
+œÝ[HŠNÂˆÝ[K™]\Ù]œÝ\šÕZUŒŒÈHYHŽÂˆÝ[K^ÛÛ[HˆÊˆRH‹ŒÎˆÛX[ˆ[ZZYÚ\›ÈÚ]Ý]XÛÜ˜]]™HÚ\š[™Ëˆ
+‹Âˆ\ËZ\›Ë]ŒLHÂˆ˜XÚÙÜ›Ý[™\ÜÚ][ÛŽ˜Ù[\ˆL‰HZ[\Ü[ÂˆBˆ\ËZ\›Ë]ŒLNŽ˜Y\ˆÂˆ\Ü^N››Û™HZ[\Ü[ÂˆBˆš\›ËZXY]ŒLHÂˆZ[‹ZZYÚŽLœZ[\Ü[ÂˆBˆš\›Ë\ØÙ[™K]ŒLHÂˆZYÚŒŽLZ[\Ü[ÂˆBˆ™›ÝË[[™\Ë]ŒLHÂˆ\Ü^N››Û™HZ[\Ü[ÂˆBˆ\ËX\]ŒLHÂˆÚY›Z[ŠM	KŒÌ
+HZ[\Ü[ÂˆX^ZZYÚŽ	HZ[\Ü[Âˆ›ÝÛNZ[\Ü[ÂˆBˆœØÙ[™K[›ÙK]ŒLK™ÜšYˆœØÙ[™K[›ÙK]ŒLK›ØYÂˆÜL	HZ[\Ü[ÂˆBˆœØÙ[™K[›ÙK]ŒLK˜˜]\žHÂˆÜ\Z[\Ü[Âˆ›ÝÛN˜]]ÈZ[\Ü[ÂˆBˆ›Ý™\šY]Ë]ŒLHˆœ™\Ù\™K\Ýš\]ŒLKˆ\ËZ\›Ë]ŒLHˆœ™\Ù\™K\Ýš\]ŒLHÂˆ\Ü^N››Û™HZ[\Ü[ÂˆB‚ˆYYXH
+X^]ÚYÌ
+HÂˆš\›ËZXY]ŒLHÂˆZ[‹ZZYÚŽLœZ[\Ü[ÂˆBˆš\›Ë\ØÙ[™K]ŒLHÂˆZYÚŒŽLZ[\Ü[ÂˆBˆ\ËX\]ŒLHÂˆÚY›Z[ŠMIKŒŒœ
+HZ[\Ü[ÂˆX^ZZYÚŽ	HZ[\Ü[Âˆ›ÝÛNZ[\Ü[ÂˆBˆœØÙ[™K[›ÙK]ŒLK˜˜]\žHÈÜ\Z[\Ü[ÈBˆBˆÂˆ›ÛÝ˜\[™
+Ý[JNÂˆBˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒŒËšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒ‹ŽÂ‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒ
+HÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒHYNÂ‚ˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂ‚ˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆYˆ
+\›ÛÝ
+H™]\›ŽÂ‚ˆÛÛœÝÝX]HH›ÛÝœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂ‚ˆYˆ
+\›ÛÝœ]Y\žTÙ[XÝÜŠœÝ[VÙ]K\Ý\šË]ZK]ŒHŠJHÂˆÛÛœÝÝ[HHØÝ[Y[˜Ü™X]Q[[Y[
+œÝ[HŠNÂˆÝ[K™]\Ù]œÝ\šÕZUŒHYHŽÂˆÝ[K^ÛÛ[HˆÊˆRH‹ˆÜ[™H™[XZ[š[™ÈÛ™KZZYÚ™\Ù\™HÛˆH›ÛÛKˆ
+‹Âˆš\›Ë\ØÙ[™K]ŒLHÂˆZYÚŒÌŒœZ[\Ü[ÂˆB‚ˆYYXH
+X^]ÚYÌ
+HÂˆš\›Ë\ØÙ[™K]ŒLHÂˆZYÚŒÌŒœZ[\Ü[ÂˆBˆBˆÂˆ›ÛÝ˜\[™
+Ý[JNÂˆBˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒKšœÂŠ
+
+HOˆÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒ‹HŽÂ˜ÛÛœÝRS—ÔÐÐSHHÍNÂ˜ÛÛœÝPVÔÐÐSHHŽÂ˜ÛÛœÝÓTÓRSˆHŽMÎÂ˜ÛÛœÝÓTÓPVHKŒÎÂ˜ÛÛœÝS—Õ‘TÒÓHÎÂ˜ÛÛœÝTÓSÕ‘HHLŽÂ˜ÛÛœÝTÑTUSÓˆHŒÂ˜ÛÛœÝÕP“WÕTÑSVHHÍŒÂ˜ÛÛœÝÕPT‘ÓTÈHÌÂ‚˜ÛÛœÝÛ[\ØØ[HH
+˜[YJHOˆX]›Z[ŠPVÔÐÐSKX]›X^
+RS—ÔÐÐSK[X™\Š˜[YJHJJNÂ˜ÛÛœÝ\Ý[˜ÙHH
+KŠHOˆX]š\Ý
+‹˜ÛY[HK˜ÛY[‹˜ÛY[HHK˜ÛY[JNÂ˜ÛÛœÝZYÚ[H
+K‹šY]ÜÜ
+HOˆÂˆÛÛœÝ™XÝHšY]ÜÜ™Ù]›Ý[™[™ÐÛY[™XÝ
+
+NÂˆ™]\›ˆÈŠK˜ÛY[
+È‹˜ÛY[
+HÈˆH™XÝ›YNŠK˜ÛY[H
+È‹˜ÛY[JHÈˆH™XÝÜNÂŸNÂ˜ÛÛœÝYÙSZYÚ[H
+KŠHOˆ
+ÈŠK˜ÛY[
+È‹˜ÛY[
+HÈ‹NŠK˜ÛY[H
+È‹˜ÛY[JHÈˆJNÂ˜ÛÛœÝÚ[\Ý[˜ÙHH
+KŠHOˆX]š\Ý
+‹žHKž‹žHHKžJNÂ‚™[˜Ý[ÛˆØ[˜Ù[Û
+\™Ù]
+HÂˆÛÛœÝ[]HH\™Ù]Ë˜ÛÜÙ\ÝËŠ–Ù]KY[]WHŠNÂˆYˆ
+Y[]JH™]\›ŽÂˆÛÛœÝ]™[H\[ÙˆÚ[\‘]™[OOH™[˜Ý[Ûˆ‚ˆÈ™]ÈÚ[\‘]™[
+œÚ[\˜Ø[˜Ù[‹ÈX˜›\ÎYKÛÛ\ÜÙYYHJBˆˆ™]È]™[
+œÚ[\˜Ø[˜Ù[‹ÈX˜›\ÎYKÛÛ\ÜÙYYHJNÂˆ[]K™\Ü]Ú]™[
+]™[
+NÂŸB‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒJHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒHHYNÂˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—ÜÝ]RÙ^UŒHH[˜Ý[Ûˆ
+
+HÂˆ™]\›ˆ\Ë—ÜÙ[XÝY\ÒYËŠ
+H\Ë—ÙXYÛ›ÜÝXÑ]šXÙRY\Ë—Ù]šXÙ\ÏË–ÌOËšY™Y˜][ŽÂˆNÂ‚ˆ[™[œ›ÝÝ\K—ÛØYÝ]UŒHH[˜Ý[Ûˆ
+Ù^JHÂˆ\Ë—×ÜÝ\šÔÝ]\ÕŒHH™]ÈX\
+
+NÂˆÛÛœÝY[[ÜžHH\Ë—×ÜÝ\šÔÝ]\ÕŒK™Ù]
+Ù^JNÂˆYˆ
+Y[[ÜžJH™]\›ˆÈ‹‹›Y[[ÜžHNÂˆ]Ý]HHÈØØ[NŒKŒNŒNÂˆžHÂˆÛÛœÝØ]™YH”ÓÓ‹œ\œÙJØØ[ÝÜ˜YÙK™Ù]][JšZØ\ÎœÜXÚX[^™Y\[™[œÝ\šË\ÛÛ\œÝÙ\Ž˜[œÙ›Ü›N‰ÚÙ^_X
+H›[ŠNÂˆYˆ
+Ø]™Y	‰ˆ\[ÙˆØ]™YOOH›Øš™XÝŠHÂˆÝ]HHÂˆØØ[N˜Û[\ØØ[JØ]™YœØØ[JKˆ“[X™\‹š\Ñš[š]JØ]™Yž
+HÈØ]™YžˆˆN“[X™\‹š\Ñš[š]JØ]™YžJHÈØ]™YžHˆˆNÂˆH[ÙHÂˆÝ]KœØØ[HHÛ[\ØØ[JØØ[ÝÜ˜YÙK™Ù]][JšZØ\ÎœÜXÚX[^™Y\[™[œÝ\šË\ÛÛ\œÝÙ\Žž›ÛÛN‰ÚÙ^_X
+HJNÂˆBˆHØ]Ú
+Ù\œ›ÜŠHÈÝ]HHÈØØ[NŒKŒNŒNÈBˆYˆ
+Ý]KœØØ[HHJHÈÝ]KžHÈÝ]KžHHÈBˆ™]\›ˆÝ]NÂˆNÂ‚ˆ[™[œ›ÝÝ\K—ÜØ]™TÝ]UŒHH[˜Ý[Ûˆ
+Ù^KÝ]JHÂˆ\Ë—×ÜÝ\šÔÝ]\ÕŒHH™]ÈX\
+
+NÂˆ\Ë—×ÜÝ\šÔÝ]\ÕŒKœÙ]
+Ù^KÈØØ[NœÝ]KœØØ[KœÝ]KžNœÝ]KžHJNÂˆžHÂˆØØ[ÝÜ˜YÙKœÙ]][JšZØ\ÎœÜXÚX[^™Y\[™[œÝ\šË\ÛÛ\œÝÙ\Žž›ÛÛN‰ÚÙ^_XÝ]KœØØ[KÑš^Y
+ÊJNÂˆØØ[ÝÜ˜YÙKœÙ]][JšZØ\ÎœÜXÚX[^™Y\[™[œÝ\šË\ÛÛ\œÝÙ\Ž˜[œÙ›Ü›N‰ÚÙ^_X”ÓÓ‹œÝš[™ÚYžJÂˆØØ[NœÝ]KœØØ[KˆœÝ]KœØØ[HˆHÈÝ]KžˆˆNœÝ]KœØØ[HˆHÈÝ]KžHˆˆJJNÂˆBˆØ]Ú
+Ù\œ›ÜŠHÈÊˆš]˜]HÙX•šY]È
+‹ÈBˆNÂ‚ˆ[™[œ›ÝÝ\K—Ú[œÝ[Ý[™\™Ø[˜\ÕŒHH[˜Ý[Ûˆ
+ÛÝ\˜ÙJHÂˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆÛÛœÝÛÝYÙHHÛÝ\˜ÙOËœ]Y\žTÙ[XÝÜŠŽœØÛÜHˆž›ÛÛK\ÝYÙK]ŒŒœØÛÜHˆž›ÛÛK\ÝYÙK]ŒMÈŠNÂˆÛÛœÝÝ\™˜XÙHHÛÝYÙOËœ]Y\žTÙ[XÝÜŠŽœØÛÜHˆž›ÛÛKXÛÛ[]ŒMÈŠNÂˆYˆ
+\›ÛÝ\ÛÝ\˜ÙH[ÛÝYÙH\Ý\™˜XÙJH™]\›ŽÂ‚ˆ\Ë—×ÜÝ\šÐØ[˜\Ô™\Ú^™SØœÙ\™\•ŒŒË™\ØÛÛ›™XÝ
+
+NÂˆ\Ë—×ÜÝ\šÐØ[˜\Ô™\Ú^™PÛX[\ŒŒËŠ
+NÂˆ\Ë—×ÜÝ\šÔ™\Ú^™SØœÙ\™\•ŒOË™\ØÛÛ›™XÝ
+
+NÂˆ\Ë—×ÜÝ\šÔ™\Ú^™PÛX[\ŒOËŠ
+NÂ‚ˆÛÛœÝšY]ÜÜHÛÝ\˜ÙK˜ÛÛ™S›ÙJ˜[ÙJNÂˆšY]ÜÜ˜Û\ÜÓ˜[YHHž›ÛÛK]šY]ÜÜ]ŒHŽÂˆšY]ÜÜœÙ]]šX]J˜\šXK[X™[‹´(4,4,t/´aô,4cÈ4/´,t.ô,4`t`´cÝ\šÈÛÛ\”ÝÙ\ˆŠNÂˆÛÛœÝÝYÙHHØÝ[Y[˜Ü™X]Q[[Y[
+™]ˆŠNÂˆÝYÙK˜Û\ÜÓ˜[YHHž›ÛÛK\ÝYÙK]ŒHŽÂˆÝ\™˜XÙK˜Û\ÜÓ˜[YHHž›ÛÛK\Ý\™˜XÙK]ŒHŽÂˆÝYÙK˜\[™
+Ý\™˜XÙJNÂˆšY]ÜÜ˜\[™
+ÝYÙJNÂˆÛÝ\˜ÙKœ™\XÙUÚ]
+šY]ÜÜ
+NÂ‚ˆ]Ù^HH\Ë—ÜÝ]RÙ^UŒJ
+NÂˆšY]ÜÜ™]\Ù]œÝ]RÙ^UŒHHÙ^NÂˆÛÛœÝÝ]HH\Ë—ÛØYÝ]UŒJÙ^JNÂˆËÈÙY\H\Ý™X[ÚY[š\š]Yœ›ÛHH™]š[Ý\ÈØ[˜\È^Y\‹‚ˆËÈÛˆSÔÈHœ™\ÚH™\XÙY[[Y[Ø[ˆ™\ÜÛY[ÚYL›ÜˆÛ™BˆËÈœ˜[YNÈÝ™\Üš][™ÈHÝ\™˜XÙHÚ]\XZÙ\ÈHÚÛH[™[˜[š\Ú‚ˆ]˜\ÙUÚYHX]›X^
+K[X™\‹œ\œÙQ›Ø]
+Ý\™˜XÙKœÝ[KÚY
+H
+NÂˆ]˜\ÙRZYÚHX]›X^
+KÝ\™˜XÙKœØÜ›ÛZYÚ
+NÂˆ][˜ÚH[Âˆ][ˆH[Âˆ]ÛÕ\H[Âˆ]][HH˜[ÙNÂ‚ˆÛÛœÝYX\Ý\™HH
+
+HOˆÂˆÛÛœÝ\™XÝÚYHX]›X^
+ˆšY]ÜÜ˜ÛY[ÚYˆšY]ÜÜ™Ù]›Ý[™[™ÐÛY[™XÝ
+
+KÚYˆ
+NÂˆÛÛœÝÙ[XÝÜˆH›ÛÝœ]Y\žTÙ[XÝÜŠ‹™ÛØ˜[Y]šXÙKXÛÛ^ŠNÂˆÛÛœÝÙ[XÝÜ•ÚYHX]›X^
+ˆÙ[XÝÜË˜ÛY[ÚYˆÙ[XÝÜË™Ù]›Ý[™[™ÐÛY[™XÝ
+
+KÚYˆ
+NÂˆÛÛœÝÜÝÚYHX]›X^
+ˆ›ÛÝšÜÝË˜ÛY[ÚYˆ›ÛÝšÜÝË™Ù]›Ý[™[™ÐÛY[™XÝ
+
+KÚYˆ
+NÂˆÛÛœÝYX\Ý\™YÚYH\™XÝÚYˆBˆÈ\™XÝÚYˆˆÙ[XÝÜ•ÚYˆBˆÈÙ[XÝÜ•ÚYˆˆÜÝÚYÂˆYˆ
+YX\Ý\™YÚYˆJH˜\ÙUÚYHYX\Ý\™YÚYÂˆYˆ
+˜\ÙUÚYˆJHÝ\™˜XÙKœÝ[KÚYH	Ø˜\ÙUÚY\ÂˆÛÛœÝ™[™\™YHÝ\™˜XÙK™Ù]›Ý[™[™ÐÛY[™XÝ
+
+KšZYÚÈX]›X^
+Ý]KœØØ[KŒJNÂˆ˜\ÙRZYÚHX]›X^
+KÝ\™˜XÙKœØÜ›ÛZYÚ[X™\‹š\Ñš[š]J™[™\™Y
+HÈ™[™\™Yˆ
+NÂˆNÂˆÛÛœÝ›Ý[™ÈH
+
+HOˆ
+ÂˆZ[–“X]›Z[ŠšY]ÜÜ˜ÛY[ÚYH˜\ÙUÚY
+ˆÝ]KœØØ[JKˆZ[–N“X]›Z[ŠšY]ÜÜ˜ÛY[ZYÚH˜\ÙRZYÚ
+ˆÝ]KœØØ[JKˆÝ™\™›ÝÖ˜˜\ÙUÚY
+ˆÝ]KœØØ[HˆšY]ÜÜ˜ÛY[ÚY
+ÈKˆÝ™\™›ÝÖN˜˜\ÙRZYÚ
+ˆÝ]KœØØ[HˆšY]ÜÜ˜ÛY[ZYÚ
+ÈKˆJNÂˆÛÛœÝÛ[\ÜÚ][ÛˆH
+
+HOˆÂˆYˆ
+Ý]KœØØ[HHJHÈÝ]KžHÈÝ]KžHHÈ™]\›ŽÈBˆÛÛœÝˆH›Ý[™Ê
+NÂˆÝ]KžH‹›Ý™\™›ÝÖÈX]›Z[ŠX]›X^
+‹›Z[–Ý]Kž
+JHˆÂˆÝ]KžHH‹›Ý™\™›ÝÖHÈX]›Z[ŠX]›X^
+‹›Z[–KÝ]KžJJHˆÂˆNÂˆÛÛœÝ\HH
+È™[YX\Ý\™OY˜[ÙK\œÚ\ÝY˜[ÙHHHßJHOˆÂˆYˆ
+™[YX\Ý\™JHYX\Ý\™J
+NÂˆÛ[\ÜÚ][ÛŠ
+NÂˆÛÛœÝ˜]]™HHÝ]KœØØ[HHNÂˆYˆ
+šY]ÜÜ˜Û\ÜÓ\Ý˜ÛÛZ[œÊ›˜]]™K\ØÜ›ÛŠHOOH˜]]™JHÂˆšY]ÜÜ˜Û\ÜÓ\ÝÙÙÛJ›˜]]™K\ØÜ›Û‹˜]]™JNÂˆšY]ÜÜ˜Û\ÜÓ\ÝÙÙÛJž›ÛÛYY‹[˜]]™JNÂˆBˆÛÛœÝÝYÙUÚYH	ÓX]›X^
+šY]ÜÜ˜ÛY[ÚY˜\ÙUÚY
+ˆÝ]KœØØ[J_\ÂˆÛÛœÝÝYÙRZYÚH	ÓX]›X^
+šY]ÜÜ˜ÛY[ZYÚ˜\ÙRZYÚ
+ˆÝ]KœØØ[J_\ÂˆÛÛœÝ˜[œÙ›Ü›HH˜]]™BˆÈØØ[J	ÜÝ]KœØØ[_JXˆˆ˜[œÛ]LÙ
+	ÜÝ]Kž\	ÜÝ]Kž_\
+HØØ[J	ÜÝ]KœØØ[_JXÂˆYˆ
+ÝYÙKœÝ[KÚYOOHÝYÙUÚY
+HÝYÙKœÝ[KÚYHÝYÙUÚYÂˆYˆ
+ÝYÙKœÝ[KšZYÚOOHÝYÙRZYÚ
+HÝYÙKœÝ[KšZYÚHÝYÙRZYÚÂˆYˆ
+Ý\™˜XÙKœÝ[K˜[œÙ›Ü›HOOH˜[œÙ›Ü›JHÝ\™˜XÙKœÝ[K˜[œÙ›Ü›HH˜[œÙ›Ü›NÂˆYˆ
+[˜]]™JHÂˆYˆ
+šY]ÜÜœØÜ›ÛY
+HšY]ÜÜœØÜ›ÛYHÂˆYˆ
+šY]ÜÜœØÜ›ÛÜ
+HšY]ÜÜœØÜ›ÛÜHÂˆBˆ\Ë—×ÜÝ\šÖ›ÛÛUŒMHÝ]KœØØ[NÂˆYˆ
+\œÚ\Ý
+H\Ë—ÜØ]™TÝ]UŒJÙ^KÝ]JNÂˆNÂˆÛÛœÝÚÝÕØ\ÝH
+
+HOˆÂˆ]Ø\ÝHšY]ÜÜœ]Y\žTÙ[XÝÜŠŽœØÛÜHˆž›ÛÛK]Ø\Ý]ŒHŠNÂˆYˆ
+]Ø\Ý
+HÂˆØ\ÝHØÝ[Y[˜Ü™X]Q[[Y[
+™]ˆŠNÂˆØ\Ý˜Û\ÜÓ˜[YHHž›ÛÛK]Ø\Ý]ŒHŽÂˆØ\ÝœÙ]]šX]Jœ›ÛH‹œÝ]\ÈŠNÂˆØ\Ý^ÛÛ[H´'4,4`tb4`´,4,HL	HŽÂˆšY]ÜÜ˜\[™
+Ø\Ý
+NÂˆBˆÛX\•[Y[Ý]
+\Ë—×ÜÝ\šÕØ\Ý[Y\•ŒJNÂˆ™\]Y\Ý[š[X][Û‘œ˜[YJ
+
+HOˆØ\Ý˜Û\ÜÓ\Ý˜Y
+š\ÚX›HŠJNÂˆ\Ë—×ÜÝ\šÕØ\Ý[Y\•ŒHHÙ][Y[Ý]
+
+
+HOˆØ\Ý˜Û\ÜÓ\Ýœ™[[Ý™Jš\ÚX›HŠKLL
+NÂˆNÂˆÛÛœÝ™\Ù]H
+›ÝYžO]YJHOˆÂˆÝ]KœØØ[HHNÈÝ]KžHÈÝ]KžHHÂˆšY]ÜÜœØÜ›ÛÊÈYŒÜŒ™Z]š[ÜŽˆ˜]]ÈˆJNÂˆ\JÈ\œÚ\ÝYHJNÂˆYˆ
+›ÝYžJHÚÝÕØ\Ý
+
+NÂˆNÂˆÛÛœÝ™\Ù]ÜÚ][ÛˆH
+È\œÚ\Ý]YHHHßJHOˆÂˆÝ]KžHÈÝ]KžHHÂˆšY]ÜÜœØÜ›ÛÊÈYŒÜŒ™Z]š[ÜŽˆ˜]]ÈˆJNÂˆ\JÈ™[YX\Ý\™NYK\œÚ\ÝJNÂˆNÂˆÛÛœÝÝÚ]ÚÛÛ^H
+™^Ù^JHOˆÂˆÛÛœÝ›Ü›X[^™YH™^Ù^H™Y˜][ŽÂˆYˆ
+›Ü›X[^™YOOHÙ^JHÂˆ™\Ù]ÜÚ][ÛŠÈ\œÚ\ÝYHJNÂˆ™]\›ŽÂˆBˆ\Ë—ÜØ]™TÝ]UŒJÙ^KÝ]JNÂˆÙ^HH›Ü›X[^™YÂˆšY]ÜÜ™]\Ù]œÝ]RÙ^UŒHHÙ^NÂˆÛÛœÝ™^H\Ë—ÛØYÝ]UŒJÙ^JNÂˆÝ]KœØØ[HH™^œØØ[NÂˆÝ]KžH™^žÂˆÝ]KžHH™^žNÂˆšY]ÜÜœØÜ›ÛÊÈYŒÜŒ™Z]š[ÜŽˆ˜]]ÈˆJNÂˆ\JÈ™[YX\Ý\™NYK\œÚ\ÝYHJNÂˆNÂˆÛÛœÝÛÛ[Ú[H
+›ØØ[
+HOˆÝ]KœØØ[HHBˆÈÈ™›ØØ[žÈÝ]KœØØ[KNŠšY]ÜÜœØÜ›ÛÜ
+È›ØØ[žJHÈÝ]KœØØ[HBˆˆÈŠ›ØØ[žHÝ]Kž
+HÈÝ]KœØØ[KNŠ›ØØ[žHHÝ]KžJHÈÝ]KœØØ[HNÂˆÛÛœÝÙ]\›Ý[™H
+™^›ØØ[[˜ÚÜŠHOˆÂˆÝ]KœØØ[HHÛ[\ØØ[J™^
+NÂˆYˆ
+Ý]KœØØ[HˆJHÂˆÝ]KžH›ØØ[žH[˜ÚÜ‹ž
+ˆÝ]KœØØ[NÂˆÝ]KžHH›ØØ[žHH[˜ÚÜ‹žH
+ˆÝ]KœØØ[NÂˆ\J
+NÂˆH[ÙHÂˆÝ]KžHÈÝ]KžHHÂˆ\J
+NÂˆšY]ÜÜœØÜ›ÛYHÂˆšY]ÜÜœØÜ›ÛÜHX]›X^
+[˜ÚÜ‹žH
+ˆÝ]KœØØ[HH›ØØ[žJNÂˆBˆNÂ‚ˆÝ\™˜XÙKœÝ[Kž›ÛÛHHˆŽÂˆÝ\™˜XÙKœÝ[K›YHŒŽÂˆÝ\™˜XÙKœÝ[K˜[œÙ›Ü›SÜšYÚ[ˆHŒŽÂˆYX\Ý\™J
+NÂˆ\J
+NÂ‚ˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚÝ\‹
+]™[
+HOˆÂˆYˆ
+]™[ÝXÚ\Ë›[™ÝHŠHÂˆÛÛœÝØK—HH]™[ÝXÚ\ÎÂˆÛÛœÝ›ØØ[HZYÚ[
+K‹šY]ÜÜ
+NÂˆ][HHYNÈ[ˆH[Âˆ[˜ÚHÈ\Ý[˜ÙN“X]›X^
+K\Ý[˜ÙJKŠJKØØ[NœÝ]KœØØ[K[˜ÚÜŽ˜ÛÛ[Ú[
+›ØØ[
+KÝ\Y]œ\™›Ü›X[˜ÙK››ÝÊ
+KZYÚ[œYÙSZYÚ[
+KŠK[Ý™Y™˜[ÙHNÂˆ\Ë—×ÜÝ\šÑÝX\™[[ŒHH[™š[š]NÂˆ\œ˜^K™œ›ÛJ]™[ÝXÚ\ÊK™›Ü‘XXÚ
+
+ÝXÚ
+HOˆØ[˜Ù[Û
+›ÛÝ™[[Y[œ›ÛTÚ[ËŠÝXÚ˜ÛY[ÝXÚ˜ÛY[JHØÝ[Y[™[[Y[œ›ÛTÚ[
+ÝXÚ˜ÛY[ÝXÚ˜ÛY[JJJNÂˆ]™[œ™]™[Y˜][
+
+NÂˆH[ÙHYˆ
+]™[ÝXÚ\Ë›[™ÝOOHH	‰ˆÝ]KœØØ[HˆH	‰ˆ[][JHÂˆÛÛœÝÝXÚH]™[ÝXÚ\ÖÌNÂˆ[ˆHÈÛY[ÝXÚ˜ÛY[ÛY[NÝXÚ˜ÛY[KœÝ]KžNœÝ]KžK\™Ù]™]™[\™Ù][Ý™Y™˜[ÙHNÂˆBˆKÈ\ÜÚ]™N™˜[ÙHJNÂ‚ˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚ[Ý™H‹
+]™[
+HOˆÂˆYˆ
+]™[ÝXÚ\Ë›[™ÝHˆ	‰ˆ[˜Ú
+HÂˆÛÛœÝØK—HH]™[ÝXÚ\ÎÂˆÛÛœÝ›ØØ[HZYÚ[
+K‹šY]ÜÜ
+NÂˆÛÛœÝÝ\œ™[\Ý[˜ÙHH\Ý[˜ÙJKŠNÂˆÙ]\›Ý[™
+[˜ÚœØØ[H
+ˆÝ\œ™[\Ý[˜ÙHÈ[˜Ú™\Ý[˜ÙK›ØØ[[˜Ú˜[˜ÚÜŠNÂˆYˆ
+Ú[\Ý[˜ÙJ[˜Ú›ZYÚ[YÙSZYÚ[
+KŠJHˆTÓSÕ‘HX]˜XœÊÝ\œ™[\Ý[˜ÙK\[˜Ú™\Ý[˜ÙJHˆTÓSÕ‘JH[˜Ú›[Ý™YHYNÂˆ]™[œ™]™[Y˜][
+
+NÂˆ™]\›ŽÂˆBˆYˆ
+\[ˆ]™[ÝXÚ\Ë›[™ÝOOHHÝ]KœØØ[HHJH™]\›ŽÂˆÛÛœÝÝXÚH]™[ÝXÚ\ÖÌNÂˆÛÛœÝHÝXÚ˜ÛY[\[‹˜ÛY[HHÝXÚ˜ÛY[K\[‹˜ÛY[NÂˆYˆ
+\[‹›[Ý™Y	‰ˆX]š\Ý
+JHS—Õ‘TÒÓ
+H™]\›ŽÂˆYˆ
+\[‹›[Ý™Y
+HÈ[‹›[Ý™Y]YNÈ\Ë—×ÜÝ\šÑÝX\™[[ŒOR[™š[š]NÈØ[˜Ù[Û
+[‹\™Ù]
+NÈBˆÛÛœÝˆH›Ý[™Ê
+NÂˆYˆ
+‹›Ý™\™›ÝÖ
+HÝ]KžH[‹ž
+ÈÂˆYˆ
+‹›Ý™\™›ÝÖJHÝ]KžHH[‹žH
+ÈNÂˆ\J
+NÂˆ]™[œ™]™[Y˜][
+
+NÂˆKÈ\ÜÚ]™N™˜[ÙHJNÂ‚ˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚ[™‹
+]™[
+HOˆÂˆËÈÙY\HÜšYÚ[˜[ÛËYš[™Ù\ˆÙ\Ý\™H[[HÙXÛÛ™š[™Ù\ˆX]™\Ë‚ˆËÈÛX\š[™È[˜ÚÛˆHš\œÝYXYHHÛËYš[™Ù\ˆ\[\ÜÜÚX›HÂˆËÈÛÛ\]H[™\™Y›Ü™Hœ›ÚÙHHÛËYš[™Ù\ˆÝX›K]\™\Ù]‚ˆYˆ
+][H	‰ˆ]™[ÝXÚ\Ë›[™ÝOOHJHÂˆ[[[Âˆ]™[œ™]™[Y˜][
+
+NÂˆ™]\›ŽÂˆBˆYˆ
+]™[ÝXÚ\Ë›[™Ý
+H™]\›ŽÂˆÛÛœÝÛÛ\]YH[˜ÚÂˆÛÛœÝØ\Ó][HH][NÂˆÛÛœÝ[Ý™YH›ÛÛX[Š[Ë›[Ý™Y
+NÂˆ[˜Ú[[È[[[È][OY˜[ÙNÂˆYˆ
+Ý]KœØØ[HHÓTÓRSˆ	‰ˆÝ]KœØØ[HHÓTÓPV	‰ˆÝ]KœØØ[HOOHJHÂˆÝ]KœØØ[OLNÈÝ]KžLÈÝ]KžOLÈ\JÜ\œÚ\ÝY_JNÈÚÝÕØ\Ý
+
+NÂˆH[ÙH\JÜ\œÚ\ÝY_JNÂˆÛÛœÝ›ÝÏ\\™›Ü›X[˜ÙK››ÝÊ
+NÂˆYˆ
+Ø\Ó][JHÂˆ]™[œ™]™[Y˜][
+
+NÂˆ\Ë—×ÜÝ\šÑÝX\™[[ŒO[›ÝÊÑÕPT‘ÓTÎÂˆÛÛœÝ\Õ\XÛÛ\]Y	‰ˆXÛÛ\]Y›[Ý™Y	‰ˆ›ÝËXÛÛ\]YœÝ\Y]UTÑTUSÓŽÂˆYˆ
+\Õ\
+HÂˆYˆ
+ÛÕ\	‰ˆ›ÝË]ÛÕ\˜]QÕP“WÕTÑSVH	‰ˆÚ[\Ý[˜ÙJÛÕ\›ZYÚ[ÛÛ\]Y›ZYÚ[
+OM
+HÈÛÕ\[[È™\Ù]
+YJNÈBˆ[ÙHÛÕ\^Ø]››ÝËZYÚ[˜ÛÛ\]Y›ZYÚ[NÂˆH[ÙHÛÕ\[[ÂˆH[ÙHYˆ
+[Ý™Y
+H\Ë—×ÜÝ\šÑÝX\™[[ŒO[›ÝÊÑÕPT‘ÓTÎÂˆKÈ\ÜÚ]™N™˜[ÙHJNÂˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚØ[˜Ù[‹
+
+HOˆÈ[˜Ú[[Ü[[[Û][OY˜[ÙNØ\JÜ\œÚ\ÝY_JNÝ\Ë—×ÜÝ\šÑÝX\™[[ŒO\\™›Ü›X[˜ÙK››ÝÊ
+JÑÕPT‘ÓTÎÈKÈ\ÜÚ]™NYHJNÂˆšY]ÜÜ˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+]™[
+HOˆÂˆYˆ
+\Ë—×ÜÝ\šÑÝX\™[[ŒOOOR[™š[š]H\™›Ü›X[˜ÙK››ÝÊ
+O[X™\Š\Ë—×ÜÝ\šÑÝX\™[[Œ_
+JHÈ]™[œ™]™[Y˜][
+
+NÙ]™[œÝÜ[[YYX]T›ÜYØ][ÛŠ
+NÈBˆKÈØ\\™NYHJNÂ‚ˆ›ÛÝœ]Y\žTÙ[XÝÜ[
+‹˜›ÝÛK[˜]‹]ŒLHÙ]K]šY]Ë]ŒLWHŠK™›Ü‘XXÚ
+
+]ÛŠHOˆ]Û‹˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+]™[
+HOˆÂˆYˆ
+\Ë—×ÜÝ\šÑÝX\™[[ŒOOOR[™š[š]H\™›Ü›X[˜ÙK››ÝÊ
+O[X™\Š\Ë—×ÜÝ\šÑÝX\™[[Œ_
+JHÂˆ]™[œ™]™[Y˜][
+
+NÂˆ]™[œÝÜ[[YYX]T›ÜYØ][ÛŠ
+NÂˆ™]\›ŽÂˆBˆÝ]KžLÜÝ]KžOLÝšY]ÜÜœØÜ›ÛÊÛYŒÜŒ™Z]š[ÜŽˆ˜]]ÈŸJNÝ\Ë—ÜØ]™TÝ]UŒJÙ^KÝ]JNÂˆKÈØ\\™NYHJJNÂ‚ˆÛÛœÝ™\Ú^™HH
+
+HOˆ™\]Y\Ý[š[X][Û‘œ˜[YJ
+
+HOˆ\JÜ™[YX\Ý\™NY_JJNÂˆYˆ
+\[Ùˆ™\Ú^™SØœÙ\™\ˆOOH™[˜Ý[ÛˆŠHÈ\Ë—×ÜÝ\šÔ™\Ú^™SØœÙ\™\•ŒO[™]È™\Ú^™SØœÙ\™\Š™\Ú^™JNÝ\Ë—×ÜÝ\šÔ™\Ú^™SØœÙ\™\•ŒK›ØœÙ\™JÝ\™˜XÙJNÈBˆÚ[™ÝË˜Y]™[\Ý[™\Šœ™\Ú^™H‹™\Ú^™KÜ\ÜÚ]™NY_JNÂˆÚ[™ÝËš\ÝX[šY]ÜÜË˜Y]™[\Ý[™\Šœ™\Ú^™H‹™\Ú^™KÜ\ÜÚ]™NY_JNÂˆ\Ë—×ÜÝ\šÔ™\Ú^™PÛX[\ŒOJ
+OOžÝÚ[™ÝËœ™[[Ý™Q]™[\Ý[™\Šœ™\Ú^™H‹™\Ú^™JNÝÚ[™ÝËš\ÝX[šY]ÜÜËœ™[[Ý™Q]™[\Ý[™\Šœ™\Ú^™H‹™\Ú^™JNßNÂˆ\Ë—×ÜÝ\šÐØ[˜\ÐÛÛ›Û\•ŒO^ÂˆšY]ÜÜˆÝ\™˜XÙKˆÝ]Kˆ™Yœ™\ÚŠ
+OO˜\JÜ™[YX\Ý\™NY_JKˆ™\Ù]ÜÚ][Û‹ˆÝÚ]ÚÛÛ^ˆ™\Ù]ˆNÂˆ™\]Y\Ý[š[X][Û‘œ˜[YJ
+
+HOˆ\JÜ™[YX\Ý\™NY_JJNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂˆÛÛœÝ›ÛÝ]\ËœÚYÝÔ›ÛÝÂˆYˆ
+\›ÛÝ
+H™]\›ŽÂˆÛÛœÝÝX]O\›ÛÝœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[XTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂˆÛÛœÝšY]ÜÜ\›ÛÝœ]Y\žTÙ[XÝÜŠ‹ž›ÛÛK]šY]ÜÜ]ŒŒž›ÛÛK]šY]ÜÜ]ŒMÈŠNÂˆYˆ
+šY]ÜÜ
+H\Ë—Ú[œÝ[Ý[™\™Ø[˜\ÕŒJšY]ÜÜ
+NÂˆYˆ
+\›ÛÝœ]Y\žTÙ[XÝÜŠœÝ[VÙ]K\Ý\šË]ZK]ŒWHŠJHÂˆÛÛœÝÝ[OYØÝ[Y[˜Ü™X]Q[[Y[
+œÝ[HŠNÂˆÝ[K™]\Ù]œÝ\šÕZUŒOHYHŽÂˆÝ[K^ÛÛ[Xˆ˜\ZXY\žÙ\Ü^N™ÜšYZ[\Ü[ÙÜšY][\]KXÛÛ[[œÎLœZ[›X^
+YœŠHLœZ[\Ü[Ø[YÛ‹Z][\Î˜Ù[\ˆZ[\Ü[ÛZ[‹ZZYÚŒœZ[\Ü[ÙØ\ŒZ[\Ü[ÛX\™Ú[ŽŒZ[\Ü[ÜY[™ÎŒZ[\Ü[Bˆ˜\ZXY\ˆ]K]Ü˜\ÙÜšYXÛÛ[[ŽŒˆZ[\Ü[Ú\ÝYžK\Ù[Ž˜Ù[\ˆZ[\Ü[Ý^X[YÛŽ˜Ù[\ˆZ[\Ü[ÛZ[‹]ÚYŒZ[\Ü[K˜\ZXY\ˆ]KZXÛÛžÙ\Ü^N››Û™HZ[\Ü[Bˆ˜\ZXY\ˆ^Ù›Û\Ú^™NŒŒ\Z[\Ü[Ù›Û]ÙZYÚŽZ[\Ü[K˜\ZXY\ˆœÝX]^Ù›Û\Ú^™NŒLœZ[\Ü[Ù›Û]ÙZYÚMŒZ[\Ü[ØÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠHZ[\Ü[Bˆ˜\ZXY\ˆœÞ\Ý[K[Y[K]ŒM‹˜\ZXY\ˆœ™Yœ™\ÚÝÚYZ[\Ü[ÛZ[‹]ÚYZ[\Ü[ÚZYÚZ[\Ü[ÛZ[‹ZZYÚZ[\Ü[Ø›Ü™\‹\˜Y]\ÎŒMœZ[\Ü[Ø›Ü™\ŽŒ\ÛÛY˜\ŠKY]šY\‹XÛÛÜŠHZ[\Ü[Ø˜XÚÙÜ›Ý[™˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠHZ[\Ü[Ø›Þ\ÚYÝÎ˜\ŠKZKXØ\™X›Þ\ÚYÝËœ™Ø˜JŒLŠJHZ[\Ü[ÜY[™ÎŒZ[\Ü[Ù\Ü^N™ÜšYZ[\Ü[ÜXÙKZ][\Î˜Ù[\ˆZ[\Ü[Bˆ˜\ZXY\ˆœÞ\Ý[K[Y[K]ŒMžÙÜšYXÛÛ[[ŽŒHZ[\Ü[ÙÜšY\›ÝÎŒHZ[\Ü[Ú\ÝYžK\Ù[ŽœÝ\Z[\Ü[ØÛÛÜŽ˜\ŠK\š[X\žK]^XÛÛÜŠHZ[\Ü[K˜\ZXY\ˆœ™Yœ™\ÚÙÜšYXÛÛ[[ŽŒÈZ[\Ü[ÙÜšY\›ÝÎŒHZ[\Ü[Ú\ÝYžK\Ù[Ž™[™Z[\Ü[ØÛÛÜŽ˜\ŠK\š[X\žKXÛÛÜŠHZ[\Ü[Bˆ˜\ZXY\ˆœÞ\Ý[K[Y[K]ŒMˆKZXÛÛ‹˜\ZXY\ˆœ™Yœ™\ÚKZXÛÛžËK[YËZXÛÛ‹\Ú^™NŒ\Z[\Ü[BˆXœË˜›ÝÛK[˜]‹]ŒL^ÜÜÚ][ÛŽ™š^YZ[\Ü[ÛYŒZ[\Ü[ÜšYÚŒZ[\Ü[Ø›ÝÛNŒZ[\Ü[ÝÚYŒL	HZ[\Ü[ÛX\™Ú[ŽŒZ[\Ü[ÜY[™ÎX^
+[ŠØY™KX\™XKZ[œÙ]\šYÚ
+JHØ[Ê
+È[ŠØY™KX\™XKZ[œÙ]X›ÝÛK
+JHX^
+[ŠØY™KX\™XKZ[œÙ][Y
+JHZ[\Ü[Ø›Ü™\‹\˜Y]\ÎŒZ[\Ü[Ø›Ü™\‹]ÜŒ\ÛÛY˜\ŠKY]šY\‹XÛÛÜŠHZ[\Ü[Ø˜XÚÙÜ›Ý[™˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠHZ[\Ü[Ø›Þ\ÚYÝÎŒLÜM™Ø˜JŒ
+HZ[\Ü[Þ‹Z[™^ŒÌZ[\Ü[Bˆ˜›ÝÛK[˜]‹]ŒLHXžÛZ[‹ZZYÚLœZ[\Ü[ÚZYÚ˜]]ÈZ[\Ü[Ø›Ü™\‹\˜Y]\ÎŒMZ[\Ü[Ù›Û\Ú^™NŒLœZ[\Ü[Ù›Û]ÙZYÚÌZ[\Ü[ØÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠHZ[\Ü[Ø˜XÚÙÜ›Ý[™˜[œÜ\™[Z[\Ü[Ø›Þ\ÚYÝÎ››Û™HZ[\Ü[Bˆ˜›ÝÛK[˜]‹]ŒLHXˆKZXÛÛžËK[YËZXÛÛ‹\Ú^™NŒŽZ[\Ü[K˜›ÝÛK[˜]‹]ŒLHXˆÜ[žÙ›Û\Ú^™NŒLœZ[\Ü[Ù›Û]ÙZYÚÌZ[\Ü[ÝÚ]K\ÜXÙN››ÝÜ˜\Z[\Ü[Bˆ˜›ÝÛK[˜]‹]ŒLHX‹˜XÝ]™^ØÛÛÜŽ˜\ŠK\š[X\žKXÛÛÜŠHZ[\Ü[Ø˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\š[X\žKXÛÛÜŠHLIK˜[œÜ\™[
+HZ[\Ü[Ø›Þ\ÚYÝÎ››Û™HZ[\Ü[Bˆž›ÛÛK]šY]ÜÜ]Œ^ÜÜÚ][ÛŽœ™[]]™NÛZ[‹]ÚYŒÛZ[‹ZZYÚŒÛÝ™\œØÜ›ÛX™Z]š[ÜŽ˜ÛÛZ[ŽË]ÙXšÚ][Ý™\™›ÝË\ØÜ›Û[™ÎÝXÚKž›ÛÛK]šY]ÜÜ]ŒK›˜]]™K\ØÜ›ÛÛÝ™\™›ÝË^šY[ˆZ[\Ü[ÛÝ™\™›ÝË^N˜]]ÈZ[\Ü[ÝÝXÚXXÝ[ÛŽœ[‹^HZ[\Ü[Kž›ÛÛK]šY]ÜÜ]ŒKž›ÛÛYYÛÝ™\™›ÝÎšY[ˆZ[\Ü[ÝÝXÚXXÝ[ÛŽ››Û™HZ[\Ü[Bˆž›ÛÛK\ÝYÙK]Œ^ÜÜÚ][ÛŽœ™[]]™NÛZ[‹]ÚYŒL	NÛZ[‹ZZYÚŒL	NÛÝ™\™›ÝÎš\ÚX›_Kž›ÛÛK\Ý\™˜XÙK]Œ^ÜÜÚ][ÛŽ˜XœÛÛ]NÛYŒÝÜŒÝ˜[œÙ›Ü›K[ÜšYÚ[ŽŒÝÚ[XÚ[™ÙN˜[œÙ›Ü›_Bˆž›ÛÛK]Ø\Ý]Œ^ÜÜÚ][ÛŽ™š^YÛYL	NØ›ÝÛN˜Ø[ÊÍœ
+È[ŠØY™KX\™XKZ[œÙ]X›ÝÛK
+JNÝ˜[œÙ›Ü›N˜[œÛ]JML	K
+NÛÜXÚ]NŒÜÚ[\‹Y]™[Î››Û™NÜY[™ÎŽLÜØ›Ü™\‹\˜Y]\ÎŽNN\Ø˜XÚÙÜ›Ý[™œ™Ø˜JŒÌKŽ
+NØÛÛÜŽˆÙ™™ŽÙ›Û\Ú^™NŒLœÙ›Û]ÙZYÚÌÝ˜[œÚ][ÛŽ‹ŒNÎÞ‹Z[™^LKž›ÛÛK]Ø\Ý]ŒKš\ÚX›^ÛÜXÚ]NŒNÝ˜[œÙ›Ü›N˜[œÛ]JML	K
+_BˆYYXJX^]ÚYŒÎL
+^Ë˜\ZXY\žÙÜšY][\]KXÛÛ[[œÎZ[›X^
+YœŠHZ[\Ü[ÛZ[‹ZZYÚŒZ[\Ü[_BˆÂˆ›ÛÝ˜\[™
+Ý[JNÂˆBˆNÂŸBŸJJ
+NÂŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒKšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]Œ‹šœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒ‹ˆŽÂ˜ÛÛœÝT×ÐT•ÓÔ’ÈBˆ‹ÜÝ\š×ÜÛÛ\œÝÙ\—Ü[™[Ø\ÜÙ]ËÜÝ\šËXÛÝ[žKLL[Û›[™Kœ™ÏÝL‹ˆŽÂ‚™[˜Ý[Ûˆ\ØÊ˜[YJHÂˆ™]\›ˆÝš[™Ê˜[YHÏÈˆŠBˆœ™\XÙP[
+‰ˆ‹‰˜[\ÈŠBˆœ™\XÙP[
+‹‰›ÈŠBˆœ™\XÙP[
+ˆ‹‰™ÝÈŠBˆœ™\XÙP[
+	È‰Ë‰œ][ÝÈŠBˆœ™\XÙP[
+‰È‹‰ˆÌÎNÈŠNÂŸB‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒŠHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒˆHYNÂ‚ˆ[™[œ›ÝÝ\K—ØÛÛ›™XÝ[Û”Ý]\ÕŒˆH[˜Ý[Ûˆ
+]šXÙJHÂˆÛÛœÝÛÝYH\Ë—Ú\ÓÛŠ]šXÙK˜ÛÝYØÛÛ›™XÝYŠNÂˆÛÛœÝÝ[HH\Ë—Ú\ÓÛŠ]šXÙK™]WÜÝ[HŠNÂ‚ˆÛÛœÝÚ[›™[HÛÝYOOHYBˆÈÈX™[ˆ´'´,t.ô,4.´/ˆ‹Û™Nˆ™ÛÛÙˆBˆˆÛÝYOOH˜[ÙBˆÈÈX™[ˆ´'t-t`ˆ4`t,´cô-ô.‹Û™Nˆ˜˜YˆBˆˆÈX™[ˆ´'t-t`ˆ4-4,4/t/tbôaH‹Û™Nˆ[šÛ›ÝÛˆˆNÂˆÛÛœÝœ™\Ú™\ÜÈHÝ[HOOH˜[ÙBˆÈÈX™[ˆ´%4,4/t/tbô-H4,4.´`´`ô,4.ôc4/tbÈ‹Û™Nˆ˜Ý\œ™[ˆBˆˆÝ[HOOHYBˆÈÈX™[ˆ´%4,4/t/tbô-H4`ô`t`´,4`4-t.ô.‹Û™NˆØ\›ˆˆBˆˆÈX™[ˆ´'t-t`ˆ4-4,4/t/tbôaH‹Û™Nˆ[šÛ›ÝÛˆˆNÂ‚ˆ™]\›ˆÈÚ[›™[œ™\Ú™\ÜÈNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—ÜÝÙ\”Ý]\ÕŒˆH[˜Ý[Ûˆ
+]šXÙJHÂˆÛÛœÝ[ÙHH\Ë—Û[ÙJ]šXÙJNÂˆÛÛœÝÛ˜]\žHH[ÙHOOH˜˜]\žWÛ[ÙHˆ\Ë—Ú\ÓÛŠ]šXÙK›Û—Ø˜]\žHŠHOOHYNÂˆYˆ
+Û˜]\žJHÂˆ™]\›ˆÂˆ]Nˆ´'´`ˆ4,t,4`´,4`4-t.‹ˆ]Z[˜4't,4,ô`4`ô-ô.´,4/ô.4`´,4-t`´`tcÈ4/´`ˆ4$4&´$H0­È4$´bôat/´-	Ý\Ë—Ù›Ü›X]
+]šXÙK›Ý]]Ý›ÛYÙHŠ_XˆÛ™NˆØ\›ˆ‹ˆNÂˆBˆYˆ
+[ÙHOOH›[™WÛ[ÙHŠHÂˆ™]\›ˆÂˆ]Nˆ´'´`ˆ4`t-t`´.‹ˆ]Z[˜4$´bôat/´-	Ý\Ë—Ù›Ü›X]
+]šXÙK›Ý]]Ý›ÛYÙHŠ_H0­È	Ý\Ë—Ù›Ü›X]
+]šXÙK›Ý]]Ùœ™\]Y[˜ÞHŠ_XˆÛ™Nˆ™ÛÛÙ‹ˆNÂˆBˆYˆ
+[ÙHOOH™˜][Û[ÙHŠHÂˆ™]\›ˆÂˆ]Nˆ´'t-H4/´/ô`4-t-4-t.ô-t/t/ˆ‹ˆ]Z[ˆ•TÈ4`t/´/´,tbt,4-t`ˆ4,4,´,4`4.4.t/tbô.H4`4-t-´.4/‹ˆÛ™Nˆ˜˜Y‹ˆNÂˆBˆ™]\›ˆÂˆ]Nˆ´'t-H4/´/ô`4-t-4-t.ô-t/t/ˆ‹ˆ]Z[ˆ´(4-t-´.4/4ct.ô-t.´`´`4/´/ô.4`´,4/t.4cÈ4-4/´`t`´/´,´-t`4/t/ˆ4/t-H4`ô`t`´,4/t/´,´.ô-t/H‹ˆÛ™Nˆ[šÛ›ÝÛˆ‹ˆNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\“Ý™\šY]ÕŒLHH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝ]šXÙHH\Ë—ÜÙ[XÝY]šXÙUŒLJ
+NÂˆYˆ
+Y]šXÙJH™]\›ˆ\Ë—Ù[\J•TÈ4/t-H4/t,4.t-4-t/tbÈŠNÂ‚ˆÛÛœÝÝÙ\ˆH\Ë—ÜÝÙ\”Ý]\ÕŒŠ]šXÙJNÂˆÛÛœÝÛÛ›™XÝ[ÛˆH\Ë—ØÛÛ›™XÝ[Û”Ý]\ÕŒŠ]šXÙJNÂˆÛÛœÝ˜]\žHH\Ë—Û[Y\šXÊ]šXÙK˜˜]\žWØØ\XÚ]HŠNÂˆÛÛœÝØYH\Ë—Û[Y\šXÊ]šXÙK›Ý]]ÛØYŠNÂˆÛÛœÝ˜XÚÙÜ›Ý[™H\Ë—Ú\›Ð˜XÚÙÜ›Ý[™ŒLJ]šXÙJNÂ‚ˆ™]\›ˆÙXÝ[ÛˆÛ\ÜÏH›Ý™\šY]Ë]ŒLHÝ™\šY]Ë]Œˆ‚ˆ\XÛHÛ\ÜÏH\ËZ\›Ë]ŒLHØ\™]ŒLH	Ù\ØÊÝÙ\‹Û™J_HˆÝ[OH‹KZ\›ËX˜XÚÙÜ›Ý[™]ŒLN\›
+	ÉÙ\ØÊ˜XÚÙÜ›Ý[™
+_IÊH‚ˆ]ˆÛ\ÜÏHš\›ËZXY]ŒLH‚ˆ]ˆÛ\ÜÏHš\›ËXÛÜK]ŒLH‚ˆÜ[´'ô&4(´$4't&4%OÜÜ[‚ˆ‰Ù\ØÊÝÙ\‹]J_OÚ‚ˆ‰Ù\ØÊÝÙ\‹™]Z[
+_OÜ‚ˆÙ]‚ˆ]ˆÛ\ÜÏH™œ™\Ú™\ÜË]ŒLHÛÛ›™XÝ[Û‹]Œˆ	Ù\ØÊÛÛ›™XÝ[Û‹˜Ú[›™[Û™J_Hˆ›ÛOHœÝ]\Èˆ\šXK[]™OHœÛ]Hˆ\šXK[X™[H‰Ù\ØÊÛÛ›™XÝ[Û‹˜Ú[›™[›X™[
+_H0­È	Ù\ØÊÛÛ›™XÝ[Û‹™œ™\Ú™\ÜË›X™[
+_H‚ˆÜ[ˆÛ\ÜÏH˜ÛÛ›™XÝ[Û‹[[\]Œˆˆ\šXKZY[HYHÜÜ[‚ˆÜ[ˆÛ\ÜÏH˜ÛÛ›™XÝ[Û‹XÛÜK]Œˆ‚ˆÝ›Û™Ï‰Ù\ØÊÛÛ›™XÝ[Û‹˜Ú[›™[›X™[
+_OÜÝ›Û™Ï‚ˆÛX[Û\ÜÏH‰Ù\ØÊÛÛ›™XÝ[Û‹™œ™\Ú™\ÜËÛ™J_H‰Ù\ØÊÛÛ›™XÝ[Û‹™œ™\Ú™\ÜË›X™[
+_OÜÛX[‚ˆÜÜ[‚ˆÙ]‚ˆÙ]‚‚ˆ]ˆÛ\ÜÏHš\›Ë\ØÙ[™K]ŒLH‚ˆ]ˆÛ\ÜÏHœØÙ[™K[›ÙK]ŒLHÜšYˆ	Ý\Ë—Ù[]RY
+]šXÙKš[œ]Ý›ÛYÙHŠHÈ]KY[]OH‰Ù\ØÊ\Ë—Ù[]RY
+]šXÙKš[œ]Ý›ÛYÙHŠJ_H˜ˆˆŸO‚ˆKZXÛÛˆXÛÛH›YN˜[œÛZ\ÜÚ[Û‹]ÝÙ\ˆÚKZXÛÛ‚ˆ]Ü[´(t-t`´cÜÜ[Ý›Û™Ï‰Ù\ØÊ\Ë—Ù›Ü›X]
+]šXÙKš[œ]Ý›ÛYÙHŠJ_OÜÝ›Û™ÏÙ]‚ˆÙ]‚ˆ]ˆÛ\ÜÏHœØÙ[™K[›ÙK]ŒLHØYˆ	Ý\Ë—Ù[]RY
+]šXÙK›Ý]]ÛØYŠHÈ]KY[]OH‰Ù\ØÊ\Ë—Ù[]RY
+]šXÙK›Ý]]ÛØYŠJ_H˜ˆˆŸO‚ˆKZXÛÛˆXÛÛH›YN›[Ûš]Ü‹Y\Ú›Ø\™ÚKZXÛÛ‚ˆ]Ü[´'t,4,ô`4`ô-ô.´,ÜÜ[Ý›Û™Ï‰ÛØYOOH[È¸ %ˆˆ	ÓX]œ›Ý[™
+ØY
+_H	XOÜÝ›Û™ÏÙ]‚ˆÙ]‚ˆ[YÈÛ\ÜÏH\ËX\]ŒLHˆÜ˜ÏH‰ÕT×ÐT•ÓÔ’ßHˆ[H”Ý\šÈÛÝ[žHLÓ“S‘H
+MJHˆØY[™ÏH™XYÙ\ˆˆXÛÙ[™ÏHœÞ[˜Èˆ™]Úš[Üš]OHšYÚˆ	Ý\Ë—Ù[]RY
+]šXÙK›[ÙHŠHÈ]KY[]OH‰Ù\ØÊ\Ë—Ù[]RY
+]šXÙK›[ÙHŠJ_H˜ˆˆŸO‚ˆ]ˆÛ\ÜÏHœØÙ[™K[›ÙK]ŒLH˜]\žHˆ	Ý\Ë—Ù[]RY
+]šXÙK˜˜]\žWØØ\XÚ]HŠHÈ]KY[]OH‰Ù\ØÊ\Ë—Ù[]RY
+]šXÙK˜˜]\žWØØ\XÚ]HŠJ_H˜ˆˆŸO‚ˆKZXÛÛˆXÛÛH›YN˜˜]\žHÚKZXÛÛ‚ˆ]Ü[´$4&´$OÜÜ[Ý›Û™Ï‰Ø˜]\žHOOH[È¸ %ˆˆ	ÓX]œ›Ý[™
+˜]\žJ_H	XOÜÝ›Û™ÏÙ]‚ˆÙ]‚ˆÙ]‚ˆØ\XÛO‚ˆÜÙXÝ[Û˜ÂˆNÂ‚ˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆYˆ
+\›ÛÝ
+H™]\›ŽÂ‚ˆÛÛœÝÝX]HH›ÛÝœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂ‚ˆYˆ
+\›ÛÝœ]Y\žTÙ[XÝÜŠœÝ[VÙ]K\Ý\šË]ZK]Œ—HŠJHÂˆÛÛœÝÝ[HHØÝ[Y[˜Ü™X]Q[[Y[
+œÝ[HŠNÂˆÝ[K™]\Ù]œÝ\šÕZUŒˆHYHŽÂˆÝ[K^ÛÛ[HˆÊˆRH‹ŽˆÝ™\šY]ÈÛÛZ[œÈÛ™Hš\ÝX[ÛÝ\˜ÙHÙˆ]ˆ
+‹Âˆ›Ý™\šY]Ë]ŒˆÈØ\ŒZ[\Ü[ÈBˆ›Ý™\šY]Ë]Œˆ\ËZ\›Ë]ŒLHÈZ[‹ZZYÚŒÈBˆ›Ý™\šY]Ë]Œˆš\›Ë\ØÙ[™K]ŒLHÈZYÚŒÍŒZ[\Ü[ÈBˆ›Ý™\šY]Ë]Œˆš\›ËXÛÜK]ŒLHÈZ[‹]ÚYŒÈX^]ÚY	NÈB‚ˆ˜ÛÛ›™XÝ[Û‹]ŒˆÂˆZ[‹ZZYÚZ[\Ü[ÂˆX^]ÚYL‰HZ[\Ü[ÂˆØ\ŒLZ[\Ü[ÂˆY[™ÎŒLœMZ[\Ü[Âˆ›Ü™\‹\˜Y]\ÎŒNZ[\Ü[ÂˆÛÛÜŽ˜\ŠK\š[X\žK]^XÛÛÜŠHZ[\Ü[ÂˆBˆ˜ÛÛ›™XÝ[Û‹[[\]ŒˆÂˆÚYŒLÂˆZYÚŒLÂˆ›^ŒLÂˆ›Ü™\‹\˜Y]\ÎL	NÂˆ˜XÚÙÜ›Ý[™˜\ŠKY\ØX›Y]^XÛÛÜŠNÂˆ›Þ\ÚYÝÎŒÜÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKY\ØX›Y]^XÛÛÜŠHL‰K˜[œÜ\™[
+NÂˆBˆ˜ÛÛ›™XÝ[Û‹]Œ‹™ÛÛÙ˜ÛÛ›™XÝ[Û‹[[\]ŒˆÈ˜XÚÙÜ›Ý[™˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™XYMMJNÈ›Þ\ÚYÝÎŒÜÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™XYMMJHL‰K˜[œÜ\™[
+NÈBˆ˜ÛÛ›™XÝ[Û‹]Œ‹˜˜Y˜ÛÛ›™XÝ[Û‹[[\]ŒˆÈ˜XÚÙÜ›Ý[™˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙLØŒØŠNÈ›Þ\ÚYÝÎŒÜÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙLØŒØŠHL‰K˜[œÜ\™[
+NÈBˆ˜ÛÛ›™XÝ[Û‹XÛÜK]ŒˆÈZ[‹]ÚYŒÈ\Ü^N™ÜšYÈØ\ŒœÈ^X[YÛŽ›YÈBˆ˜ÛÛ›™XÝ[Û‹XÛÜK]ŒˆÝ›Û™ÈÈÛÛÜŽ˜\ŠKY\ØX›Y]^XÛÛÜŠNÈ›Û\Ú^™NŒM\È›Û]ÙZYÚÌÈ[™KZZYÚŒKŒNÈBˆ˜ÛÛ›™XÝ[Û‹]Œ‹™ÛÛÙ˜ÛÛ›™XÝ[Û‹XÛÜK]ŒˆÝ›Û™ÈÈÛÛÜŽ˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™XYMMJNÈBˆ˜ÛÛ›™XÝ[Û‹]Œ‹˜˜Y˜ÛÛ›™XÝ[Û‹XÛÜK]ŒˆÝ›Û™ÈÈÛÛÜŽ˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙLØŒØŠNÈBˆ˜ÛÛ›™XÝ[Û‹XÛÜK]ŒˆÛX[ÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈ›Û\Ú^™NŒLœÈ›Û]ÙZYÚMLÈ[™KZZYÚŒKŒMNÈBˆ˜ÛÛ›™XÝ[Û‹XÛÜK]ŒˆÛX[Ø\›ˆÈÛÛÜŽ˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙYŒ
+NÈ›Û]ÙZYÚLÈBˆ˜ÛÛ›™XÝ[Û‹XÛÜK]ŒˆÛX[[šÛ›ÝÛˆÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈB‚ˆYYXH
+X^]ÚYÌ
+HÂˆ›Ý™\šY]Ë]Œˆš\›Ë\ØÙ[™K]ŒLHÈZYÚŒÍŒZ[\Ü[ÈBˆ˜ÛÛ›™XÝ[Û‹]ŒˆÈX^]ÚYLIHZ[\Ü[ÈBˆ›Ý™\šY]Ë]Œˆš\›ËXÛÜK]ŒLHÈX^]ÚYŒŒÌÈBˆBˆÂˆ›ÛÝ˜\[™
+Ý[JNÂˆBˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]Œ‹šœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒËšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒ‹ÈŽÂ‚™[˜Ý[Ûˆ\ØÊ˜[YJHÂˆ™]\›ˆÝš[™Ê˜[YHÏÈˆŠBˆœ™\XÙP[
+‰ˆ‹‰˜[\ÈŠBˆœ™\XÙP[
+‹‰›ÈŠBˆœ™\XÙP[
+ˆ‹‰™ÝÈŠBˆœ™\XÙP[
+	È‰Ë‰œ][ÝÈŠBˆœ™\XÙP[
+‰È‹‰ˆÌÎNÈŠNÂŸB‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒÊHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒÈHYNÂ‚ˆÛÛœÝ™]š[Ý\ÓÝ™\šY]ÈH[™[œ›ÝÝ\K—Ü™[™\“Ý™\šY]ÕŒLNÂˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\“Ý™\šY]ÕŒLHH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝ[H™]š[Ý\ÓÝ™\šY]Ë˜Ø[
+\ÊNÂˆÛÛœÝ]šXÙHH\Ë—ÜÙ[XÝY]šXÙUŒLJ
+NÂˆYˆ
+Y]šXÙHZ[š[˜ÛY\Ê	ØÛ\ÜÏH›Ý™\šY]Ë]ŒLHÝ™\šY]Ë]Œˆ‰ÊJH™]\›ˆ[Â‚ˆÛÛœÝ˜]\žHH\Ë—Û[Y\šXÊ]šXÙK˜˜]\žWØØ\XÚ]HŠNÂˆÛÛœÝ™\Ù\™HH\Ë—Ü™\Ù\™UŒL
+]šXÙK˜]\žHOOH[
+NÂˆÛÛœÝ[]RYH\Ë—Ù[]RY
+]šXÙK˜˜]\žWØØ\XÚ]HŠNÂ‚ˆËÈ\ÈÝ[H\È\ÙˆH[š]X[ÛÜšË\Ý\™˜XÙHX\šÝ\ˆH›ÛÛH[™Ú[™BˆËÈ\™Y›Ü™HYX\Ý\™\ÈHš[˜[Ù[ÛY]žH[œÝXYÙˆØœÙ\š[™ÈH]\ˆÔÔÂˆËÈZYÚÚ[™ÙH[™œšYY›HÛÛ\Ú[™ËÜ™\ÜÚ][Ûš[™ÈHSÔÈØ[˜\Ë‚ˆÛÛœÝÝX›TÝ[HHÝ[H]K\Ý\šË[Ý™\šY]Ë]ŒÏ‚ˆÙXÝ[Û‹›Ý™\šY]Ë]ŒˆÈØ\ŒLZ[\Ü[ÈBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆ\ËZ\›Ë]ŒLHÈZ[‹ZZYÚŒÈBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆš\›Ë\ØÙ[™K]ŒLHÈZYÚŒÍŒZ[\Ü[ÈBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆš\›ËXÛÜK]ŒLHÈZ[‹]ÚYŒÈX^]ÚY	NÈBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆ˜ÛÛ›™XÝ[Û‹]ŒˆÂˆZ[‹ZZYÚZ[\Ü[ÂˆX^]ÚYL‰HZ[\Ü[ÂˆØ\ŒLZ[\Ü[ÂˆY[™ÎŒLœMZ[\Ü[Âˆ›Ü™\‹\˜Y]\ÎŒNZ[\Ü[ÂˆÛÛÜŽ˜\ŠK\š[X\žK]^XÛÛÜŠHZ[\Ü[ÂˆBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆ˜ÛÛ›™XÝ[Û‹[[\]ŒˆÂˆÚYŒLÈZYÚŒLÈ›^ŒLÈ›Ü™\‹\˜Y]\ÎL	NÂˆ˜XÚÙÜ›Ý[™˜\ŠKY\ØX›Y]^XÛÛÜŠNÂˆ›Þ\ÚYÝÎŒÜÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKY\ØX›Y]^XÛÛÜŠHL‰K˜[œÜ\™[
+NÂˆBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆ˜ÛÛ›™XÝ[Û‹]Œ‹™ÛÛÙ˜ÛÛ›™XÝ[Û‹[[\]ŒˆÈ˜XÚÙÜ›Ý[™˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™XYMMJNÈ›Þ\ÚYÝÎŒÜÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™XYMMJHL‰K˜[œÜ\™[
+NÈBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆ˜ÛÛ›™XÝ[Û‹]Œ‹˜˜Y˜ÛÛ›™XÝ[Û‹[[\]ŒˆÈ˜XÚÙÜ›Ý[™˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙLØŒØŠNÈ›Þ\ÚYÝÎŒÜÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙLØŒØŠHL‰K˜[œÜ\™[
+NÈBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆ˜ÛÛ›™XÝ[Û‹XÛÜK]ŒˆÈZ[‹]ÚYŒÈ\Ü^N™ÜšYÈØ\ŒœÈ^X[YÛŽ›YÈBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆ˜ÛÛ›™XÝ[Û‹XÛÜK]ŒˆÝ›Û™ÈÈÛÛÜŽ˜\ŠKY\ØX›Y]^XÛÛÜŠNÈ›Û\Ú^™NŒM\È›Û]ÙZYÚÌÈ[™KZZYÚŒKŒNÈBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆ˜ÛÛ›™XÝ[Û‹]Œ‹™ÛÛÙ˜ÛÛ›™XÝ[Û‹XÛÜK]ŒˆÝ›Û™ÈÈÛÛÜŽ˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™XYMMJNÈBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆ˜ÛÛ›™XÝ[Û‹]Œ‹˜˜Y˜ÛÛ›™XÝ[Û‹XÛÜK]ŒˆÝ›Û™ÈÈÛÛÜŽ˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙLØŒØŠNÈBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆ˜ÛÛ›™XÝ[Û‹XÛÜK]ŒˆÛX[ÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈ›Û\Ú^™NŒLœÈ›Û]ÙZYÚMLÈ[™KZZYÚŒKŒMNÈBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆ˜ÛÛ›™XÝ[Û‹XÛÜK]ŒˆÛX[Ø\›ˆÈÛÛÜŽ˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙYŒ
+NÈ›Û]ÙZYÚLÈBˆœ™\Ù\™K\Ýš\]ŒÈÂˆZ[‹ZZYÚLÈ\Ü^N™›^È[YÛ‹Z][\Î˜Ù[\ŽÈ\ÝYžKXÛÛ[˜Ù[\ŽÈØ\ŒLÂˆY[™ÎŒLMÈ›Ü™\ŽŒ\ÛÛYÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™XYMMJHŽ	K˜[œÜ\™[
+NÂˆ›Ü™\‹\˜Y]\ÎŒNÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™XYMMJHÉK˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠJNÂˆÛÛÜŽ˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™XYMMJNÈ›Þ\ÚYÝÎŒ\N™Ø˜JŒËKÍ‹ŒJNÂˆBˆœ™\Ù\™K\Ýš\]ŒÈKZXÛÛˆÈK[YËZXÛÛ‹\Ú^™NŒ\È›^Œ]]ÎÈBˆœ™\Ù\™K\Ýš\]ŒÈÝ›Û™ÈÈ›Û\Ú^™NŒM\È[™KZZYÚŒKŒMNÈBˆœ™\Ù\™K\Ýš\]ŒËØ\›ˆÈÛÛÜŽ˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙYŒ
+NÈ›Ü™\‹XÛÛÜŽ˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙYŒ
+HÌ	K˜[œÜ\™[
+NÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK]Ø\›š[™ËXÛÛÜ‹ÙYŒ
+HÉK˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠJNÈBˆœ™\Ù\™K\Ýš\]ŒË˜˜YÈÛÛÜŽ˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙLØŒØŠNÈ›Ü™\‹XÛÛÜŽ˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙLØŒØŠHÌ	K˜[œÜ\™[
+NÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙLØŒØŠHÉK˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠJNÈBˆœ™\Ù\™K\Ýš\]ŒË[šÛ›ÝÛˆÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈ›Ü™\‹XÛÛÜŽ˜\ŠKY]šY\‹XÛÛÜŠNÈ˜XÚÙÜ›Ý[™˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠNÈBˆYYXH
+X^]ÚYÌ
+HÂˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆš\›Ë\ØÙ[™K]ŒLHÈZYÚŒÍŒZ[\Ü[ÈBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆ˜ÛÛ›™XÝ[Û‹]ŒˆÈX^]ÚYLIHZ[\Ü[ÈBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆš\›ËXÛÜK]ŒLHÈX^]ÚYŒŒÌÈBˆBˆÜÝ[O˜Â‚ˆÛÛœÝ™\Ù\™TÝš\H]ˆÛ\ÜÏHœ™\Ù\™K\Ýš\]ŒÈ	Ù\ØÊ™\Ù\™KÛ™J_Hˆ	Ù[]RYÈ]KY[]OH‰Ù\ØÊ[]RY
+_H˜ˆˆŸO‚ˆKZXÛÛˆXÛÛH‰Ù\ØÊ™\Ù\™KšXÛÛŠ_HÚKZXÛÛ‚ˆÝ›Û™Ï‰Ù\ØÊ™\Ù\™K›X™[
+_OÜÝ›Û™Ï‚ˆÙ]˜Â‚ˆ™]\›ˆÝX›TÝ[H
+È[œ™\XÙJÜÙXÝ[Ûˆ‹	Ü™\Ù\™TÝš\OÜÙXÝ[Û˜
+NÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂˆÛÛœÝÝX]HH\ËœÚYÝÔ›ÛÝËœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒËšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒŽšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒ‹ŽŽÂ˜ÛÛœÝÓ‘TÈHÈ™ÛÛÙ‹Ø\›ˆ‹˜˜Y‹[šÛ›ÝÛˆ‹˜Ý\œ™[—NÂ‚™[˜Ý[ÛˆÙ]^
+›ÛÝÙ[XÝÜ‹˜[YJHÂˆÛÛœÝ[[Y[H›ÛÝËœ]Y\žTÙ[XÝÜŠÙ[XÝÜŠNÂˆYˆ
+Y[[Y[
+H™]\›ˆ˜[ÙNÂˆÛÛœÝ^HÝš[™Ê˜[YHÏÈˆŠNÂˆYˆ
+[[Y[^ÛÛ[OOH^
+H[[Y[^ÛÛ[H^Âˆ™]\›ˆYNÂŸB‚™[˜Ý[ÛˆÙ]Û™J[[Y[Û™JHÂˆYˆ
+Y[[Y[
+H™]\›ˆ˜[ÙNÂˆ[[Y[˜Û\ÜÓ\Ýœ™[[Ý™J‹‹•Ó‘TÊNÂˆYˆ
+Û™JH[[Y[˜Û\ÜÓ\Ý˜Y
+Û™JNÂˆ™]\›ˆYNÂŸB‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒŽ
+HÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒŽHYNÂ‚ˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—ÛÝ™\šY]ÔÝXÝ\™RÙ^UŒŽH[˜Ý[Ûˆ
+]šXÙJHÂˆÛÛœÝ[]Y\ÈHØš™XÝ™[šY\Ê]šXÙOË™[]Y\ÈßJBˆ›X\
+
+ÚÙ^K[]RYJHOˆÚÙ^K[]RYJBˆœÛÜ
+
+ÛYKÜšYÚJHOˆY›ØØ[PÛÛ\\™JšYÚ
+JNÂˆ™]\›ˆ”ÓÓ‹œÝš[™ÚYžJÂˆ\Ë—ÝšY]Ëˆ]šXÙOËšYÏÈ[ˆ]šXÙOË›˜[YHÏÈ[ˆ]šXÙOË›[Ù[ÏÈ[ˆ[]Y\ËˆJNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü]ÚÝ™\šY]ÕŒŽH[˜Ý[Ûˆ
+]šXÙJHÂˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆÛÛœÝÝ™\šY]ÈH›ÛÝËœ]Y\žTÙ[XÝÜŠ‹ž›ÛÛK\Ý\™˜XÙK]ŒH›Ý™\šY]Ë]ŒˆŠBˆ›ÛÝËœ]Y\žTÙ[XÝÜŠ‹›Ý™\šY]Ë]ŒˆŠNÂˆYˆ
+\›ÛÝ[Ý™\šY]ÈY]šXÙJH™]\›ˆ˜[ÙNÂ‚ˆÛÛœÝÝÙ\ˆH\Ë—ÜÝÙ\”Ý]\ÕŒŠ]šXÙJNÂˆÛÛœÝÛÛ›™XÝ[ÛˆH\Ë—ØÛÛ›™XÝ[Û”Ý]\ÕŒŠ]šXÙJNÂˆÛÛœÝ˜]\žHH\Ë—Û[Y\šXÊ]šXÙK˜˜]\žWØØ\XÚ]HŠNÂˆÛÛœÝØYH\Ë—Û[Y\šXÊ]šXÙK›Ý]]ÛØYŠNÂˆÛÛœÝ™\Ù\™HH\Ë—Ü™\Ù\™UŒL
+]šXÙK˜]\žHOOH[
+NÂ‚ˆÙ]Û™JÝ™\šY]Ëœ]Y\žTÙ[XÝÜŠ‹\ËZ\›Ë]ŒLHŠKÝÙ\‹Û™JNÂˆÙ]^
+Ý™\šY]Ë‹š\›ËXÛÜK]ŒLHˆ‹ÝÙ\‹]JNÂˆÙ]^
+Ý™\šY]Ë‹š\›ËXÛÜK]ŒLH‹ÝÙ\‹™]Z[
+NÂ‚ˆÛÛœÝÛÛ›™XÝ[Û”\]YHHÝ™\šY]Ëœ]Y\žTÙ[XÝÜŠ‹˜ÛÛ›™XÝ[Û‹]ŒˆŠNÂˆÙ]Û™JÛÛ›™XÝ[Û”\]YKÛÛ›™XÝ[Û‹˜Ú[›™[Û™JNÂˆÙ]^
+Ý™\šY]Ë‹˜ÛÛ›™XÝ[Û‹XÛÜK]ŒˆÝ›Û™È‹ÛÛ›™XÝ[Û‹˜Ú[›™[›X™[
+NÂˆÛÛœÝœ™\Ú™\ÜÈHÝ™\šY]Ëœ]Y\žTÙ[XÝÜŠ‹˜ÛÛ›™XÝ[Û‹XÛÜK]ŒˆÛX[ŠNÂˆÙ]Û™Jœ™\Ú™\ÜËÛÛ›™XÝ[Û‹™œ™\Ú™\ÜËÛ™JNÂˆYˆ
+œ™\Ú™\ÜÈ	‰ˆœ™\Ú™\ÜË^ÛÛ[OOHÛÛ›™XÝ[Û‹™œ™\Ú™\ÜË›X™[
+HÂˆœ™\Ú™\ÜË^ÛÛ[HÛÛ›™XÝ[Û‹™œ™\Ú™\ÜË›X™[ÂˆB‚ˆÙ]^
+Ý™\šY]Ë‹œØÙ[™K[›ÙK]ŒLK™ÜšYÝ›Û™È‹\Ë—Ù›Ü›X]
+]šXÙKš[œ]Ý›ÛYÙHŠJNÂˆÙ]^
+Ý™\šY]Ë‹œØÙ[™K[›ÙK]ŒLK›ØYÝ›Û™È‹ØYOOH[È¸ %ˆˆ	ÓX]œ›Ý[™
+ØY
+_H	X
+NÂˆÙ]^
+Ý™\šY]Ë‹œØÙ[™K[›ÙK]ŒLK˜˜]\žHÝ›Û™È‹˜]\žHOOH[È¸ %ˆˆ	ÓX]œ›Ý[™
+˜]\žJ_H	X
+NÂ‚ˆÛÛœÝ™\Ù\™TÝš\HÝ™\šY]Ëœ]Y\žTÙ[XÝÜŠ‹œ™\Ù\™K\Ýš\]ŒÈŠNÂˆÙ]Û™J™\Ù\™TÝš\™\Ù\™KÛ™JNÂˆÛÛœÝ™\Ù\™RXÛÛˆH™\Ù\™TÝš\Ëœ]Y\žTÙ[XÝÜŠšKZXÛÛˆŠNÂˆYˆ
+™\Ù\™RXÛÛË™Ù]]šX]JšXÛÛˆŠHOOH™\Ù\™KšXÛÛŠHÂˆ™\Ù\™RXÛÛËœÙ]]šX]JšXÛÛˆ‹™\Ù\™KšXÛÛŠNÂˆBˆÙ]^
+Ý™\šY]Ë‹œ™\Ù\™K\Ýš\]ŒÈÝ›Û™È‹™\Ù\™K›X™[
+NÂ‚ˆÙ]^
+›ÛÝ‹œÝX]H‹TÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸX
+NÂˆ™]\›ˆYNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝ]šXÙHH\Ë—ÜÙ[XÝY]šXÙUŒLOËŠ
+NÂˆÛÛœÝÝXÝ\™RÙ^HH\Ë—ÝšY]ÈOOH›Ý™\šY]Èˆ	‰ˆ]šXÙBˆÈ\Ë—ÛÝ™\šY]ÔÝXÝ\™RÙ^UŒŽ
+]šXÙJBˆˆ[Â‚ˆËÈ[[Y]žH\]\È]\Ý›Ý™\XÙHHÝ™\šY]ÈÓKˆÙY\[™ÈHØ[YBˆËÈ[XYÙKØ[˜\È[™›ÛÛH›Ù\È™]™[ÈSÔÈÙX•šY]È›\Ú\È[™™\Ù\™\ÂˆËÈH\Ù\‰ÜÈÝ\œ™[ØØ[K[ˆ[™˜]]™HØÜ›ÛÜÚ][Û‹‚ˆYˆ
+ˆÝXÝ\™RÙ^Bˆ	‰ˆ\Ë—ÛÝ™\šY]ÔÝXÝ\™PØXÚUŒŽOOHÝXÝ\™RÙ^Bˆ	‰ˆ\Ë—Ü]ÚÝ™\šY]ÕŒŽ
+]šXÙJBˆ
+HÂˆ™]\›ŽÂˆB‚ˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂ‚ˆÛÛœÝ™[™\™Y]šXÙHH\Ë—ÜÙ[XÝY]šXÙUŒLOËŠ
+NÂˆ\Ë—ÛÝ™\šY]ÔÝXÝ\™PØXÚUŒŽH\Ë—ÝšY]ÈOOH›Ý™\šY]Èˆ	‰ˆ™[™\™Y]šXÙBˆÈ\Ë—ÛÝ™\šY]ÔÝXÝ\™RÙ^UŒŽ
+™[™\™Y]šXÙJBˆˆ[ÂˆÙ]^
+\ËœÚYÝÔ›ÛÝ‹œÝX]H‹TÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸX
+NÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒŽšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒŽKšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒ‹ŽHŽÂ‚™[˜Ý[ÛˆØ[YU™YTÚ\JÝ\œ™[\Ú\™Y
+HÂˆYˆ
+XÝ\œ™[Y\Ú\™YÝ\œ™[››ÙU\HOOH\Ú\™Y››ÙU\JH™]\›ˆ˜[ÙNÂˆYˆ
+Ý\œ™[››ÙU\HOOH›ÙK‘SSQS•Ó“ÑH	‰ˆÝ\œ™[YÓ˜[YHOOH\Ú\™YYÓ˜[YJH™]\›ˆ˜[ÙNÂˆYˆ
+Ý\œ™[˜Ú[›Ù\Ë›[™ÝOOH\Ú\™Y˜Ú[›Ù\Ë›[™Ý
+H™]\›ˆ˜[ÙNÂˆ›Üˆ
+][™^HÈ[™^Ý\œ™[˜Ú[›Ù\Ë›[™ÝÈ[™^
+ÏHJHÂˆYˆ
+\Ø[YU™YTÚ\JÝ\œ™[˜Ú[›Ù\ÖÚ[™^K\Ú\™Y˜Ú[›Ù\ÖÚ[™^JJH™]\›ˆ˜[ÙNÂˆBˆ™]\›ˆYNÂŸB‚™[˜Ý[ÛˆØ[YPÚ[™[”Ú\JÝ\œ™[\Ú\™Y
+HÂˆYˆ
+Ý\œ™[˜Ú[›Ù\Ë›[™ÝOOH\Ú\™Y˜Ú[›Ù\Ë›[™Ý
+H™]\›ˆ˜[ÙNÂˆ›Üˆ
+][™^HÈ[™^Ý\œ™[˜Ú[›Ù\Ë›[™ÝÈ[™^
+ÏHJHÂˆYˆ
+\Ø[YU™YTÚ\JÝ\œ™[˜Ú[›Ù\ÖÚ[™^K\Ú\™Y˜Ú[›Ù\ÖÚ[™^JJH™]\›ˆ˜[ÙNÂˆBˆ™]\›ˆYNÂŸB‚™[˜Ý[ÛˆÞ[˜Ð]šX]\ÊÝ\œ™[\Ú\™Y
+HÂˆ›Üˆ
+ÛÛœÝ]šX]HÙˆ\œ˜^K™œ›ÛJÝ\œ™[˜]šX]\ÊJHÂˆYˆ
+Y\Ú\™Yš\Ð]šX]J]šX]K›˜[YJJHÝ\œ™[œ™[[Ý™P]šX]J]šX]K›˜[YJNÂˆBˆ›Üˆ
+ÛÛœÝ]šX]HÙˆ\œ˜^K™œ›ÛJ\Ú\™Y˜]šX]\ÊJHÂˆYˆ
+Ý\œ™[™Ù]]šX]J]šX]K›˜[YJHOOH]šX]K˜[YJHÂˆÝ\œ™[œÙ]]šX]J]šX]K›˜[YK]šX]K˜[YJNÂˆBˆBŸB‚™[˜Ý[ÛˆÞ[˜Õ™YJÝ\œ™[\Ú\™Y
+HÂˆYˆ
+Ý\œ™[››ÙU\HOOH›ÙK•VÓ“ÑJHÂˆYˆ
+Ý\œ™[››ÙU˜[YHOOH\Ú\™Y››ÙU˜[YJHÝ\œ™[››ÙU˜[YHH\Ú\™Y››ÙU˜[YNÂˆ™]\›ŽÂˆBˆYˆ
+Ý\œ™[››ÙU\HOOH›ÙK‘SSQS•Ó“ÑJHÞ[˜Ð]šX]\ÊÝ\œ™[\Ú\™Y
+NÂˆ›Üˆ
+][™^HÈ[™^Ý\œ™[˜Ú[›Ù\Ë›[™ÝÈ[™^
+ÏHJHÂˆÞ[˜Õ™YJÝ\œ™[˜Ú[›Ù\ÖÚ[™^K\Ú\™Y˜Ú[›Ù\ÖÚ[™^JNÂˆBŸB‚™[˜Ý[ÛˆÞ[˜ÐÚ[™[ŠÝ\œ™[\Ú\™Y
+HÂˆ›Üˆ
+][™^HÈ[™^Ý\œ™[˜Ú[›Ù\Ë›[™ÝÈ[™^
+ÏHJHÂˆÞ[˜Õ™YJÝ\œ™[˜Ú[›Ù\ÖÚ[™^K\Ú\™Y˜Ú[›Ù\ÖÚ[™^JNÂˆBŸB‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒŽJHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒŽHHYNÂ‚ˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—Û]™TÝXÝ\™RÙ^UŒŽHH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝ]šXÙ\ÈH
+\Ë—Ù]šXÙ\È×JK›X\
+
+]šXÙJHOˆÂˆ]šXÙKšYˆ]šXÙK›˜[YKˆ]šXÙK›[Ù[ˆØš™XÝ™[šY\Ê]šXÙK™[]Y\ÈßJBˆ›X\
+
+ÚÙ^K[]RYJHOˆÚÙ^K[]RYJBˆœÛÜ
+
+ÛYKÜšYÚJHOˆY›ØØ[PÛÛ\\™JšYÚ
+JKˆJNÂˆ™]\›ˆ”ÓÓ‹œÝš[™ÚYžJÂˆ\Ë—ÝšY]Ëˆ\Ë—ÜÙ[XÝY\ÒYËŠ
+H[ˆ›ÛÛX[Š\Ë—ÛY[SÜ[ŠKˆ]šXÙ\ËˆJNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\“]™UšY]ÕŒŽHH[˜Ý[Ûˆ
+
+HÂˆYˆ
+\Ë—ÝšY]ÈOOH›Ý™\šY]ÈŠH™]\›ˆ\Ë—Ü™[™\“Ý™\šY]ÕŒLJ
+NÂˆYˆ
+\Ë—ÝšY]ÈOOH\ÈŠH™]\›ˆ\Ë—Ü™[™\•\ÕŒLJ
+NÂˆYˆ
+\Ë—ÝšY]ÈOOHš\ÝÜžHŠH™]\›ˆ\Ë—Ü™[™\’\ÝÜžJ
+NÂˆYˆ
+\Ë—ÝšY]ÈOOH™]™[ÈŠH™]\›ˆ\Ë—Ü™[™\‘]™[ÕŒLJ
+NÂˆYˆ
+\Ë—ÝšY]ÈOOH™XYÛ›ÜÝXÜÈŠH™]\›ˆ\Ë—Ü™[™\‘XYÛ›ÜÝXÜÊ
+NÂˆ™]\›ˆ[ÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü]Ú]™UšY]ÕŒŽHH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆÛÛœÝÝ\œ™[H›ÛÝËœ]Y\žTÙ[XÝÜŠ‹ž›ÛÛK\Ý\™˜XÙK]ŒHŠBˆ›ÛÝËœ]Y\žTÙ[XÝÜŠ‹ž›ÛÛKXÛÛ[]ŒMÈŠNÂˆÛÛœÝX\šÝ\H\Ë—Ü™[™\“]™UšY]ÕŒŽJ
+NÂˆYˆ
+\›ÛÝXÝ\œ™[\[ÙˆX\šÝ\OOHœÝš[™ÈŠH™]\›ˆ˜[ÙNÂ‚ˆÛÛœÝ[\]HHØÝ[Y[˜Ü™X]Q[[Y[
+[\]HŠNÂˆ[\]Kš[›™\’SHX\šÝ\ÂˆËÈH\›X[™[Ù[XÝÜˆX›Ý™HHØ[˜\ÈÝ\\œÙY\ÈHYØXÞHØØ[ˆËÈXYÛ›ÜÝXÜÈÙ[XÝÜ‹ÚXÚH›Ü›X[™[™\ˆ\[[™H[ÛÈ™[[Ý™\Ë‚ˆ[\]K˜ÛÛ[œ]Y\žTÙ[XÝÜ[
+‹™]šXÙK\ÝÚ]Ú\ˆŠK™›Ü‘XXÚ
+
+›ÙJHOˆ›ÙKœ™[[Ý™J
+JNÂˆËÈH›ÛÛH[œÝ[\ˆ[Ý™\È\˜Ú[™[‹›ÝÜ[]™[Ú]\ÜXÙH›Ù\Ë‚ˆËÈZ\œ›Üˆ]^XÝÚ\H›Üˆ][K\›ÛÝXYÛ›ÜÝXÜÈX\šÝ\‚ˆ\œ˜^K™œ›ÛJ[\]K˜ÛÛ[˜Ú[›Ù\ÊK™›Ü‘XXÚ
+
+›ÙJHOˆÂˆYˆ
+›ÙK››ÙU\HOOH›ÙK•VÓ“ÑH	‰ˆ[›ÙK››ÙU˜[YKš[J
+JH›ÙKœ™[[Ý™J
+NÂˆJNÂ‚ˆYˆ
+\Ø[YPÚ[™[”Ú\JÝ\œ™[[\]K˜ÛÛ[
+JH™]\›ˆ˜[ÙNÂˆÞ[˜ÐÚ[™[ŠÝ\œ™[[\]K˜ÛÛ[
+NÂ‚ˆÛÛœÝÝX]HH›ÛÝœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]OË^ÛÛ[OOHTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸX
+HÂˆÝX]K^ÛÛ[HTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂˆBˆ™]\›ˆYNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝØ[”]ÚH›ÛÛX[Šˆ\Ë—Ú\ÜÂˆ	‰ˆ]\Ë—ÛØY[™Ô™YÚ\ÝžBˆ	‰ˆ]\Ë—Ü™YÚ\ÝžQ\œ›Ü‚ˆ	‰ˆ\Ë—Ù]šXÙ\ÏË›[™Ýˆ
+NÂˆÛÛœÝÝXÝ\™RÙ^HHØ[”]ÚÈ\Ë—Û]™TÝXÝ\™RÙ^UŒŽJ
+Hˆ[Â‚ˆYˆ
+ˆÝXÝ\™RÙ^Bˆ	‰ˆ\Ë—Û]™TÝXÝ\™PØXÚUŒŽHOOHÝXÝ\™RÙ^Bˆ	‰ˆ\Ë—Ü]Ú]™UšY]ÕŒŽJ
+Bˆ
+HÂˆ™]\›ŽÂˆB‚ˆËÈ›Ü˜ÙHHÛ\ˆÝ™\šY]Ë[Û›HÝX\™ÈZY[Ú[™]™\ˆHÙ[XÝYˆËÈšY]ËÙ]šXÙHÝXÝ\™HXÝX[HÚ[™ÙY[™HÛÛ\]H™[™\ˆ\È™YYY‚ˆ\Ë—ÛÝ™\šY]ÔÝXÝ\™PØXÚUŒŽH[Âˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂ‚ˆ\Ë—Û]™TÝXÝ\™PØXÚUŒŽHHØ[”]ÚÈ\Ë—Û]™TÝXÝ\™RÙ^UŒŽJ
+Hˆ[ÂˆÛÛœÝÝX]HH\ËœÚYÝÔ›ÛÝËœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒŽKšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒÌšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒËŒŽÂ‚™[˜Ý[Ûˆ\ØÊ˜[YJHÂˆ™]\›ˆÝš[™Ê˜[YHÏÈˆŠBˆœ™\XÙP[
+‰ˆ‹‰˜[\ÈŠBˆœ™\XÙP[
+‹‰›ÈŠBˆœ™\XÙP[
+ˆ‹‰™ÝÈŠBˆœ™\XÙP[
+	È‰Ë‰œ][ÝÈŠBˆœ™\XÙP[
+‰È‹‰ˆÌÎNÈŠNÂŸB‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒÌ
+HÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒÌHYNÂ‚ˆÛÛœÝ™]š[Ý\ÓÝ™\šY]ÈH[™[œ›ÝÝ\K—Ü™[™\“Ý™\šY]ÕŒLNÂˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—Ø˜]\žQ˜XÝŒÌH[˜Ý[Ûˆ
+]šXÙKÙ^KX™[
+HÂˆÛÛœÝ[]RYH\Ë—Ù[]RY
+]šXÙKÙ^JNÂˆ™]\›ˆ]ˆÛ\ÜÏH˜˜]\žKY˜XÝ]ŒÌˆ	Ù[]RYÈ]KY[]OH‰Ù\ØÊ[]RY
+_H˜ˆˆŸO‚ˆÜ[‰Ù\ØÊX™[
+_OÜÜ[‚ˆÝ›Û™Ï‰Ù\ØÊ\Ë—Ù›Ü›X]
+]šXÙKÙ^K¸ %ŠJ_OÜÝ›Û™Ï‚ˆÙ]˜ÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\“Ý™\šY]ÕŒLHH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝ[H™]š[Ý\ÓÝ™\šY]Ë˜Ø[
+\ÊNÂˆÛÛœÝ]šXÙHH\Ë—ÜÙ[XÝY]šXÙUŒLJ
+NÂˆYˆ
+Y]šXÙHZ[š[˜ÛY\Ê	ØÛ\ÜÏH›Ý™\šY]Ë]ŒLHÝ™\šY]Ë]Œˆ‰ÊJH™]\›ˆ[Â‚ˆÛÛœÝÝX›TÝ[HHÝ[H]K\Ý\šË[Ý™\šY]Ë]ŒÌ‚ˆÙXÝ[Û‹›Ý™\šY]Ë]ŒˆœØÙ[™K[›ÙK]ŒLK˜˜]\žHÂˆÜÌœZ[\Ü[Âˆ›ÝÛN˜]]ÈZ[\Ü[ÂˆBˆ˜˜]\žKY]Z[Ë]ŒÌÂˆY[™ÎŒLœMÂˆ›Ü™\ŽŒ\ÛÛYÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™XYMMJH	K˜\ŠKY]šY\‹XÛÛÜŠJNÂˆ›Ü™\‹\˜Y]\ÎŒŒœÂˆ˜XÚÙÜ›Ý[™˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠNÂˆ›Þ\ÚYÝÎŒ\N™Ø˜JŒËKÍ‹ŒJNÂˆBˆ˜˜]\žKY]Z[ËZXY]ŒÌÂˆ\Ü^N™›^È[YÛ‹Z][\Î˜Ù[\ŽÈØ\ŽÈX\™Ú[‹X›ÝÛNŒLÂˆBˆ˜˜]\žKY]Z[ËZXY]ŒÌKZXÛÛˆÂˆK[YËZXÛÛ‹\Ú^™NŒŒÜÈÛÛÜŽ˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™XYMMJNÈ›^Œ]]ÎÂˆBˆ˜˜]\žKY]Z[ËZXY]ŒÌÝ›Û™ÈÂˆ›Û\Ú^™NŒMÜÈ[™KZZYÚŒKŒNÂˆBˆ˜˜]\žKY]Z[ËZXY]ŒÌÛX[ÂˆX\™Ú[‹[Y˜]]ÎÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈ›Û\Ú^™NŒL\È[™KZZYÚŒKŒNÂˆBˆ˜˜]\žKY˜XÝË]ŒÌÂˆ\Ü^N™ÜšYÈÜšY][\]KXÛÛ[[œÎœ™\X]
+Z[›X^
+YœŠJNÂˆBˆ˜˜]\žKY˜XÝ]ŒÌÂˆZ[‹]ÚYŒÈY[™ÎŒ\È›Ü™\‹[YŒ\ÛÛY˜\ŠKY]šY\‹XÛÛÜŠNÂˆBˆ˜˜]\žKY˜XÝ]ŒÌ™š\œÝXÚ[ÈY[™Ë[YŒÈ›Ü™\‹[YŒÈBˆ˜˜]\žKY˜XÝ]ŒÌ›\ÝXÚ[ÈY[™Ë\šYÚŒÈBˆ˜˜]\žKY˜XÝ]ŒÌÜ[‹˜˜]\žKY˜XÝ]ŒÌÝ›Û™ÈÈ\Ü^N˜›ØÚÎÈBˆ˜˜]\žKY˜XÝ]ŒÌÜ[ˆÂˆZ[‹ZZYÚŒÈÛÛÜŽ˜\ŠK\ÙXÛÛ™\žK]^XÛÛÜŠNÈ›Û\Ú^™NŒL\È[™KZZYÚŒKŒNÂˆBˆ˜˜]\žKY˜XÝ]ŒÌÝ›Û™ÈÂˆX\™Ú[‹]ÜÈÛÛÜŽ˜\ŠK\š[X\žK]^XÛÛÜŠNÈ›Û\Ú^™NŒM\È[™KZZYÚŒKŒNÂˆÝ™\™›ÝË]Ü˜\˜[ž]Ú\™NÂˆBˆYYXJX^]ÚYŒÎL
+HÂˆÙXÝ[Û‹›Ý™\šY]Ë]ŒˆœØÙ[™K[›ÙK]ŒLK˜˜]\žHÈÜŽZ[\Ü[ÈBˆ˜˜]\žKY]Z[Ë]ŒÌÈY[™ÎŒL\LœÈBˆ˜˜]\žKY]Z[ËZXY]ŒÌÛX[È\Ü^N››Û™NÈBˆ˜˜]\žKY˜XÝ]ŒÌÈY[™ÎŒœÈBˆ˜˜]\žKY˜XÝ]ŒÌÜ[ˆÈ›Û\Ú^™NŒLÈBˆ˜˜]\žKY˜XÝ]ŒÌÝ›Û™ÈÈ›Û\Ú^™NŒMÈBˆBˆÜÝ[O˜Â‚ˆÛÛœÝ]Z[ÈH\XÛHÛ\ÜÏH˜˜]\žKY]Z[Ë]ŒÌ‚ˆ]ˆÛ\ÜÏH˜˜]\žKY]Z[ËZXY]ŒÌ‚ˆKZXÛÛˆXÛÛH›YN˜˜]\žKZX\]˜\šX[ÚKZXÛÛ‚ˆÝ›Û™Ï´$t,4`´,4`4-tcÏÜÝ›Û™Ï‚ˆÛX[´(4,4`tb4.4`4-t/t/t,4cÈ4`´-t.ô-t/4-t`´`4.4cÏÜÛX[‚ˆÙ]‚ˆ]ˆÛ\ÜÏH˜˜]\žKY˜XÝË]ŒÌ‚ˆ	Ý\Ë—Ø˜]\žQ˜XÝŒÌ
+]šXÙK˜˜]\žWÝ›ÛYÙH‹´'t,4/ô`4cô-´-t/t.4-HŠ_Bˆ	Ý\Ë—Ø˜]\žQ˜XÝŒÌ
+]šXÙK˜˜]\žWÜYXÙWÛ[X™\ˆ‹´&´/´.ô.4aô-t`t`´,´/ˆ4$4&´$HŠ_Bˆ	Ý\Ë—Ø˜]\žQ˜XÝŒÌ
+]šXÙK˜Ú\™Ù\—Ý[\\˜]\™H‹´(´-t/4/Ëˆ4%ô(ÈŠ_Bˆ	Ý\Ë—Ø˜]\žQ˜XÝŒÌ
+]šXÙK˜˜]\žWÜ™[XZ[—Ý[YH‹´'´`t`´,4`´/´.ˆUÈŠ_BˆÙ]‚ˆØ\XÛO˜Â‚ˆ™]\›ˆÝX›TÝ[H
+È[œ™\XÙJÜÙXÝ[Ûˆ‹	Ù]Z[ßOÜÙXÝ[Û˜
+NÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂˆÛÛœÝÝX]HH\ËœÚYÝÔ›ÛÝËœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒÌšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒÌKšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒËŒHŽÂ‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒÌJHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒÌHHYNÂ‚ˆËÈÙ\Ý\™HÛÛ\][Ûˆ[™ÜÝ\[˜Ú˜]šYØ][ÛˆÝ\™\ÜÚ[Ûˆ\™H[\[Y[YˆËÈžHH\›X[™[Ø[˜\È^Y\ˆ[ˆŒNÈ\È^Y\ˆÛ›Hš[˜[^™\È^[Ý]‚‚ˆÛÛœÝ™]š[Ý\ÓÝ™\šY]ÈH[™[œ›ÝÝ\K—Ü™[™\“Ý™\šY]ÕŒLNÂˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\“Ý™\šY]ÕŒLHH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝ[H™]š[Ý\ÓÝ™\šY]Ë˜Ø[
+\ÊNÂˆYˆ
+Z[š[˜ÛY\Ê	ØÛ\ÜÏH›Ý™\šY]Ë]ŒLHÝ™\šY]Ë]Œˆ‰ÊJH™]\›ˆ[Â‚ˆ™]\›ˆÝ[H]K\Ý\šË[Ý™\šY]Ë]ŒÌO‚ˆÊˆÙY\HØ\XÚ]H\]YHš\ÝX[HÙ\\˜]Hœ›ÛHHØXš[™]ˆ
+‹ÂˆÙXÝ[Û‹›Ý™\šY]Ë]ŒˆœØÙ[™K[›ÙK]ŒLK˜˜]\žHÂˆÜNZ[\Ü[Âˆ›ÝÛN˜]]ÈZ[\Ü[ÂˆBˆÊˆHÛ™È˜[˜XÚÈÝ]H\ÈÛ™HØ[H[™NÈ›Ü›X[[ÙH]\ÈÙY\ˆZ\ˆ\ÝX›\ÚYÍx $ÌÎY\˜\˜ÚKˆ
+‹ÂˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆ\ËZ\›Ë]ŒLK[šÛ›ÝÛˆš\›ËXÛÜK]ŒLH‹ˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆ\ËZ\›Ë]ŒLK˜˜Yš\›ËXÛÜK]ŒLHˆÂˆÚ]K\ÜXÙN››ÝÜ˜\ÂˆÝ™\™›ÝË]Ü˜\››Ü›X[Âˆ›Û\Ú^™N˜Û[\
+ŒÜ‹ËŽ\
+HZ[\Ü[Âˆ]\‹\ÜXÚ[™Î‹KŒÍY[NÂˆBˆYYXJX^]ÚYŒÎL
+HÂˆÙXÝ[Û‹›Ý™\šY]Ë]ŒˆœØÙ[™K[›ÙK]ŒLK˜˜]\žHÈÜMZ[\Ü[ÈBˆBˆÜÝ[O‰Ú[XÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂˆÛÛœÝÝX]HH\ËœÚYÝÔ›ÛÝËœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒÌKšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒŽŒŽÂ˜ÛÛœÝÓ‘TÈHÈ™ÛÛÙ‹Ø\›ˆ‹˜˜Y‹[šÛ›ÝÛˆ‹˜Ý\œ™[—NÂ‚™[˜Ý[ÛˆØ[YU™YTÚ\JÝ\œ™[\Ú\™Y
+HÂˆYˆ
+XÝ\œ™[Y\Ú\™YÝ\œ™[››ÙU\HOOH\Ú\™Y››ÙU\JH™]\›ˆ˜[ÙNÂˆYˆ
+Ý\œ™[››ÙU\HOOH›ÙK‘SSQS•Ó“ÑH	‰ˆÝ\œ™[YÓ˜[YHOOH\Ú\™YYÓ˜[YJH™]\›ˆ˜[ÙNÂˆYˆ
+Ý\œ™[˜Ú[›Ù\Ë›[™ÝOOH\Ú\™Y˜Ú[›Ù\Ë›[™Ý
+H™]\›ˆ˜[ÙNÂˆ›Üˆ
+][™^HÈ[™^Ý\œ™[˜Ú[›Ù\Ë›[™ÝÈ[™^
+ÏHJHÂˆYˆ
+\Ø[YU™YTÚ\JÝ\œ™[˜Ú[›Ù\ÖÚ[™^K\Ú\™Y˜Ú[›Ù\ÖÚ[™^JJH™]\›ˆ˜[ÙNÂˆBˆ™]\›ˆYNÂŸB‚™[˜Ý[ÛˆØ[YPÚ[™[”Ú\JÝ\œ™[\Ú\™Y
+HÂˆYˆ
+Ý\œ™[˜Ú[›Ù\Ë›[™ÝOOH\Ú\™Y˜Ú[›Ù\Ë›[™Ý
+H™]\›ˆ˜[ÙNÂˆ›Üˆ
+][™^HÈ[™^Ý\œ™[˜Ú[›Ù\Ë›[™ÝÈ[™^
+ÏHJHÂˆYˆ
+\Ø[YU™YTÚ\JÝ\œ™[˜Ú[›Ù\ÖÚ[™^K\Ú\™Y˜Ú[›Ù\ÖÚ[™^JJH™]\›ˆ˜[ÙNÂˆBˆ™]\›ˆYNÂŸB‚™[˜Ý[ÛˆÞ[˜Ð]šX]\ÊÝ\œ™[\Ú\™Y
+HÂˆ›Üˆ
+ÛÛœÝ]šX]HÙˆ\œ˜^K™œ›ÛJÝ\œ™[˜]šX]\ÊJHÂˆYˆ
+Y\Ú\™Yš\Ð]šX]J]šX]K›˜[YJJHÝ\œ™[œ™[[Ý™P]šX]J]šX]K›˜[YJNÂˆBˆ›Üˆ
+ÛÛœÝ]šX]HÙˆ\œ˜^K™œ›ÛJ\Ú\™Y˜]šX]\ÊJHÂˆYˆ
+Ý\œ™[™Ù]]šX]J]šX]K›˜[YJHOOH]šX]K˜[YJHÂˆÝ\œ™[œÙ]]šX]J]šX]K›˜[YK]šX]K˜[YJNÂˆBˆBŸB‚™[˜Ý[ÛˆÞ[˜Õ™YJÝ\œ™[\Ú\™Y
+HÂˆYˆ
+Ý\œ™[››ÙU\HOOH›ÙK•VÓ“ÑJHÂˆYˆ
+Ý\œ™[››ÙU˜[YHOOH\Ú\™Y››ÙU˜[YJHÝ\œ™[››ÙU˜[YHH\Ú\™Y››ÙU˜[YNÂˆ™]\›ŽÂˆBˆYˆ
+Ý\œ™[››ÙU\HOOH›ÙK‘SSQS•Ó“ÑJHÞ[˜Ð]šX]\ÊÝ\œ™[\Ú\™Y
+NÂˆ›Üˆ
+][™^HÈ[™^Ý\œ™[˜Ú[›Ù\Ë›[™ÝÈ[™^
+ÏHJHÂˆÞ[˜Õ™YJÝ\œ™[˜Ú[›Ù\ÖÚ[™^K\Ú\™Y˜Ú[›Ù\ÖÚ[™^JNÂˆBŸB‚™[˜Ý[ÛˆÞ[˜ÐÚ[™[ŠÝ\œ™[\Ú\™Y
+HÂˆ›Üˆ
+][™^HÈ[™^Ý\œ™[˜Ú[›Ù\Ë›[™ÝÈ[™^
+ÏHJHÂˆÞ[˜Õ™YJÝ\œ™[˜Ú[›Ù\ÖÚ[™^K\Ú\™Y˜Ú[›Ù\ÖÚ[™^JNÂˆBŸB‚™[˜Ý[ÛˆÛX[•[\]JX\šÝ\
+HÂˆÛÛœÝ[\]HHØÝ[Y[˜Ü™X]Q[[Y[
+[\]HŠNÂˆ[\]Kš[›™\’SHX\šÝ\Âˆ[\]K˜ÛÛ[œ]Y\žTÙ[XÝÜ[
+‹™]šXÙK\ÝÚ]Ú\ˆŠK™›Ü‘XXÚ
+
+›ÙJHOˆ›ÙKœ™[[Ý™J
+JNÂˆ\œ˜^K™œ›ÛJ[\]K˜ÛÛ[˜Ú[›Ù\ÊK™›Ü‘XXÚ
+
+›ÙJHOˆÂˆYˆ
+›ÙK››ÙU\HOOH›ÙK•VÓ“ÑH	‰ˆ[›ÙK››ÙU˜[YKš[J
+JH›ÙKœ™[[Ý™J
+NÂˆJNÂˆ™]\›ˆ[\]NÂŸB‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒ
+HÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒHYNÂ‚ˆÛÛœÝYØXÞT™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—ÝšY]ÐØXÚRÙ^UŒH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝ]šXÙHH\Ë—ÜÙ[XÝY\ÒYËŠ
+H\Ë—ÙXYÛ›ÜÝXÑ]šXÙRY\Ë—Ù]šXÙ\ÏË–ÌOËšY™Y˜][ŽÂˆ™]\›ˆ	Ù]šXÙ_NŽ‰Ý\Ë—ÝšY]È›Ý™\šY]ÈŸXÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\•šY]ÓX\šÝ\ŒH[˜Ý[Ûˆ
+
+HÂˆ™]\›ˆ\Ë—Ü™[™\“]™UšY]ÕŒŽOËŠ
+HÏÈ[ÂˆNÂ‚ˆ[™[œ›ÝÝ\K—ÝšY]ÔÝXÝ\™RÙ^UŒH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝ]šXÙHH\Ë—ÜÙ[XÝY]šXÙUŒLOËŠ
+NÂˆÛÛœÝ[]Y\ÈHØš™XÝ™[šY\Ê]šXÙOË™[]Y\ÈßJBˆ›X\
+
+Û˜[YK[]RYJHOˆÛ˜[YK[]RYJBˆœÛÜ
+
+ÛYKÜšYÚJHOˆY›ØØ[PÛÛ\\™JšYÚ
+JNÂˆ™]\›ˆ”ÓÓ‹œÝš[™ÚYžJÝ\Ë—ÝšY]Ë]šXÙOËšY[[]Y\×JNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Øš[™šY]Ñ[]Y\ÕŒH[˜Ý[Ûˆ
+ØÛÜJHÂˆØÛÜOËœ]Y\žTÙ[XÝÜ[
+–Ù]KY[]WHŠK™›Ü‘XXÚ
+
+[[Y[
+HOˆÂˆYˆ
+[[Y[™]\Ù]œÝ\šÐ›Ý[™Œ
+H™]\›ŽÂˆ[[Y[™]\Ù]œÝ\šÐ›Ý[™ŒHYHŽÂˆÛÛœÝ[]RYH[[Y[™]\Ù]™[]NÂˆYˆ
+Y[]RY
+H™]\›ŽÂˆ][Y\ˆH[Âˆ]š\™YH˜[ÙNÂˆÛÛœÝÛX\ˆH
+
+HOˆÂˆYˆ
+[Y\ŠHÛX\•[Y[Ý]
+[Y\ŠNÂˆ[Y\ˆH[ÂˆNÂˆ[[Y[˜Y]™[\Ý[™\ŠœÚ[\™ÝÛˆ‹
+
+HOˆÂˆš\™YH˜[ÙNÂˆ[Y\ˆHÙ][Y[Ý]
+
+
+HOˆÂˆš\™YHYNÂˆ\Ë—ÜÚÝÓ[Ü™R[™›Ê[]RY
+NÂˆKLŒ
+NÂˆJNÂˆ[[Y[˜Y]™[\Ý[™\ŠœÚ[\\‹ÛX\ŠNÂˆ[[Y[˜Y]™[\Ý[™\ŠœÚ[\˜Ø[˜Ù[‹ÛX\ŠNÂˆ[[Y[˜Y]™[\Ý[™\ŠœÚ[\›X]™H‹ÛX\ŠNÂˆYˆ
+[[Y[˜Û\ÜÓ\Ý˜ÛÛZ[œÊš\ÝÜžK[[šÈŠJHÂˆ[[Y[˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+]™[
+HOˆÂˆYˆ
+Yš\™Y
+H\Ë—ÜÚÝÓ[Ü™R[™›Ê[]RY
+NÂˆ]™[œ™]™[Y˜][
+
+NÂˆJNÂˆBˆJNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—ØÜ™X]PØXÚYšY]ÕŒH[˜Ý[Ûˆ
+Ù^KX\šÝ\ÝXÝ\™RÙ^JHÂˆÛÛœÝÚ[H\Ë—×ÜÝ\šÔÚ[ŒÂˆYˆ
+\Ú[\[ÙˆX\šÝ\OOHœÝš[™ÈŠH™]\›ˆ[ÂˆÛÛœÝšY]ÈHØÝ[Y[˜Ü™X]Q[[Y[
+™]ˆŠNÂˆšY]Ë˜Û\ÜÓ˜[YHHÛÜšË]šY]Ë]ŒŽÂˆšY]Ë™]\Ù]˜ØXÚRÙ^UŒHÙ^NÂˆšY]Ë—×ÜÝ\šÔÝXÝ\™RÙ^UŒHÝXÝ\™RÙ^NÂˆšY]ËšY[ˆHYNÂˆÛÛœÝ[\]HHÛX[•[\]JX\šÝ\
+NÂˆšY]Ë˜\[™
+[\]K˜ÛÛ[
+NÂˆ\Ë—Øš[™šY]Ñ[]Y\ÕŒ
+šY]ÊNÂˆÚ[œÝ\™˜XÙK˜\[™
+šY]ÊNÂˆÚ[˜ØXÚKœÙ]
+Ù^KšY]ÊNÂˆ™]\›ˆšY]ÎÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü]ÚØXÚYšY]ÕŒH[˜Ý[Ûˆ
+šY]ËX\šÝ\ÝXÝ\™RÙ^JHÂˆYˆ
+]šY]È\[ÙˆX\šÝ\OOHœÝš[™ÈŠH™]\›ˆ˜[ÙNÂˆÛÛœÝ[\]HHÛX[•[\]JX\šÝ\
+NÂˆYˆ
+ˆšY]Ë—×ÜÝ\šÔÝXÝ\™RÙ^UŒOOHÝXÝ\™RÙ^Bˆ	‰ˆØ[YPÚ[™[”Ú\JšY]Ë[\]K˜ÛÛ[
+Bˆ
+HÂˆÞ[˜ÐÚ[™[ŠšY]Ë[\]K˜ÛÛ[
+NÂˆ™]\›ˆYNÂˆB‚ˆËÈÛ›HH™X[ÝXÝ\˜[Ú[™ÙHX^H™\XÙHÛ™HØXÚYÛÜšÈšY]ËˆBˆËÈXY\‹Ù[XÝÜ‹šY]ÜÜØ[˜\Ë\ÛÜšÈÝÛ™\ˆ[™›ÝÛHXˆ˜\‚ˆËÈ™[XZ[ˆHÜšYÚ[˜[[Ý[Y›Ù\Ë‚ˆšY]Ëœ™\XÙPÚ[™[Š[\]K˜ÛÛ[
+NÂˆšY]Ë—×ÜÝ\šÔÝXÝ\™RÙ^UŒHÝXÝ\™RÙ^NÂˆ\Ë—Øš[™šY]Ñ[]Y\ÕŒ
+šY]ÊNÂˆ™]\›ˆYNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—ÜÞ[˜ÔÚ[ÛÛ›ÛÕŒH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝÚ[H\Ë—×ÜÝ\šÔÚ[ŒÂˆYˆ
+\Ú[
+H™]\›ŽÂˆÛÛœÝÙ[XÝYYH\Ë—ÜÙ[XÝY\ÒYËŠ
+H\Ë—Ù]šXÙ\ÏË–ÌOËšY[ÂˆÚ[œÙ[XÝÜËœ]Y\žTÙ[XÝÜ[
+–Ù]K]\ËY]šXÙWHŠK™›Ü‘XXÚ
+
+]ÛŠHOˆÂˆÛÛœÝXÝ]™HH]Û‹™]\Ù]\Ñ]šXÙHOOHÙ[XÝYYÂˆYˆ
+]Û‹˜Û\ÜÓ\Ý˜ÛÛZ[œÊ˜XÝ]™HŠHOOHXÝ]™JHÂˆ]Û‹˜Û\ÜÓ\ÝÙÙÛJ˜XÝ]™H‹XÝ]™JNÂˆBˆÛÛœÝ™\ÜÙYHXÝ]™HÈYHˆˆ™˜[ÙHŽÂˆYˆ
+]Û‹™Ù]]šX]J˜\šXK\™\ÜÙYŠHOOH™\ÜÙY
+HÂˆ]Û‹œÙ]]šX]J˜\šXK\™\ÜÙY‹™\ÜÙY
+NÂˆBˆÛÛœÝ]šXÙHH\Ë—Ù]šXÙ\ÏË™š[™
+
+][JHOˆ][KšYOOH]Û‹™]\Ù]\Ñ]šXÙJNÂˆÛÛœÝÝH]Û‹œ]Y\žTÙ[XÝÜŠ‹™]šXÙKZX[YÝŠNÂˆYˆ
+Ý	‰ˆ]šXÙJHÂˆÛÛœÝÛ™HH\Ë—ÜÝ]\ÏËŠ]šXÙJOËÛ™H[šÛ›ÝÛˆŽÂˆYˆ
+YÝ˜Û\ÜÓ\Ý˜ÛÛZ[œÊÛ™JJHÂˆÝ˜Û\ÜÓ\Ýœ™[[Ý™J‹‹•Ó‘TÊNÂˆÝ˜Û\ÜÓ\Ý˜Y
+Û™JNÂˆBˆBˆJNÂˆÚ[›˜]Ëœ]Y\žTÙ[XÝÜ[
+–Ù]K]šY]Ë]ŒLWHŠK™›Ü‘XXÚ
+
+]ÛŠHOˆÂˆÛÛœÝXÝ]™HH]Û‹™]\Ù]šY]ÕŒLHOOH\Ë—ÝšY]ÎÂˆYˆ
+]Û‹˜Û\ÜÓ\Ý˜ÛÛZ[œÊ˜XÝ]™HŠHOOHXÝ]™JHÂˆ]Û‹˜Û\ÜÓ\ÝÙÙÛJ˜XÝ]™H‹XÝ]™JNÂˆBˆYˆ
+XÝ]™H	‰ˆ]Û‹™Ù]]šX]J˜\šXKXÝ\œ™[ŠHOOHœYÙHŠHÂˆ]Û‹œÙ]]šX]J˜\šXKXÝ\œ™[‹œYÙHŠNÂˆH[ÙHYˆ
+XXÝ]™H	‰ˆ]Û‹š\Ð]šX]J˜\šXKXÝ\œ™[ŠJHÂˆ]Û‹œ™[[Ý™P]šX]J˜\šXKXÝ\œ™[ŠNÂˆBˆJNÂˆÛÛœÝÝX]HHÚ[šXY\Ëœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]OË^ÛÛ[OOHTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸX
+HÂˆÝX]K^ÛÛ[HTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂˆBˆNÂ‚ˆ[™[œ›ÝÝ\K—Ú[œÝ[Ú[ŒH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆÛÛœÝ\H›ÛÝËœ]Y\žTÙ[XÝÜŠ›XZ[‹˜\ŠNÂˆÛÛœÝXY\ˆH\Ëœ]Y\žTÙ[XÝÜŠŽœØÛÜHˆ˜\ZXY\ˆŠNÂˆÛÛœÝÙ[XÝÜˆH\Ëœ]Y\žTÙ[XÝÜŠŽœØÛÜHˆ™ÛØ˜[Y]šXÙKXÛÛ^ŠNÂˆÛÛœÝšY]ÜÜH\Ëœ]Y\žTÙ[XÝÜŠŽœØÛÜHˆž›ÛÛK]šY]ÜÜ]ŒHŠNÂˆÛÛœÝÝ\™˜XÙHHšY]ÜÜËœ]Y\žTÙ[XÝÜŠŽœØÛÜHˆž›ÛÛK\ÝYÙK]ŒHˆž›ÛÛK\Ý\™˜XÙK]ŒHŠNÂˆÛÛœÝ˜]ˆH\Ëœ]Y\žTÙ[XÝÜŠŽœØÛÜHˆXœË˜›ÝÛK[˜]‹]ŒLHŠNÂˆYˆ
+\›ÛÝX\ZXY\ˆ]šY]ÜÜ\Ý\™˜XÙH[˜]ŠH™]\›ˆ˜[ÙNÂ‚ˆÛÛœÝÙ^HH\Ë—ÝšY]ÐØXÚRÙ^UŒ
+
+NÂˆÛÛœÝ[š]X[HØÝ[Y[˜Ü™X]Q[[Y[
+™]ˆŠNÂˆ[š]X[˜Û\ÜÓ˜[YHHÛÜšË]šY]Ë]ŒŽÂˆ[š]X[™]\Ù]˜ØXÚRÙ^UŒHÙ^NÂˆ[š]X[—×ÜÝ\šÔÝXÝ\™RÙ^UŒH\Ë—ÝšY]ÔÝXÝ\™RÙ^UŒ
+
+NÂˆÚ[H
+Ý\™˜XÙK™š\œÝÚ[
+H[š]X[˜\[™
+Ý\™˜XÙK™š\œÝÚ[
+NÂˆ[š]X[œ]Y\žTÙ[XÝÜ[
+–Ù]KY[]WHŠK™›Ü‘XXÚ
+
+[[Y[
+HOˆÂˆËÈ[š]X[šY]È[™XYHÝÛœÈHYØXÞH\Ý[™\œÈ[œÝ[Y\š[™ÈBˆËÈÛ™H[ÝÙYÛÛ\]H[Ý[ˆ™]ÈØXÚYšY]ÜÈ\ÙHHŒŽš[™\‹‚ˆ[[Y[™]\Ù]œÝ\šÐ›Ý[™ŒH›YØXÞHŽÂˆJNÂˆÝ\™˜XÙK˜\[™
+[š]X[
+NÂ‚ˆ\Ë—×ÜÝ\šÔÚ[ŒHÂˆ\ˆXY\‹ˆÙ[XÝÜ‹ˆšY]ÜÜˆÝ\™˜XÙKˆ˜]‹ˆØXÚN›™]ÈX\
+ÖÚÙ^K[š]X[WJKˆXÝ]™RÙ^NšÙ^Kˆ]šXÙRY\Ë—ÜÙ[XÝY\ÒYËŠ
+H\Ë—Ù]šXÙ\ÏË–ÌOËšY™Y˜][‹ˆNÂˆ\Ë—ÜÞ[˜ÔÚ[ÛÛ›ÛÕŒ
+
+NÂˆ\Ë—×ÜÝ\šÐØ[˜\ÐÛÛ›Û\•ŒOËœ™Yœ™\Ú
+
+NÂˆ™]\›ˆYNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™XÛÛ˜Ú[TÚ[ŒH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝÚ[H\Ë—×ÜÝ\šÔÚ[ŒÂˆYˆ
+\Ú[\Ú[˜\š\ÐÛÛ›™XÝY\Ú[šY]ÜÜš\ÐÛÛ›™XÝY
+H™]\›ˆ˜[ÙNÂ‚ˆÛÛœÝÙ^HH\Ë—ÝšY]ÐØXÚRÙ^UŒ
+
+NÂˆÛÛœÝ]šXÙRYH\Ë—ÜÙ[XÝY\ÒYËŠ
+H\Ë—Ù]šXÙ\ÏË–ÌOËšY™Y˜][ŽÂˆÛÛœÝX\šÝ\H\Ë—Ü™[™\•šY]ÓX\šÝ\Œ
+
+NÂˆÛÛœÝÝXÝ\™RÙ^HH\Ë—ÝšY]ÔÝXÝ\™RÙ^UŒ
+
+NÂˆ]\™Ù]HÚ[˜ØXÚK™Ù]
+Ù^JNÂˆYˆ
+]\™Ù]
+H\™Ù]H\Ë—ØÜ™X]PØXÚYšY]ÕŒ
+Ù^KX\šÝ\ÝXÝ\™RÙ^JNÂˆ[ÙH\Ë—Ü]ÚØXÚYšY]ÕŒ
+\™Ù]X\šÝ\ÝXÝ\™RÙ^JNÂˆYˆ
+]\™Ù]
+H™]\›ˆ˜[ÙNÂ‚ˆÛÛœÝÚ[™ÙYšY]ÈHÚ[˜XÝ]™RÙ^HOOHÙ^NÂˆÛÛœÝÚ[™ÙY]šXÙHHÚ[™]šXÙRYOOH]šXÙRYÂˆYˆ
+Ú[™ÙYšY]ÊHÂˆÚ[˜ØXÚK™›Ü‘XXÚ
+
+šY]ËšY]ÒÙ^JHOˆÈšY]ËšY[ˆHšY]ÒÙ^HOOHÙ^NÈJNÂˆÚ[˜XÝ]™RÙ^HHÙ^NÂˆÚ[™]šXÙRYH]šXÙRYÂˆYˆ
+Ú[™ÙY]šXÙJH\Ë—×ÜÝ\šÐØ[˜\ÐÛÛ›Û\•ŒOËœÝÚ]ÚÛÛ^
+]šXÙRY
+NÂˆ[ÙH\Ë—×ÜÝ\šÐØ[˜\ÐÛÛ›Û\•ŒOËœ™\Ù]ÜÚ][ÛŠÈ\œÚ\ÝYHJNÂˆH[ÙHÂˆ\Ë—×ÜÝ\šÐØ[˜\ÐÛÛ›Û\•ŒOËœ™Yœ™\Ú
+
+NÂˆB‚ˆ\Ë—ÜÞ[˜ÔÚ[ÛÛ›ÛÕŒ
+
+NÂˆ™]\›ˆYNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆYˆ
+\Ë—×ÜÝ\šÔÚ[Œ	‰ˆ\Ë—Ü™XÛÛ˜Ú[TÚ[Œ
+
+JH™]\›ŽÂ‚ˆYØXÞT™[™\‹˜Ø[
+\ÊNÂˆYˆ
+ˆ\Ë—Ú\ÜÂˆ	‰ˆ]\Ë—ÛØY[™Ô™YÚ\ÝžBˆ	‰ˆ]\Ë—Ü™YÚ\ÝžQ\œ›Ü‚ˆ	‰ˆ\Ë—Ù]šXÙ\ÏË›[™Ýˆ
+HÂˆ\Ë—Ú[œÝ[Ú[Œ
+
+NÂˆB‚ˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆYˆ
+\›ÛÝ›ÛÝœ]Y\žTÙ[XÝÜŠœÝ[VÙ]K\Ý\šË]ZK]ŒHŠJH™]\›ŽÂˆÛÛœÝÝ[HHØÝ[Y[˜Ü™X]Q[[Y[
+œÝ[HŠNÂˆÝ[K™]\Ù]œÝ\šÕZUŒHYHŽÂˆÝ[K^ÛÛ[HˆÊˆšZØTÈÜXÚX[^™Y[™[RHÝ[™\™ŒK‹ˆ
+‹ÂˆšÜÝÂˆ\Ü^N˜›ØÚÈZ[\Ü[ÂˆÚYŒL	HZ[\Ü[ÂˆZYÚŒLšZ[\Ü[ÂˆZ[‹ZZYÚŒZ[\Ü[ÂˆÝ™\™›ÝÎšY[ˆZ[\Ü[ÂˆÝ™\œØÜ›ÛX™Z]š[ÜŽ››Û™HZ[\Ü[ÂˆBˆXZ[‹˜\ÂˆÚYŒL	HZ[\Ü[ÂˆZYÚŒLšZ[\Ü[ÂˆX^ZZYÚŒLšZ[\Ü[ÂˆZ[‹ZZYÚŒZ[\Ü[Âˆ\Ü^N™›^Z[\Ü[Âˆ›^Y\™XÝ[ÛŽ˜ÛÛ[[ˆZ[\Ü[ÂˆÝ™\™›ÝÎšY[ˆZ[\Ü[ÂˆY[™ËX›ÝÛN˜Ø[Ê
+È[ŠØY™KX\™XKZ[œÙ]X›ÝÛK
+JHZ[\Ü[ÂˆBˆ˜\ZXY\‹™ÛØ˜[Y]šXÙKXÛÛ^È›^Œ]]ÈZ[\Ü[ÈBˆ˜\ZXY\ˆHÈ›Û\Ú^™NŒŒÜZ[\Ü[È›Û]ÙZYÚŽZ[\Ü[ÈÚ]K\ÜXÙN››ÝÜ˜\Z[\Ü[ÈBˆ˜\ZXY\ˆœÝX]HÈ›Û\Ú^™NŒMZ[\Ü[È›Û]ÙZYÚMŒZ[\Ü[ÈBˆ˜\ZXY\ˆœÞ\Ý[K[Y[K]ŒM‹˜\ZXY\ˆœ™Yœ™\ÚÂˆ›Þ\ÚYÝÎŒÜŒ™Ø˜JŒËKÍ‹Œ
+HZ[\Ü[ÂˆBˆXœË˜›ÝÛK[˜]‹]ŒLHÂˆY[™ÎœX^
+[ŠØY™KX\™XKZ[œÙ]\šYÚ
+JHØ[Êœ
+È[ŠØY™KX\™XKZ[œÙ]X›ÝÛK
+JHX^
+[ŠØY™KX\™XKZ[œÙ][Y
+JHZ[\Ü[ÂˆBˆ˜›ÝÛK[˜]‹]ŒLHXˆÂˆZ[‹ZZYÚLœZ[\Ü[ÂˆØ\ŒÜZ[\Ü[ÂˆY[™ÎœZ[\Ü[Âˆ›Ü™\‹\˜Y]\ÎŒMœZ[\Ü[ÂˆBˆž›ÛÛK]šY]ÜÜ]ŒHÂˆ›^ŒHH]]ÈZ[\Ü[ÂˆÚYŒL	HZ[\Ü[ÂˆZYÚ˜]]ÈZ[\Ü[ÂˆZ[‹ZZYÚŒZ[\Ü[ÂˆX^ZZYÚ››Û™HZ[\Ü[ÂˆÝ™\™›ÝËX[˜ÚÜŽ››Û™HZ[\Ü[ÂˆÝ™\œØÜ›ÛX™Z]š[Ü‹^››Û™HZ[\Ü[ÂˆÝ™\œØÜ›ÛX™Z]š[Ü‹^N››Û™HZ[\Ü[ÂˆBˆž›ÛÛK\Ý\™˜XÙK]ŒKÛÜšË]šY]Ë]ŒÈÚYŒL	NÈZ[‹]ÚYŒÈBˆÛÜšË]šY]Ë]ŒÚY[—HÈ\Ü^N››Û™HZ[\Ü[ÈB‚ˆÊˆŒKˆ\ÙÜ˜\H[™[ÜNˆYX[š[™Ù[Û™H^\ÈL¸ $ÌHˆ
+‹Âˆš\›ËXÛÜK]ŒLHˆÈ›Û\Ú^™NŒ\Z[\Ü[È[™KZZYÚŒKŒZ[\Ü[È]\‹\ÜXÚ[™Î‹KŒY[HZ[\Ü[ÈBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆ\ËZ\›Ë]ŒLK[šÛ›ÝÛˆš\›ËXÛÜK]ŒLH‹ˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆ\ËZ\›Ë]ŒLK˜˜Yš\›ËXÛÜK]ŒLHˆÈ›Û\Ú^™NŒ\Z[\Ü[ÈBˆ™^YXœ›ÝË™›ÝË[›ÙHÜ[‹™›ÝË]\ÈÜ[‹›Y]šXË[X™[š[›Z[šK]™\œÚ[Û‹œÝ]\Ëˆ›Y]šXËXÛÜK]ŒLHÜ[‹›Y]šXËXÛÜK]ŒLHÛX[ˆœÝ]K]˜[Y\Ë]ŒLHÜ[‹œÝ]K\[]ŒLK˜˜]\žKY]Z[ËZXY]ŒÌÛX[ˆ˜˜]\žKY˜XÝ]ŒÌÜ[ˆÈ›Û\Ú^™NŒLœZ[\Ü[ÈBˆ˜ÛÛ›™XÝ[Û‹XÛÜK]ŒˆÝ›Û™ÈÈ›Û\Ú^™NŒMœZ[\Ü[È›Û]ÙZYÚÌZ[\Ü[ÈBˆ˜ÛÛ›™XÝ[Û‹XÛÜK]ŒˆÛX[È›Û\Ú^™NŒLÜZ[\Ü[È›Û]ÙZYÚMŒZ[\Ü[ÈB‚ˆÊˆÝ]\ÈÛÛÜˆÝÛœÈHÝX›HÛË[[™H\]YK›ÝÛ›H]È[\ˆ
+‹ÂˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆ˜ÛÛ›™XÝ[Û‹]ŒˆÂˆ›Ü™\‹]ÚYŒ\Z[\Ü[Âˆ›Ü™\‹\Ý[NœÛÛYZ[\Ü[Âˆ›Þ\ÚYÝÎŒ\Mœ™Ø˜JŒËKÍ‹ŒŠHZ[\Ü[ÂˆBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆ˜ÛÛ›™XÝ[Û‹]Œ‹™ÛÛÙÂˆ›Ü™\‹XÛÛÜŽ˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™XYMMJHÌ	K˜\ŠKY]šY\‹XÛÛÜŠJHZ[\Ü[Âˆ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\ÝXØÙ\ÜËXÛÛÜ‹Ì™XYMMJHL	K˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠJHZ[\Ü[ÂˆBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆ˜ÛÛ›™XÝ[Û‹]Œ‹˜˜YÂˆ›Ü™\‹XÛÛÜŽ˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙLØŒØŠHÌ	K˜\ŠKY]šY\‹XÛÛÜŠJHZ[\Ü[Âˆ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKY\œ›Ü‹XÛÛÜ‹ÙLØŒØŠHL	K˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠJHZ[\Ü[ÂˆBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆ˜ÛÛ›™XÝ[Û‹]Œ‹[šÛ›ÝÛˆÂˆ›Ü™\‹XÛÛÜŽ˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKY\ØX›Y]^XÛÛÜŠHÌ	K˜\ŠKY]šY\‹XÛÛÜŠJHZ[\Ü[Âˆ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠKY\ØX›Y]^XÛÛÜŠHIK˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜŠJHZ[\Ü[ÂˆB‚ˆYYXJX^]ÚYŒÎL
+HÂˆ˜\ZXY\ˆHÈ›Û\Ú^™NŒŒ\Z[\Ü[ÈBˆ˜\ZXY\ˆœÝX]HÈ›Û\Ú^™NŒLÜZ[\Ü[ÈBˆ™ÛØ˜[Y]šXÙKXÛÛ^]ÛˆÈ›Û\Ú^™NŒM\Z[\Ü[ÈBˆ˜›ÝÛK[˜]‹]ŒLHX‹˜›ÝÛK[˜]‹]ŒLHXˆÜ[ˆÈ›Û\Ú^™NŒLœZ[\Ü[ÈBˆœÝ]K\[]ŒLKœÝ]K]˜[Y\Ë]ŒLHÜ[‹˜˜]\žKY˜XÝ]ŒÌÜ[ˆÈ›Û\Ú^™NŒLœZ[\Ü[ÈBˆBˆYYXJX^]ÚYŽ
+HÂˆšÜÝÈÜÚ][ÛŽ™š^YZ[\Ü[È[œÙ]ŒZ[\Ü[ÈÚY˜]]ÈZ[\Ü[ÈZYÚ˜]]ÈZ[\Ü[ÈBˆXZ[‹˜\ÈÜÚ][ÛŽ˜XœÛÛ]HZ[\Ü[È[œÙ]ŒZ[\Ü[ÈÚY˜]]ÈZ[\Ü[ÈZYÚ˜]]ÈZ[\Ü[ÈBˆBˆÂˆ›ÛÝ˜\[™
+Ý[JNÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒKšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒŽŒHŽÂ‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒJHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒHHYNÂ‚ˆÛÛœÝ™]š[Ý\Ð˜]\žQ˜XÝH[™[œ›ÝÝ\K—Ø˜]\žQ˜XÝŒÌÂˆÛÛœÝ™]š[Ý\ÓÝ™\šY]ÈH[™[œ›ÝÝ\K—Ü™[™\“Ý™\šY]ÕŒLNÂˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—Ø˜]\žQ˜XÝŒÌH[˜Ý[Ûˆ
+]šXÙKÙ^KX™[
+HÂˆÛÛœÝÛÛ\XÝX™[HÙ^HOOH˜˜]\žWÜYXÙWÛ[X™\ˆˆÈ´$4&´$K4b4`‹ˆˆˆX™[Âˆ™]\›ˆ™]š[Ý\Ð˜]\žQ˜XÝ˜Ø[
+\Ë]šXÙKÙ^KÛÛ\XÝX™[
+NÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\“Ý™\šY]ÕŒLHH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝ[H™]š[Ý\ÓÝ™\šY]Ë˜Ø[
+\ÊNÂˆYˆ
+Z[š[˜ÛY\Ê	ØÛ\ÜÏH›Ý™\šY]Ë]ŒLHÝ™\šY]Ë]Œˆ‰ÊJH™]\›ˆ[Â‚ˆËÈHš[˜[[Øš[HÛÛ\ÜÚ][Ûˆ\È[Z]YÚ]H[š]X[]XÚYšY]ÂˆËÈX\šÝ\ˆHØ[˜\È\™Y›Ü™HYX\Ý\™\ÈHÛÛ\XÝÙ[ÛY]žH™Y›Ü™H]\ÂˆËÈÚÝÛŽÈ›È]H™\Ú^™HÜˆÝXÝ\˜[™[™\ˆ\È™YYY‚ˆÛÛœÝÝX›TÝ[HHÝ[H]K\Ý\šË[Ý™\šY]Ë]ŒO‚ˆÙXÝ[Û‹›Ý™\šY]Ë]ŒˆÂˆØ\ŽZ[\Ü[Âˆ›Þ\Ú^š[™Î˜›Ü™\‹X›ÞÂˆY[™ËX›ÝÛNŒMœÂˆBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆš\›Ë\ØÙ[™K]ŒLHÂˆZYÚŒÌÍœZ[\Ü[ÂˆBˆÙXÝ[Û‹›Ý™\šY]Ë]ŒˆœØÙ[™K[›ÙK]ŒLK˜˜]\žHÂˆÜŒÎZ[\Ü[Âˆ›ÝÛN˜]]ÈZ[\Ü[ÂˆBˆÙXÝ[Û‹›Ý™\šY]Ë]ŒˆœØÙ[™K[›ÙK]ŒLK™ÜšYˆÙXÝ[Û‹›Ý™\šY]Ë]ŒˆœØÙ[™K[›ÙK]ŒLK›ØYÂˆÜM	HZ[\Ü[ÂˆBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆœ™\Ù\™K\Ýš\]ŒÈÂˆZ[‹ZZYÚZ[\Ü[ÂˆY[™ÎÜLœZ[\Ü[ÂˆBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆ˜˜]\žKY]Z[Ë]ŒÌÂˆY[™ÎŒLML\ÂˆBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆ˜˜]\žKY]Z[ËZXY]ŒÌÂˆX\™Ú[‹X›ÝÛNŽÂˆBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆ˜˜]\žKY˜XÝ]ŒÌÜ[ˆÂˆZ[‹ZZYÚŒM\ÂˆÚ]K\ÜXÙN››ÝÜ˜\ÂˆÝ™\™›ÝË]Ü˜\››Ü›X[ÂˆB‚ˆYYXJX^]ÚYÌ
+HÂˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆš\›Ë\ØÙ[™K]ŒLHÈZYÚŒÌÍœZ[\Ü[ÈBˆÙXÝ[Û‹›Ý™\šY]Ë]ŒˆœØÙ[™K[›ÙK]ŒLK˜˜]\žHÈÜŒÎZ[\Ü[ÈBˆBˆYYXJX^]ÚYŒÎL
+HÂˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆš\›Ë\ØÙ[™K]ŒLHÈZYÚŒÌÌœZ[\Ü[ÈBˆÙXÝ[Û‹›Ý™\šY]Ë]ŒˆœØÙ[™K[›ÙK]ŒLK˜˜]\žHÈÜŒÍœZ[\Ü[ÈBˆÙXÝ[Û‹›Ý™\šY]Ë]Œˆ˜˜]\žKY]Z[Ë]ŒÌÈY[™ÎŒLLœL\ÈBˆBˆÜÝ[O˜Â‚ˆ™]\›ˆ	Ú[IÜÝX›TÝ[_XÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂˆÛÛœÝÝX]HH\ËœÚYÝÔ›ÛÝËœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒKšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]Œ‹šœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒŽŒˆŽÂ‚™[˜Ý[ÛˆÙ\Ý\™QÝX\™XÝ]™UŒŠ[™[
+HÂˆÛÛœÝ›ÝÈH\™›Ü›X[˜ÙK››ÝÊ
+NÂˆ™]\›ˆÜ[™[—×ÜÝ\šÑÝX\™[[ŒK[™[—×ÜÝ\šÑÙ\Ý\™QÝX\™[[ŒNBˆ›X\
+
+˜[YJHOˆ[X™\Š˜[YH
+JBˆœÛÛYJ
+ÝX\™Y[[
+HOˆ
+ˆÝX\™Y[[OOH[X™\‹”ÔÒUU‘WÒS‘’S’UH›ÝÈÝX\™Y[[ˆ
+JNÂŸB‚™[˜Ý[ÛˆØ[˜Ù[[]RÛŒŠ[[Y[
+HÂˆÛÛœÝ]™[H\[ÙˆÚ[\‘]™[OOH™[˜Ý[Ûˆ‚ˆÈ™]ÈÚ[\‘]™[
+œÚ[\˜Ø[˜Ù[‹ÈX˜›\ÎYKÛÛ\ÜÙYYHJBˆˆ™]È]™[
+œÚ[\˜Ø[˜Ù[‹ÈX˜›\ÎYKÛÛ\ÜÙYYHJNÂˆ[[Y[™\Ü]Ú]™[
+]™[
+NÂŸB‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒŠHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒˆHYNÂ‚ˆÛÛœÝ™]š[Ý\ÔÚÝÓ[Ü™R[™›ÈH[™[œ›ÝÝ\K—ÜÚÝÓ[Ü™R[™›ÎÂˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆËÈÛ[Y\œÈØ[ÜÚÝÓ[Ü™R[™›Ê
+X\™XÝKÛÈÛXÚÈÝ\™\ÜÚ[Ûˆ[Û™BˆËÈØ[››ÝÝÜ[KˆÙY\\ÈÝX\™]Hš[˜[\Ü]Ú›Ý[™\žHÚ\™YˆËÈžHH[š]X[YØXÞHšY]È[™[^š[HØXÚYŒŽšY]ÜË‚ˆ[™[œ›ÝÝ\K—ÜÚÝÓ[Ü™R[™›ÈH[˜Ý[Ûˆ
+[]RY
+HÂˆYˆ
+Ù\Ý\™QÝX\™XÝ]™UŒŠ\ÊJH™]\›ŽÂˆ™]š[Ý\ÔÚÝÓ[Ü™R[™›Ë˜Ø[
+\Ë[]RY
+NÂˆNÂ‚ˆ[™[œ›ÝÝ\K—ØØ[˜Ù[[]RÛÕŒˆH[˜Ý[Ûˆ
+ØÛÜJHÂˆØÛÜOËœ]Y\žTÙ[XÝÜ[
+–Ù]KY[]WHŠK™›Ü‘XXÚ
+Ø[˜Ù[[]RÛŒŠNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ú[œÝ[[˜Ú[Ü™R[™›ÑÝX\™ŒˆH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝšY]ÜÜH\Ë—×ÜÝ\šÔÚ[ŒËšY]ÜÜˆ\ËœÚYÝÔ›ÛÝËœ]Y\žTÙ[XÝÜŠ‹ž›ÛÛK]šY]ÜÜ]ŒHŠNÂˆÛÛœÝÝ\™˜XÙHH\Ë—×ÜÝ\šÔÚ[ŒËœÝ\™˜XÙBˆšY]ÜÜËœ]Y\žTÙ[XÝÜŠ‹ž›ÛÛK\Ý\™˜XÙK]ŒHŠNÂˆYˆ
+]šY]ÜÜ\Ý\™˜XÙH\Ë—×ÜÝ\šÑÝX\™šY]ÜÜŒˆOOHšY]ÜÜ
+H™]\›ŽÂˆ\Ë—×ÜÝ\šÑÝX\™šY]ÜÜŒˆHšY]ÜÜÂ‚ˆËÈHš\œÝš[™Ù\ˆX^H[™XYHÝÛˆHLŒ\ÈÛ[Y\ˆÚ[ˆHÙXÛÛ™ˆËÈš[™Ù\ˆ\œš]™\ËˆØ[˜Ù[]™\žH[]HÛ[ˆH\›X[™[ÛÜšÈÝ\™˜XÙBˆËÈ[œÝXYÙˆ™[Z[™ÈÛˆ[[Y[œ›ÛTÚ[XÜ›ÜÜÈ[ˆSÔÈÚYÝÈ›ÛÝ‚ˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚÝ\‹
+]™[
+HOˆÂˆYˆ
+]™[ÝXÚ\Ë›[™ÝŠH™]\›ŽÂˆ\Ë—×ÜÝ\šÑÝX\™[[ŒHH[X™\‹”ÔÒUU‘WÒS‘’S’UNÂˆ\Ë—ØØ[˜Ù[[]RÛÕŒŠÝ\™˜XÙJNÂˆKÈØ\\™NYK\ÜÚ]™NYHJNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂˆ\Ë—Ú[œÝ[[˜Ú[Ü™R[™›ÑÝX\™ŒŠ
+NÂˆÛÛœÝÝX]HH\ËœÚYÝÔ›ÛÝËœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]Œ‹šœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒËšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒŽŒÈŽÂ‚™[˜Ý[Ûˆ\ØÕŒÊ˜[YJHÂˆ™]\›ˆÝš[™Ê˜[YHÏÈˆŠBˆœ™\XÙP[
+‰ˆ‹‰˜[\ÈŠBˆœ™\XÙP[
+‹‰›ÈŠBˆœ™\XÙP[
+ˆ‹‰™ÝÈŠBˆœ™\XÙP[
+	È‰Ë‰œ][ÝÈŠBˆœ™\XÙP[
+‰È‹‰ˆÌÎNÈŠNÂŸB‚™[˜Ý[Ûˆ›Ü›X][[YSZ[]\ÕŒÊ˜[YJHÂˆÛÛœÝ˜]ÓZ[]\ÈH[X™\Š˜[YJNÂˆYˆ
+S[X™\‹š\Ñš[š]J˜]ÓZ[]\ÊH˜]ÓZ[]\È
+H™]\›ˆ¸ %ŽÂˆÛÛœÝÝ[Z[]\ÈHX]œ›Ý[™
+˜]ÓZ[]\ÊNÂˆÛÛœÝÝ\œÈHX]™›ÛÜŠÝ[Z[]\ÈÈŒ
+NÂˆÛÛœÝZ[]\ÈHÝ[Z[]\È	HŒÂˆYˆ
+Ý\œÈOOH
+H™]\›ˆ	ÛZ[]\ßH4/4.4/XÂˆ™]\›ˆ	ÚÝ\œßH4aÈ	ÔÝš[™ÊZ[]\ÊKœYÝ\
+‹ŒŠ_H4/4.4/XÂŸB‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒÊHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒÈHYNÂ‚ˆÛÛœÝ™]š[Ý\Ð˜]\žQ˜XÝH[™[œ›ÝÝ\K—Ø˜]\žQ˜XÝŒÌÂˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—Ø˜]\žQ˜XÝŒÌH[˜Ý[Ûˆ
+]šXÙKÙ^KX™[
+HÂˆYˆ
+Ù^HOOH˜˜]\žWÜ™[XZ[—Ý[YHŠHÂˆ™]\›ˆ™]š[Ý\Ð˜]\žQ˜XÝ˜Ø[
+\Ë]šXÙKÙ^KX™[
+NÂˆB‚ˆÛÛœÝ[]RYH\Ë—Ù[]RY
+]šXÙKÙ^JNÂˆÛÛœÝ˜]ÓZ[]\ÈH\Ë—Û[Y\šXÊ]šXÙKÙ^JNÂˆÛÛœÝ[[YHH›Ü›X][[YSZ[]\ÕŒÊ˜]ÓZ[]\ÊNÂˆ™]\›ˆ]ˆÛ\ÜÏH˜˜]\žKY˜XÝ]ŒÌ˜]\žK\[[YK]ŒÈˆ	Ù[]RYÈ]KY[]OH‰Ù\ØÕŒÊ[]RY
+_H˜ˆˆŸH]K\[[YK\ÛÝ\˜ÙOH™[™Ü‹\˜]Ë[Z[]\È‚ˆÜ[´$4,´`´/´/t/´/4.4cÏÜÜ[‚ˆÝ›Û™Ï‰Ù\ØÕŒÊ[[YJ_OÜÝ›Û™Ï‚ˆÙ]˜ÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂˆÛÛœÝÝX]HH\ËœÚYÝÔ›ÛÝËœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒËšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒŽŽÂ‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒ
+HÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒHYNÂ‚ˆÛÛœÝ™]š[Ý\Ô™\Ù\™HH[™[œ›ÝÝ\K—Ü™\Ù\™UŒLÂˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—Ü™\Ù\™UŒLH[˜Ý[Ûˆ
+]šXÙK\ÝY
+HÂˆÛÛœÝ™\Ù\™HH™]š[Ý\Ô™\Ù\™K˜Ø[
+\Ë]šXÙK\ÝY
+NÂˆÛÛœÝ˜]\žHH\Ë—Û[Y\šXÊ]šXÙK˜˜]\žWØØ\XÚ]HŠNÂˆÛÛœÝ[ÙHH\Ë—Û[ÙJ]šXÙJNÂˆÛÛœÝÛ˜]\žHH[ÙHOOH˜˜]\žWÛ[ÙH‚ˆ\Ë—Ú\ÓÛŠ]šXÙK›Û—Ø˜]\žHŠHOOHYNÂ‚ˆYˆ
+]\ÝY˜]\žHOOH[Û˜]\žH˜]\žHHŒ
+HÂˆ™]\›ˆ™\Ù\™NÂˆB‚ˆYˆ
+[ÙHOOH›[™WÛ[ÙHˆ	‰ˆ˜]\žHMJHÂˆ™]\›ˆÂˆX™[ˆ4(4-t-ô-t`4,ˆ4/t-t/ô/´.ô/tbô.H0­È4$4&´$H	ÓX]œ›Ý[™
+˜]\žJ_H	XˆÛ™NˆØ\›ˆ‹ˆXÛÛŽˆ›YN˜˜]\žK[YY][H‹ˆNÂˆB‚ˆYˆ
+[ÙHOOH›[™WÛ[ÙHŠHÂˆ™]\›ˆÂˆX™[ˆ´$ô/´`´/´,´/t/´`t`´c4`4-t-ô-t`4,´,4/t-H4/ô/´-4`´,´-t`4-´-4-t/t,‹ˆÛ™Nˆ[šÛ›ÝÛˆ‹ˆXÛÛŽˆ›YN˜˜]\žK][šÛ›ÝÛˆ‹ˆNÂˆB‚ˆ™]\›ˆ™\Ù\™NÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂˆÛÛœÝÝX]HH\ËœÚYÝÔ›ÛÝËœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒKšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒŽHŽÂ˜ÛÛœÝÕT•TÐTÔÑUÈHÂˆ‹ÜÝ\š×ÜÛÛ\œÝÙ\—Ü[™[Ø\ÜÙ]ËÜÝ\šËXÛÝ[žKLL[Û›[™Kœ™ÏÝL‹ˆ‹ˆ‹ÜÝ\š×ÜÛÛ\œÝÙ\—Ü[™[Ø\ÜÙ]ËÜÝ\šËZ\›ËZ[\›™]]ŒŒËÙXœÝL‹ŒÈ‹ˆ‹ÜÝ\š×ÜÛÛ\œÝÙ\—Ü[™[Ø\ÜÙ]ËÜÝ\šËZ\›ËX›Ú[\‹]ŒŒËÙXœÝL‹ŒÈ‹—NÂ‚™[˜Ý[Ûˆ™]Ø\›TÝ\\\ÜÙ]ÕŒJ
+HÂˆYˆ
+ÛØ˜[\Ë—×ÜÝ\šÔÝ\\\ÜÙ]ÕŒJH™]\›ˆÛØ˜[\Ë—×ÜÝ\šÔÝ\\\ÜÙ]ÕŒKœ™XYNÂ‚ˆÛÛœÝ[XYÙ\ÈHÕT•TÐTÔÑUË›X\
+
+\›
+HOˆÂˆÛÛœÝ[XYÙHH™]È[XYÙJ
+NÂˆ[XYÙK›ØY[™ÈH™XYÙ\ˆŽÂˆ[XYÙK™XÛÙ[™ÈHœÞ[˜ÈŽÂˆ[XYÙK™™]Úš[Üš]HHšYÚŽÂˆ[XYÙKœÜ˜ÈH\›Âˆ™]\›ˆ[XYÙNÂˆJNÂˆÛÛœÝ™XYHH›ÛZ\ÙK˜[Ù]Y
+[XYÙ\Ë›X\
+
+[XYÙJHOˆ
+ˆ\[Ùˆ[XYÙK™XÛÙHOOH™[˜Ý[Ûˆ‚ˆÈ[XYÙK™XÛÙJ
+Bˆˆ™]È›ÛZ\ÙJ
+™\ÛÛ™JHOˆÂˆYˆ
+[XYÙK˜ÛÛ\]JH™\ÛÛ™J
+NÂˆ[ÙHÂˆ[XYÙK˜Y]™[\Ý[™\Š›ØY‹™\ÛÛ™KÈÛ˜ÙNYHJNÂˆ[XYÙK˜Y]™[\Ý[™\Š™\œ›Üˆ‹™\ÛÛ™KÈÛ˜ÙNYHJNÂˆBˆJBˆ
+JJNÂ‚ˆÛØ˜[\Ë—×ÜÝ\šÔÝ\\\ÜÙ]ÕŒHHÈ[XYÙ\Ë™XYHNÂˆ™]\›ˆ™XYNÂŸB‚œ™]Ø\›TÝ\\\ÜÙ]ÕŒJ
+NÂ‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒJHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒHHYNÂˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂˆÛÛœÝÝX]HH\ËœÚYÝÔ›ÛÝËœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒKšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]Œ‹šœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒŽˆŽÂ˜ÛÛœÝÕT•TÐPÒÑÔ“ÕS‘Bˆ‹ÜÝ\š×ÜÛÛ\œÝÙ\—Ü[™[Ø\ÜÙ]ËÜÝ\šËZ\›ËZ[\›™]]ŒŒËÙXœÝL‹ŒÈŽÂ˜ÛÛœÝÕT•TÐT•ÓÔ’ÈBˆ‹ÜÝ\š×ÜÛÛ\œÝÙ\—Ü[™[Ø\ÜÙ]ËÜÝ\šËXÛÝ[žKLL[Û›[™Kœ™ÏÝL‹ˆŽÂ‚™[˜Ý[ÛˆÝ\\Ý™\šY]ÕŒŠ
+HÂˆ™]\›ˆÙXÝ[ÛˆÛ\ÜÏH›Ý™\šY]Ë]ŒLHÝ™\šY]Ë]ŒˆÝ\\[Ý™\šY]Ë]Œˆˆ\šXKX\ÞOHYHˆ\šXK[X™[H´'ô/´.ô`ôaô-t/t.4-H4-4,4/t/tbôaHTÈ‚ˆ\XÛHÛ\ÜÏH\ËZ\›Ë]ŒLHØ\™]ŒLH[šÛ›ÝÛˆˆÝ[OH‹KZ\›ËX˜XÚÙÜ›Ý[™]ŒLN\›
+	ÉÔÕT•TÐPÒÑÔ“ÕS‘IÊH‚ˆ]ˆÛ\ÜÏHš\›ËZXY]ŒLH‚ˆ]ˆÛ\ÜÏHš\›ËXÛÜK]ŒLH‚ˆÜ[´'ô&4(´$4't&4%OÜÜ[‚ˆ´'ô/´.ô`ôaô-t/t.4-H4-4,4/t/tbôaOÚ‚ˆ´'ô/´-4.´.ôc´aô-t/t.4-H4.ˆÛYH\ÜÚ\Ý[Ü‚ˆÙ]‚ˆ]ˆÛ\ÜÏH™œ™\Ú™\ÜË]ŒLHÛÛ›™XÝ[Û‹]Œˆ[šÛ›ÝÛˆˆ›ÛOHœÝ]\Èˆ\šXK[X™[H´'ô/´-4.´.ôc´aô-t/t.4-H0­È4)ô`´-t/t.4-H4`´-t.ô-t/4-t`´`4.4.‚ˆÜ[ˆÛ\ÜÏH˜ÛÛ›™XÝ[Û‹[[\]Œˆˆ\šXKZY[HYHÜÜ[‚ˆÜ[ˆÛ\ÜÏH˜ÛÛ›™XÝ[Û‹XÛÜK]Œˆ‚ˆÝ›Û™Ï´'ô/´-4.´.ôc´aô-t/t.4-OÜÝ›Û™Ï‚ˆÛX[´)ô`´-t/t.4-H4`´-t.ô-t/4-t`´`4.4.ÜÛX[‚ˆÜÜ[‚ˆÙ]‚ˆÙ]‚ˆ]ˆÛ\ÜÏHš\›Ë\ØÙ[™K]ŒLH‚ˆ]ˆÛ\ÜÏHœØÙ[™K[›ÙK]ŒLHÜšY‚ˆKZXÛÛˆXÛÛH›YN˜[œÛZ\ÜÚ[Û‹]ÝÙ\ˆÚKZXÛÛ‚ˆ]Ü[´(t-t`´cÜÜ[Ý›Û™Ï¸ %ÜÝ›Û™ÏÙ]‚ˆÙ]‚ˆ]ˆÛ\ÜÏHœØÙ[™K[›ÙK]ŒLHØY‚ˆKZXÛÛˆXÛÛH›YN›[Ûš]Ü‹Y\Ú›Ø\™ÚKZXÛÛ‚ˆ]Ü[´'t,4,ô`4`ô-ô.´,ÜÜ[Ý›Û™Ï¸ %ÜÝ›Û™ÏÙ]‚ˆÙ]‚ˆ[YÈÛ\ÜÏH\ËX\]ŒLHˆÜ˜ÏH‰ÔÕT•TÐT•ÓÔ’ßHˆ[H”Ý\šÈÛÝ[žHLÓ“S‘H
+MJHˆØY[™ÏH™XYÙ\ˆˆXÛÙ[™ÏHœÞ[˜Èˆ™]Úš[Üš]OHšYÚ‚ˆ]ˆÛ\ÜÏHœØÙ[™K[›ÙK]ŒLH˜]\žH‚ˆKZXÛÛˆXÛÛH›YN˜˜]\žHÚKZXÛÛ‚ˆ]Ü[´$4&´$OÜÜ[Ý›Û™Ï¸ %ÜÝ›Û™ÏÙ]‚ˆÙ]‚ˆÙ]‚ˆØ\XÛO‚ˆ]ˆÛ\ÜÏHœ™\Ù\™K\Ýš\]ŒÈ[šÛ›ÝÛˆ‚ˆKZXÛÛˆXÛÛH›YN˜˜]\žK\Þ[˜ÈÚKZXÛÛ‚ˆÝ›Û™Ï´'ô`4/´,´-t`4.´,4`t/´`t`´/´cô/t.4cÈ4$4&´$OÜÝ›Û™Ï‚ˆÙ]‚ˆ\XÛHÛ\ÜÏH˜˜]\žKY]Z[Ë]ŒÌ‚ˆ]ˆÛ\ÜÏH˜˜]\žKY]Z[ËZXY]ŒÌ‚ˆKZXÛÛˆXÛÛH›YN˜˜]\žKZX\]˜\šX[ÚKZXÛÛ‚ˆÝ›Û™Ï´$t,4`´,4`4-tcÏÜÝ›Û™Ï‚ˆÛX[´'ô/´.ô`ôaô-t/t.4-H4`´-t.ô-t/4-t`´`4.4.ÜÛX[‚ˆÙ]‚ˆ]ˆÛ\ÜÏH˜˜]\žKY˜XÝË]ŒÌ‚ˆ]ˆÛ\ÜÏH˜˜]\žKY˜XÝ]ŒÌÜ[´'t,4/ô`4cô-´-t/t.4-OÜÜ[Ý›Û™Ï¸ %ÜÝ›Û™ÏÙ]‚ˆ]ˆÛ\ÜÏH˜˜]\žKY˜XÝ]ŒÌÜ[´$4&´$K4b4`‹ÜÜ[Ý›Û™Ï¸ %ÜÝ›Û™ÏÙ]‚ˆ]ˆÛ\ÜÏH˜˜]\žKY˜XÝ]ŒÌÜ[´(´-t/4/Ëˆ4%ô(ÏÜÜ[Ý›Û™Ï¸ %ÜÝ›Û™ÏÙ]‚ˆ]ˆÛ\ÜÏH˜˜]\žKY˜XÝ]ŒÌÜ[´$4,´`´/´/t/´/4.4cÏÜÜ[Ý›Û™Ï¸ %ÜÝ›Û™ÏÙ]‚ˆÙ]‚ˆØ\XÛO‚ˆÝ[H]K\Ý\šË\Ý\\]Œ‚ˆÙXÝ[Û‹œÝ\\[Ý™\šY]Ë]ŒˆÂˆØ\ŽZ[\Ü[Âˆ›Þ\Ú^š[™Î˜›Ü™\‹X›ÞÂˆY[™ËX›ÝÛNŒMœÂˆBˆÙXÝ[Û‹œÝ\\[Ý™\šY]Ë]Œˆš\›Ë\ØÙ[™K]ŒLHÈZYÚŒÌÍœZ[\Ü[ÈBˆÙXÝ[Û‹œÝ\\[Ý™\šY]Ë]ŒˆœØÙ[™K[›ÙK]ŒLK˜˜]\žHÂˆÜŒÎZ[\Ü[Âˆ›ÝÛN˜]]ÈZ[\Ü[ÂˆBˆÙXÝ[Û‹œÝ\\[Ý™\šY]Ë]ŒˆœØÙ[™K[›ÙK]ŒLK™ÜšYˆÙXÝ[Û‹œÝ\\[Ý™\šY]Ë]ŒˆœØÙ[™K[›ÙK]ŒLK›ØYÈÜM	HZ[\Ü[ÈBˆÙXÝ[Û‹œÝ\\[Ý™\šY]Ë]Œˆœ™\Ù\™K\Ýš\]ŒÈÂˆZ[‹ZZYÚZ[\Ü[ÂˆY[™ÎÜLœZ[\Ü[ÂˆBˆÙXÝ[Û‹œÝ\\[Ý™\šY]Ë]Œˆ˜˜]\žKY]Z[Ë]ŒÌÈY[™ÎŒLML\ÈBˆÙXÝ[Û‹œÝ\\[Ý™\šY]Ë]Œˆ˜˜]\žKY]Z[ËZXY]ŒÌÈX\™Ú[‹X›ÝÛNŽÈBˆÙXÝ[Û‹œÝ\\[Ý™\šY]Ë]Œˆ˜˜]\žKY˜XÝ]ŒÌÜ[ˆÂˆZ[‹ZZYÚŒM\ÂˆÚ]K\ÜXÙN››ÝÜ˜\ÂˆÝ™\™›ÝË]Ü˜\››Ü›X[ÂˆBˆYYXJX^]ÚYŒÎL
+HÂˆÙXÝ[Û‹œÝ\\[Ý™\šY]Ë]Œˆš\›Ë\ØÙ[™K]ŒLHÈZYÚŒÌÌœZ[\Ü[ÈBˆÙXÝ[Û‹œÝ\\[Ý™\šY]Ë]ŒˆœØÙ[™K[›ÙK]ŒLK˜˜]\žHÈÜŒÍœZ[\Ü[ÈBˆÙXÝ[Û‹œÝ\\[Ý™\šY]Ë]Œˆ˜˜]\žKY]Z[Ë]ŒÌÈY[™ÎŒLLœL\ÈBˆBˆÜÝ[O‚ˆÜÙXÝ[Û˜ÂŸB‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒŠHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒˆHYNÂˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂ‚ˆ[™[œ›ÝÝ\K—Ú[œÝ[Ý\\Ý™\šY]ÕŒˆH[˜Ý[Ûˆ
+
+HÂˆYˆ
+\Ë—Ü™YÚ\ÝžSØYY\Ë—Ü™YÚ\ÝžQ\œ›ÜŠH™]\›ŽÂˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆÛÛœÝ\H›ÛÝËœ]Y\žTÙ[XÝÜŠ›XZ[‹˜\ŠNÂˆÛÛœÝXY\ˆH\Ëœ]Y\žTÙ[XÝÜŠŽœØÛÜHˆ˜\ZXY\ˆŠNÂˆÛÛœÝ[\HH\Ëœ]Y\žTÙ[XÝÜŠ‹ž›ÛÛK\Ý\™˜XÙK]ŒH™[\K™[\HŠNÂˆYˆ
+X\ZXY\ˆY[\JH™]\›ŽÂ‚ˆYˆ
+X\œ]Y\žTÙ[XÝÜŠŽœØÛÜHˆ™ÛØ˜[Y]šXÙKXÛÛ^ŠJHÂˆÛÛœÝÙ[XÝÜˆHØÝ[Y[˜Ü™X]Q[[Y[
+™]ˆŠNÂˆÙ[XÝÜ‹˜Û\ÜÓ˜[YHH™ÛØ˜[Y]šXÙKXÛÛ^Ý\\\Ù[XÝÜ‹]ŒˆŽÂˆÙ[XÝÜ‹œÙ]]šX]J˜\šXK[X™[‹´$´bô,t/´`TÈ4-ô,4,ô`4`ô-´,4-t`´`tcÈŠNÂˆÙ[XÝÜ‹œÝ[KœÙ]›Ü\J‹K]\ËXÛÝ[‹ŒˆŠNÂˆÙ[XÝÜ‹š[›™\’SH]Ûˆ\OH˜]ÛˆˆÛ\ÜÏH˜XÝ]™Hˆ\šXK\™\ÜÙYHYHˆ\šXKY\ØX›YHYHÜ[ˆÛ\ÜÏH™]šXÙK[˜[YH•TÈ4&4/t`´-t`4/t-t`ÜÜ[Ø]Û‚ˆ]Ûˆ\OH˜]Ûˆˆ\šXK\™\ÜÙYH™˜[ÙHˆ\šXKY\ØX›YHYHÜ[ˆÛ\ÜÏH™]šXÙK[˜[YH•TÈ4&´/´`´dt.ÏÜÜ[Ø]Û˜ÂˆXY\‹š[œÙ\Y˜XÙ[[[Y[
+˜Y\™[™‹Ù[XÝÜŠNÂˆB‚ˆÛÛœÝ[\]HHØÝ[Y[˜Ü™X]Q[[Y[
+[\]HŠNÂˆ[\]Kš[›™\’SHÝ\\Ý™\šY]ÕŒŠ
+NÂˆ[\Kœ™\XÙUÚ]
+[\]K˜ÛÛ[
+NÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂˆ\Ë—Ú[œÝ[Ý\\Ý™\šY]ÕŒŠ
+NÂˆÛÛœÝÝX]HH\ËœÚYÝÔ›ÛÝËœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+ÝX]JHÝX]K^ÛÛ[HTÈÛÛ›ÛÙ[\ˆ0­ÈRH‰ÕRWÕ‘T”ÒSÓŸXÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]Œ‹šœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒLšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝRWÕ‘T”ÒSÓˆHŒŽKŒÈŽÂ˜ÛÛœÝÓÕTÑWÔ“ÕUWÒÑVHH›šZØ\ËœÜXÚX[^™YœÛÝ\˜ÙWÜ›Ý]KŒHŽÂ˜ÛÛœÝÓÕTÑWÔ“ÕUWÐUÒÑVHH›šZØ\ËœÜXÚX[^™YœÛÝ\˜ÙWÜ›Ý]WØ]ŒHŽÂ˜ÛÛœÝ‘UT“—Ô“ÕUWÒÑVHH›šZØ\ËœÝ\š×ÜÛÛ\œÝÙ\‹œ™]\›—Ü›Ý]KŒHŽÂ˜ÛÛœÝÐQ‘WÔ‘UT“—Ô“ÕUHH‹Ù\Ú›Ø\™Z[™œ˜\ÝXÝ\™KÛÝ™\šY]ÈŽÂ‚™[˜Ý[Ûˆ›Ü›X[^™P˜\ÙT›Ý]UŒL
+˜[YJHÂˆYˆ
+]˜[YJH™]\›ˆ[ÂˆžHÂˆÛÛœÝ\›H™]ÈT“
+Ýš[™Ê˜[YJKš[J
+KÚ[™ÝË›ØØ][Û‹›ÜšYÚ[ŠNÂˆYˆ
+\››ÜšYÚ[ˆOOHÚ[™ÝË›ØØ][Û‹›ÜšYÚ[ŠH™]\›ˆ[ÂˆYˆ
+\›œ]˜[YHOOH‹Ù\Ú›Ø\™ZÝ\ÙK]ŒLHˆ\›œ]˜[YKœÝ\ÕÚ]
+‹Ù\Ú›Ø\™ZÝ\ÙK]ŒLKÈŠJHÂˆ™]\›ˆ‹Ù\Ú›Ø\™ZÝ\ÙK]ŒLKÚÛYHŽÂˆBˆYˆ
+\›œ]˜[YHOOH‹Ù\Ú›Ø\™XXÝ[ÛœÈˆ\›œ]˜[YKœÝ\ÕÚ]
+‹Ù\Ú›Ø\™XXÝ[ÛœËÈŠJHÂˆ™]\›ˆ‹Ù\Ú›Ø\™XXÝ[ÛœËÚÛYHŽÂˆBˆYˆ
+\›œ]˜[YHOOH‹Ù\Ú›Ø\™Z[™œ˜\ÝXÝ\™Hˆ\›œ]˜[YKœÝ\ÕÚ]
+‹Ù\Ú›Ø\™Z[™œ˜\ÝXÝ\™KÈŠJHÂˆ™]\›ˆ‹Ù\Ú›Ø\™Z[™œ˜\ÝXÝ\™KÛÝ™\šY]ÈŽÂˆBˆHØ]Ú
+Ù\œ›ÜŠHÂˆËÈ[˜[Y[™Ü›ÜÜË[ÜšYÚ[ˆØ[™Y]\È˜[›ÝYÚÈH™^ÛÝ\˜ÙK‚ˆBˆ™]\›ˆ[ÂŸB‚™[˜Ý[Ûˆ™XYÛ™TÚÝÛÝ\˜ÙUŒL
+
+HÂˆžHÂˆÛÛœÝ˜]Ô›Ý]HHÙ\ÜÚ[Û”ÝÜ˜YÙK™Ù]][JÓÕTÑWÔ“ÕUWÒÑVJNÂˆÛÛœÝ˜]Õ[Y\Ý[\HÙ\ÜÚ[Û”ÝÜ˜YÙK™Ù]][JÓÕTÑWÔ“ÕUWÐUÒÑVJNÂˆÙ\ÜÚ[Û”ÝÜ˜YÙKœ™[[Ý™R][JÓÕTÑWÔ“ÕUWÒÑVJNÂˆÙ\ÜÚ[Û”ÝÜ˜YÙKœ™[[Ý™R][JÓÕTÑWÔ“ÕUWÐUÒÑVJNÂˆYˆ
+˜]Ô›Ý]HOOH[˜]Õ[Y\Ý[\OOH[
+H™]\›ˆ[ÂˆÛÛœÝ[Y\Ý[\H[X™\Š˜]Õ[Y\Ý[\
+NÂˆÛÛœÝYÙHH]K››ÝÊ
+HH[Y\Ý[\ÂˆYˆ
+S[X™\‹š\Ñš[š]J[Y\Ý[\
+HYÙHYÙHˆÌÌ
+H™]\›ˆ[Âˆ™]\›ˆ›Ü›X[^™P˜\ÙT›Ý]UŒL
+˜]Ô›Ý]JNÂˆHØ]Ú
+Ù\œ›ÜŠHÂˆ™]\›ˆ[ÂˆBŸB‚™[˜Ý[Ûˆ™XYØ]™YÛÝ\˜ÙUŒL
+
+HÂˆžHÂˆ™]\›ˆ›Ü›X[^™P˜\ÙT›Ý]UŒL
+Ù\ÜÚ[Û”ÝÜ˜YÙK™Ù]][J‘UT“—Ô“ÕUWÒÑVJJNÂˆHØ]Ú
+Ù\œ›ÜŠHÂˆ™]\›ˆ[ÂˆBŸB‚™[˜Ý[Ûˆ™\ÛÛ™T™]\›”›Ý]UŒL
+[™[
+HÂˆÛÛœÝÝ\œ™[H™]ÈT“
+Ú[™ÝË›ØØ][Û‹š™YŠNÂˆÛÛœÝ^XÚ]H›Ü›X[^™P˜\ÙT›Ý]UŒL
+Ý\œ™[œÙX\˜Ú\˜[\Ë™Ù]
+œ™]\›—ÝÈŠJBˆ›Ü›X[^™P˜\ÙT›Ý]UŒL
+Ý\œ™[œÙX\˜Ú\˜[\Ë™Ù]
+™œ›ÛHŠJNÂˆÛÛœÝ[™YÙ™ˆH™XYÛ™TÚÝÛÝ\˜ÙUŒL
+
+NÂˆÛÛœÝØ]™YH™XYØ]™YÛÝ\˜ÙUŒL
+
+NÂˆÛÛœÝ™Y™\œ™\ˆH›Ü›X[^™P˜\ÙT›Ý]UŒL
+ØÝ[Y[œ™Y™\œ™\ŠNÂˆÛÛœÝÛÛ™šYÝ\™YH›Ü›X[^™P˜\ÙT›Ý]UŒL
+ˆ[™[Ë—Ü[™[Ë˜ÛÛ™šYÏËœ\™[Ü›Ý]H[™[Ëœ[™[Ë˜ÛÛ™šYÏËœ\™[Ü›Ý]Kˆ
+NÂˆÛÛœÝ›Ý]HH^XÚ][™YÙ™ˆØ]™Y™Y™\œ™\ˆÛÛ™šYÝ\™YÐQ‘WÔ‘UT“—Ô“ÕUNÂˆžHÂˆÙ\ÜÚ[Û”ÝÜ˜YÙKœÙ]][J‘UT“—Ô“ÕUWÒÑVK›Ý]JNÂˆHØ]Ú
+Ù\œ›ÜŠHÂˆËÈš]˜]Hœ›ÝÜÚ[™ÈX^H\ØX›HÝÜ˜YÙNÈHØ\\™Y[œÝ[˜ÙH˜[YH™[XZ[œÈ˜[Y‚ˆBˆ™]\›ˆ›Ý]NÂŸB‚™[˜Ý[Ûˆ˜]šYØ]UÔÛÝ\˜ÙUŒL
+›Ý]JHÂˆÛÛœÝ\™Ù]H›Ü›X[^™P˜\ÙT›Ý]UŒL
+›Ý]JHÐQ‘WÔ‘UT“—Ô“ÕUNÂˆÚ[™ÝËš\ÝÜžKœ\ÚÝ]J[ˆ‹\™Ù]
+NÂˆÚ[™ÝË™\Ü]Ú]™[
+™]È]™[
+›ØØ][Û‹XÚ[™ÙYŠJNÂŸB‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒL
+HÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒLHYNÂˆÛÛœÝ™]š[Ý\Ô™[™\ˆH[™[œ›ÝÝ\K—Ü™[™\ŽÂˆÛÛœÝ™]š[Ý\ÔÞ[˜ÐÛÛ›ÛÈH[™[œ›ÝÝ\K—ÜÞ[˜ÔÚ[ÛÛ›ÛÕŒÂ‚ˆ[™[œ›ÝÝ\K—Ú[œÝ[XY\”™]\›•ŒLH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝ›ÛÝH\ËœÚYÝÔ›ÛÝÂˆÛÛœÝXY\ˆH›ÛÝËœ]Y\žTÙ[XÝÜŠ‹˜\ZXY\ˆŠNÂˆYˆ
+ZXY\ŠH™]\›ŽÂ‚ˆYˆ
+]\Ë—×ÜÝ\šÔ™]\›”›Ý]UŒL
+HÂˆ\Ë—×ÜÝ\šÔ™]\›”›Ý]UŒLH™\ÛÛ™T™]\›”›Ý]UŒL
+\ÊNÂˆB‚ˆ]\]YHHXY\‹œ]Y\žTÙ[XÝÜŠ‹]K\™]\›‹]ŒLŠNÂˆYˆ
+\\]YJHÂˆÛÛœÝYØXÞU]HHXY\‹œ]Y\žTÙ[XÝÜŠ‹]K]Ü˜\ŠNÂˆYˆ
+[YØXÞU]JH™]\›ŽÂˆ\]YHHØÝ[Y[˜Ü™X]Q[[Y[
+˜]ÛˆŠNÂˆ\]YK\HH˜]ÛˆŽÂˆ\]YK˜Û\ÜÓ˜[YHH]K]Ü˜\]K\™]\›‹]ŒLŽÂˆ\]YKœÙ]]šX]J˜\šXK[X™[‹´$´-t`4/t`ô`´c4`tcÈ4,ˆ4.4`tat/´-4/t`ôcˆ4/ô,4/t-t.ôcšZØTÈŠNÂˆÛÛœÝÛÛ[HØÝ[Y[˜Ü™X]Q[[Y[
+œÜ[ˆŠNÂˆÛÛ[˜Û\ÜÓ˜[YHH]K\™]\›‹XÛÜK]ŒLŽÂˆÛÛœÝ]HHØÝ[Y[˜Ü™X]Q[[Y[
+œÜ[ˆŠNÂˆ]K˜Û\ÜÓ˜[YHH]K\™]\›‹[˜[YK]ŒLŽÂˆ]K^ÛÛ[H´&4$t'ÈÝ\šÈŽÂˆÛÛœÝ™\œÚ[ÛˆHØÝ[Y[˜Ü™X]Q[[Y[
+œÜ[ˆŠNÂˆ™\œÚ[Û‹˜Û\ÜÓ˜[YHHœÝX]HŽÂˆ™\œÚ[Û‹^ÛÛ[HRH‰ÕRWÕ‘T”ÒSÓŸXÂˆÛÛ[˜\[™
+]K™\œÚ[ÛŠNÂˆ\]YK˜\[™
+ÛÛ[
+NÂˆ\]YK˜Y]™[\Ý[™\Š˜ÛXÚÈ‹
+
+HOˆ˜]šYØ]UÔÛÝ\˜ÙUŒL
+\Ë—×ÜÝ\šÔ™]\›”›Ý]UŒL
+JNÂˆYØXÞU]Kœ™\XÙUÚ]
+\]YJNÂˆB‚ˆÛÛœÝ™\œÚ[ÛˆH\]YKœ]Y\žTÙ[XÝÜŠ‹œÝX]HŠNÂˆYˆ
+™\œÚ[ÛË^ÛÛ[OOHRH‰ÕRWÕ‘T”ÒSÓŸX
+H™\œÚ[Û‹^ÛÛ[HRH‰ÕRWÕ‘T”ÒSÓŸXÂ‚ˆYˆ
+\›ÛÝœ]Y\žTÙ[XÝÜŠœÝ[VÙ]K\Ý\šË]ZK]ŒLHŠJHÂˆÛÛœÝÝ[HHØÝ[Y[˜Ü™X]Q[[Y[
+œÝ[HŠNÂˆÝ[K™]\Ù]œÝ\šÕZUŒLHYHŽÂˆÝ[K^ÛÛ[HˆÊˆšZØTÈÜXÚX[^™Y[™[RH
+È˜]šYØ][ÛˆÝ[™\™ŒKŽKˆ
+‹Âˆ˜\ZXY\ˆ]K\™]\›‹]ŒLÂˆÜšYXÛÛ[[ŽŒˆZ[\Ü[Âˆ\ÝYžK\Ù[Ž˜Ù[\ˆZ[\Ü[ÂˆZ[‹]ÚY›Z[ŠŽLL	JHZ[\Ü[ÂˆX^]ÚYŒL	HZ[\Ü[ÂˆZ[‹ZZYÚZ[\Ü[ÂˆX\™Ú[ŽŒZ[\Ü[ÂˆY[™Î\MZ[\Ü[Âˆ\Ü^N˜›ØÚÈZ[\Ü[Âˆ›Ü™\ŽŒ\ÛÛYÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\š[X\žKXÛÛÜ‹ÌØNYJH	K˜\ŠKY]šY\‹XÛÛÜ‹Ù™LÙN
+JHZ[\Ü[Âˆ›Ü™\‹\˜Y]\ÎŒMœZ[\Ü[Âˆ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\š[X\žKXÛÛÜ‹ÌØNYJHIK˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜ‹Ù™™ŠJHZ[\Ü[ÂˆÛÛÜŽ˜\ŠK\š[X\žK]^XÛÛÜŠHZ[\Ü[Âˆ›Þ\ÚYÝÎŒ\Mœ™Ø˜JŒËKÍ‹ŒŠHZ[\Ü[Âˆ\X\˜[˜ÙN››Û™HZ[\Ü[Âˆ›Ûš[š\š]Z[\Ü[Âˆ^X[YÛŽ˜Ù[\ˆZ[\Ü[ÂˆÝ\œÛÜŽœÚ[\ˆZ[\Ü[Âˆ]ÙXšÚ]]\ZYÚYÚXÛÛÜŽ˜[œÜ\™[ÂˆBˆ˜\ZXY\ˆ]K\™]\›‹]ŒL™›ØÝ\Ë]š\ÚX›HÂˆÝ][™NŒœÛÛY˜\ŠK\š[X\žKXÛÛÜŠHZ[\Ü[ÂˆÝ][™K[Ù™œÙ]ŒœZ[\Ü[ÂˆBˆ˜\ZXY\ˆ]K\™]\›‹]ŒL˜XÝ]™HÈ˜[œÙ›Ü›NœØØ[JŽNJNÈ˜XÚÙÜ›Ý[™˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\š[X\žKXÛÛÜ‹ÌØNYJHLÉK˜\ŠKXØ\™X˜XÚÙÜ›Ý[™XÛÛÜ‹Ù™™ŠJHZ[\Ü[È›Ü™\‹XÛÛÜŽ˜ÛÛÜ‹[Z^
+[ˆÜ™Ø‹˜\ŠK\š[X\žKXÛÛÜ‹ÌØNYJH‰K˜\ŠKY]šY\‹XÛÛÜ‹Ù™LÙN
+JHZ[\Ü[È›Þ\ÚYÝÎŒœÜ™Ø˜JŒËKÍ‹ŒJHZ[\Ü[ÈBˆ]K\™]\›‹XÛÜK]ŒLÈ\Ü^N™›^ÈZ[‹]ÚYŒÈ›^Y\™XÝ[ÛŽ˜ÛÛ[[ŽÈ[YÛ‹Z][\Î˜Ù[\ŽÈBˆ]K\™]\›‹[˜[YK]ŒLÂˆX^]ÚYŒL	NÂˆÝ™\™›ÝÎšY[ŽÂˆ^[Ý™\™›ÝÎ™[\Ú\ÎÂˆÚ]K\ÜXÙN››ÝÜ˜\Âˆ›Û\Ú^™NŒŒÜÂˆ[™KZZYÚŒKŒNÂˆ›Û]ÙZYÚŽÂˆBˆ]K\™]\›‹]ŒLœÝX]HÈX\™Ú[‹]ÜŒÜZ[\Ü[È›Û\Ú^™NŒMZ[\Ü[È[™KZZYÚŒKŒŽÈ›Û]ÙZYÚMŒZ[\Ü[È]\‹\ÜXÚ[™Î‹ŒY[NÈBˆYYXJX^]ÚYŒÎL
+HÂˆ˜\ZXY\ˆ]K\™]\›‹]ŒLÈZ[‹]ÚYŒZ[\Ü[ÈÚYŒL	HZ[\Ü[ÈY[™ËZ[›[™NŽZ[\Ü[ÈBˆ]K\™]\›‹[˜[YK]ŒLÈ›Û\Ú^™NŒŒ\ÈBˆ]K\™]\›‹]ŒLœÝX]HÈ›Û\Ú^™NŒLÜZ[\Ü[ÈBˆBˆÂˆ›ÛÝ˜\[™
+Ý[JNÂˆBˆNÂ‚ˆ[™[œ›ÝÝ\K—Ú[œÝ[ØÜ›Û›Ý[™\žQÝX\™ŒLH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝšY]ÜÜH\Ë—×ÜÝ\šÔÚ[ŒËšY]ÜÜˆ\ËœÚYÝÔ›ÛÝËœ]Y\žTÙ[XÝÜŠ‹ž›ÛÛK]šY]ÜÜ]ŒHŠNÂˆYˆ
+]šY]ÜÜ\Ë—×ÜÝ\šÔØÜ›ÛÝX\™šY]ÜÜŒLOOHšY]ÜÜ
+H™]\›ŽÂ‚ˆ\Ë—×ÜÝ\šÔØÜ›ÛÝX\™ÛX[\ŒLËŠ
+NÂˆ]\ÝÝXÚHH[Â‚ˆÛÛœÝ\Ó˜]]™TØÜ›ÛH
+
+HOˆšY]ÜÜ˜Û\ÜÓ\Ý˜ÛÛZ[œÊ›˜]]™K\ØÜ›ÛŠNÂˆÛÛœÝ]ÜH
+
+HOˆšY]ÜÜœØÜ›ÛÜHÂˆÛÛœÝ]›ÝÛHH
+
+HOˆ
+ˆX]˜ÙZ[
+šY]ÜÜœØÜ›ÛÜ
+ÈšY]ÜÜ˜ÛY[ZYÚ
+HHšY]ÜÜœØÜ›ÛZYÚˆ
+NÂˆÛÛœÝÛ•ÝXÚÝ\H
+]™[
+HOˆÂˆ\ÝÝXÚHH]™[ÝXÚ\Ë›[™ÝOOHHÈ]™[ÝXÚ\ÖÌK˜ÛY[Hˆ[ÂˆNÂˆÛÛœÝÛ•ÝXÚ[Ý™HH
+]™[
+HOˆÂˆYˆ
+Z\Ó˜]]™TØÜ›Û
+
+H]™[ÝXÚ\Ë›[™ÝOOHH\ÝÝXÚHOOH[
+HÂˆ\ÝÝXÚHH[Âˆ™]\›ŽÂˆBˆÛÛœÝ™^HH]™[ÝXÚ\ÖÌK˜ÛY[NÂˆÛÛœÝ[VHH™^HH\ÝÝXÚNÂˆ\ÝÝXÚHH™^NÂˆYˆ
+
+]Ü
+
+H	‰ˆ[VHˆ
+H
+]›ÝÛJ
+H	‰ˆ[VH
+JHÂˆ]™[œ™]™[Y˜][
+
+NÂˆBˆNÂˆÛÛœÝÛ•ÝXÚ[™H
+]™[
+HOˆÂˆ\ÝÝXÚHH]™[ÝXÚ\Ë›[™ÝOOHHÈ]™[ÝXÚ\ÖÌK˜ÛY[Hˆ[ÂˆNÂˆÛÛœÝÛ•ÚY[H
+]™[
+HOˆÂˆYˆ
+Z\Ó˜]]™TØÜ›Û
+
+JH™]\›ŽÂˆYˆ
+
+]Ü
+
+H	‰ˆ]™[™[VH
+H
+]›ÝÛJ
+H	‰ˆ]™[™[VHˆ
+JHÂˆ]™[œ™]™[Y˜][
+
+NÂˆBˆNÂ‚ˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚÝ\‹Û•ÝXÚÝ\È\ÜÚ]™NYHJNÂˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚ[Ý™H‹Û•ÝXÚ[Ý™KÈ\ÜÚ]™N™˜[ÙHJNÂˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚ[™‹Û•ÝXÚ[™È\ÜÚ]™NYHJNÂˆšY]ÜÜ˜Y]™[\Ý[™\ŠÝXÚØ[˜Ù[‹Û•ÝXÚ[™È\ÜÚ]™NYHJNÂˆšY]ÜÜ˜Y]™[\Ý[™\ŠÚY[‹Û•ÚY[È\ÜÚ]™N™˜[ÙHJNÂˆ\Ë—×ÜÝ\šÔØÜ›ÛÝX\™šY]ÜÜŒLHšY]ÜÜÂˆ\Ë—×ÜÝ\šÔØÜ›ÛÝX\™ÛX[\ŒLH
+
+HOˆÂˆšY]ÜÜœ™[[Ý™Q]™[\Ý[™\ŠÝXÚÝ\‹Û•ÝXÚÝ\
+NÂˆšY]ÜÜœ™[[Ý™Q]™[\Ý[™\ŠÝXÚ[Ý™H‹Û•ÝXÚ[Ý™JNÂˆšY]ÜÜœ™[[Ý™Q]™[\Ý[™\ŠÝXÚ[™‹Û•ÝXÚ[™
+NÂˆšY]ÜÜœ™[[Ý™Q]™[\Ý[™\ŠÝXÚØ[˜Ù[‹Û•ÝXÚ[™
+NÂˆšY]ÜÜœ™[[Ý™Q]™[\Ý[™\ŠÚY[‹Û•ÚY[
+NÂˆYˆ
+\Ë—×ÜÝ\šÔØÜ›ÛÝX\™šY]ÜÜŒLOOHšY]ÜÜ
+HÂˆ\Ë—×ÜÝ\šÔØÜ›ÛÝX\™šY]ÜÜŒLH[ÂˆBˆNÂˆNÂ‚ˆ[™[œ›ÝÝ\K—ÜÞ[˜ÔÚ[ÛÛ›ÛÕŒH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\ÔÞ[˜ÐÛÛ›ÛÏË˜Ø[
+\ÊNÂˆ\Ë—Ú[œÝ[XY\”™]\›•ŒL
+
+NÂˆ\Ë—Ú[œÝ[ØÜ›Û›Ý[™\žQÝX\™ŒL
+
+NÂˆNÂ‚ˆ[™[œ›ÝÝ\K—Ü™[™\ˆH[˜Ý[Ûˆ
+
+HÂˆ™]š[Ý\Ô™[™\‹˜Ø[
+\ÊNÂˆ\Ë—Ú[œÝ[XY\”™]\›•ŒL
+
+NÂˆ\Ë—Ú[œÝ[ØÜ›Û›Ý[™\žQÝX\™ŒL
+
+NÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒLšœÂ‚‹ËÈ‘QÒSˆÝ\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒLKšœÂŠ
+
+HOˆÂ˜ÛÛœÝ[™[HÝ\ÝÛQ[[Y[Ë™Ù]
+œÝ\šË\ÛÛ\œÝÙ\‹\[™[ŠNÂ˜ÛÛœÝ’RÐT×ÔÒSÐ“ÕS‘T–WÕ‘TÒÓÔHÂ‚™[˜Ý[ÛˆÚÝ[›ØÚÓšZØ\ÔÚ[›Ý[™\žS[Ý™JÂˆ[Vˆ[VKˆ[•šY]ÜÜˆØÜ›ÛÜˆØÜ›ÛZYÚˆÛY[ZYÚŸJHÂˆYˆ
+S[X™\‹š\Ñš[š]J[VJHX]˜XœÊ[VJHHX]˜XœÊ[X™\Š[V
+H
+JH™]\›ˆ˜[ÙNÂˆYˆ
+Z[•šY]ÜÜ
+H™]\›ˆYNÂˆÛÛœÝX^[][TØÜ›ÛHX]›X^
+
+[X™\ŠØÜ›ÛZYÚ
+H
+HH
+[X™\ŠÛY[ZYÚ
+H
+JNÂˆYˆ
+X^[][TØÜ›ÛHJH™]\›ˆYNÂˆÛÛœÝÝ\œ™[ØÜ›ÛHX]›X^
+[X™\ŠØÜ›ÛÜ
+H
+NÂˆYˆ
+[VHˆ	‰ˆÝ\œ™[ØÜ›ÛHJH™]\›ˆYNÂˆ™]\›ˆ[VH	‰ˆÝ\œ™[ØÜ›ÛHX^[][TØÜ›ÛHNÂŸB‚™[˜Ý[ÛˆÜ™X]SšZØ\ÔÚ[ØÜ›Û›Ý[™\žQÝX\™
+ÈÜÝšY]ÜÜJHÂˆYˆ
+ZÜÝË˜Y]™[\Ý[™\ˆ]šY]ÜÜ
+H™]\›ˆ
+
+HOˆßNÂˆ]ÝXÚH[Â‚ˆÛÛœÝ]™[Ý\Y[•šY]ÜÜH
+]™[
+HOˆÂˆÛÛœÝ]H\[Ùˆ]™[˜ÛÛ\ÜÙY]OOH™[˜Ý[ÛˆˆÈ]™[˜ÛÛ\ÜÙY]
+
+Hˆ×NÂˆ™]\›ˆ]š[˜ÛY\ÊšY]ÜÜ
+H›ÛÛX[ŠšY]ÜÜ˜ÛÛZ[œÏËŠ]™[\™Ù]
+JNÂˆNÂˆÛÛœÝ™[Y[X™\•ÝXÚH
+]™[
+HOˆÂˆYˆ
+]™[ÝXÚ\Ë›[™ÝOOHJHÂˆÝXÚH[Âˆ™]\›ŽÂˆBˆÛÛœÝÝ\œ™[H]™[ÝXÚ\ÖÌNÂˆÝXÚHÂˆˆÝ\œ™[˜ÛY[ˆNˆÝ\œ™[˜ÛY[KˆÝ\ˆÝ\œ™[˜ÛY[ˆÝ\NˆÝ\œ™[˜ÛY[Kˆ[•šY]ÜÜˆ]™[Ý\Y[•šY]ÜÜ
+]™[
+Kˆ›ØÚÙYˆ˜[ÙKˆNÂˆNÂˆÛÛœÝ[Ý™UÝXÚH
+]™[
+HOˆÂˆYˆ
+]™[ÝXÚ\Ë›[™ÝOOHJHÂˆÝXÚH[Âˆ™]\›ŽÂˆBˆÛÛœÝÝ\œ™[H]™[ÝXÚ\ÖÌNÂˆYˆ
+]ÝXÚ
+HÂˆ™[Y[X™\•ÝXÚ
+]™[
+NÂˆ™]\›ŽÂˆBˆÛÛœÝ[VHÝ\œ™[˜ÛY[HÝXÚžÂˆÛÛœÝ[VHHÝ\œ™[˜ÛY[HHÝXÚžNÂˆÛÛœÝ˜]™[HÝ\œ™[˜ÛY[HÝXÚœÝ\ÂˆÛÛœÝ˜]™[HHÝ\œ™[˜ÛY[HHÝXÚœÝ\NÂˆÝXÚžHÝ\œ™[˜ÛY[ÂˆÝXÚžHHÝ\œ™[˜ÛY[NÂˆÛÛœÝ™\XØ[[[HX]˜XœÊ˜]™[JHˆ’RÐT×ÔÒSÐ“ÕS‘T–WÕ‘TÒÓÔˆ	‰ˆX]˜XœÊ˜]™[JHˆX]˜XœÊ˜]™[
+NÂˆYˆ
+]ÝXÚ˜›ØÚÙY	‰ˆ™\XØ[[[
+HÂˆÝXÚ˜›ØÚÙYHÚÝ[›ØÚÓšZØ\ÔÚ[›Ý[™\žS[Ý™JÂˆ[Vˆ[VKˆ[•šY]ÜÜˆÝXÚš[•šY]ÜÜˆØÜ›ÛÜˆšY]ÜÜœØÜ›ÛÜˆØÜ›ÛZYÚˆšY]ÜÜœØÜ›ÛZYÚˆÛY[ZYÚˆšY]ÜÜ˜ÛY[ZYÚˆJNÂˆBˆYˆ
+ÝXÚ˜›ØÚÙY	‰ˆ]™[˜Ø[˜Ù[X›JH]™[œ™]™[Y˜][
+
+NÂˆNÂˆÛÛœÝ[™ÝXÚH
+]™[
+HOˆÂˆYˆ
+]™[ÝXÚ\Ë›[™ÝOOHJH™[Y[X™\•ÝXÚ
+]™[
+NÂˆ[ÙHÝXÚH[ÂˆNÂˆÛÛœÝØ[˜Ù[ÝXÚH
+
+HOˆÂˆÝXÚH[ÂˆNÂ‚ˆÜÝ˜Y]™[\Ý[™\ŠÝXÚÝ\‹™[Y[X™\•ÝXÚÈ\ÜÚ]™Nˆ˜[ÙKØ\\™NˆYHJNÂˆÜÝ˜Y]™[\Ý[™\ŠÝXÚ[Ý™H‹[Ý™UÝXÚÈ\ÜÚ]™Nˆ˜[ÙKØ\\™NˆYHJNÂˆÜÝ˜Y]™[\Ý[™\ŠÝXÚ[™‹[™ÝXÚÈ\ÜÚ]™NˆYKØ\\™NˆYHJNÂˆÜÝ˜Y]™[\Ý[™\ŠÝXÚØ[˜Ù[‹Ø[˜Ù[ÝXÚÈ\ÜÚ]™NˆYKØ\\™NˆYHJNÂ‚ˆ™]\›ˆ
+
+HOˆÂˆÜÝœ™[[Ý™Q]™[\Ý[™\ŠÝXÚÝ\‹™[Y[X™\•ÝXÚYJNÂˆÜÝœ™[[Ý™Q]™[\Ý[™\ŠÝXÚ[Ý™H‹[Ý™UÝXÚYJNÂˆÜÝœ™[[Ý™Q]™[\Ý[™\ŠÝXÚ[™‹[™ÝXÚYJNÂˆÜÝœ™[[Ý™Q]™[\Ý[™\ŠÝXÚØ[˜Ù[‹Ø[˜Ù[ÝXÚYJNÂˆÝXÚH[ÂˆNÂŸB‚šYˆ
+[™[	‰ˆT[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒLJHÂˆ[™[œ›ÝÝ\K—×ÜÝ\šÕZUŒLHHYNÂˆÛÛœÝ™]š[Ý\Ñ\ØÛÛ›™XÝYH[™[œ›ÝÝ\K™\ØÛÛ›™XÝYØ[˜XÚÎÂ‚ˆ[™[œ›ÝÝ\K—Ú[œÝ[ØÜ›Û›Ý[™\žQÝX\™ŒLH[˜Ý[Ûˆ
+
+HÂˆÛÛœÝšY]ÜÜH\Ë—×ÜÝ\šÔÚ[ŒËšY]ÜÜˆ\ËœÚYÝÔ›ÛÝËœ]Y\žTÙ[XÝÜŠ‹ž›ÛÛK]šY]ÜÜ]ŒHŠNÂˆYˆ
+]šY]ÜÜ\Ë—×ÜÝ\šÔØÜ›ÛÝX\™šY]ÜÜŒLHOOHšY]ÜÜ
+H™]\›ŽÂ‚ˆ\Ë—×ÜÝ\šÔØÜ›ÛÝX\™ÛX[\ŒLËŠ
+NÂˆ\Ë—×ÜÝ\šÔØÜ›ÛÝX\™ÛX[\ŒLOËŠ
+NÂˆ\Ë—×ÜÝ\šÔØÜ›ÛÝX\™ÛX[\ŒLHHÜ™X]SšZØ\ÔÚ[ØÜ›Û›Ý[™\žQÝX\™
+ÂˆÜÝˆ\ËˆšY]ÜÜˆJNÂˆ\Ë—×ÜÝ\šÔØÜ›ÛÝX\™šY]ÜÜŒLHHšY]ÜÜÂˆNÂ‚ˆ[™[œ›ÝÝ\K™\ØÛÛ›™XÝYØ[˜XÚÈH[˜Ý[Ûˆ
+
+HÂˆ\Ë—×ÜÝ\šÔØÜ›ÛÝX\™ÛX[\ŒLËŠ
+NÂˆ\Ë—×ÜÝ\šÔØÜ›ÛÝX\™ÛX[\ŒLOËŠ
+NÂˆ\Ë—×ÜÝ\šÔØÜ›ÛÝX\™ÛX[\ŒLH[Âˆ\Ë—×ÜÝ\šÔØÜ›ÛÝX\™ÛX[\ŒLHH[Âˆ\Ë—×ÜÝ\šÔØÜ›ÛÝX\™šY]ÜÜŒLH[Âˆ\Ë—×ÜÝ\šÔØÜ›ÛÝX\™šY]ÜÜŒLHH[Âˆ™]š[Ý\Ñ\ØÛÛ›™XÝYË˜Ø[
+\ÊNÂˆNÂŸBŸJJ
+NÂ‹ËÈS‘Ý\ÝÛWØÛÛ\Û™[ËÜÝ\š×ÜÛÛ\œÝÙ\‹Ùœ›Û[™ÜÝ\šË\ÛÛ\œÝÙ\‹\[™[]ŒLKšœÂ

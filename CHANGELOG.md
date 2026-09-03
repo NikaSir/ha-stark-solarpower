@@ -4,6 +4,15 @@ All notable project changes are recorded here.
 
 ## [Unreleased]
 
+## [1.9.3] - 2026-09-03
+
+### Panel UI 0.9.3 — confirmed Shell v2.1 boundary guard
+
+- Replace the viewport-only scroll limiter with the field-confirmed NikaS Shell v2.1 capture guard used by Access 0.1.7.
+- Consume vertical gestures before they reach the Home Assistant host at short-view, top and bottom boundaries while preserving native scrolling inside long views.
+- Preserve pinch gestures, taps with up to 4 px finger jitter, the fixed Header, peer selector, Bottom Tab Bar, stable DOM, UPS semantics and approved visual composition.
+- Remove every capture listener when the panel disconnects and declare NikaS UI Standard 2.1 in the panel contract.
+
 ## [1.9.2] - 2026-09-02
 
 - Prefix the Home Assistant and HACS integration name with `NikaS`.
