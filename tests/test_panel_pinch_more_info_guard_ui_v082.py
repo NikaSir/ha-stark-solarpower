@@ -30,7 +30,7 @@ class PanelPinchMoreInfoGuardUiV082Tests(unittest.TestCase):
         )
 
     def test_delivery_versions_and_bundle_source_agree(self) -> None:
-        self.assertEqual(self.integration_manifest["version"], "1.9.6")
+        self.assertEqual(self.integration_manifest["version"], "1.9.7")
         self.assertEqual(self.panel_manifest["ui_version"], "0.9.5")
         self.assertIn('PANEL_UI_VERSION = "0.9.5"', self.panel_registration)
         self.assertIn('"stark-solarpower-panel-v082.js"', self.bundle_builder)

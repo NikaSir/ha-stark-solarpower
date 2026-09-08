@@ -4,6 +4,18 @@ All notable project changes are recorded here.
 
 ## [Unreleased]
 
+## [1.9.7] - 2026-09-08
+
+### Preserve unknown UPS operating modes
+
+- Keep `on_battery` unknown and unavailable when fresh telemetry omits
+  `bt_model`, returns null or reports an unrecognized mode; only an explicit
+  known non-battery mode produces `off`.
+- Suppress battery-exit and fault-clear events across unknown mode samples so
+  partial cloud responses cannot invent state transitions.
+- Cover missing, null, unknown, line, battery and partial-after-full snapshots
+  with executable platform-level regression tests. Panel UI remains `0.9.5`.
+
 ## [1.9.6] - 2026-09-08
 
 ### Panel lifecycle independent of cloud availability
