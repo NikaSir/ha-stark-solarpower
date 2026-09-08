@@ -28,7 +28,7 @@ PANEL_ENTRY_IDS = "panel_entry_ids"
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Set up Stark SolarPower from a config entry."""
+    """Set up Stark SolarPower while keeping the panel independent of cloud I/O."""
     utc_offset = dt_util.now().utcoffset()
     fallback_timezone_offset = (
         int(utc_offset.total_seconds()) if utc_offset is not None else None
@@ -40,11 +40,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         fallback_timezone_offset=fallback_timezone_offset,
     )
     coordinator = StarkSolarPowerCoordinator(hass, entry, api)
-    await coordinator.async_config_entry_first_refresh()
 
+    # Publish ownership and register the application route before the first
+    # fallible cloud discovery/telemetry refresh. A ConfigEntryNotReady retry
+    # may delay entities, but it must never make /dashboard-ups disappear.
     entry.runtime_data = coordinator
-    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-
     domain_data = hass.data.setdefault(DOMAIN, {})
     entry_ids = domain_data.setdefault(PANEL_ENTRY_IDS, set())
     if isinstance(entry_ids, set):
@@ -53,10 +53,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     try:
         await async_register_ups_panel(hass)
     except (OSError, RuntimeError, ValueError) as err:
-        # The monitoring integration must stay operational even if the optional
-        # frontend panel cannot be registered on a particular HA frontend build.
+        # Telemetry remains useful even when this frontend build cannot register.
         _LOGGER.warning("Cannot register Stark SolarPower UPS panel: %s", err)
 
+    await coordinator.async_config_entry_first_refresh()
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
 
 
