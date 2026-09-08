@@ -4,6 +4,17 @@ All notable project changes are recorded here.
 
 ## [Unreleased]
 
+## [1.9.6] - 2026-09-08
+
+### Panel lifecycle independent of cloud availability
+
+- Publish config-entry runtime ownership and register `/dashboard-ups` before
+  the first fallible SolarPower discovery/telemetry refresh.
+- Preserve the panel route while Home Assistant retries an unavailable cloud
+  account; entity setup and all telemetry semantics remain unchanged.
+- Add a static startup-order regression contract. Panel UI remains `0.9.5`.
+
+
 ## [1.9.4] - 2026-09-03
 
 ### Panel UI 0.9.4 — peer-device status lamps
