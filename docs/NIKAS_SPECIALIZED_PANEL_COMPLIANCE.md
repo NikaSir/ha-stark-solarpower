@@ -1,24 +1,24 @@
 # NikaS specialized-panel compliance — Stark SolarPower
 
-**Audit date:** 2026-08-28
-**Standard:** NikaS Specialized Panel UI and Navigation Standard v1.9
-**Audited production path:** `panel.py` → `stark-solarpower-panel-bundle.js?v=0.9.5` → `stark-solarpower-panel`
-**Scope:** implemented in UI v0.9.5; phone field acceptance remains required
+**Audit date:** 2026-09-09
+**Standard:** NikaS Specialized Panel UI Standard v2.2 / Navigation Contract v1.2
+**Audited production path:** `panel.py` → `stark-solarpower-panel-bundle.js?v=0.9.6` → `stark-solarpower-panel`
+**Scope:** implemented in UI v0.9.6 / integration 1.9.8; production browser and phone acceptance remain required
 
 | Area | Result | Evidence |
 |---|---|---|
 | Canonical StarLine peer selector | PASS | Final `frontend/stark-solarpower-panel-v095.js` uses the shared 52 px row, two separate 44 px buttons, 8 px gap, left-aligned labels, primary selection surface/border and the existing independent 9 px status lamps. |
-| Integration-owned height-locked shell | PASS | Final `frontend/stark-solarpower-panel-v080.js` locks the application to `100dvh`; Header, selector and Bottom Tab Bar remain outside the only flexible work viewport. |
+| Integration-owned host-bound shell | PASS (static) | Final `frontend/stark-solarpower-panel-v096.js` binds an absolute four-row grid to the Home Assistant panel host with 60 px Header, 52 px selector, `minmax(0,1fr)` work row and 64 px Bottom Tab Bar. Browser rectangle measurements remain required. |
 | One zoom viewport / idempotence | PASS | `frontend/stark-solarpower-panel-v060.js` replaces the prior viewport, marks `data-stark-transform-pan-v060` and detaches older resize engines. |
 | Scale 75–200%, focal pinch, per-UPS persistence | PASS | `frontend/stark-solarpower-panel-v054.js`, `v060.js`: clamp, focal content coordinates and device-keyed local storage/state. |
 | 97–103% snap, two-finger double tap and toast | PASS | `frontend/stark-solarpower-panel-v056.js`, `v060.js`: snap/reset and `Масштаб 100%`. |
 | Native HA menu | PASS | `frontend/stark-solarpower-panel-v056.js`: `mdi:menu`, bubbling/composed `hass-toggle-menu`. |
-| Safe area and fixed Bottom Tab Bar | PASS | `frontend/stark-solarpower-panel-v053.js`, `v052.js`: top and bottom safe-area handling; shell elements remain outside transform. |
-| Header reference geometry | PASS | `v065.js` provides 52/48 rails, 62/60 height, matched 44×44 radius-16 plaques and 25px icons; final `v080.js` applies v1.6 typography at 23/14 px and 21/13 px narrow. |
-| Source-aware title return | PASS | Final navigation layer mounts one semantic 44px+ center button, keeps the second line exactly `UI v0.9.5`, requires and validates the route/timestamp pair once, rejects future/stale hand-offs and performs explicit HA navigation without `history.back()`. |
+| Safe area and fixed Bottom Tab Bar | PASS (static) | `v096.js` owns safe-area insets once in the host grid; chrome is outside the transform canvas and browser-window fixed positioning is superseded. |
+| Header reference geometry | PASS (static) | `v096.js` applies the exact v2.2 60 px body, 52/48 rails, 44×44 radius-16 side plaques, 25 px icons, S8 surface and 52 px center title. |
+| Source-aware title return | PASS | Final navigation layer mounts one semantic 52 px center button, keeps the second line exactly `UI v0.9.6`, requires and validates the route/timestamp pair once, rejects future/stale hand-offs and performs explicit HA navigation without `history.back()`. |
 | iOS scroll boundary | PASS | Final `v091.js` uses the confirmed Shell v2.1 capture/non-passive host guard: it contains short views and real top/bottom edges while allowing inner scrolling, taps and multitouch pinch. |
-| Navigation contract | PASS | `.nikas-ui-standard.json` pins the canonical v1.9 documents; `scripts/check_nikas_ui_standard.py` validates the three base routes, one-shot hand-off, saved fallback and runtime markers. |
-| Bottom Tab geometry | PASS | Final v065 layer uses fixed full-width safe-area bar, minimum 52px controls, `ha-icon` at 28px, 12/700 labels and 11% primary active fill. |
+| Navigation contract | PASS | `.nikas-ui-standard.json` pins canonical v2.2 / Navigation 1.2 documents. Runtime accepts current House v13, Rooms v11, Actions and Infrastructure routes, consumes the one-shot hand-off and stores only a validated same-origin return. |
+| Bottom Tab geometry | PASS (static) | Final v096 layer uses the 64 px host row, exact 52 px controls, `ha-icon` at 26 px, 12/14 px labels, 1 px stack gap and 11% primary active fill. |
 | Native vertical scroll at 100% | PASS | v065 switches to `overflow-y:auto`, `overflow-x:hidden`, `touch-action:pan-y` at scale ≤100%; transform offsets are zero. |
 | Origin fixed at 100%; no one-finger pan | PASS | v065 creates a single-finger pan candidate only when `state.scale > 1`; clamp fixes `x=y=0` at or below 100%. |
 | Pan only above 100% / overflowing axes | PASS | v065 independently mutates x/y only when calculated content bounds overflow that axis and clamps both edges. |
@@ -38,15 +38,17 @@
 | Immediate startup surface | PASS | Final `v086.js` replaces the legacy empty/loading viewport with a complete neutral Overview and factual placeholders before the registries resolve; the runtime stable shell still takes ownership after discovery. |
 | Mobile Overview composition | PASS | Final `v081.js` uses a 336px phone scene, raises the capacity plaque, preserves the side-metric alignment, compacts the two lower surfaces and reserves 16px above fixed navigation without resizing the UPS artwork. |
 | Typography envelope | PASS | Final `v080.js` enforces the v1.6 12–25px phone envelope, with explicit 23/14 and 21/13 Header pairs and a 25px hero ceiling. |
-| Connection/freshness plaque | PASS | Final `v080.js` keeps the requested selected-UPS two-level semantics and applies 16/13 typography, 10% status tint and 30% status border without animation/remount. |
+| Connection/freshness plaque and blue corner | PASS (static) | Final `v096.js` keeps the requested two-level semantics and locks the plaque to 168×58 px at 13/13 px with 11×12 padding, 10 px lamp, 16/13 typography and exact state tints. The persistent corner is 205×205 px at −92/−70 with fixed `rgba(3,169,217,0.07)`. Browser geometry remains a GAP. |
 | Peer-device status lamps | PASS | Final `v092.js` restores one 9px lamp inside each selector button and point-patches good/warn/bad/unknown tone plus accessible status text without replacing selector nodes. |
-| Production delivery | PASS | `panel.py` uses one cache-busted autonomous bundle URL, UI version `0.9.5` and cache headers for its versioned static files. |
-| Data truth and command policy | PASS | Telemetry comes from integration/registry evidence; unknown/unavailable remain explicit. The sole action is a discovered refresh entity: unavailable targets are rejected, duplicate requests are blocked and completion reports only that Home Assistant accepted the refresh request. |
+| Refresh contract v1.1 | PASS (runtime harness) | The production bundle starts all discovered UPS refresh entities immediately, blocks duplicate activation, keeps busy for at least 900 ms, treats partial/unavailable targets as failure, exposes ARIA state and shows the 1400 ms check/error result. Retry cancels the old result timer. Browser animation remains a GAP. |
+| Panel lifecycle v1.0 | PASS (static/runtime order) | Registration precedes first cloud refresh. Shared entry ownership is retained; a foreign `/dashboard-ups` route is not removed on unload. Empty/unavailable frontend states remain explicit. Full HA retry acceptance remains required. |
+| Production delivery | PASS | `panel.py` uses one cache-busted autonomous bundle URL, UI version `0.9.6` and cache headers for its versioned static files. The exact canonical Shell v2.1 source is vendored and concatenated at build time. |
+| Data truth and command policy | PASS | Telemetry comes from integration/registry evidence; unknown/unavailable remain explicit. Peer status remains gray until enough facts exist. The sole action is integration-owned read-only refresh; completion does not fabricate a new sample or freshness. |
 | Deterministic bundle check | PASS | `build_frontend_bundle.py --check` fails on stale output; CI syntax-checks the single autonomous entrypoint and rejects runtime imports. |
 
 ## Remaining follow-up
 
-Complete the phone field checks below. Preserve the approved icon and add optional theme/logo variants only if a real surface requires them.
+Complete the full v2.2 browser matrix and phone field checks below. Preserve the approved icon and add optional theme/logo variants only if a real surface requires them.
 
 ## Phone verification still required
 

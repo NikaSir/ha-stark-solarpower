@@ -9,7 +9,8 @@ ROOT = Path(__file__).resolve().parents[1]
 INTEGRATION = ROOT / "custom_components" / "stark_solarpower"
 GESTURES = INTEGRATION / "frontend" / "stark-solarpower-panel-v065.js"
 STANDARD = INTEGRATION / "frontend" / "stark-solarpower-panel-v080.js"
-REFRESH = INTEGRATION / "frontend" / "stark-solarpower-panel-v043.js"
+ADOPTION = INTEGRATION / "frontend" / "stark-solarpower-panel-v096.js"
+REFRESH = ADOPTION
 
 
 class PanelUiStandardV16Tests(unittest.TestCase):
@@ -17,6 +18,7 @@ class PanelUiStandardV16Tests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.gestures = GESTURES.read_text(encoding="utf-8")
         cls.standard = STANDARD.read_text(encoding="utf-8")
+        cls.adoption = ADOPTION.read_text(encoding="utf-8")
         cls.refresh = REFRESH.read_text(encoding="utf-8")
         cls.manifest = json.loads(
             (INTEGRATION / "panel_manifest.json").read_text(encoding="utf-8")
@@ -35,20 +37,19 @@ class PanelUiStandardV16Tests(unittest.TestCase):
         self.assertIn("resetPosition", self.gestures)
         self.assertIn("stark-solarpower:transform:${key}", self.gestures)
 
-    def test_height_locked_fixed_shell(self) -> None:
-        self.assertIn("height:100dvh!important", self.standard)
-        self.assertIn("overflow:hidden!important", self.standard)
-        self.assertIn("flex:1 1 auto!important", self.standard)
-        self.assertIn("overscroll-behavior-y:none!important", self.standard)
-        self.assertIn(":host { position:fixed!important; inset:0!important", self.standard)
-        self.assertIn(
-            "padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))",
-            self.standard,
-        )
+    def test_host_bound_four_row_shell(self) -> None:
+        self.assertIn("position:relative!important", self.adoption)
+        self.assertIn("height:100%!important", self.adoption)
+        self.assertIn('grid-template-areas:"header" "peer" "viewport" "tabs"', self.adoption)
+        self.assertIn("calc(60px + env(safe-area-inset-top,0px))", self.adoption)
+        self.assertIn("52px minmax(0,1fr)", self.adoption)
+        self.assertIn("calc(64px + env(safe-area-inset-bottom,0px))", self.adoption)
 
     def test_bottom_navigation_geometry(self) -> None:
-        self.assertIn("padding:6px max(8px,env(safe-area-inset-right,0px))", self.standard)
-        self.assertIn("border-radius:16px!important", self.standard)
+        self.assertIn("height:52px!important", self.adoption)
+        self.assertIn("padding:2px 3px 6px!important", self.adoption)
+        self.assertIn("--mdc-icon-size:26px!important", self.adoption)
+        self.assertIn("line-height:14px!important", self.adoption)
 
     def test_lazy_view_cache_preserves_shell(self) -> None:
         self.assertIn("cache:new Map", self.standard)
@@ -75,8 +76,8 @@ class PanelUiStandardV16Tests(unittest.TestCase):
         self.assertIn(".metric-copy-v051 span,.metric-copy-v051 small", self.standard)
 
     def test_manifest_matches_runtime(self) -> None:
-        self.assertEqual(self.manifest["ui_version"], "0.9.5")
-        self.assertEqual(self.manifest["template"]["version"], "1.9")
+        self.assertEqual(self.manifest["ui_version"], "0.9.6")
+        self.assertEqual(self.manifest["template"]["version"], "2.2")
         self.assertEqual(
             self.manifest["navigation"]["views"],
             ["overview", "ups", "events", "history", "diagnostics"],
@@ -96,7 +97,10 @@ class PanelUiStandardV16Tests(unittest.TestCase):
 
     def test_refresh_fails_closed_without_optimistic_success(self) -> None:
         self.assertIn('["unknown", "unavailable"].includes', self.refresh)
-        self.assertIn("Запрос обновления принят", self.refresh)
+        self.assertIn("Запрос обновления выполнен", self.refresh)
+        self.assertIn("Promise.allSettled", self.refresh)
+        self.assertIn("REFRESH_MINIMUM_MS = 900", self.refresh)
+        self.assertIn("REFRESH_RESULT_MS = 1400", self.refresh)
         self.assertNotIn("UPS обновлены", self.refresh)
 
 

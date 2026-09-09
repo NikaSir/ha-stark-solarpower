@@ -37,7 +37,7 @@ class PeerDeviceSelectorUiV095Tests(unittest.TestCase):
 
     def test_manifest_and_bundle_publish_v095(self):
         context = self.panel_manifest["device_context"]
-        self.assertEqual(self.panel_manifest["ui_version"], "0.9.5")
+        self.assertEqual(self.panel_manifest["ui_version"], "0.9.6")
         self.assertEqual(context["visual_reference"], "StarLine UI 0.6.8")
         self.assertEqual(context["row_height_px"], 52)
         self.assertEqual(context["touch_target_px"], 44)

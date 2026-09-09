@@ -7,7 +7,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FRONTEND = ROOT / "custom_components" / "stark_solarpower" / "frontend"
 OUTPUT = FRONTEND / "stark-solarpower-panel-bundle.js"
+SHELL_SOURCE = ROOT / "templates" / "shell_v2" / "nikas-specialized-shell.js"
 SOURCES = [
+    SHELL_SOURCE,
     FRONTEND / "stark-solarpower-panel.js",
     FRONTEND / "stark-solarpower-panel-v020.js",
     FRONTEND / "stark-solarpower-panel-v021.js",
@@ -55,6 +57,7 @@ SOURCES = [
     FRONTEND / "stark-solarpower-panel-v091.js",
     FRONTEND / "stark-solarpower-panel-v092.js",
     FRONTEND / "stark-solarpower-panel-v095.js",
+    FRONTEND / "stark-solarpower-panel-v096.js",
 ]
 IMPORT_RE = re.compile(r"^\s*import\s+[\"']\./[^\"']+[\"'];?\s*$", re.MULTILINE)
 
@@ -78,16 +81,14 @@ def build() -> str:
         if not path.exists():
             raise SystemExit(f"Missing frontend source: {path}")
         relative = path.relative_to(ROOT).as_posix()
-        parts.extend(
-            [
-                f"// BEGIN {relative}",
-                "(() => {",
-                _clean(path),
-                "})();",
-                f"// END {relative}",
-                "",
-            ]
-        )
+        parts.append(f"// BEGIN {relative}")
+        if path == SHELL_SOURCE:
+            # The exact canonical kit stays in the outer bundle scope so the
+            # final product layer can reuse its style and routing helpers.
+            parts.append(_clean(path))
+        else:
+            parts.extend(["(() => {", _clean(path), "})();"])
+        parts.extend([f"// END {relative}", ""])
     return "\n".join(parts).rstrip() + "\n"
 
 

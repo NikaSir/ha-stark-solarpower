@@ -6,7 +6,7 @@ Custom Home Assistant integration for **STARK Country Online** UPS devices monit
 
 ## Status
 
-Current production baseline: **v1.9.7** with the integration-owned UPS panel UI **v0.9.5**.
+Current production baseline: **v1.9.8** with the integration-owned UPS panel UI **v0.9.6**.
 
 The integration has been field-tested on two STARK Country Online 1000 VA UPS devices with SolarPower Wi-Fi cards.
 
@@ -44,11 +44,11 @@ Navigation contract:
 - sidebar title: `ИБП Stark`;
 - icon: `mdi:battery-charging`;
 - preferred view: `overview`;
-- panel UI version: `0.9.5`;
+- panel UI version: `0.9.6`;
 - persistent device selector: `UPS Интернет / UPS Котёл`;
 - product artwork: `Stark Country 1000 ONLINE (16A)`.
 
-The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.9.5 keeps the approved panel layout, keeps point-updated status lamps and adopts the StarLine peer-device selector geometry and applies the field-confirmed NikaS Shell v2.1 scroll-boundary behavior: a height-locked shell keeps Header, peer selector and Bottom Tab Bar stationary around one permanent work viewport; short views and top/bottom boundaries cannot chain into the Home Assistant host; long views keep native interior scrolling; pinch and taps remain available. The centered title plaque returns to the validated originating NikaS base panel; visited UPS/tab views are lazily cached; routine telemetry point-patches the mounted DOM. A complete neutral Overview is mounted immediately while registry discovery and image prewarming continue in parallel, so cold startup no longer presents a blank viewport or standalone loader. Versioned frontend assets use browser cache headers. The selected-UPS cloud/freshness indicator uses the canonical two-level vocabulary and status-tinted plaque, while all meaningful phone typography stays within 12–25 px. The mobile Overview reports the vendor runtime in hours/minutes and distinguishes a complete reserve (at least 95%) from a partial reserve after mains return. Pinch cancels every pending entity hold and guards the final more-info dispatch, while an intentional stationary one-finger hold remains available.
+The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.9.6 adopts NikaS Specialized Panel UI Standard v2.2 and Navigation Contract v1.2 while preserving the approved UPS composition. The vendored canonical Shell v2.1 source binds the application to the Home Assistant panel host with exact 60/52/work/64 px rows, a 1280 px content frame, 26 px Bottom Tab Bar icons and current House v13 / Rooms v11 return routes. The Stark peer selector remains the standard status-lamp reference: selection and factual green/orange/red/gray health stay independent and update in place. The selected-UPS cloud/freshness plaque now uses the locked 168×58 geometry and fixed decoration tokens. Manual Refresh addresses every discovered UPS, blocks duplicate requests, remains busy for at least 900 ms and shows a 1400 ms success/error result without fabricating freshness. Header, selector, work viewport, artwork and Bottom Tab Bar remain mounted while telemetry is point-patched.
 
 Views:
 

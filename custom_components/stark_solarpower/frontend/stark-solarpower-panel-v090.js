@@ -1,7 +1,7 @@
 import "./stark-solarpower-panel-v086.js";
 
 const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.9.5";
+const UI_VERSION = "0.9.6";
 const SOURCE_ROUTE_KEY = "nikas.specialized.source_route.v1";
 const SOURCE_ROUTE_AT_KEY = "nikas.specialized.source_route_at.v1";
 const RETURN_ROUTE_KEY = "nikas.stark_solarpower.return_route.v1";
@@ -12,8 +12,11 @@ function normalizeBaseRouteV090(value) {
   try {
     const url = new URL(String(value).trim(), window.location.origin);
     if (url.origin !== window.location.origin) return null;
-    if (url.pathname === "/dashboard-house-v11" || url.pathname.startsWith("/dashboard-house-v11/")) {
-      return "/dashboard-house-v11/home";
+    if (url.pathname === "/dashboard-house-v13" || url.pathname.startsWith("/dashboard-house-v13/")) {
+      return "/dashboard-house-v13/home";
+    }
+    if (url.pathname === "/dashboard-rooms-v11" || url.pathname.startsWith("/dashboard-rooms-v11/")) {
+      return "/dashboard-rooms-v11/rooms";
     }
     if (url.pathname === "/dashboard-actions" || url.pathname.startsWith("/dashboard-actions/")) {
       return "/dashboard-actions/home";
@@ -45,7 +48,7 @@ function readOneShotSourceV090() {
 
 function readSavedSourceV090() {
   try {
-    return normalizeBaseRouteV090(sessionStorage.getItem(RETURN_ROUTE_KEY));
+    return normalizeBaseRouteV090(localStorage.getItem(RETURN_ROUTE_KEY));
   } catch (_error) {
     return null;
   }
@@ -63,7 +66,7 @@ function resolveReturnRouteV090(panel) {
   );
   const route = explicit || handedOff || saved || referrer || configured || SAFE_RETURN_ROUTE;
   try {
-    sessionStorage.setItem(RETURN_ROUTE_KEY, route);
+    localStorage.setItem(RETURN_ROUTE_KEY, route);
   } catch (_error) {
     // Private browsing may disable storage; the captured instance value remains valid.
   }
@@ -119,7 +122,7 @@ if (Panel && !Panel.prototype.__starkUiV090) {
       const style = document.createElement("style");
       style.dataset.starkUiV090 = "true";
       style.textContent = `
-        /* NikaS Specialized Panel UI + Navigation Standard v1.9. */
+        /* NikaS Specialized Panel UI Standard v2.2 + Navigation Contract v1.2. */
         .app-header .title-return-v090 {
           grid-column:2!important;
           justify-self:center!important;

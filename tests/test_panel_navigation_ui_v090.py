@@ -31,7 +31,8 @@ class PanelNavigationUiV090Tests(unittest.TestCase):
 
     def test_only_canonical_base_routes_are_accepted(self) -> None:
         for route in (
-            "/dashboard-house-v11/home",
+            "/dashboard-house-v13/home",
+            "/dashboard-rooms-v11/rooms",
             "/dashboard-actions/home",
             "/dashboard-infrastructure/overview",
         ):
@@ -61,11 +62,14 @@ class PanelNavigationUiV090Tests(unittest.TestCase):
     def test_explicit_ha_navigation_and_delivery_versions(self) -> None:
         self.assertIn('window.history.pushState(null, "", target)', self.source)
         self.assertIn('new Event("location-changed")', self.source)
-        self.assertEqual(self.panel_manifest["ui_version"], "0.9.5")
+        self.assertIn("localStorage.getItem(RETURN_ROUTE_KEY)", self.source)
+        self.assertIn("localStorage.setItem(RETURN_ROUTE_KEY, route)", self.source)
+        self.assertEqual(self.panel_manifest["ui_version"], "0.9.6")
         self.assertEqual(self.panel_manifest["title"], "ИБП Stark")
         self.assertFalse(self.panel_manifest["shell"]["scroll_chaining"])
         self.assertTrue(self.panel_manifest["shell"]["ios_scroll_boundary_guard"])
         self.assertEqual(self.panel_manifest["shell"]["standard_version"], "2.1")
+        self.assertEqual(self.panel_manifest["nikas_ui_standard"], "2.2")
         self.assertIn('FRONTEND / "stark-solarpower-panel-v090.js"', self.builder)
 
 
