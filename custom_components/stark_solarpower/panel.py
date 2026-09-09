@@ -16,10 +16,11 @@ PANEL_URL_PATH = "dashboard-ups"
 PANEL_PARENT_ROUTE = "/dashboard-infrastructure/overview"
 PANEL_ICON = "mdi:battery-charging"
 PANEL_WEB_COMPONENT = "stark-solarpower-panel"
-PANEL_UI_VERSION = "0.9.5"
-PANEL_TEMPLATE_VERSION = "1.0"
+PANEL_UI_VERSION = "0.9.6"
+PANEL_TEMPLATE_VERSION = "2.2"
 PANEL_STATIC_URL = "/stark_solarpower_panel"
 PANEL_STATIC_REGISTERED = "panel_static_registered"
+PANEL_OWNED = "panel_owned"
 PANEL_DIRECTORY = Path(__file__).parent / "frontend"
 PANEL_BUNDLE = "stark-solarpower-panel-bundle.js"
 
@@ -55,6 +56,7 @@ async def async_register_ups_panel(hass: HomeAssistant) -> None:
         domain_data[PANEL_STATIC_REGISTERED] = True
 
     if frontend.async_panel_exists(hass, PANEL_URL_PATH):
+        domain_data.setdefault(PANEL_OWNED, False)
         return
 
     await panel_custom.async_register_panel(
@@ -69,8 +71,13 @@ async def async_register_ups_panel(hass: HomeAssistant) -> None:
         handle_safe_area=True,
         config=PANEL_METADATA,
     )
+    domain_data[PANEL_OWNED] = True
 
 
 def async_unregister_ups_panel(hass: HomeAssistant) -> None:
     """Remove the panel when its owning config entry is unloaded."""
+    domain_data = hass.data.setdefault(DOMAIN, {})
+    if not domain_data.get(PANEL_OWNED):
+        return
     frontend.async_remove_panel(hass, PANEL_URL_PATH, warn_if_unknown=False)
+    domain_data[PANEL_OWNED] = False

@@ -66,6 +66,9 @@ jobs:
       - name: Verify Shell v2.1 scroll boundary behavior
         run: node tests/stark_scroll_boundary_harness.mjs
 
+      - name: Verify Stark UI v2.2 production behavior
+        run: node tests/stark_ui_v22_harness.mjs
+
       - name: Reject tracked credential/key files
         shell: bash
         run: |

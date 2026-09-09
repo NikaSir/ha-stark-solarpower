@@ -2,6 +2,333 @@
 // Stark SolarPower self-contained Home Assistant panel bundle.
 // Source history is composed at build time; no previous UI file is loaded at runtime.
 
+// BEGIN templates/shell_v2/nikas-specialized-shell.js
+/* NikaS specialized panel shell source kit v2.1.
+ * Copy this file into a panel repository at build time and concatenate it into
+ * that panel's single autonomous production bundle. Runtime imports are forbidden.
+ */
+
+const NIKAS_SHELL_V2_VERSION = "2.1";
+const NIKAS_SOURCE_ROUTE_KEY = "nikas.specialized.source_route.v1";
+const NIKAS_SOURCE_ROUTE_AT_KEY = "nikas.specialized.source_route_at.v1";
+const NIKAS_SOURCE_ROUTE_MAX_AGE_MS = 30_000;
+const NIKAS_SHELL_BOUNDARY_THRESHOLD_PX = 4;
+
+const NIKAS_BASE_ROUTES = Object.freeze([
+  Object.freeze({ root: "/dashboard-house-v13", entry: "/dashboard-house-v13/home" }),
+  Object.freeze({ root: "/dashboard-rooms-v11", entry: "/dashboard-rooms-v11/rooms" }),
+  Object.freeze({ root: "/dashboard-actions", entry: "/dashboard-actions/home" }),
+  Object.freeze({ root: "/dashboard-infrastructure", entry: "/dashboard-infrastructure/overview" }),
+]);
+const NIKAS_SPECIALIZED_ROOTS = Object.freeze([
+  "/dashboard-access-v1",
+  "/dashboard-zont",
+  "/starline",
+  "/dashboard-s8-omni",
+  "/dashboard-irrigation",
+  "/dashboard-ups",
+  "/dashboard-keenetic",
+  "/dashboard-lider",
+  "/dashboard-water-accounting",
+]);
+
+function nikasShellV2Styles() {
+  return `
+    :host{
+      display:block;position:relative;inline-size:100%;block-size:100%;min-inline-size:0;min-block-size:0;
+      overflow:hidden;overscroll-behavior:none;color:var(--primary-text-color,#15191d);
+      background:var(--primary-background-color,#f4f6f8);
+      font-family:var(--paper-font-body1_-_font-family,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif)
+    }
+    *{box-sizing:border-box}
+    [hidden]{display:none!important}
+    button{appearance:none;-webkit-appearance:none;font:inherit;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+    .nikas-shell{
+      position:absolute;inset:0;inline-size:100%;block-size:100%;display:grid;min-inline-size:0;min-block-size:0;
+      container:nikas-panel / inline-size;
+      grid-template-areas:"header" "viewport" "tabs";
+      grid-template-rows:calc(60px + env(safe-area-inset-top,0px)) minmax(0,1fr)
+        calc(64px + env(safe-area-inset-bottom,0px));
+      overflow:hidden;overscroll-behavior:none;background:var(--primary-background-color,#f4f6f8)
+    }
+    .nikas-shell--with-peer{
+      grid-template-areas:"header" "peer" "viewport" "tabs";
+      grid-template-rows:calc(60px + env(safe-area-inset-top,0px)) 52px minmax(0,1fr)
+        calc(64px + env(safe-area-inset-bottom,0px))
+    }
+    .nikas-shell__header{
+      grid-area:header;position:relative;z-index:20;min-inline-size:0;
+      padding:env(safe-area-inset-top,0px) calc(12px + env(safe-area-inset-right,0px)) 0
+        calc(12px + env(safe-area-inset-left,0px));
+      display:grid;grid-template-columns:52px minmax(0,1fr) 52px;align-items:center;
+      background:color-mix(in srgb,var(--primary-background-color,#f4f6f8) 97%,transparent);
+      border-bottom:1px solid color-mix(in srgb,var(--divider-color,#dfe3e8) 70%,transparent);
+      backdrop-filter:blur(18px) saturate(130%);-webkit-backdrop-filter:blur(18px) saturate(130%)
+    }
+    .nikas-shell__side-action{
+      inline-size:44px;block-size:44px;padding:0;
+      border:1px solid color-mix(in srgb,var(--divider-color,#dfe3e8) 72%,transparent);
+      border-radius:16px;background:var(--card-background-color,#fff);box-shadow:0 7px 20px rgba(23,45,76,.08);
+      display:grid;place-items:center;color:var(--primary-text-color,#17191c);cursor:pointer
+    }
+    .nikas-shell__side-action--right{justify-self:end;color:var(--primary-color,#03a9d9)}
+    .nikas-shell__side-action:disabled{opacity:.55;cursor:wait}
+    .nikas-shell__side-action ha-icon{--mdc-icon-size:25px}
+    .nikas-shell__title{
+      justify-self:center;inline-size:min(360px,100%);block-size:52px;padding:5px 14px;
+      border:1px solid color-mix(in srgb,var(--primary-color,#03a9d9) 24%,var(--divider-color,#dfe3e8));
+      border-radius:16px;background:color-mix(in srgb,var(--primary-color,#03a9d9) 5%,var(--card-background-color,#fff));
+      box-shadow:0 5px 16px rgba(23,45,76,.06);color:inherit;display:grid;place-content:center;
+      text-align:center;cursor:pointer;line-height:1.08
+    }
+    .nikas-shell__title strong{display:block;max-inline-size:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:23px;font-weight:800}
+    .nikas-shell__title small{display:block;font-size:14px;font-weight:560;color:var(--secondary-text-color,#68737d)}
+    .nikas-shell__title:active{
+      transform:scale(.985);border-color:color-mix(in srgb,var(--primary-color,#03a9d9) 42%,var(--divider-color,#dfe3e8));
+      background:color-mix(in srgb,var(--primary-color,#03a9d9) 13%,var(--card-background-color,#fff));
+      box-shadow:0 2px 7px rgba(23,45,76,.05)
+    }
+    .nikas-shell__title:focus-visible,.nikas-shell__side-action:focus-visible{
+      outline:2px solid var(--primary-color,#03a9d9);outline-offset:2px
+    }
+    .nikas-shell__side-action:active:not(:disabled){transform:scale(.985)}
+    .nikas-shell__peer{grid-area:peer;min-inline-size:0;min-block-size:0}
+    .nikas-shell__viewport{
+      grid-area:viewport;position:relative;z-index:1;min-inline-size:0;min-block-size:0;
+      overflow-y:auto;overflow-x:hidden;overscroll-behavior-x:none;overscroll-behavior-y:none;touch-action:pan-y;
+      background:var(--primary-background-color,#f4f6f8);-webkit-overflow-scrolling:touch;overflow-anchor:none
+    }
+    .nikas-shell__viewport.zoomed{overflow:hidden;touch-action:none}
+    .nikas-shell__canvas{inline-size:100%;min-block-size:100%;transform-origin:0 0}
+    .nikas-shell__content{
+      inline-size:100%;max-inline-size:1280px;min-block-size:100%;margin:0 auto;padding:12px 12px 20px
+    }
+    .nikas-shell__tabs{
+      grid-area:tabs;position:relative;z-index:20;min-inline-size:0;min-block-size:0;
+      padding:6px calc(6px + env(safe-area-inset-right,0px))
+        calc(6px + env(safe-area-inset-bottom,0px)) calc(6px + env(safe-area-inset-left,0px));
+      display:grid;grid-template-columns:repeat(var(--nikas-shell-tab-count,4),minmax(0,1fr));gap:2px;
+      background:var(--card-background-color,#fff);border-top:1px solid var(--divider-color,#dfe3e8);
+      box-shadow:0 -5px 22px rgba(23,45,76,.08)
+    }
+    .nikas-shell__tab{
+      min-inline-size:0;block-size:52px;padding:2px 3px 6px;border:0;border-radius:16px;background:transparent;
+      color:var(--secondary-text-color,#68737d);display:flex;flex-direction:column;align-items:center;
+      justify-content:center;gap:1px;overflow:hidden;font-family:inherit;font-weight:700;line-height:1;cursor:pointer
+    }
+    .nikas-shell__tab ha-icon{--mdc-icon-size:26px;display:block;flex:0 0 26px}
+    .nikas-shell__tab small{display:block;flex:0 0 14px;max-inline-size:100%;font-family:inherit;font-size:12px;font-weight:700;line-height:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .nikas-shell__tab.active{
+      color:var(--primary-color,#2186d7);background:color-mix(in srgb,var(--primary-color,#2186d7) 11%,transparent)
+    }
+    @container nikas-panel (min-width:600px){.nikas-shell__content{padding-inline:16px}}
+    @container nikas-panel (min-width:1024px){.nikas-shell__content{padding-inline:24px}}
+    @container nikas-panel (max-width:359px){
+      .nikas-shell__header{grid-template-columns:48px minmax(0,1fr) 48px}
+      .nikas-shell__title{inline-size:100%;padding-inline:8px}
+      .nikas-shell__title strong{font-size:21px}.nikas-shell__title small{font-size:13px}
+    }
+  `;
+}
+
+function shouldBlockNikasShellBoundaryMove({
+  deltaX,
+  deltaY,
+  inViewport,
+  scrollTop,
+  scrollHeight,
+  clientHeight,
+}) {
+  if (!Number.isFinite(deltaY) || Math.abs(deltaY) <= Math.abs(Number(deltaX) || 0)) return false;
+  if (!inViewport) return true;
+  const maximumScroll = Math.max(0, (Number(scrollHeight) || 0) - (Number(clientHeight) || 0));
+  if (maximumScroll <= 1) return true;
+  const currentScroll = Math.max(0, Number(scrollTop) || 0);
+  if (deltaY > 0 && currentScroll <= 1) return true;
+  return deltaY < 0 && currentScroll >= maximumScroll - 1;
+}
+
+function createNikasShellScrollBoundaryGuard({ host, viewport }) {
+  if (!host?.addEventListener || !viewport) return () => {};
+  let touch = null;
+
+  const eventStartedInViewport = (event) => {
+    const path = typeof event.composedPath === "function" ? event.composedPath() : [];
+    return path.includes(viewport) || Boolean(viewport.contains?.(event.target));
+  };
+  const rememberTouch = (event) => {
+    if (event.touches.length !== 1) {
+      touch = null;
+      return;
+    }
+    const current = event.touches[0];
+    touch = {
+      x: current.clientX,
+      y: current.clientY,
+      startX: current.clientX,
+      startY: current.clientY,
+      inViewport: eventStartedInViewport(event),
+      blocked: false,
+    };
+  };
+  const moveTouch = (event) => {
+    if (event.touches.length !== 1) {
+      touch = null;
+      return;
+    }
+    const current = event.touches[0];
+    if (!touch) {
+      rememberTouch(event);
+      return;
+    }
+    const deltaX = current.clientX - touch.x;
+    const deltaY = current.clientY - touch.y;
+    const travelX = current.clientX - touch.startX;
+    const travelY = current.clientY - touch.startY;
+    touch.x = current.clientX;
+    touch.y = current.clientY;
+    const verticalIntent = Math.abs(travelY) > NIKAS_SHELL_BOUNDARY_THRESHOLD_PX
+      && Math.abs(travelY) > Math.abs(travelX);
+    if (!touch.blocked && verticalIntent) {
+      touch.blocked = shouldBlockNikasShellBoundaryMove({
+        deltaX,
+        deltaY,
+        inViewport: touch.inViewport,
+        scrollTop: viewport.scrollTop,
+        scrollHeight: viewport.scrollHeight,
+        clientHeight: viewport.clientHeight,
+      });
+    }
+    if (touch.blocked && event.cancelable) {
+      event.preventDefault();
+    }
+  };
+  const endTouch = (event) => {
+    if (event.touches.length === 1) rememberTouch(event);
+    else touch = null;
+  };
+  const cancelTouch = () => {
+    touch = null;
+  };
+
+  host.addEventListener("touchstart", rememberTouch, { passive: false, capture: true });
+  host.addEventListener("touchmove", moveTouch, { passive: false, capture: true });
+  host.addEventListener("touchend", endTouch, { passive: true, capture: true });
+  host.addEventListener("touchcancel", cancelTouch, { passive: true, capture: true });
+
+  return () => {
+    host.removeEventListener("touchstart", rememberTouch, true);
+    host.removeEventListener("touchmove", moveTouch, true);
+    host.removeEventListener("touchend", endTouch, true);
+    host.removeEventListener("touchcancel", cancelTouch, true);
+    touch = null;
+  };
+}
+
+function normalizeNikasBaseRoute(value) {
+  if (typeof value !== "string" || !value || value.startsWith("//")) return null;
+  try {
+    const url = new URL(value, window.location.origin);
+    if (url.origin !== window.location.origin) return null;
+    const match = NIKAS_BASE_ROUTES.find(
+      ({ root }) => url.pathname === root || url.pathname.startsWith(`${root}/`),
+    );
+    return match?.entry || null;
+  } catch (_error) {
+    return null;
+  }
+}
+
+function consumeNikasSourceHandoff(now = Date.now()) {
+  let route = null;
+  let timestamp = null;
+  try {
+    route = window.sessionStorage.getItem(NIKAS_SOURCE_ROUTE_KEY);
+    timestamp = window.sessionStorage.getItem(NIKAS_SOURCE_ROUTE_AT_KEY);
+  } catch (_error) {
+    return null;
+  } finally {
+    try {
+      window.sessionStorage.removeItem(NIKAS_SOURCE_ROUTE_KEY);
+      window.sessionStorage.removeItem(NIKAS_SOURCE_ROUTE_AT_KEY);
+    } catch (_error) {
+      // Storage is optional; both values were still consumed for this mount.
+    }
+  }
+  if (!route || !timestamp) return null;
+  const createdAt = Number(timestamp);
+  const age = now - createdAt;
+  if (!Number.isFinite(createdAt) || age < 0 || age > NIKAS_SOURCE_ROUTE_MAX_AGE_MS) return null;
+  return normalizeNikasBaseRoute(route);
+}
+
+function captureNikasShellReturnRoute({ panelId, parentRoute, safeReturnRoute }) {
+  const savedKey = `nikas.${panelId}.return_route.v1`;
+  const params = new URLSearchParams(window.location.search);
+  const handoff = consumeNikasSourceHandoff();
+  let saved = null;
+  try {
+    saved = window.localStorage.getItem(savedKey);
+  } catch (_error) {
+    // Saved return routes are an optional convenience.
+  }
+  const candidates = [
+    ...params.getAll("return_to"),
+    ...params.getAll("from"),
+    handoff,
+    saved,
+    document.referrer,
+    parentRoute,
+    safeReturnRoute,
+  ];
+  const accepted = candidates.map(normalizeNikasBaseRoute).find(Boolean)
+    || NIKAS_BASE_ROUTES[0].entry;
+  try {
+    window.localStorage.setItem(savedKey, accepted);
+  } catch (_error) {
+    // The captured route remains stable for the mounted panel instance.
+  }
+  return accepted;
+}
+
+function rememberNikasSpecializedSourceRoute(destination) {
+  if (typeof destination !== "string" || !destination.startsWith("/")) return false;
+  const target = new URL(destination, window.location.origin);
+  const isSpecialized = target.origin === window.location.origin && NIKAS_SPECIALIZED_ROOTS.some(
+    (root) => target.pathname === root || target.pathname.startsWith(`${root}/`),
+  );
+  if (!isSpecialized) return false;
+  const sourceRoute = normalizeNikasBaseRoute(window.location.pathname);
+  if (!sourceRoute) return false;
+  try {
+    window.sessionStorage.setItem(NIKAS_SOURCE_ROUTE_KEY, sourceRoute);
+    window.sessionStorage.setItem(NIKAS_SOURCE_ROUTE_AT_KEY, String(Date.now()));
+    return true;
+  } catch (_error) {
+    try {
+      window.sessionStorage.removeItem(NIKAS_SOURCE_ROUTE_KEY);
+      window.sessionStorage.removeItem(NIKAS_SOURCE_ROUTE_AT_KEY);
+    } catch (_storageError) {
+      // Destination navigation remains available without storage.
+    }
+    return false;
+  }
+}
+
+function navigateNikasShell(path, { captureSource = false } = {}) {
+  if (typeof path !== "string" || !path.startsWith("/") || path.startsWith("//")) return false;
+  const target = new URL(path, window.location.origin);
+  if (target.origin !== window.location.origin) return false;
+  const destination = `${target.pathname}${target.search}${target.hash}`;
+  const current = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+  if (current === destination) return true;
+  if (captureSource) rememberNikasSpecializedSourceRoute(destination);
+  window.history.pushState(null, "", destination);
+  window.dispatchEvent(new Event("location-changed"));
+  return true;
+}
+// END templates/shell_v2/nikas-specialized-shell.js
+
 // BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel.js
 (() => {
 const DOMAIN = "stark_solarpower";
@@ -6359,13 +6686,13 @@ if (Panel && !Panel.prototype.__starkUiV065) {
         .app-header .system-menu-v056,.app-header .refresh{width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important;border-radius:16px!important;border:1px solid var(--divider-color)!important;background:var(--card-background-color)!important;box-shadow:var(--ha-card-box-shadow,0 2px 8px rgba(0,0,0,.12))!important;padding:0!important;display:grid!important;place-items:center!important}
         .app-header .system-menu-v056{grid-column:1!important;grid-row:1!important;justify-self:start!important;color:var(--primary-text-color)!important}.app-header .refresh{grid-column:3!important;grid-row:1!important;justify-self:end!important;color:var(--primary-color)!important}
         .app-header .system-menu-v056 ha-icon,.app-header .refresh ha-icon{--mdc-icon-size:25px!important}
-        .tabs.bottom-nav-v051{position:fixed!important;left:0!important;right:0!important;bottom:0!important;width:100%!important;margin:0!important;padding:4px max(4px,env(safe-area-inset-right,0px)) calc(4px + env(safe-area-inset-bottom,0px)) max(4px,env(safe-area-inset-left,0px))!important;border-radius:0!important;border-top:1px solid var(--divider-color)!important;background:var(--card-background-color)!important;box-shadow:0 -3px 14px rgba(0,0,0,.08)!important;z-index:30!important}
+        .tabs.bottom-nav-v051{position:relative!important;inset:auto!important;width:100%!important;margin:0!important;padding:6px max(6px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(6px,env(safe-area-inset-left,0px))!important;border-radius:0!important;border-top:1px solid var(--divider-color)!important;background:var(--card-background-color)!important;box-shadow:0 -5px 22px rgba(23,45,76,.08)!important;z-index:30!important}
         .bottom-nav-v051 .tab{min-height:52px!important;height:auto!important;border-radius:14px!important;font-size:12px!important;font-weight:700!important;color:var(--secondary-text-color)!important;background:transparent!important;box-shadow:none!important}
-        .bottom-nav-v051 .tab ha-icon{--mdc-icon-size:28px!important}.bottom-nav-v051 .tab span{font-size:12px!important;font-weight:700!important;white-space:nowrap!important}
+        .bottom-nav-v051 .tab ha-icon{--mdc-icon-size:26px!important}.bottom-nav-v051 .tab span{font-size:12px!important;font-weight:700!important;line-height:14px!important;white-space:nowrap!important}
         .bottom-nav-v051 .tab.active{color:var(--primary-color)!important;background:color-mix(in srgb,var(--primary-color) 11%,transparent)!important;box-shadow:none!important}
         .zoom-viewport-v065{position:relative;min-width:0;min-height:0;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}.zoom-viewport-v065.native-scroll{overflow-x:hidden!important;overflow-y:auto!important;touch-action:pan-y!important}.zoom-viewport-v065.zoomed{overflow:hidden!important;touch-action:none!important}
         .zoom-stage-v065{position:relative;min-width:100%;min-height:100%;overflow:visible}.zoom-surface-v065{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
-        .zoom-toast-v065{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom,0px));transform:translate(-50%,8px);opacity:0;pointer-events:none;padding:8px 13px;border-radius:999px;background:rgba(20,24,31,.88);color:#fff;font-size:12px;font-weight:700;transition:.18s;z-index:50}.zoom-toast-v065.visible{opacity:1;transform:translate(-50%,0)}
+        .zoom-toast-v065{position:absolute;left:50%;bottom:12px;transform:translate(-50%,8px);opacity:0;pointer-events:none;padding:8px 13px;border-radius:999px;background:rgba(20,24,31,.88);color:#fff;font-size:12px;font-weight:700;transition:.18s;z-index:50}.zoom-toast-v065.visible{opacity:1;transform:translate(-50%,0)}
         @media(max-width:390px){.app-header{grid-template-columns:48px minmax(0,1fr) 48px!important;min-height:60px!important}}
       `;
       root.append(style);
@@ -7328,20 +7655,21 @@ if (Panel && !Panel.prototype.__starkUiV080) {
       :host {
         display:block!important;
         width:100%!important;
-        height:100dvh!important;
+        position:relative!important;
+        height:100%!important;
         min-height:0!important;
         overflow:hidden!important;
         overscroll-behavior:none!important;
       }
       main.app {
         width:100%!important;
-        height:100dvh!important;
-        max-height:100dvh!important;
+        height:100%!important;
+        max-height:100%!important;
         min-height:0!important;
         display:flex!important;
         flex-direction:column!important;
         overflow:hidden!important;
-        padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))!important;
+        padding-bottom:0!important;
       }
       .app-header,.global-device-context { flex:0 0 auto!important; }
       .app-header h1 { font-size:23px!important; font-weight:800!important; white-space:nowrap!important; }
@@ -7409,8 +7737,8 @@ if (Panel && !Panel.prototype.__starkUiV080) {
         .state-pill-v051,.state-values-v051 span,.battery-fact-v070 span { font-size:12px!important; }
       }
       @media(max-width:680px) {
-        :host { position:fixed!important; inset:0!important; width:auto!important; height:auto!important; }
-        main.app { position:absolute!important; inset:0!important; width:auto!important; height:auto!important; }
+        :host { position:relative!important; inset:auto!important; width:100%!important; height:100%!important; }
+        main.app { position:absolute!important; inset:0!important; width:100%!important; height:100%!important; }
       }
     `;
     root.append(style);
@@ -7853,7 +8181,7 @@ if (Panel && !Panel.prototype.__starkUiV086) {
 // BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v090.js
 (() => {
 const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.9.5";
+const UI_VERSION = "0.9.6";
 const SOURCE_ROUTE_KEY = "nikas.specialized.source_route.v1";
 const SOURCE_ROUTE_AT_KEY = "nikas.specialized.source_route_at.v1";
 const RETURN_ROUTE_KEY = "nikas.stark_solarpower.return_route.v1";
@@ -7864,8 +8192,11 @@ function normalizeBaseRouteV090(value) {
   try {
     const url = new URL(String(value).trim(), window.location.origin);
     if (url.origin !== window.location.origin) return null;
-    if (url.pathname === "/dashboard-house-v11" || url.pathname.startsWith("/dashboard-house-v11/")) {
-      return "/dashboard-house-v11/home";
+    if (url.pathname === "/dashboard-house-v13" || url.pathname.startsWith("/dashboard-house-v13/")) {
+      return "/dashboard-house-v13/home";
+    }
+    if (url.pathname === "/dashboard-rooms-v11" || url.pathname.startsWith("/dashboard-rooms-v11/")) {
+      return "/dashboard-rooms-v11/rooms";
     }
     if (url.pathname === "/dashboard-actions" || url.pathname.startsWith("/dashboard-actions/")) {
       return "/dashboard-actions/home";
@@ -7897,7 +8228,7 @@ function readOneShotSourceV090() {
 
 function readSavedSourceV090() {
   try {
-    return normalizeBaseRouteV090(sessionStorage.getItem(RETURN_ROUTE_KEY));
+    return normalizeBaseRouteV090(localStorage.getItem(RETURN_ROUTE_KEY));
   } catch (_error) {
     return null;
   }
@@ -7915,7 +8246,7 @@ function resolveReturnRouteV090(panel) {
   );
   const route = explicit || handedOff || saved || referrer || configured || SAFE_RETURN_ROUTE;
   try {
-    sessionStorage.setItem(RETURN_ROUTE_KEY, route);
+    localStorage.setItem(RETURN_ROUTE_KEY, route);
   } catch (_error) {
     // Private browsing may disable storage; the captured instance value remains valid.
   }
@@ -7971,7 +8302,7 @@ if (Panel && !Panel.prototype.__starkUiV090) {
       const style = document.createElement("style");
       style.dataset.starkUiV090 = "true";
       style.textContent = `
-        /* NikaS Specialized Panel UI + Navigation Standard v1.9. */
+        /* NikaS Specialized Panel UI Standard v2.2 + Navigation Contract v1.2. */
         .app-header .title-return-v090 {
           grid-column:2!important;
           justify-self:center!important;
@@ -8363,3 +8694,495 @@ if (Panel && !Panel.prototype.__starkUiV095) {
 }
 })();
 // END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v095.js
+
+// BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v096.js
+(() => {
+const Panel = customElements.get("stark-solarpower-panel");
+const UI_VERSION = "0.9.6";
+const REFRESH_MINIMUM_MS = 900;
+const REFRESH_RESULT_MS = 1400;
+
+const wait = (milliseconds) => new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+
+if (Panel && !Panel.prototype.__starkUiV096) {
+  Panel.prototype.__starkUiV096 = true;
+
+  const previousBindEvents = Panel.prototype._bindEvents;
+  const previousRender = Panel.prototype._render;
+  const previousDisconnected = Panel.prototype.disconnectedCallback;
+
+  Panel.prototype._status = function (device) {
+    const cloud = this._isOn(device, "cloud_connected");
+    const stale = this._isOn(device, "data_stale");
+    const onBattery = this._isOn(device, "on_battery");
+    const mode = this._mode(device);
+
+    if (cloud === false) {
+      return { label:"Облако недоступно", tone:"bad", icon:"mdi:cloud-off-outline" };
+    }
+    if (cloud === null) {
+      return { label:"Источник неизвестен", tone:"unknown", icon:"mdi:cloud-question-outline" };
+    }
+    if (stale === true) {
+      return { label:"Данные устарели", tone:"warn", icon:"mdi:clock-alert-outline" };
+    }
+    if (stale === null) {
+      return { label:"Свежесть неизвестна", tone:"unknown", icon:"mdi:clock-question-outline" };
+    }
+    if (mode === "fault_mode") {
+      return { label:"Авария", tone:"bad", icon:"mdi:alert-octagon-outline" };
+    }
+    if (onBattery === true || mode === "battery_mode") {
+      return { label:"От батареи", tone:"warn", icon:"mdi:battery-arrow-down-outline" };
+    }
+    if (mode === "line_mode") {
+      const required = ["input_voltage", "output_voltage", "battery_capacity", "output_load"];
+      if (required.every((key) => this._available(this._state(device, key)))) {
+        return { label:"Нормально", tone:"good", icon:"mdi:check-circle-outline" };
+      }
+      return { label:"Неполные данные", tone:"unknown", icon:"mdi:help-circle-outline" };
+    }
+    if (mode && mode !== "unknown") {
+      return { label:this._modeLabel(device), tone:"warn", icon:"mdi:information-outline" };
+    }
+    return { label:"Состояние неизвестно", tone:"unknown", icon:"mdi:help-circle-outline" };
+  };
+
+  Panel.prototype._ensureRefreshStatusV096 = function () {
+    const header = this.shadowRoot?.querySelector(".app-header");
+    if (!header) return null;
+    let status = header.querySelector(".refresh-status-v096");
+    if (!status) {
+      status = document.createElement("span");
+      status.className = "refresh-status-v096";
+      status.setAttribute("role", "status");
+      status.setAttribute("aria-live", "polite");
+      status.setAttribute("aria-atomic", "true");
+      header.append(status);
+    }
+    return status;
+  };
+
+  Panel.prototype._setRefreshPhaseV096 = function (phase, { announce = false } = {}) {
+    this.__starkRefreshPhaseV096 = phase;
+    const button = this.shadowRoot?.querySelector(".refresh");
+    if (!button) return;
+
+    const states = {
+      idle: { icon:"mdi:refresh", label:"Обновить", busy:false },
+      busy: { icon:"mdi:refresh", label:"Обновление данных", busy:true },
+      success: { icon:"mdi:check", label:"Запрос обновления выполнен", busy:false },
+      error: { icon:"mdi:alert-circle-outline", label:"Не удалось обновить данные", busy:false },
+    };
+    const state = states[phase] || states.idle;
+    for (const name of ["busy", "success", "error"]) {
+      button.classList.toggle(`is-${name}-v096`, phase === name);
+    }
+    button.disabled = state.busy;
+    button.setAttribute("aria-busy", state.busy ? "true" : "false");
+    button.setAttribute("aria-label", state.label);
+    button.setAttribute("title", state.label);
+    const icon = button.querySelector("ha-icon");
+    if (icon?.getAttribute("icon") !== state.icon) icon?.setAttribute("icon", state.icon);
+
+    const live = this._ensureRefreshStatusV096();
+    if (announce && live) live.textContent = state.label;
+  };
+
+  Panel.prototype._refreshTargetsV096 = function () {
+    if (!this._hass || typeof this._hass.callService !== "function") return null;
+    const devices = Array.isArray(this._devices) ? this._devices : [];
+    if (!devices.length) return null;
+    const targets = [];
+    for (const device of devices) {
+      const entityId = this._entityId(device, "refresh_now");
+      const state = entityId ? this._hass.states?.[entityId] : null;
+      if (!state || ["unknown", "unavailable"].includes(String(state.state).toLowerCase())) {
+        return null;
+      }
+      targets.push(entityId);
+    }
+    return [...new Set(targets)];
+  };
+
+  Panel.prototype._showRefreshResultV096 = function (phase, token) {
+    if (token !== this.__starkRefreshTokenV096 || !this.isConnected) return;
+    window.clearTimeout(this.__starkRefreshResultTimerV096);
+    this._setRefreshPhaseV096(phase, { announce:true });
+    this.__starkRefreshResultTimerV096 = window.setTimeout(() => {
+      if (token !== this.__starkRefreshTokenV096 || !this.isConnected) return;
+      this.__starkRefreshResultTimerV096 = null;
+      this._setRefreshPhaseV096("idle");
+    }, REFRESH_RESULT_MS);
+  };
+
+  Panel.prototype._runRefreshV096 = async function () {
+    if (this.__starkRefreshInFlightV096) return false;
+    window.clearTimeout(this.__starkRefreshResultTimerV096);
+    this.__starkRefreshResultTimerV096 = null;
+    const token = (this.__starkRefreshTokenV096 || 0) + 1;
+    this.__starkRefreshTokenV096 = token;
+    this.__starkRefreshInFlightV096 = true;
+    const startedAt = performance.now();
+    this._setRefreshPhaseV096("busy");
+
+    let succeeded = false;
+    try {
+      const targets = this._refreshTargetsV096();
+      if (targets?.length) {
+        const results = await Promise.allSettled(
+          targets.map((entityId) => this._hass.callService("button", "press", { entity_id:entityId })),
+        );
+        succeeded = results.every(
+          (result) => result.status === "fulfilled" && result.value !== false,
+        );
+      }
+    } catch (error) {
+      console.warn("Stark SolarPower refresh failed", error);
+      succeeded = false;
+    }
+
+    const remaining = Math.max(0, REFRESH_MINIMUM_MS - (performance.now() - startedAt));
+    if (remaining) await wait(remaining);
+    if (token !== this.__starkRefreshTokenV096 || !this.isConnected) return false;
+    this.__starkRefreshInFlightV096 = false;
+    this._showRefreshResultV096(succeeded ? "success" : "error", token);
+    return succeeded;
+  };
+
+  Panel.prototype._installRefreshV096 = function () {
+    const oldButton = this.shadowRoot?.querySelector(".refresh");
+    if (!oldButton || oldButton.dataset.starkRefreshV096 === "true") {
+      this._setRefreshPhaseV096(this.__starkRefreshPhaseV096 || "idle");
+      return;
+    }
+    const button = oldButton.cloneNode(true);
+    button.dataset.starkRefreshV096 = "true";
+    oldButton.replaceWith(button);
+    button.addEventListener("click", () => { void this._runRefreshV096(); });
+    this._setRefreshPhaseV096(this.__starkRefreshPhaseV096 || "idle");
+  };
+
+  Panel.prototype._installShellV096 = function () {
+    const root = this.shadowRoot;
+    const app = root?.querySelector("main.app");
+    const header = app?.querySelector(":scope > .app-header");
+    const selector = app?.querySelector(":scope > .global-device-context");
+    const viewport = app?.querySelector(":scope > .zoom-viewport-v065");
+    const surface = viewport?.querySelector(".zoom-surface-v065");
+    const nav = app?.querySelector(":scope > .tabs.bottom-nav-v051");
+    if (!root || !app || !header || !viewport || !nav) return;
+
+    app.classList.add("nikas-shell");
+    app.classList.toggle("nikas-shell--with-peer", Boolean(selector));
+    header.classList.add("nikas-shell__header");
+    selector?.classList.add("nikas-shell__peer");
+    viewport.classList.add("nikas-shell__viewport");
+    surface?.classList.add("nikas-shell__canvas");
+    surface?.querySelectorAll(":scope > .work-view-v080").forEach((view) => {
+      view.classList.add("nikas-shell__content");
+    });
+    nav.classList.add("nikas-shell__tabs");
+    nav.style.setProperty("--nikas-shell-tab-count", String(nav.querySelectorAll(".tab").length));
+    nav.querySelectorAll(".tab").forEach((tab) => tab.classList.add("nikas-shell__tab"));
+
+    header.querySelector(".system-menu-v056")?.classList.add("nikas-shell__side-action");
+    header.querySelector(".refresh")?.classList.add(
+      "nikas-shell__side-action",
+      "nikas-shell__side-action--right",
+    );
+    header.querySelector(".title-return-v090")?.classList.add("nikas-shell__title");
+
+    if (!root.querySelector("style[data-stark-ui-v096]")) {
+      const style = document.createElement("style");
+      style.dataset.starkUiV096 = "true";
+      style.textContent = `${nikasShellV2Styles()}
+        /* Stark UI 0.9.6 — production adoption of NikaS UI Standard v2.2. */
+        :host {
+          position:relative!important;
+          inset:auto!important;
+          width:100%!important;
+          height:100%!important;
+          min-width:0!important;
+          min-height:0!important;
+        }
+        main.app.nikas-shell {
+          position:absolute!important;
+          inset:0!important;
+          width:100%!important;
+          height:100%!important;
+          max-width:none!important;
+          max-height:none!important;
+          min-width:0!important;
+          min-height:0!important;
+          margin:0!important;
+          padding:0!important;
+          display:grid!important;
+          grid-template-areas:"header" "viewport" "tabs"!important;
+          grid-template-rows:calc(60px + env(safe-area-inset-top,0px)) minmax(0,1fr) calc(64px + env(safe-area-inset-bottom,0px))!important;
+          overflow:hidden!important;
+          container:nikas-panel / inline-size;
+        }
+        main.app.nikas-shell--with-peer {
+          grid-template-areas:"header" "peer" "viewport" "tabs"!important;
+          grid-template-rows:calc(60px + env(safe-area-inset-top,0px)) 52px minmax(0,1fr) calc(64px + env(safe-area-inset-bottom,0px))!important;
+        }
+        .app-header.nikas-shell__header {
+          grid-area:header!important;
+          min-height:0!important;
+          height:auto!important;
+          margin:0!important;
+          padding:env(safe-area-inset-top,0px) calc(12px + env(safe-area-inset-right,0px)) 0 calc(12px + env(safe-area-inset-left,0px))!important;
+          display:grid!important;
+          grid-template-columns:52px minmax(0,1fr) 52px!important;
+          align-items:center!important;
+          background:color-mix(in srgb,var(--primary-background-color,#f4f6f8) 97%,transparent)!important;
+          border-bottom:1px solid color-mix(in srgb,var(--divider-color,#dfe3e8) 70%,transparent)!important;
+          backdrop-filter:blur(18px) saturate(130%)!important;
+          -webkit-backdrop-filter:blur(18px) saturate(130%)!important;
+        }
+        .app-header .system-menu-v056,
+        .app-header .refresh {
+          width:44px!important;
+          min-width:44px!important;
+          height:44px!important;
+          min-height:44px!important;
+          padding:0!important;
+          border:1px solid color-mix(in srgb,var(--divider-color,#dfe3e8) 72%,transparent)!important;
+          border-radius:16px!important;
+          background:var(--card-background-color,#fff)!important;
+          box-shadow:0 7px 20px rgba(23,45,76,.08)!important;
+        }
+        .app-header .title-return-v090 {
+          width:min(360px,100%)!important;
+          min-width:0!important;
+          max-width:100%!important;
+          height:52px!important;
+          min-height:52px!important;
+          padding:5px 14px!important;
+        }
+        .global-device-context.nikas-shell__peer {
+          grid-area:peer!important;
+          height:52px!important;
+          min-height:52px!important;
+          max-height:52px!important;
+        }
+        .zoom-viewport-v065.nikas-shell__viewport {
+          grid-area:viewport!important;
+          width:100%!important;
+          height:auto!important;
+          min-width:0!important;
+          min-height:0!important;
+          max-height:none!important;
+        }
+        .zoom-surface-v065 > .work-view-v080.nikas-shell__content {
+          width:100%!important;
+          max-width:1280px!important;
+          min-height:100%!important;
+          margin:0 auto!important;
+          padding:12px 12px 20px!important;
+          box-sizing:border-box!important;
+        }
+        .tabs.bottom-nav-v051.nikas-shell__tabs {
+          grid-area:tabs!important;
+          position:relative!important;
+          inset:auto!important;
+          width:100%!important;
+          height:auto!important;
+          margin:0!important;
+          padding:6px calc(6px + env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) calc(6px + env(safe-area-inset-left,0px))!important;
+          grid-template-columns:repeat(var(--nikas-shell-tab-count,5),minmax(0,1fr))!important;
+          gap:2px!important;
+          border-radius:0!important;
+          border-top:1px solid var(--divider-color,#dfe3e8)!important;
+          background:var(--card-background-color,#fff)!important;
+          box-shadow:0 -5px 22px rgba(23,45,76,.08)!important;
+        }
+        .bottom-nav-v051 .tab.nikas-shell__tab {
+          min-width:0!important;
+          width:100%!important;
+          height:52px!important;
+          min-height:52px!important;
+          padding:2px 3px 6px!important;
+          border-radius:16px!important;
+          display:flex!important;
+          flex-direction:column!important;
+          align-items:center!important;
+          justify-content:center!important;
+          gap:1px!important;
+          font-family:inherit!important;
+          font-size:12px!important;
+          font-weight:700!important;
+          line-height:1!important;
+        }
+        .bottom-nav-v051 .tab.nikas-shell__tab ha-icon {
+          --mdc-icon-size:26px!important;
+          display:block!important;
+          flex:0 0 26px!important;
+        }
+        .bottom-nav-v051 .tab.nikas-shell__tab span {
+          display:block!important;
+          flex:0 0 14px!important;
+          max-width:100%!important;
+          font-size:12px!important;
+          font-weight:700!important;
+          line-height:14px!important;
+          white-space:nowrap!important;
+          overflow:hidden!important;
+          text-overflow:ellipsis!important;
+        }
+        .zoom-toast-v065 {
+          position:absolute!important;
+          left:50%!important;
+          bottom:12px!important;
+        }
+        .refresh.is-busy-v096 ha-icon {
+          animation:stark-refresh-spin-v096 900ms linear infinite!important;
+          color:var(--primary-color,#03a9d9)!important;
+        }
+        .refresh.is-success-v096 ha-icon { color:#43a047!important; }
+        .refresh.is-error-v096 ha-icon { color:#e53935!important; }
+        @keyframes stark-refresh-spin-v096 { to { transform:rotate(360deg); } }
+        .refresh-status-v096 {
+          position:absolute!important;
+          width:1px!important;
+          height:1px!important;
+          padding:0!important;
+          margin:-1px!important;
+          overflow:hidden!important;
+          clip:rect(0,0,0,0)!important;
+          white-space:nowrap!important;
+          border:0!important;
+        }
+        .ups-hero-v051 {
+          container:stark-hero / inline-size;
+        }
+        .ups-hero-v051::after {
+          content:""!important;
+          display:block!important;
+          position:absolute!important;
+          width:205px!important;
+          height:205px!important;
+          top:-92px!important;
+          right:-70px!important;
+          bottom:auto!important;
+          left:auto!important;
+          border-radius:50%!important;
+          background:rgba(3,169,217,0.07)!important;
+          opacity:1!important;
+          z-index:0!important;
+          pointer-events:none!important;
+        }
+        .hero-head-v051 { position:static!important; }
+        .hero-copy-v051 {
+          position:relative;
+          z-index:6;
+          max-width:calc(100% - 194px)!important;
+        }
+        .connection-v066 {
+          position:absolute!important;
+          top:13px!important;
+          right:13px!important;
+          width:168px!important;
+          min-width:168px!important;
+          max-width:168px!important;
+          height:58px!important;
+          min-height:58px!important;
+          max-height:58px!important;
+          box-sizing:border-box!important;
+          display:grid!important;
+          grid-template-columns:10px minmax(0,1fr)!important;
+          align-items:center!important;
+          gap:9px!important;
+          padding:11px 12px!important;
+          border-radius:18px!important;
+          box-shadow:0 4px 14px rgba(0,0,0,.055)!important;
+          font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif!important;
+          z-index:7!important;
+        }
+        .connection-v066.good {
+          color:var(--success-color,#43a047)!important;
+          border-color:color-mix(in srgb,var(--success-color,#43a047) 30%,var(--divider-color,#dfe3e8))!important;
+          background:color-mix(in srgb,var(--success-color,#43a047) 11%,var(--card-background-color,#fff))!important;
+        }
+        .connection-v066.bad {
+          color:var(--error-color,#db4437)!important;
+          border-color:color-mix(in srgb,var(--error-color,#db4437) 30%,var(--divider-color,#dfe3e8))!important;
+          background:color-mix(in srgb,var(--error-color,#db4437) 10%,var(--card-background-color,#fff))!important;
+        }
+        .connection-v066.unknown {
+          color:var(--disabled-text-color,var(--secondary-text-color))!important;
+          border-color:color-mix(in srgb,var(--secondary-text-color,#68737d) 28%,var(--divider-color,#dfe3e8))!important;
+          background:color-mix(in srgb,var(--secondary-text-color,#68737d) 8%,var(--card-background-color,#fff))!important;
+        }
+        .connection-lamp-v066 {
+          width:10px!important;
+          height:10px!important;
+          flex:0 0 10px!important;
+        }
+        .connection-copy-v066 {
+          display:grid!important;
+          gap:3px!important;
+          text-align:left!important;
+        }
+        .connection-copy-v066 strong {
+          font-family:inherit!important;
+          font-size:16px!important;
+          font-weight:700!important;
+          line-height:17px!important;
+        }
+        .connection-copy-v066 small {
+          font-family:inherit!important;
+          font-size:13px!important;
+          font-weight:600!important;
+          line-height:14px!important;
+        }
+        @container stark-hero (max-width:359px) {
+          .hero-head-v051 { min-height:150px!important; }
+          .hero-copy-v051 {
+            max-width:100%!important;
+            padding-top:72px!important;
+          }
+        }
+        @container nikas-panel (min-width:600px) {
+          .zoom-surface-v065 > .work-view-v080.nikas-shell__content { padding-inline:16px!important; }
+        }
+        @container nikas-panel (min-width:1024px) {
+          .zoom-surface-v065 > .work-view-v080.nikas-shell__content { padding-inline:24px!important; }
+        }
+        @container nikas-panel (max-width:359px) {
+          .app-header.nikas-shell__header { grid-template-columns:48px minmax(0,1fr) 48px!important; }
+          .app-header .title-return-v090 { width:100%!important; padding-inline:8px!important; }
+        }
+        @media(prefers-reduced-motion:reduce) {
+          .refresh.is-busy-v096 ha-icon { animation:none!important; }
+          .refresh.is-busy-v096 { opacity:.72!important; }
+        }
+      `;
+      root.append(style);
+    }
+  };
+
+  Panel.prototype._bindEvents = function () {
+    previousBindEvents.call(this);
+    this._installRefreshV096();
+  };
+
+  Panel.prototype._render = function () {
+    previousRender.call(this);
+    this._installShellV096();
+    this._installRefreshV096();
+    const version = this.shadowRoot?.querySelector(".title-return-v090 .subtitle");
+    if (version?.textContent !== `UI v${UI_VERSION}`) version.textContent = `UI v${UI_VERSION}`;
+  };
+
+  Panel.prototype.disconnectedCallback = function () {
+    this.__starkRefreshTokenV096 = (this.__starkRefreshTokenV096 || 0) + 1;
+    this.__starkRefreshInFlightV096 = false;
+    window.clearTimeout(this.__starkRefreshResultTimerV096);
+    this.__starkRefreshResultTimerV096 = null;
+    previousDisconnected?.call(this);
+  };
+}
+})();
+// END custom_components/stark_solarpower/frontend/stark-solarpower-panel-v096.js

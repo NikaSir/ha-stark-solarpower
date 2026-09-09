@@ -4,6 +4,25 @@ All notable project changes are recorded here.
 
 ## [Unreleased]
 
+## [1.9.8] - 2026-09-09
+
+### Panel UI 0.9.6 — NikaS UI Standard v2.2
+
+- Adopt the canonical v2.2 documents, Navigation Contract v1.2 and vendored
+  Shell v2.1 source at canonical revision `4d229f38`.
+- Bind the persistent four-row shell to the Home Assistant panel host, use the
+  exact 60/52/work/64 px rows, 1280 px content frame, 52 px title and 26 px
+  Bottom Tab Bar icons without browser-viewport `100dvh` or fixed navigation.
+- Return to current House v13, Rooms v11, Actions or Infrastructure routes and
+  preserve the accepted route locally for the panel client.
+- Lock the requested connection plaque to 168×58 px and the blue decoration to
+  205×205 px; keep peer health gray until sufficient facts exist.
+- Refresh every discovered UPS with one single-flight operation, at least 900 ms
+  of busy feedback and a truthful 1400 ms success/error result. Preserve the
+  mounted shell and clear timers on disconnect.
+- Track route ownership so unloading Stark cannot remove a foreign panel that
+  already occupied `/dashboard-ups`.
+
 ## [1.9.7] - 2026-09-08
 
 ### Preserve unknown UPS operating modes

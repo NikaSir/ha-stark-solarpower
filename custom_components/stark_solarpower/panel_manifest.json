@@ -10,11 +10,11 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.9.5",
-  "nikas_ui_standard": "2.1",
+  "ui_version": "0.9.6",
+  "nikas_ui_standard": "2.2",
   "template": {
     "name": "NikaS Integration Panel Template",
-    "version": "1.9"
+    "version": "2.2"
   },
   "shell": {
     "standard_version": "2.1",
@@ -23,7 +23,15 @@
     "outer_page_scroll": false,
     "work_view_cache": "lazy_per_view_and_peer",
     "scroll_chaining": false,
-    "ios_scroll_boundary_guard": true
+    "ios_scroll_boundary_guard": true,
+    "host_boundary": "ha-panel",
+    "layout": "four_row_grid",
+    "header_body_px": 60,
+    "peer_selector_px": 52,
+    "work_viewport": "minmax(0,1fr)",
+    "bottom_nav_body_px": 64,
+    "content_max_width_px": 1280,
+    "coordinate_tolerance_px": 2
   },
   "header": {
     "grid_mobile_px": [
@@ -37,7 +45,7 @@
       48
     ],
     "title_alignment": "viewport_center",
-    "minimum_height_px": 62,
+    "minimum_height_px": 60,
     "minimum_height_px_narrow": 60,
     "title_px": 23,
     "title_px_narrow": 21,
@@ -48,9 +56,11 @@
       "type": "source_aware_return",
       "semantic_element": "button",
       "minimum_touch_height_px": 44,
-      "second_line": "UI v0.9.5",
+      "second_line": "UI v0.9.6",
       "source_handoff_key": "nikas.specialized.source_route.v1",
-      "saved_route_key": "nikas.stark_solarpower.return_route.v1"
+      "saved_route_key": "nikas.stark_solarpower.return_route.v1",
+      "width": "min(360px,100%)",
+      "height_px": 52
     },
     "left_control": {
       "type": "home_assistant_system_menu",
@@ -59,7 +69,9 @@
       "touch_target_px": 44,
       "plaque_radius_px": 16,
       "icon_px": 25,
-      "event": "hass-toggle-menu"
+      "event": "hass-toggle-menu",
+      "border_divider_mix_percent": 72,
+      "shadow": "0 7px 20px rgba(23,45,76,.08)"
     },
     "actions": [
       "refresh"
@@ -69,8 +81,16 @@
       "icon": "mdi:refresh",
       "touch_target_px": 44,
       "plaque_radius_px": 16,
-      "icon_px": 25
-    }
+      "icon_px": 25,
+      "border_divider_mix_percent": 72,
+      "shadow": "0 7px 20px rgba(23,45,76,.08)"
+    },
+    "body_height_px": 60,
+    "surface_reference": "S8 OMNI",
+    "surface_background": "primary_background_97_percent",
+    "divider_mix_percent": 70,
+    "backdrop_blur_px": 18,
+    "backdrop_saturation_percent": 130
   },
   "device_context": {
     "selector": "persistent_below_header",
@@ -106,7 +126,7 @@
     "floating": false,
     "safe_area": true,
     "touch_target_px": 52,
-    "icon_px": 28,
+    "icon_px": 26,
     "label_px": 12,
     "label_weight": 700,
     "active_primary_percent": 11,
@@ -116,7 +136,13 @@
       "events",
       "history",
       "diagnostics"
-    ]
+    ],
+    "body_height_px": 64,
+    "row_height_px": 52,
+    "top_padding_px": 6,
+    "bottom_padding_px": 6,
+    "icon_label_gap_px": 1,
+    "label_line_height_px": 14
   },
   "zoom": {
     "scope": "selected_device_work_viewport",
@@ -208,7 +234,21 @@
         "unknown"
       ],
       "channel_and_freshness_independent": true,
-      "extended_telemetry_affects_primary": false
+      "extended_telemetry_affects_primary": false,
+      "geometry_contract_version": "1.1",
+      "width_px": 168,
+      "height_px": 58,
+      "top_px": 13,
+      "right_px": 13,
+      "padding_px": "11 12",
+      "radius_px": 18,
+      "lamp_px": 10,
+      "column_gap_px": 9,
+      "text_gap_px": 3,
+      "main_font": "16px/700",
+      "freshness_font": "13px/600",
+      "stable_dom": true,
+      "point_patch": true
     },
     "power_mode_separate_from_connection": true
   },
@@ -237,7 +277,10 @@
     "startup_assets": "preloaded_and_decoded_parallel_to_registry",
     "startup_surface": "immediate_neutral_overview_before_registry",
     "runtime_previous_version_imports": false,
-    "production_entrypoints": 1
+    "production_entrypoints": 1,
+    "canonical_shell_source": "templates/shell_v2/nikas-specialized-shell.js",
+    "canonical_shell_sha256": "c7171560b68e2c4118b327c5e6a63c65e3410a4e1f10a02691e0d15560166e65",
+    "shell_delivery": "vendored_build_time"
   },
   "typography": {
     "profile": "mobile_readability",
@@ -258,7 +301,7 @@
     "mobile_content_columns": 1,
     "overview_state_tile_columns_mobile": 2,
     "overview_state_tile_columns_desktop": 4,
-    "desktop_content_max_width_px": 1240,
+    "desktop_content_max_width_px": 1280,
     "desktop_selected_device_card_max_width_px": 820,
     "overview_mobile_hero_scene_px": 336,
     "overview_mobile_bottom_clearance_px": 16,
@@ -272,7 +315,11 @@
     "shell_mount": "once_per_panel_instance",
     "visited_views": "lazy_dom_cache",
     "height_locked_phone_shell": true,
-    "pfc_status_mapped": true
+    "pfc_status_mapped": true,
+    "nikas_ui_standard": "2.2",
+    "refresh_feedback_contract": "1.1",
+    "connection_geometry_contract": "1.1",
+    "panel_lifecycle_contract": "1.0"
   },
   "targets": {
     "primary": "iPhone Pro Max portrait",

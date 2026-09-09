@@ -279,20 +279,21 @@ if (Panel && !Panel.prototype.__starkUiV080) {
       :host {
         display:block!important;
         width:100%!important;
-        height:100dvh!important;
+        position:relative!important;
+        height:100%!important;
         min-height:0!important;
         overflow:hidden!important;
         overscroll-behavior:none!important;
       }
       main.app {
         width:100%!important;
-        height:100dvh!important;
-        max-height:100dvh!important;
+        height:100%!important;
+        max-height:100%!important;
         min-height:0!important;
         display:flex!important;
         flex-direction:column!important;
         overflow:hidden!important;
-        padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))!important;
+        padding-bottom:0!important;
       }
       .app-header,.global-device-context { flex:0 0 auto!important; }
       .app-header h1 { font-size:23px!important; font-weight:800!important; white-space:nowrap!important; }
@@ -360,8 +361,8 @@ if (Panel && !Panel.prototype.__starkUiV080) {
         .state-pill-v051,.state-values-v051 span,.battery-fact-v070 span { font-size:12px!important; }
       }
       @media(max-width:680px) {
-        :host { position:fixed!important; inset:0!important; width:auto!important; height:auto!important; }
-        main.app { position:absolute!important; inset:0!important; width:auto!important; height:auto!important; }
+        :host { position:relative!important; inset:auto!important; width:100%!important; height:100%!important; }
+        main.app { position:absolute!important; inset:0!important; width:100%!important; height:100%!important; }
       }
     `;
     root.append(style);
