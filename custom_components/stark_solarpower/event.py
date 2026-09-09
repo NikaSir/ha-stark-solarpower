@@ -16,11 +16,11 @@ from .const import MODE_BATTERY, MODE_FAULT
 from .coordinator import StarkSolarPowerCoordinator
 from .entity import StarkSolarPowerEntity
 from .helpers import is_data_stale
-from .sensor import _normalize_mode
+from .mode import mode_is
 
 
 EventStateFn = Callable[
-    [StarkDeviceSnapshot, StarkSolarPowerCoordinator, str], bool
+    [StarkDeviceSnapshot, StarkSolarPowerCoordinator, str], bool | None
 ]
 
 
@@ -28,18 +28,18 @@ def _is_on_battery(
     snapshot: StarkDeviceSnapshot,
     coordinator: StarkSolarPowerCoordinator,
     pn: str,
-) -> bool:
+) -> bool | None:
     """Return whether the UPS is currently in battery mode."""
-    return _normalize_mode(snapshot.values.get("bt_model")) == MODE_BATTERY
+    return mode_is(snapshot.values.get("bt_model"), MODE_BATTERY)
 
 
 def _is_fault_mode(
     snapshot: StarkDeviceSnapshot,
     coordinator: StarkSolarPowerCoordinator,
     pn: str,
-) -> bool:
+) -> bool | None:
     """Return whether the UPS reports the explicit Fault Mode state."""
-    return _normalize_mode(snapshot.values.get("bt_model")) == MODE_FAULT
+    return mode_is(snapshot.values.get("bt_model"), MODE_FAULT)
 
 
 def _is_cloud_connected(

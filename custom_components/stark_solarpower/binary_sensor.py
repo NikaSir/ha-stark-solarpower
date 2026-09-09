@@ -19,14 +19,14 @@ from .const import MODE_BATTERY
 from .coordinator import StarkSolarPowerCoordinator
 from .entity import StarkSolarPowerEntity
 from .helpers import is_data_stale
-from .sensor import _normalize_mode
+from .mode import mode_is
 
 
 @dataclass(frozen=True, kw_only=True)
 class StarkSolarPowerBinarySensorDescription(BinarySensorEntityDescription):
     """Binary sensor description with a snapshot value extractor."""
 
-    value_fn: Callable[[StarkDeviceSnapshot], bool]
+    value_fn: Callable[[StarkDeviceSnapshot], bool | None]
     requires_live_data: bool = False
 
 
@@ -34,8 +34,8 @@ BINARY_SENSORS: tuple[StarkSolarPowerBinarySensorDescription, ...] = (
     StarkSolarPowerBinarySensorDescription(
         key="on_battery",
         translation_key="on_battery",
-        value_fn=lambda snapshot: (
-            _normalize_mode(snapshot.values.get("bt_model")) == MODE_BATTERY
+        value_fn=lambda snapshot: mode_is(
+            snapshot.values.get("bt_model"), MODE_BATTERY
         ),
         requires_live_data=True,
     ),
@@ -90,7 +90,11 @@ class StarkSolarPowerBinarySensor(StarkSolarPowerEntity, BinarySensorEntity):
         if snapshot is None or not self.coordinator.last_update_success:
             return False
         if self.entity_description.requires_live_data:
-            return snapshot.available and not is_data_stale(snapshot)
+            return (
+                snapshot.available
+                and not is_data_stale(snapshot)
+                and self.entity_description.value_fn(snapshot) is not None
+            )
         return True
 
     @property

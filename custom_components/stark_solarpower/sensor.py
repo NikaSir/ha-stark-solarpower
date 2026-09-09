@@ -26,33 +26,11 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .api import StarkDeviceSnapshot
-from .const import (
-    MODE_BATTERY,
-    MODE_BYPASS,
-    MODE_FAULT,
-    MODE_LINE,
-    MODE_OPTIONS,
-    MODE_SHUTDOWN,
-    MODE_STANDBY,
-    MODE_UNKNOWN,
-)
+from .const import MODE_OPTIONS
 from .coordinator import StarkSolarPowerCoordinator
 from .entity import StarkSolarPowerEntity
 from .helpers import data_age_seconds, is_data_stale
-
-
-def _normalize_mode(value: Any) -> str:
-    """Normalize vendor mode text to stable enum values."""
-    text = str(value or "").strip().casefold()
-    mapping = {
-        "line mode": MODE_LINE,
-        "battery mode": MODE_BATTERY,
-        "standby mode": MODE_STANDBY,
-        "bypass mode": MODE_BYPASS,
-        "fault mode": MODE_FAULT,
-        "shutdown mode": MODE_SHUTDOWN,
-    }
-    return mapping.get(text, MODE_UNKNOWN)
+from .mode import normalize_mode as _normalize_mode
 
 
 def _extended_value(snapshot: StarkDeviceSnapshot, key: str) -> Any:
