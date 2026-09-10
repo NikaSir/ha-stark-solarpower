@@ -9,6 +9,7 @@ on:
       - "custom_components/stark_solarpower/panel.py"
       - "custom_components/stark_solarpower/panel_manifest.json"
       - "scripts/build_frontend_bundle.py"
+      - "scripts/check_frontend_delivery.py"
       - ".github/workflows/frontend-bundle.yml"
   pull_request:
     paths:
@@ -16,6 +17,7 @@ on:
       - "custom_components/stark_solarpower/panel.py"
       - "custom_components/stark_solarpower/panel_manifest.json"
       - "scripts/build_frontend_bundle.py"
+      - "scripts/check_frontend_delivery.py"
       - ".github/workflows/frontend-bundle.yml"
   workflow_dispatch:
 
@@ -47,37 +49,8 @@ jobs:
       - name: Verify JavaScript syntax
         run: node --check custom_components/stark_solarpower/frontend/stark-solarpower-panel-bundle.js
 
-      - name: Reject runtime imports in production bundle
-        shell: bash
-        run: |
-          if grep -nE '^[[:space:]]*(import|export)[[:space:]]' custom_components/stark_solarpower/frontend/stark-solarpower-panel-bundle.js; then
-            echo "Production panel bundle must be self-contained."
-            exit 1
-          fi
-
-      - name: Verify production module registration
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-
-          panel = Path('custom_components/stark_solarpower/panel.py').read_text(encoding='utf-8')
-          manifest = json.loads(Path('custom_components/stark_solarpower/panel_manifest.json').read_text(encoding='utf-8'))
-
-          expected = 'stark-solarpower-panel-bundle.js'
-          if f'PANEL_BUNDLE = "{expected}"' not in panel:
-              raise SystemExit('panel.py must declare the self-contained production bundle')
-          if 'module_url=f"{PANEL_STATIC_URL}/{PANEL_BUNDLE}?v={PANEL_UI_VERSION}"' not in panel:
-              raise SystemExit('module_url must point to PANEL_BUNDLE with query-string cache busting')
-          delivery = manifest.get('frontend_delivery', {})
-          if delivery.get('mode') != 'self_contained_bundle':
-              raise SystemExit('panel_manifest.json must declare self_contained_bundle delivery')
-          if delivery.get('module') != expected:
-              raise SystemExit('panel_manifest.json module does not match production registration')
-          if delivery.get('runtime_previous_version_imports') is not False:
-              raise SystemExit('runtime_previous_version_imports must be false')
-          print('Production frontend registration contract OK')
-          PY
+      - name: Verify frontend delivery contract
+        run: python scripts/check_frontend_delivery.py
 
       - name: Verify committed bundle on pull request
         if: github.event_name == 'pull_request'
