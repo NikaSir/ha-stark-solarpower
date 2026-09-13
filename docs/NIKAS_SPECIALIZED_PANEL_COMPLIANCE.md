@@ -3,12 +3,12 @@
 **Audit date:** 2026-09-09
 **Standard:** NikaS Specialized Panel UI Standard v2.2 / Navigation Contract v1.2
 **Audited production path:** `panel.py` → `stark-solarpower-panel-bundle.js?v=0.9.6` → `stark-solarpower-panel`
-**Scope:** implemented in UI v0.9.6 / integration 1.9.8; production browser and phone acceptance remain required
+**Scope:** implemented through UI v0.9.8 / integration 1.9.10; production browser and phone acceptance remain required
 
 | Area | Result | Evidence |
 |---|---|---|
 | Canonical StarLine peer selector | PASS | Final `frontend/stark-solarpower-panel-v095.js` uses the shared 52 px row, two separate 44 px buttons, 8 px gap, left-aligned labels, primary selection surface/border and the existing independent 9 px status lamps. |
-| Integration-owned host-bound shell | PASS (static) | Final `frontend/stark-solarpower-panel-v096.js` binds an absolute four-row grid to the Home Assistant panel host with 60 px Header, 52 px selector, `minmax(0,1fr)` work row and 64 px Bottom Tab Bar. Browser rectangle measurements remain required. |
+| Integration-owned host-bound shell | PASS (static) | Final `frontend/stark-solarpower-panel-v098.js` preserves the v0.9.6 absolute four-row grid bound to the Home Assistant panel host, then adds the approved inset-photo Overview composition without changing shell geometry. Browser rectangle measurements remain required. |
 | One zoom viewport / idempotence | PASS | `frontend/stark-solarpower-panel-v060.js` replaces the prior viewport, marks `data-stark-transform-pan-v060` and detaches older resize engines. |
 | Scale 75–200%, focal pinch, per-UPS persistence | PASS | `frontend/stark-solarpower-panel-v054.js`, `v060.js`: clamp, focal content coordinates and device-keyed local storage/state. |
 | 97–103% snap, two-finger double tap and toast | PASS | `frontend/stark-solarpower-panel-v056.js`, `v060.js`: snap/reset and `Масштаб 100%`. |

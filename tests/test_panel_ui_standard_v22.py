@@ -37,7 +37,7 @@ class PanelUiStandardV22Tests(unittest.TestCase):
             shell["sha256"],
         )
         self.assertIn(f"BEGIN {shell['path']}", self.bundle)
-        self.assertIn("BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v096.js", self.bundle)
+        self.assertIn("BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v098.js", self.bundle)
 
     def test_shell_and_chrome_publish_exact_v22_geometry(self) -> None:
         shell = self.profile["shell_contract"]

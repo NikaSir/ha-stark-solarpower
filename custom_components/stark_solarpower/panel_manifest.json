@@ -10,7 +10,7 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.9.7",
+  "ui_version": "0.9.8",
   "nikas_ui_standard": "2.2",
   "template": {
     "name": "NikaS Integration Panel Template",
@@ -56,7 +56,7 @@
       "type": "declared_parent_navigation",
       "semantic_element": "button",
       "minimum_touch_height_px": 44,
-      "second_line": "UI v0.9.7",
+      "second_line": "UI v0.9.8",
       "width": "min(360px,100%)",
       "height_px": 52
     },
@@ -185,6 +185,15 @@
       "battery_details"
     ],
     "hero_scope": "selected_device_only",
+    "composition": {
+      "reference": "Keenetic Hero 4G+",
+      "status_header_surface": "light_primary_5_percent",
+      "photo_placement": "inset_below_status_header",
+      "photo_radius_px": 20,
+      "mobile_photo_height_px": 300,
+      "startup_geometry_matches_live": true,
+      "blue_corner": "locked_connection_decoration_contract"
+    },
     "power_flow": {
       "nodes": [
         "grid",
@@ -301,7 +310,7 @@
     "overview_state_tile_columns_desktop": 4,
     "desktop_content_max_width_px": 1280,
     "desktop_selected_device_card_max_width_px": 820,
-    "overview_mobile_hero_scene_px": 336,
+    "overview_mobile_hero_scene_px": 300,
     "overview_mobile_bottom_clearance_px": 16,
     "content_clears_bottom_navigation": true
   },
