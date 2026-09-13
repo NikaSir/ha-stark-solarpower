@@ -15,6 +15,7 @@ const NIKAS_SOURCE_ROUTE_MAX_AGE_MS = 30_000;
 const NIKAS_SHELL_BOUNDARY_THRESHOLD_PX = 4;
 
 const NIKAS_BASE_ROUTES = Object.freeze([
+  Object.freeze({ root: "/home", entry: "/home/overview" }),
   Object.freeze({ root: "/dashboard-house-v13", entry: "/dashboard-house-v13/home" }),
   Object.freeze({ root: "/dashboard-rooms-v11", entry: "/dashboard-rooms-v11/rooms" }),
   Object.freeze({ root: "/dashboard-actions", entry: "/dashboard-actions/home" }),
@@ -262,33 +263,19 @@ function consumeNikasSourceHandoff(now = Date.now()) {
   return normalizeNikasBaseRoute(route);
 }
 
-function captureNikasShellReturnRoute({ panelId, parentRoute, safeReturnRoute }) {
-  const savedKey = `nikas.${panelId}.return_route.v1`;
-  const params = new URLSearchParams(window.location.search);
-  const handoff = consumeNikasSourceHandoff();
-  let saved = null;
+// Navigation contract v1.3: the declared hierarchy is the only authority.
+function captureNikasShellReturnRoute({ parentRoute } = {}) {
+  const overview = "/home/overview";
+  if (typeof parentRoute !== "string" || !parentRoute.startsWith("/")
+      || parentRoute.startsWith("//")) return overview;
   try {
-    saved = window.localStorage.getItem(savedKey);
+    const parent = new URL(parentRoute, window.location.origin);
+    if (parent.origin !== window.location.origin || parent.search || parent.hash
+        || parent.pathname === window.location.pathname) return overview;
+    return parent.pathname;
   } catch (_error) {
-    // Saved return routes are an optional convenience.
+    return overview;
   }
-  const candidates = [
-    ...params.getAll("return_to"),
-    ...params.getAll("from"),
-    handoff,
-    saved,
-    document.referrer,
-    parentRoute,
-    safeReturnRoute,
-  ];
-  const accepted = candidates.map(normalizeNikasBaseRoute).find(Boolean)
-    || NIKAS_BASE_ROUTES[0].entry;
-  try {
-    window.localStorage.setItem(savedKey, accepted);
-  } catch (_error) {
-    // The captured route remains stable for the mounted panel instance.
-  }
-  return accepted;
 }
 
 function rememberNikasSpecializedSourceRoute(destination) {
@@ -8181,81 +8168,15 @@ if (Panel && !Panel.prototype.__starkUiV086) {
 // BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v090.js
 (() => {
 const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.9.6";
-const SOURCE_ROUTE_KEY = "nikas.specialized.source_route.v1";
-const SOURCE_ROUTE_AT_KEY = "nikas.specialized.source_route_at.v1";
-const RETURN_ROUTE_KEY = "nikas.stark_solarpower.return_route.v1";
-const SAFE_RETURN_ROUTE = "/dashboard-infrastructure/overview";
+const UI_VERSION = "0.9.7";
+const SAFE_RETURN_ROUTE = "/home/overview";
 
-function normalizeBaseRouteV090(value) {
-  if (!value) return null;
-  try {
-    const url = new URL(String(value).trim(), window.location.origin);
-    if (url.origin !== window.location.origin) return null;
-    if (url.pathname === "/dashboard-house-v13" || url.pathname.startsWith("/dashboard-house-v13/")) {
-      return "/dashboard-house-v13/home";
-    }
-    if (url.pathname === "/dashboard-rooms-v11" || url.pathname.startsWith("/dashboard-rooms-v11/")) {
-      return "/dashboard-rooms-v11/rooms";
-    }
-    if (url.pathname === "/dashboard-actions" || url.pathname.startsWith("/dashboard-actions/")) {
-      return "/dashboard-actions/home";
-    }
-    if (url.pathname === "/dashboard-infrastructure" || url.pathname.startsWith("/dashboard-infrastructure/")) {
-      return "/dashboard-infrastructure/overview";
-    }
-  } catch (_error) {
-    // Invalid and cross-origin candidates fall through to the next source.
-  }
-  return null;
+function resolveReturnRouteV090(_panel) {
+  return SAFE_RETURN_ROUTE;
 }
 
-function readOneShotSourceV090() {
-  try {
-    const rawRoute = sessionStorage.getItem(SOURCE_ROUTE_KEY);
-    const rawTimestamp = sessionStorage.getItem(SOURCE_ROUTE_AT_KEY);
-    sessionStorage.removeItem(SOURCE_ROUTE_KEY);
-    sessionStorage.removeItem(SOURCE_ROUTE_AT_KEY);
-    if (rawRoute === null || rawTimestamp === null) return null;
-    const timestamp = Number(rawTimestamp);
-    const age = Date.now() - timestamp;
-    if (!Number.isFinite(timestamp) || age < 0 || age > 30_000) return null;
-    return normalizeBaseRouteV090(rawRoute);
-  } catch (_error) {
-    return null;
-  }
-}
-
-function readSavedSourceV090() {
-  try {
-    return normalizeBaseRouteV090(localStorage.getItem(RETURN_ROUTE_KEY));
-  } catch (_error) {
-    return null;
-  }
-}
-
-function resolveReturnRouteV090(panel) {
-  const current = new URL(window.location.href);
-  const explicit = normalizeBaseRouteV090(current.searchParams.get("return_to"))
-    || normalizeBaseRouteV090(current.searchParams.get("from"));
-  const handedOff = readOneShotSourceV090();
-  const saved = readSavedSourceV090();
-  const referrer = normalizeBaseRouteV090(document.referrer);
-  const configured = normalizeBaseRouteV090(
-    panel?._panel?.config?.parent_route || panel?.panel?.config?.parent_route,
-  );
-  const route = explicit || handedOff || saved || referrer || configured || SAFE_RETURN_ROUTE;
-  try {
-    localStorage.setItem(RETURN_ROUTE_KEY, route);
-  } catch (_error) {
-    // Private browsing may disable storage; the captured instance value remains valid.
-  }
-  return route;
-}
-
-function navigateToSourceV090(route) {
-  const target = normalizeBaseRouteV090(route) || SAFE_RETURN_ROUTE;
-  window.history.pushState(null, "", target);
+function navigateToSourceV090(_route) {
+  window.history.pushState(null, "", SAFE_RETURN_ROUTE);
   window.dispatchEvent(new Event("location-changed"));
 }
 
@@ -8280,7 +8201,7 @@ if (Panel && !Panel.prototype.__starkUiV090) {
       plaque = document.createElement("button");
       plaque.type = "button";
       plaque.className = "title-wrap title-return-v090";
-      plaque.setAttribute("aria-label", "Вернуться в исходную панель NikaS");
+      plaque.setAttribute("aria-label", "Вернуться на главную панель");
       const content = document.createElement("span");
       content.className = "title-return-copy-v090";
       const title = document.createElement("span");
@@ -8698,7 +8619,7 @@ if (Panel && !Panel.prototype.__starkUiV095) {
 // BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v096.js
 (() => {
 const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.9.6";
+const UI_VERSION = "0.9.7";
 const REFRESH_MINIMUM_MS = 900;
 const REFRESH_RESULT_MS = 1400;
 
@@ -8897,7 +8818,7 @@ if (Panel && !Panel.prototype.__starkUiV096) {
       const style = document.createElement("style");
       style.dataset.starkUiV096 = "true";
       style.textContent = `${nikasShellV2Styles()}
-        /* Stark UI 0.9.6 — production adoption of NikaS UI Standard v2.2. */
+        /* Stark UI 0.9.7 — production adoption of NikaS UI Standard v2.2. */
         :host {
           position:relative!important;
           inset:auto!important;

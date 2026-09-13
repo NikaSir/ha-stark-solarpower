@@ -1,7 +1,7 @@
 import "./stark-solarpower-panel-v095.js";
 
 const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.9.6";
+const UI_VERSION = "0.9.7";
 const REFRESH_MINIMUM_MS = 900;
 const REFRESH_RESULT_MS = 1400;
 
@@ -200,7 +200,7 @@ if (Panel && !Panel.prototype.__starkUiV096) {
       const style = document.createElement("style");
       style.dataset.starkUiV096 = "true";
       style.textContent = `${nikasShellV2Styles()}
-        /* Stark UI 0.9.6 — production adoption of NikaS UI Standard v2.2. */
+        /* Stark UI 0.9.7 — production adoption of NikaS UI Standard v2.2. */
         :host {
           position:relative!important;
           inset:auto!important;
