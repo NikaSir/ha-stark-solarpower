@@ -4,6 +4,13 @@ All notable project changes are recorded here.
 
 ## [Unreleased]
 
+## Integration 1.9.10 / UI 0.9.8 — 2026-09-13
+
+- Move the Overview photograph below the operational status header into a rounded inset scene, following the approved Keenetic composition without increasing the card height.
+- Keep the connection plaque at its locked 168×58 px geometry and retain the fixed 205×205 px cyan corner decoration on the light header surface.
+- Apply the same geometry to the immediate startup surface so registry arrival does not make the photograph or hero controls jump.
+- Preserve the stable DOM, selected-UPS telemetry patching, zoom viewport and fixed Header, selector and Bottom Tab Bar.
+
 ## Integration 1.9.9 / UI 0.9.7 — 2026-09-13
 
 - Main panel title now opens `/home/overview` regardless of opening source, query parameters, stored return routes, or referrer.

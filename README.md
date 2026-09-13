@@ -6,7 +6,7 @@ Custom Home Assistant integration for **STARK Country Online** UPS devices monit
 
 ## Status
 
-Current production baseline: **v1.9.8** with the integration-owned UPS panel UI **v0.9.6**.
+Current production baseline: **v1.9.10** with the integration-owned UPS panel UI **v0.9.8**.
 
 The integration has been field-tested on two STARK Country Online 1000 VA UPS devices with SolarPower Wi-Fi cards.
 

@@ -16,6 +16,9 @@ class PanelMobileCompositionUiV081Tests(unittest.TestCase):
         cls.source = (FRONTEND / "stark-solarpower-panel-v081.js").read_text(
             encoding="utf-8"
         )
+        cls.final_source = (FRONTEND / "stark-solarpower-panel-v098.js").read_text(
+            encoding="utf-8"
+        )
         cls.manifest = json.loads(
             (INTEGRATION / "panel_manifest.json").read_text(encoding="utf-8")
         )
@@ -28,9 +31,10 @@ class PanelMobileCompositionUiV081Tests(unittest.TestCase):
 
     def test_scene_is_compact_without_resizing_the_ups_artwork(self) -> None:
         self.assertIn("height:336px !important", self.source)
+        self.assertIn("height:300px!important", self.final_source)
         self.assertNotIn(".ups-art-v051", self.source)
         self.assertEqual(
-            self.manifest["layout"]["overview_mobile_hero_scene_px"], 336
+            self.manifest["layout"]["overview_mobile_hero_scene_px"], 300
         )
 
     def test_capacity_plaque_is_raised_and_side_metrics_keep_alignment(self) -> None:

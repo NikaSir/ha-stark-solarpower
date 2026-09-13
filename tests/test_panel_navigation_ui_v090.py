@@ -51,7 +51,7 @@ class PanelNavigationUiV090Tests(unittest.TestCase):
     def test_explicit_ha_navigation_and_delivery_versions(self) -> None:
         self.assertIn('window.history.pushState(null, "", SAFE_RETURN_ROUTE)', self.source)
         self.assertIn('new Event("location-changed")', self.source)
-        self.assertEqual(self.panel_manifest["ui_version"], "0.9.7")
+        self.assertEqual(self.panel_manifest["ui_version"], "0.9.8")
         self.assertEqual(self.panel_manifest["title"], "ИБП Stark")
         self.assertFalse(self.panel_manifest["shell"]["scroll_chaining"])
         self.assertTrue(self.panel_manifest["shell"]["ios_scroll_boundary_guard"])

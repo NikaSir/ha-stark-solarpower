@@ -62,9 +62,10 @@
     "custom_components/stark_solarpower/frontend/stark-solarpower-panel-v091.js",
     "custom_components/stark_solarpower/frontend/stark-solarpower-panel-v092.js",
     "custom_components/stark_solarpower/frontend/stark-solarpower-panel-v095.js",
-    "custom_components/stark_solarpower/frontend/stark-solarpower-panel-v096.js"
+    "custom_components/stark_solarpower/frontend/stark-solarpower-panel-v096.js",
+    "custom_components/stark_solarpower/frontend/stark-solarpower-panel-v098.js"
   ],
-  "ui_version": "0.9.7",
+  "ui_version": "0.9.8",
   "web_component": "stark-solarpower-panel",
   "bundle_contract": {
     "autonomous": true,
