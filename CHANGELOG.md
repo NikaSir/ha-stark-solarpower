@@ -4,6 +4,11 @@ All notable project changes are recorded here.
 
 ## [Unreleased]
 
+## Integration 1.9.9 / UI 0.9.7 — 2026-09-13
+
+- Main panel title now opens `/home/overview` regardless of opening source, query parameters, stored return routes, or referrer.
+- Adopt Navigation Contract v1.3 and refresh the autonomous frontend cache version.
+
 ## [1.9.8] - 2026-09-09
 
 ### Panel UI 0.9.6 — NikaS UI Standard v2.2

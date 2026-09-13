@@ -18,27 +18,16 @@ class PanelNavigationUiV090Tests(unittest.TestCase):
         cls.builder = (ROOT / "scripts" / "build_frontend_bundle.py").read_text(encoding="utf-8")
         cls.panel_manifest = json.loads((INTEGRATION / "panel_manifest.json").read_text(encoding="utf-8"))
 
-    def test_source_route_is_captured_once_with_required_precedence(self) -> None:
-        self.assertIn('current.searchParams.get("return_to")', self.source)
-        self.assertIn('current.searchParams.get("from")', self.source)
-        self.assertIn('sessionStorage.getItem(SOURCE_ROUTE_KEY)', self.source)
-        self.assertIn('sessionStorage.removeItem(SOURCE_ROUTE_KEY)', self.source)
-        self.assertIn('rawRoute === null || rawTimestamp === null', self.source)
-        self.assertIn('age < 0', self.source)
-        self.assertIn('if (!this.__starkReturnRouteV090)', self.source)
-        self.assertIn('document.referrer', self.source)
-        self.assertIn('parent_route', self.source)
+    def test_header_returns_home_regardless_of_opening_source(self) -> None:
+        import subprocess
+        subprocess.run(["node", "tests/header_parent_navigation.mjs"], cwd=ROOT, check=True)
 
-    def test_only_canonical_base_routes_are_accepted(self) -> None:
-        for route in (
-            "/dashboard-house-v13/home",
-            "/dashboard-rooms-v11/rooms",
-            "/dashboard-actions/home",
-            "/dashboard-infrastructure/overview",
-        ):
-            self.assertIn(route, self.source)
-        self.assertNotIn('"/dashboard-house"', self.source)
+    def test_title_uses_home_and_never_browser_back(self) -> None:
+        self.assertIn('const SAFE_RETURN_ROUTE = "/home/overview"', self.source)
         self.assertNotIn("history.back(", self.bundle)
+        self.assertNotIn("sessionStorage", self.source)
+        self.assertNotIn("localStorage", self.source)
+        self.assertNotIn("document.referrer", self.source)
 
     def test_title_is_persistent_semantic_version_only_button(self) -> None:
         self.assertIn('document.createElement("button")', self.source)
@@ -60,11 +49,9 @@ class PanelNavigationUiV090Tests(unittest.TestCase):
         self.assertIn('addEventListener("wheel", onWheel, { passive:false })', self.source)
 
     def test_explicit_ha_navigation_and_delivery_versions(self) -> None:
-        self.assertIn('window.history.pushState(null, "", target)', self.source)
+        self.assertIn('window.history.pushState(null, "", SAFE_RETURN_ROUTE)', self.source)
         self.assertIn('new Event("location-changed")', self.source)
-        self.assertIn("localStorage.getItem(RETURN_ROUTE_KEY)", self.source)
-        self.assertIn("localStorage.setItem(RETURN_ROUTE_KEY, route)", self.source)
-        self.assertEqual(self.panel_manifest["ui_version"], "0.9.6")
+        self.assertEqual(self.panel_manifest["ui_version"], "0.9.7")
         self.assertEqual(self.panel_manifest["title"], "ИБП Stark")
         self.assertFalse(self.panel_manifest["shell"]["scroll_chaining"])
         self.assertTrue(self.panel_manifest["shell"]["ios_scroll_boundary_guard"])

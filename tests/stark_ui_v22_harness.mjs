@@ -203,4 +203,4 @@ assert.ok(source.includes("REFRESH_MINIMUM_MS = 900"));
 assert.ok(source.includes("REFRESH_RESULT_MS = 1400"));
 assert.ok(!source.includes("window.location.reload"));
 
-console.log("Stark UI 0.9.6 / NikaS UI 2.2 production regression OK");
+console.log("Stark UI 0.9.7 / NikaS UI 2.2 production regression OK");

@@ -22,7 +22,7 @@ class PanelUiStandardV22Tests(unittest.TestCase):
 
     def test_canonical_documents_and_shell_source_are_pinned(self) -> None:
         self.assertEqual(self.profile["version"], "2.2")
-        self.assertEqual(self.profile["navigation_contract_version"], "1.2")
+        self.assertEqual(self.profile["navigation_contract_version"], "1.3")
         for path_key, hash_key in (
             ("standard_path", "standard_sha256"),
             ("navigation_contract_path", "navigation_contract_sha256"),
