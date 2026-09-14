@@ -48,7 +48,7 @@ class PanelUiStandardV22Tests(unittest.TestCase):
         self.assertEqual(shell["content_max_width_px"], 1280)
         for marker in (
             "position:relative!important",
-            'grid-template-areas:\"header\" \"peer\" \"viewport\" \"tabs\"',
+            'grid-template-areas:\"header\" \"viewport\" \"peer\" \"tabs\"',
             "width:min(360px,100%)!important",
             "height:52px!important",
             "max-width:1280px!important",

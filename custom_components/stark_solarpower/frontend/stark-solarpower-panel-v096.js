@@ -227,8 +227,8 @@ if (Panel && !Panel.prototype.__starkUiV096) {
           container:nikas-panel / inline-size;
         }
         main.app.nikas-shell--with-peer {
-          grid-template-areas:"header" "peer" "viewport" "tabs"!important;
-          grid-template-rows:calc(60px + env(safe-area-inset-top,0px)) 52px minmax(0,1fr) calc(64px + env(safe-area-inset-bottom,0px))!important;
+          grid-template-areas:"header" "viewport" "peer" "tabs"!important;
+          grid-template-rows:calc(60px + env(safe-area-inset-top,0px)) minmax(0,1fr) 52px calc(64px + env(safe-area-inset-bottom,0px))!important;
         }
         .app-header.nikas-shell__header {
           grid-area:header!important;
@@ -255,6 +255,9 @@ if (Panel && !Panel.prototype.__starkUiV096) {
           border-radius:16px!important;
           background:var(--card-background-color,#fff)!important;
           box-shadow:0 7px 20px rgba(23,45,76,.08)!important;
+        }
+        .app-header .refresh {
+          color:var(--primary-text-color,#17191c)!important;
         }
         .app-header .title-return-v090 {
           width:min(360px,100%)!important;
@@ -341,7 +344,7 @@ if (Panel && !Panel.prototype.__starkUiV096) {
         }
         .refresh.is-busy-v096 ha-icon {
           animation:stark-refresh-spin-v096 900ms linear infinite!important;
-          color:var(--primary-color,#03a9d9)!important;
+          color:var(--primary-text-color,#17191c)!important;
         }
         .refresh.is-success-v096 ha-icon { color:#43a047!important; }
         .refresh.is-error-v096 ha-icon { color:#e53935!important; }

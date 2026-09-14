@@ -40,9 +40,9 @@ class PanelUiStandardV16Tests(unittest.TestCase):
     def test_host_bound_four_row_shell(self) -> None:
         self.assertIn("position:relative!important", self.adoption)
         self.assertIn("height:100%!important", self.adoption)
-        self.assertIn('grid-template-areas:"header" "peer" "viewport" "tabs"', self.adoption)
+        self.assertIn('grid-template-areas:"header" "viewport" "peer" "tabs"', self.adoption)
         self.assertIn("calc(60px + env(safe-area-inset-top,0px))", self.adoption)
-        self.assertIn("52px minmax(0,1fr)", self.adoption)
+        self.assertIn("minmax(0,1fr) 52px", self.adoption)
         self.assertIn("calc(64px + env(safe-area-inset-bottom,0px))", self.adoption)
 
     def test_bottom_navigation_geometry(self) -> None:
