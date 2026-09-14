@@ -13,3 +13,14 @@ def test_refresh_action_is_black_at_rest():
 def test_peer_selector_is_between_viewport_and_bottom_navigation():
     assert 'grid-template-areas:"header" "viewport" "peer" "tabs"' in UI
     assert "minmax(0,1fr) 52px" in UI
+
+HERO_SOURCE = (ROOT / "custom_components/stark_solarpower/frontend/stark-solarpower-panel-v098.js").read_text(encoding="utf-8")
+BUNDLE = (ROOT / "custom_components/stark_solarpower/frontend/stark-solarpower-panel-bundle.js").read_text(encoding="utf-8")
+
+
+def test_hero_accent_uses_canonical_density():
+    canonical = "background:color-mix(in srgb,var(--primary-color,#03a9d9) 12%,var(--card-background-color,#fff))!important"
+    for artifact in (HERO_SOURCE, BUNDLE):
+        assert canonical in artifact
+        assert "background:rgba(3,169,217,0.07)!important" not in artifact
+
