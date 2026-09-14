@@ -38,7 +38,7 @@ class PanelOverviewHeaderUiV098Tests(unittest.TestCase):
         self.assertIn("height:205px!important", self.source)
         self.assertIn("top:-92px!important", self.source)
         self.assertIn("right:-70px!important", self.source)
-        self.assertIn("background:rgba(3,169,217,0.07)!important", self.source)
+        self.assertIn("background:color-mix(in srgb,var(--primary-color,#03a9d9) 12%,var(--card-background-color,#fff))!important", self.source)
 
     def test_composition_keeps_the_stable_dom_contract(self) -> None:
         self.assertNotIn("innerHTML", self.source)
