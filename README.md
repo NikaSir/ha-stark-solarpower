@@ -1,6 +1,6 @@
 # Stark SolarPower for Home Assistant
 
-> Beta candidate: **1.9.11-b1** / UI **0.9.9**. Unified header with a black refresh icon in the light theme (theme-aware in dark mode). Device selection is above the bottom navigation. Device control behavior is unchanged. Publication is manual as a GitHub pre-release; this notice does not confirm publication.
+> Beta candidate: **1.9.11-beta002** / UI **0.9.10**. Unified header with a black refresh icon in the light theme (theme-aware in dark mode). Device selection is above the bottom navigation. Device control behavior is unchanged. Publication is manual as a GitHub pre-release; this notice does not confirm publication.
 
 ![Stark SolarPower integration icon](custom_components/stark_solarpower/brand/icon.png)
 

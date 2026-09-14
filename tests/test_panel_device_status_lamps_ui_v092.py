@@ -34,8 +34,8 @@ class DeviceStatusLampsUiV092Tests(unittest.TestCase):
         self.assertNotIn("replaceChildren", self.source)
 
     def test_delivery_versions_and_bundle_are_current(self):
-        self.assertEqual(self.integration_manifest["version"], "1.9.11-b1")
-        self.assertEqual(self.panel_manifest["ui_version"], "0.9.9")
+        self.assertEqual(self.integration_manifest["version"], "1.9.11-beta002")
+        self.assertEqual(self.panel_manifest["ui_version"], "0.9.10")
         self.assertIn("BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v092.js", self.bundle)
 
 

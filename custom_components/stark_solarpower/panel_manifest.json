@@ -10,7 +10,7 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.9.9",
+  "ui_version": "0.9.10",
   "nikas_ui_standard": "2.2",
   "template": {
     "name": "NikaS Integration Panel Template",
@@ -56,7 +56,7 @@
       "type": "declared_parent_navigation",
       "semantic_element": "button",
       "minimum_touch_height_px": 44,
-      "second_line": "UI v0.9.9",
+      "second_line": "UI v0.9.10",
       "width": "min(360px,100%)",
       "height_px": 52
     },
