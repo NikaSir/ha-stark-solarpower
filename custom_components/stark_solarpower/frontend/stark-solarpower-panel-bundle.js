@@ -9158,7 +9158,7 @@ if (Panel && !Panel.prototype.__starkUiV098) {
         height:205px!important;
         top:-92px!important;
         right:-70px!important;
-        background:rgba(3,169,217,0.07)!important;
+        background:color-mix(in srgb,var(--primary-color,#03a9d9) 12%,var(--card-background-color,#fff))!important;
       }
       @media(max-width:430px) {
         section.overview-v066 .hero-scene-v051,
