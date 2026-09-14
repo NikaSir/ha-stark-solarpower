@@ -8992,7 +8992,7 @@ if (Panel && !Panel.prototype.__starkUiV096) {
           bottom:auto!important;
           left:auto!important;
           border-radius:50%!important;
-          background:color-mix(in srgb,var(--primary-color,#03a9d9) 12%,var(--card-background-color,#fff))!important;
+          background:rgba(3,169,217,0.07)!important;
           opacity:1!important;
           z-index:0!important;
           pointer-events:none!important;
