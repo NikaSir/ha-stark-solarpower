@@ -1,7 +1,7 @@
 import "./stark-solarpower-panel-v096.js";
 
 const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.9.9";
+const UI_VERSION = "0.9.10";
 
 if (Panel && !Panel.prototype.__starkUiV098) {
   Panel.prototype.__starkUiV098 = true;
@@ -14,7 +14,7 @@ if (Panel && !Panel.prototype.__starkUiV098) {
     const style = document.createElement("style");
     style.dataset.starkUiV098 = "true";
     style.textContent = `
-      /* Stark UI 0.9.9 — Keenetic-style status header above an inset photo. */
+      /* Stark UI 0.9.10 — Keenetic-style status header above an inset photo. */
       section.overview-v066 .ups-hero-v051,
       section.startup-overview-v086 .ups-hero-v051 {
         padding:12px!important;
