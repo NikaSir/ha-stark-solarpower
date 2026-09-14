@@ -24,7 +24,7 @@ class PanelOverviewHeaderUiV098Tests(unittest.TestCase):
         )
 
     def test_photo_is_a_lower_inset_scene_below_the_status_header(self) -> None:
-        self.assertIn("Stark UI 0.9.9", self.source)
+        self.assertIn("Stark UI 0.9.10", self.source)
         self.assertIn("background-image:none!important", self.source)
         self.assertIn("background-image:linear-gradient", self.source)
         self.assertIn("var(--hero-background-v051)", self.source)
@@ -51,9 +51,9 @@ class PanelOverviewHeaderUiV098Tests(unittest.TestCase):
             "custom_components/stark_solarpower/frontend/stark-solarpower-panel-v098.js",
             self.adoption["build_source_files"],
         )
-        self.assertEqual(self.adoption["ui_version"], "0.9.9")
-        self.assertEqual(self.panel_manifest["ui_version"], "0.9.9")
-        self.assertEqual(self.integration_manifest["version"], "1.9.11-b1")
+        self.assertEqual(self.adoption["ui_version"], "0.9.10")
+        self.assertEqual(self.panel_manifest["ui_version"], "0.9.10")
+        self.assertEqual(self.integration_manifest["version"], "1.9.11-beta002")
 
 
 if __name__ == "__main__":
