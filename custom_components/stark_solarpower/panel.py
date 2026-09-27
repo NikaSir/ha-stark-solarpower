@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from homeassistant.components import frontend, panel_custom
@@ -16,7 +17,10 @@ PANEL_URL_PATH = "dashboard-ups"
 PANEL_PARENT_ROUTE = "/home/overview"
 PANEL_ICON = "mdi:battery-charging"
 PANEL_WEB_COMPONENT = "stark-solarpower-panel"
-PANEL_UI_VERSION = "0.9.10"
+PANEL_UI_VERSION = "0.9.11-beta001"
+PANEL_INTEGRATION_VERSION = json.loads(
+    (Path(__file__).parent / "manifest.json").read_text(encoding="utf-8")
+)["version"]
 PANEL_TEMPLATE_VERSION = "2.2"
 PANEL_STATIC_URL = "/stark_solarpower_panel"
 PANEL_STATIC_REGISTERED = "panel_static_registered"
@@ -34,6 +38,7 @@ PANEL_METADATA = {
     "expose_in_generated_ui": True,
     "preferred_view": "overview",
     "ui_version": PANEL_UI_VERSION,
+    "integration_version": PANEL_INTEGRATION_VERSION,
     "template_version": PANEL_TEMPLATE_VERSION,
     "frontend_bundle": PANEL_BUNDLE,
 }
