@@ -64,6 +64,9 @@ class StarkSolarPowerCoordinator(
         self.devices: dict[str, StarkDeviceInfo] = {}
         self._manual_refresh_lock = asyncio.Lock()
         self._last_manual_refresh = 0.0
+        self._force_primary_refresh = False
+        self._primary_failures: dict[str, int] = {}
+        self._primary_retry_at: dict[str, float] = {}
         self._last_extended_refresh = 0.0
         self._force_extended_refresh = True
         self.extended_values: dict[str, dict[str, Any]] = {}
@@ -81,6 +84,7 @@ class StarkSolarPowerCoordinator(
                 _LOGGER.debug("Manual refresh ignored during cooldown")
                 return False
             self._last_manual_refresh = now
+            self._force_primary_refresh = True
             self._force_extended_refresh = True
 
         await self.async_request_refresh()
@@ -109,11 +113,29 @@ class StarkSolarPowerCoordinator(
         if not self.devices:
             raise UpdateFailed("No Stark SolarPower devices were discovered")
 
-        devices = list(self.devices.values())
+        all_devices = list(self.devices.values())
+        now = time.monotonic()
+        force_primary = self._force_primary_refresh
+        self._force_primary_refresh = False
+        polled_devices = [
+            device
+            for device in all_devices
+            if force_primary
+            or _snapshot_reports_battery_mode((self.data or {}).get(device.pn))
+            or now >= self._primary_retry_at.get(device.pn, 0.0)
+        ]
         current_results = await asyncio.gather(
-            *(self.api.async_get_snapshot(device) for device in devices),
+            *(self.api.async_get_snapshot(device) for device in polled_devices),
             return_exceptions=True,
         )
+        current_by_pn = dict(
+            zip((device.pn for device in polled_devices), current_results, strict=True)
+        )
+        devices = [
+            device
+            for device, result in zip(polled_devices, current_results, strict=True)
+            if isinstance(result, StarkDeviceSnapshot)
+        ]
 
         # Most detailed values change slowly and remain on the five-minute
         # cadence. Battery remaining time is the exception verified on real
@@ -123,19 +145,24 @@ class StarkSolarPowerCoordinator(
         refresh_extended = self._extended_refresh_due() or any(
             _snapshot_reports_battery_mode(result) for result in current_results
         )
+        refresh_extended = refresh_extended or any(
+            isinstance(result, StarkDeviceSnapshot)
+            and self._primary_failures.get(device.pn, 0) > 0
+            for device, result in zip(polled_devices, current_results, strict=True)
+        )
         extended_results = (
             await asyncio.gather(
                 *(async_get_extended_values(self.api, device) for device in devices),
                 return_exceptions=True,
             )
-            if refresh_extended
+            if refresh_extended and devices
             else []
         )
 
         auth_error: SolarPowerAuthError | None = None
         extended_failed = False
 
-        if refresh_extended:
+        if refresh_extended and devices:
             self._last_extended_refresh = time.monotonic()
             self._force_extended_refresh = False
             fetched_at = datetime.now(tz=UTC)
@@ -171,8 +198,23 @@ class StarkSolarPowerCoordinator(
         updated: dict[str, StarkDeviceSnapshot] = {}
         successes = 0
 
-        for device, result in zip(devices, current_results, strict=True):
+        for device in all_devices:
+            if device.pn not in current_by_pn:
+                previous = (self.data or {}).get(device.pn)
+                if previous is not None:
+                    updated[device.pn] = replace(previous, available=False)
+                continue
+
+            result = current_by_pn[device.pn]
             if isinstance(result, StarkDeviceSnapshot):
+                failures = self._primary_failures.pop(device.pn, 0)
+                self._primary_retry_at.pop(device.pn, None)
+                if failures:
+                    _LOGGER.info(
+                        "Cloud telemetry restored for %s after %s failed polls",
+                        device.name,
+                        failures,
+                    )
                 values = dict(result.values)
 
                 # Detailed telemetry is merged only after a successful latest
@@ -198,7 +240,21 @@ class StarkSolarPowerCoordinator(
 
             previous = (self.data or {}).get(device.pn)
             error_text = str(result)
-            _LOGGER.warning("Cannot update %s: %s", device.name, error_text)
+            failures = self._primary_failures.get(device.pn, 0) + 1
+            self._primary_failures[device.pn] = failures
+            self.extended_errors[device.pn] = f"Primary telemetry unavailable: {error_text}"
+            # Keep a one-minute retry in battery mode; otherwise double the
+            # delay after each failed poll, capped below the stale threshold.
+            retry_seconds = (
+                UPDATE_INTERVAL.total_seconds()
+                if _snapshot_reports_battery_mode(previous)
+                else min(UPDATE_INTERVAL.total_seconds() * 2 ** min(failures - 1, 3), 300)
+            )
+            self._primary_retry_at[device.pn] = now + retry_seconds
+            if failures == 1:
+                _LOGGER.warning("Cannot update %s: %s", device.name, error_text)
+            else:
+                _LOGGER.debug("Cannot update %s: %s", device.name, error_text)
 
             if previous is not None:
                 updated[device.pn] = replace(

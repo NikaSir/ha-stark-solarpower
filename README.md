@@ -118,6 +118,8 @@ SolarPower cloud updates can lag the physical UPS by roughly 2–3 minutes. The 
 
 The default primary stale threshold is **360 seconds (6 minutes)**. When data is stale, operational values are intentionally marked unavailable instead of presenting old measurements as current.
 
+Primary telemetry is normally polled every 60 seconds. After a cloud request fails, retries for the affected UPS are spaced at 60, 120, 240, then at most 300 seconds until communication returns. A UPS last seen in Battery Mode keeps 60-second retry attempts. A manual refresh bypasses the retry delay. The first failure produces a warning; subsequent failures are logged at debug level, and recovery is logged once. During an outage, the UPS remains unavailable and old detailed values are not used as current data; recovery refreshes detailed telemetry before merging it again.
+
 Detailed telemetry is intentionally sampled every 5 minutes. If the latest detailed request for one UPS fails, cached detailed values remain in diagnostics but are not merged into live entities. The integration retries the detailed request on the next normal 60-second pass.
 
 ## Validated detailed fields
