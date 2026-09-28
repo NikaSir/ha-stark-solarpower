@@ -12,7 +12,7 @@ import time
 from typing import Any
 from urllib.parse import quote
 
-from aiohttp import ClientError, ClientSession
+from aiohttp import ClientError, ClientResponseError, ClientSession
 
 from .const import (
     API_URLS,
@@ -217,8 +217,16 @@ class StarkSolarPowerApi:
                     response.raise_for_status()
                     payload = await response.json(content_type=None)
         except (TimeoutError, ClientError, ValueError) as err:
+            if isinstance(err, TimeoutError):
+                detail = "request timed out after 15 seconds"
+            elif isinstance(err, ClientResponseError):
+                detail = f"HTTP {err.status}"
+            elif isinstance(err, ClientError):
+                detail = f"network error ({type(err).__name__})"
+            else:
+                detail = "invalid JSON response"
             raise SolarPowerConnectionError(
-                f"Cannot communicate with SolarPower: {err}"
+                f"Cannot communicate with SolarPower: {detail}"
             ) from err
 
         if not isinstance(payload, dict):

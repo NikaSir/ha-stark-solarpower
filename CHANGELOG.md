@@ -4,6 +4,11 @@ All notable project changes are recorded here.
 
 ## [Unreleased]
 
+### Integration 1.9.11-beta004
+
+- Identify SolarPower request timeouts, HTTP status failures, connection errors, and invalid JSON in telemetry diagnostics.
+- Keep signed request URLs and their authentication parameters out of transport error messages.
+
 ## Integration 1.9.10 / UI 0.9.8 — 2026-09-13
 
 - Move the Overview photograph below the operational status header into a rounded inset scene, following the approved Keenetic composition without increasing the card height.
