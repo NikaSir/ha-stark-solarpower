@@ -1,6 +1,6 @@
 # Stark SolarPower for Home Assistant
 
-> Beta candidate: **1.9.11-beta003** / UI **0.9.11-beta001**. The header subtitle shows the full panel and integration versions. Device selection is above the bottom navigation. Device control behavior is unchanged. Publication is manual as a GitHub pre-release; this notice does not confirm publication.
+> Beta candidate: **1.9.11-beta004** / UI **0.9.11-beta001**. The header subtitle shows the full panel and integration versions. Device selection is above the bottom navigation. Device control behavior is unchanged. Publication is manual as a GitHub pre-release; this notice does not confirm publication.
 
 ![Stark SolarPower integration icon](custom_components/stark_solarpower/brand/icon.png)
 

@@ -56,7 +56,7 @@
       "type": "declared_parent_navigation",
       "semantic_element": "button",
       "minimum_touch_height_px": 44,
-      "second_line": "UI v0.9.11-beta001 · Интеграция v1.9.11-beta003",
+      "second_line": "UI v0.9.11-beta001 · Интеграция v1.9.11-beta004",
       "width": "min(360px,100%)",
       "height_px": 52
     },

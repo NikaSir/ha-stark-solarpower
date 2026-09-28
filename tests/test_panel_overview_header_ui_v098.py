@@ -53,7 +53,7 @@ class PanelOverviewHeaderUiV098Tests(unittest.TestCase):
         )
         self.assertEqual(self.adoption["ui_version"], "0.9.11-beta001")
         self.assertEqual(self.panel_manifest["ui_version"], "0.9.11-beta001")
-        self.assertEqual(self.integration_manifest["version"], "1.9.11-beta003")
+        self.assertEqual(self.integration_manifest["version"], "1.9.11-beta004")
 
 
 if __name__ == "__main__":

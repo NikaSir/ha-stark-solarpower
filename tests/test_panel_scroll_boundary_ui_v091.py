@@ -42,7 +42,7 @@ class PanelScrollBoundaryUiV091Tests(unittest.TestCase):
         self.assertIn('host.removeEventListener("touchmove", moveTouch, true)', self.source)
 
     def test_delivery_versions_and_standard_are_coherent(self) -> None:
-        self.assertEqual(self.integration_manifest["version"], "1.9.11-beta003")
+        self.assertEqual(self.integration_manifest["version"], "1.9.11-beta004")
         self.assertEqual(self.panel_manifest["ui_version"], "0.9.11-beta001")
         self.assertEqual(self.panel_manifest["shell"]["standard_version"], "2.1")
         self.assertEqual(self.panel_manifest["nikas_ui_standard"], "2.2")
