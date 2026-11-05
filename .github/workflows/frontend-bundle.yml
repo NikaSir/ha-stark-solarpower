@@ -1,3 +1,4 @@
+# Temporary push verification for PR #87; workflow behavior is unchanged.
 name: Frontend bundle
 
 on:
