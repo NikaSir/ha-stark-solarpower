@@ -67,3 +67,34 @@ states["net.mode"].state = "bypass_mode";
 assert.match(panel._renderOverviewV051(), /Байпас/);
 states["net.mode"].state = "fault_mode";
 assert.match(panel._renderOverviewV051(), /Авария/);
+
+const tabs = {
+  classList: { add() {} },
+  querySelectorAll: () => [],
+  querySelector(selector) {
+    const view = selector.match(/"(\w+)"/)[1];
+    return {
+      remove: () => { this.innerHTML = this.innerHTML.replace(
+        new RegExp(`<button[^>]*data-view-v051="${view}"[^>]*>.*?</button>`), "",
+      ); },
+      setAttribute() {},
+      querySelector: () => ({ textContent: "" }),
+    };
+  },
+  insertBefore() {},
+};
+panel.shadowRoot = { querySelector: () => tabs };
+panel._installNavigationV051();
+assert.deepEqual(
+  [...tabs.innerHTML.matchAll(/data-view-v051="([^"]+)"/g)].map((match) => match[1]),
+  ["overview", "ups", "events", "history", "diagnostics"],
+);
+panel._diagnosticDeviceId = boiler.id;
+for (const [view, heading] of [["ups", "Рабочие параметры"], ["events", "СОБЫТИЯ"]]) {
+  panel._view = view;
+  const content = panel._renderViewMarkupV080();
+  assert.match(content, new RegExp(heading));
+  assert.match(content, /UPS Котел/);
+}
+panel._view = "diagnostics";
+assert.doesNotMatch(panel._renderViewMarkupV080(), /Рабочие параметры|СОБЫТИЯ/);

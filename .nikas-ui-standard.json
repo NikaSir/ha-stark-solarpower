@@ -67,7 +67,7 @@
     "custom_components/stark_solarpower/frontend/stark-solarpower-panel-v099.js",
     "custom_components/stark_solarpower/frontend/stark-solarpower-panel-v100.js"
   ],
-  "ui_version": "0.9.11-beta002",
+  "ui_version": "0.9.11-beta003",
   "web_component": "stark-solarpower-panel",
   "bundle_contract": {
     "autonomous": true,
