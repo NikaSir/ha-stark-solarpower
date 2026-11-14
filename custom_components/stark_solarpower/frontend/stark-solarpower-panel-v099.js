@@ -1,7 +1,7 @@
 import "./stark-solarpower-panel-v098.js";
 
 const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.9.11-beta001";
+const UI_VERSION = "0.9.11-beta002";
 
 if (Panel && !Panel.prototype.__starkUiV099) {
   Panel.prototype.__starkUiV099 = true;

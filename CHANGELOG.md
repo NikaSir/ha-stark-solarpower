@@ -4,6 +4,12 @@ All notable project changes are recorded here.
 
 ## [Unreleased]
 
+### Integration 1.9.11-beta005 / UI 0.9.11-beta002
+
+- Show all UPS units together on Overview with load, power mode, voltages and vendor runtime estimate.
+- Move snapshot and last successful exchange timestamps into independent per-device details.
+- Keep working parameters and latest events in Diagnostics, and retain selected-device History.
+
 ### Integration 1.9.11-beta004
 
 - Identify SolarPower request timeouts, HTTP status failures, connection errors, and invalid JSON in telemetry diagnostics.

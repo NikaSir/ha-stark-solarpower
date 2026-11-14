@@ -1,6 +1,6 @@
 # Stark SolarPower for Home Assistant
 
-> Beta candidate: **1.9.11-beta004** / UI **0.9.11-beta001**. The header subtitle shows the full panel and integration versions. Device selection is above the bottom navigation. Device control behavior is unchanged. Publication is manual as a GitHub pre-release; this notice does not confirm publication.
+> Beta candidate: **1.9.11-beta005** / UI **0.9.11-beta002**. The Overview shows every discovered UPS in one list. Device selection remains available in Diagnostics and History.
 
 ![Stark SolarPower integration icon](custom_components/stark_solarpower/brand/icon.png)
 
@@ -46,19 +46,16 @@ Navigation contract:
 - sidebar title: `ИБП Stark`;
 - icon: `mdi:battery-charging`;
 - preferred view: `overview`;
-- panel UI version: `0.9.6`;
-- persistent device selector: `UPS Интернет / UPS Котёл`;
+- panel UI version: `0.9.11-beta002`;
 - product artwork: `Stark Country 1000 ONLINE (16A)`.
-
-The panel is designed mobile-first for iPhone Pro Max in portrait orientation and uses one reusable UPS template for every Stark SolarPower device discovered through Home Assistant's registries. UI v0.9.6 adopts NikaS Specialized Panel UI Standard v2.2 and Navigation Contract v1.2 while preserving the approved UPS composition. The vendored canonical Shell v2.1 source binds the application to the Home Assistant panel host with exact 60/52/work/64 px rows, a 1280 px content frame, 26 px Bottom Tab Bar icons and current House v13 / Rooms v11 return routes. The Stark peer selector remains the standard status-lamp reference: selection and factual green/orange/red/gray health stay independent and update in place. The selected-UPS cloud/freshness plaque now uses the locked 168×58 geometry and fixed decoration tokens. Manual Refresh addresses every discovered UPS, blocks duplicate requests, remains busy for at least 900 ms and shows a 1400 ms success/error result without fabricating freshness. Header, selector, work viewport, artwork and Bottom Tab Bar remain mounted while telemetry is point-patched.
 
 Views:
 
-- **Обзор** — operating mode, input, load, battery and the selected UPS cloud/freshness indicator in one photographic card;
-- **ИБП** — selected-device identity, electrical state and working parameters;
-- **События** — latest selected-device integration event entities;
-- **История** — compact key measurements opening native Home Assistant history;
-- **Диагн.** — primary-vs-extended data source health plus detailed electrical and vendor diagnostics.
+- **Обзор** — one card per UPS with independent cloud and freshness states, power mode, a load scale, battery and input voltages, and the vendor's runtime estimate. Expand **Подробнее** for the snapshot time and last successful exchange.
+- **Диагностика** — selected UPS working parameters, recent events and detailed source diagnostics.
+- **История** — selected UPS measurements linked to native Home Assistant history.
+
+The shared NikaS shell preserves its viewport, zoom and scroll position during telemetry updates. Overview values require both a confirmed cloud connection and fresh snapshot. Runtime availability additionally depends on the detailed SolarPower endpoint.
 
 The panel never calls the Stark/SolarPower API directly. It reads Home Assistant entities only and uses the existing integration button entity for manual refresh. `unknown` and `unavailable` are never presented as healthy states.
 
@@ -134,7 +131,7 @@ On both field UPS devices, the following were confirmed:
 
 The vendor field named `Battery Group NNumber` contains values that differ between the two otherwise similar UPS devices. It is therefore exposed only as **vendor RAW** diagnostics, not as a physical group count. The integration preserves the vendor's misspelled raw key and also provides a stable internal alias so entity unique IDs do not depend on that typo.
 
-`Battery Remain Time` is also kept as a unitless vendor RAW value until its unit and interpretation are proven.
+`Battery Remain Time` stays available as vendor RAW for diagnostics. The panel displays it as an estimate in hours and minutes using the existing minute interpretation. Device-display comparison remains a field acceptance check.
 
 `Fault Kind` and the associated pre-fault snapshot are retained only in diagnostics. `Fault Kind = 14` was observed while both UPS devices were operating normally, so it must not be interpreted as an active alarm.
 

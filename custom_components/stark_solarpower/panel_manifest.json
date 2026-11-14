@@ -10,7 +10,7 @@
   "owner": "stark_solarpower",
   "expose_in_generated_ui": true,
   "preferred_view": "overview",
-  "ui_version": "0.9.11-beta001",
+  "ui_version": "0.9.11-beta002",
   "nikas_ui_standard": "2.2",
   "template": {
     "name": "NikaS Integration Panel Template",
@@ -56,7 +56,7 @@
       "type": "declared_parent_navigation",
       "semantic_element": "button",
       "minimum_touch_height_px": 44,
-      "second_line": "UI v0.9.11-beta001 · Интеграция v1.9.11-beta004",
+      "second_line": "UI v0.9.11-beta002 · Интеграция v1.9.11-beta005",
       "width": "min(360px,100%)",
       "height_px": 52
     },
@@ -91,10 +91,10 @@
     "backdrop_saturation_percent": 130
   },
   "device_context": {
-    "selector": "persistent_below_header",
+    "selector": "above_bottom_tabs_outside_overview",
     "preserve_across_views": true,
     "reorder_selected": false,
-    "content_scope": "selected_device_only",
+    "content_scope": "all_devices_on_overview_selected_device_elsewhere",
     "mobile_rows": 1,
     "touch_target_px": 44,
     "status_lamp": {
@@ -130,10 +130,8 @@
     "active_primary_percent": 11,
     "views": [
       "overview",
-      "ups",
-      "events",
-      "history",
-      "diagnostics"
+      "diagnostics",
+      "history"
     ],
     "body_height_px": 64,
     "row_height_px": 52,
@@ -177,87 +175,34 @@
     ]
   },
   "overview": {
-    "information_architecture": [
-      "contextual_photographic_hero",
-      "connection_and_freshness_indicator",
-      "live_hero_metrics",
-      "reserve_readiness",
-      "battery_details"
-    ],
-    "hero_scope": "selected_device_only",
-    "composition": {
-      "reference": "Keenetic Hero 4G+",
-      "status_header_surface": "light_primary_5_percent",
-      "photo_placement": "inset_below_status_header",
-      "photo_radius_px": 20,
-      "mobile_photo_height_px": 300,
-      "startup_geometry_matches_live": true,
-      "blue_corner": "locked_connection_decoration_contract"
-    },
-    "power_flow": {
-      "nodes": [
-        "grid",
-        "ups",
-        "load",
-        "battery"
-      ],
-      "connectors": "none",
-      "invented_power_values": false
-    },
-    "reserve_strip_placement": "below_hero",
+    "composition": "stacked_device_cards",
+    "reference": "StarLine",
+    "hero_scope": "all_discovered_devices",
+    "startup_geometry_matches_live": true,
+    "power_mode_separate_from_connection": true,
+    "channel_and_freshness_independent": true,
+    "measurements_require_live_fresh_data": true,
+    "load_scale_segments": 10,
     "key_metrics": [
-      "input_voltage",
-      "output_voltage",
-      "output_frequency",
-      "battery_capacity",
+      "mode",
       "output_load",
       "battery_voltage",
-      "battery_piece_number",
-      "charger_temperature",
+      "input_voltage",
       "battery_remain_time"
     ],
+    "details": {
+      "initially_expanded": false,
+      "fields": ["data_timestamp", "last_successful_update"],
+      "timezone": "Europe/Moscow"
+    },
     "battery_runtime": {
       "source": "battery_remain_time",
       "vendor_raw_unit": "minutes",
-      "overview_display": "hours_minutes",
+      "overview_display": "estimated_hours_minutes",
       "diagnostics_preserve_vendor_value": true,
       "normal_polling_seconds": 300,
       "battery_mode_polling_seconds": 60
-    },
-    "reserve_ready_minimum_percent": 95,
-    "partial_reserve_state": "warning_not_ready",
-    "standalone_metric_row": false,
-    "state_tiles": [],
-    "connection_indicator": {
-      "scope": "selected_device_only",
-      "channel_states": [
-        "cloud",
-        "disconnected",
-        "unknown"
-      ],
-      "freshness_states": [
-        "current",
-        "stale",
-        "unknown"
-      ],
-      "channel_and_freshness_independent": true,
-      "extended_telemetry_affects_primary": false,
-      "geometry_contract_version": "1.1",
-      "width_px": 168,
-      "height_px": 58,
-      "top_px": 13,
-      "right_px": 13,
-      "padding_px": "11 12",
-      "radius_px": 18,
-      "lamp_px": 10,
-      "column_gap_px": 9,
-      "text_gap_px": 3,
-      "main_font": "16px/700",
-      "freshness_font": "13px/600",
-      "stable_dom": true,
-      "point_patch": true
-    },
-    "power_mode_separate_from_connection": true
+    }
   },
   "events": {
     "scope": "selected_device_only",
@@ -307,10 +252,10 @@
     "mobile_horizontal_scroll": false,
     "mobile_content_columns": 1,
     "overview_state_tile_columns_mobile": 2,
-    "overview_state_tile_columns_desktop": 4,
+    "overview_state_tile_columns_desktop": 2,
     "desktop_content_max_width_px": 1280,
     "desktop_selected_device_card_max_width_px": 820,
-    "overview_mobile_hero_scene_px": 300,
+    "overview_mobile_artwork_height_px": 97,
     "overview_mobile_bottom_clearance_px": 16,
     "content_clears_bottom_navigation": true
   },

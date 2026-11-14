@@ -28,9 +28,7 @@ class PanelStatusUiV066Tests(unittest.TestCase):
         ):
             self.assertIn(label, self.source)
         self.assertTrue(
-            self.manifest["overview"]["connection_indicator"][
-                "channel_and_freshness_independent"
-            ]
+            self.manifest["overview"]["channel_and_freshness_independent"]
         )
 
     def test_power_mode_is_separate(self) -> None:

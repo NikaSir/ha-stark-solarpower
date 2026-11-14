@@ -24,6 +24,7 @@ function sameChildrenShape(current, desired) {
 
 function syncAttributes(current, desired) {
   for (const attribute of Array.from(current.attributes)) {
+    if (attribute.name === "open" && current.tagName === "DETAILS") continue;
     if (!desired.hasAttribute(attribute.name)) current.removeAttribute(attribute.name);
   }
   for (const attribute of Array.from(desired.attributes)) {
@@ -221,7 +222,7 @@ if (Panel && !Panel.prototype.__starkUiV080) {
       nav,
       cache:new Map([[key, initial]]),
       activeKey:key,
-      deviceId:this._selectedUpsId?.() || this._devices?.[0]?.id || "default",
+      deviceId:this._stateKeyV065(),
     };
     this._syncShellControlsV080();
     this.__starkCanvasControllerV065?.refresh();
@@ -233,7 +234,7 @@ if (Panel && !Panel.prototype.__starkUiV080) {
     if (!shell || !shell.app.isConnected || !shell.viewport.isConnected) return false;
 
     const key = this._viewCacheKeyV080();
-    const deviceId = this._selectedUpsId?.() || this._devices?.[0]?.id || "default";
+    const deviceId = this._stateKeyV065();
     const markup = this._renderViewMarkupV080();
     const structureKey = this._viewStructureKeyV080();
     let target = shell.cache.get(key);
