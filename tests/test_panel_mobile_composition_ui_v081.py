@@ -34,7 +34,7 @@ class PanelMobileCompositionUiV081Tests(unittest.TestCase):
         self.assertIn("height:300px!important", self.final_source)
         self.assertNotIn(".ups-art-v051", self.source)
         self.assertEqual(
-            self.manifest["layout"]["overview_mobile_artwork_height_px"], 97
+            self.manifest["layout"]["overview_mobile_artwork_height_px"], 103
         )
 
     def test_capacity_plaque_is_raised_and_side_metrics_keep_alignment(self) -> None:

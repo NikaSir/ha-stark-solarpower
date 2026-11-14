@@ -133,7 +133,7 @@ const styles = `
     align-items:center; padding:2px 6px; border-radius:12px;
     background:radial-gradient(ellipse at 82% 52%,color-mix(in srgb,var(--primary-color,#03a9d9) 18%,transparent),transparent 58%);
   }
-  .ups-overview-hero img { display:block; width:100%; height:97px; object-fit:contain; }
+  .ups-overview-hero img { display:block; width:100%; height:103px; object-fit:contain; }
   .ups-overview h2 { margin:0 0 5px; font-size:clamp(18px,5vw,24px); line-height:1.15; overflow-wrap:anywhere; }
   .ups-overview-status {
     display:flex; align-items:center; gap:5px; margin:2px 0; font-size:13px; line-height:1.2;
@@ -171,12 +171,15 @@ const styles = `
     background:var(--ups-tile); border-radius:6px; padding:5px 8px; font-size:12px;
   }
   .ups-overview dd { margin:0; }
+
+  @media (min-width:400px) and (min-height:850px) {
+    .ups-overview-hero img { height:107px; }
+    .ups-overview-metric { min-height:53px; }
+  }
 `;
 
 if (Panel) {
   const previousRender = Panel.prototype._render;
-  const previousNavigation = Panel.prototype._installNavigationV051;
-  const previousDiagnostics = Panel.prototype._renderDiagnostics;
   const previousKey = Panel.prototype._viewCacheKeyV080;
   const previousStructure = Panel.prototype._viewStructureKeyV080;
   const previousContext = Panel.prototype._stateKeyV065;
@@ -205,24 +208,6 @@ if (Panel) {
   Panel.prototype._viewStructureKeyV080 = function () {
     if (this._view !== "overview") return previousStructure.call(this);
     return JSON.stringify(this._devices.map(({ id, name, entities }) => [id, name, entities]));
-  };
-
-  Panel.prototype._installNavigationV051 = function () {
-    previousNavigation.call(this);
-    const nav = this.shadowRoot?.querySelector(".bottom-nav-v051");
-    if (!nav) return;
-    nav.querySelector('[data-view-v051="ups"]')?.remove();
-    nav.querySelector('[data-view-v051="events"]')?.remove();
-    const diagnostics = nav.querySelector('[data-view-v051="diagnostics"]');
-    if (diagnostics) {
-      diagnostics.setAttribute("aria-label", "Диагностика");
-      diagnostics.querySelector("span").textContent = "Диагностика";
-      nav.insertBefore(diagnostics, nav.querySelector('[data-view-v051="history"]'));
-    }
-  };
-
-  Panel.prototype._renderDiagnostics = function () {
-    return previousDiagnostics.call(this) + this._renderUpsV051() + this._renderEventsV051();
   };
 
   Panel.prototype._render = function () {

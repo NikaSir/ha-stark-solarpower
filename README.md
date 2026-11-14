@@ -1,6 +1,6 @@
 # Stark SolarPower for Home Assistant
 
-> Beta candidate: **1.9.11-beta005** / UI **0.9.11-beta002**. The Overview shows every discovered UPS in one list. Device selection remains available in Diagnostics and History.
+> Beta candidate: **1.9.11-beta006** / UI **0.9.11-beta003**. The Overview shows every discovered UPS in a list of taller cards, alongside the original five tabs. The device selector is available on all other tabs.
 
 ![Stark SolarPower integration icon](custom_components/stark_solarpower/brand/icon.png)
 
@@ -46,14 +46,16 @@ Navigation contract:
 - sidebar title: `ИБП Stark`;
 - icon: `mdi:battery-charging`;
 - preferred view: `overview`;
-- panel UI version: `0.9.11-beta002`;
+- panel UI version: `0.9.11-beta003`;
 - product artwork: `Stark Country 1000 ONLINE (16A)`.
 
 Views:
 
 - **Обзор** — one card per UPS with independent cloud and freshness states, power mode, a load scale, battery and input voltages, and the vendor's runtime estimate. Expand **Подробнее** for the snapshot time and last successful exchange.
-- **Диагностика** — selected UPS working parameters, recent events and detailed source diagnostics.
+- **ИБП** — selected UPS working parameters.
+- **События** — selected UPS recent events.
 - **История** — selected UPS measurements linked to native Home Assistant history.
+- **Диагн.** — selected UPS source and extended telemetry diagnostics.
 
 The shared NikaS shell preserves its viewport, zoom and scroll position during telemetry updates. Overview values require both a confirmed cloud connection and fresh snapshot. Runtime availability additionally depends on the detailed SolarPower endpoint.
 

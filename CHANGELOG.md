@@ -4,6 +4,11 @@ All notable project changes are recorded here.
 
 ## [Unreleased]
 
+### Integration 1.9.11-beta006 / UI 0.9.11-beta003
+
+- Restore the original five tabs, including dedicated UPS and Events views.
+- Use the available vertical space for taller Overview cards on large phones.
+
 ### Integration 1.9.11-beta005 / UI 0.9.11-beta002
 
 - Show all UPS units together on Overview with load, power mode, voltages and vendor runtime estimate.
