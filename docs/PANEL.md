@@ -2,6 +2,18 @@
 
 The Stark SolarPower integration owns a dedicated Home Assistant panel for day-to-day UPS monitoring.
 
+## Overview beta 0.9.11-beta002
+
+The current Overview shows all UPS units as stacked cards. Each card starts collapsed
+and contains independent cloud/freshness states, power mode, a load indicator,
+battery/input voltages and the vendor runtime estimate. The native «Подробнее»
+disclosure contains the snapshot and successful exchange timestamps in Moscow time.
+The exchange appears as a dash when the optional `last_successful_update` diagnostic
+entity is disabled or unavailable.
+Overview has its own saved zoom context. The selector remains in Diagnostics and
+History. Diagnostics also contains the previously separate working parameters and
+events. The sections below describe the previous Overview layout for reference.
+
 ## Navigation contract
 
 - Panel ID: `ups`
