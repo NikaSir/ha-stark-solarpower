@@ -4,6 +4,10 @@ All notable project changes are recorded here.
 
 ## [Unreleased]
 
+### Integration 1.9.11-beta007 / UI 0.9.11-beta004
+
+- Show battery charge alongside battery voltage and output voltage alongside input voltage on each Overview card.
+
 ### Integration 1.9.11-beta006 / UI 0.9.11-beta003
 
 - Restore the original five tabs, including dedicated UPS and Events views.

@@ -9190,7 +9190,7 @@ if (Panel && !Panel.prototype.__starkUiV098) {
 // BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v099.js
 (() => {
 const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.9.11-beta003";
+const UI_VERSION = "0.9.11-beta004";
 
 if (Panel && !Panel.prototype.__starkUiV099) {
   Panel.prototype.__starkUiV099 = true;
@@ -9278,6 +9278,15 @@ function metric(label, text, icon, entity, tone = "", extra = "") {
   </div>`;
 }
 
+function metricPair(icon, left, right) {
+  const field = ([label, value, entity]) =>
+    `<div${entity}><span>${label}</span><strong>${esc(value)}</strong></div>`;
+  return `<div class="ups-overview-metric ups-overview-metric-pair">
+    <ha-icon icon="${icon}" aria-hidden="true"></ha-icon>
+    ${field(left)}${field(right)}
+  </div>`;
+}
+
 function status(text, tone, icon) {
   return `<p class="ups-overview-status ${esc(tone)}"><ha-icon icon="${icon}" aria-hidden="true"></ha-icon>${esc(text)}</p>`;
 }
@@ -9297,6 +9306,7 @@ function overviewCard(panel, device) {
     const value = reading(key);
     return value === null ? "—" : `${VOLTAGE.format(value)} В`;
   };
+  const charge = reading("battery_capacity");
   const load = reading("output_load");
   const filled = Math.max(0, Math.min(10, Math.round((load ?? 0) / 10)));
   const segments = `<span class="ups-load-bar" aria-hidden="true">${Array.from({ length: 10 },
@@ -9317,8 +9327,12 @@ function overviewCard(panel, device) {
     <div class="ups-overview-grid">
       ${metric("Питание", powerTitle, powerIcon, entity("mode"), powerTone)}
       ${metric("Нагрузка", load === null ? "—" : `${Math.round(load)} %`, "mdi:signal", entity("output_load"), "", segments)}
-      ${metric("АКБ", voltage("battery_voltage"), "mdi:battery-outline", entity("battery_voltage"))}
-      ${metric("Вход", voltage("input_voltage"), "mdi:sine-wave", entity("input_voltage"))}
+      ${metricPair("mdi:battery-outline",
+        ["АКБ", voltage("battery_voltage"), entity("battery_voltage")],
+        ["Заряд", charge === null ? "—" : `${Math.round(charge)} %`, entity("battery_capacity")])}
+      ${metricPair("mdi:sine-wave",
+        ["Вход", voltage("input_voltage"), entity("input_voltage")],
+        ["Выход", voltage("output_voltage"), entity("output_voltage")])}
     </div>
     <div class="ups-overview-runtime ${autonomy === "—" ? "unknown" : ""}"${entity("battery_remain_time")}>
       <ha-icon icon="mdi:clock-outline" aria-hidden="true"></ha-icon>
@@ -9378,6 +9392,16 @@ const styles = `
   .ups-overview-metric span, .ups-overview-metric strong { display:block; }
   .ups-overview-metric span, .ups-overview-runtime span { font-size:13px; line-height:1.15; }
   .ups-overview-metric strong, .ups-overview-runtime strong { font-size:16px; line-height:1.15; overflow-wrap:anywhere; }
+  .ups-overview-metric-pair { flex-wrap:nowrap; column-gap:5px; }
+  .ups-overview-metric-pair > div:last-child {
+    border-inline-start:1px solid var(--ups-edge); padding-inline-start:4px; text-align:end;
+  }
+  .ups-overview-metric-pair strong { font-variant-numeric:tabular-nums; }
+  @media (max-width:390px) {
+    .ups-overview-metric-pair { padding-inline:5px; column-gap:3px; }
+    .ups-overview-metric-pair ha-icon { --mdc-icon-size:16px; }
+    .ups-overview-metric-pair strong { font-size:14px; }
+  }
   .ups-overview-runtime { min-height:33px; }
   .ups-overview-runtime strong { margin-inline-start:auto; text-align:end; }
   .ups-overview-metric .ups-load-bar { display:flex; gap:2px; width:100%; }

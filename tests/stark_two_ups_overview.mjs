@@ -28,14 +28,14 @@ function ups(id, name, readings) {
 }
 const internet = ups("net", "UPS Интернет", {
   cloud_connected: "on", data_stale: "off", mode: "line_mode",
-  input_voltage: "231", battery_voltage: "27.3", output_load: "18",
+  input_voltage: "231", output_voltage: "229.6", battery_capacity: "100", battery_voltage: "27.3", output_load: "18",
   battery_remain_time: "135",
   data_timestamp: "2026-11-14T17:36:00Z",
   last_successful_update: "2026-11-14T17:37:00Z",
 });
 const boiler = ups("boiler", "UPS Котел", {
   cloud_connected: "off", data_stale: "on", mode: "line_mode",
-  input_voltage: "199", battery_voltage: "25.1", output_load: "82",
+  input_voltage: "199", output_voltage: "198.9", battery_capacity: "87", battery_voltage: "25.1", output_load: "82",
   battery_remain_time: "99",
   data_timestamp: "2026-11-14T17:11:00Z",
   last_successful_update: "2026-11-14T17:12:00Z",
@@ -49,6 +49,16 @@ assert.match(markup, /ИБП Интернет/);
 assert.match(markup, /ИБП Котёл/);
 assert.match(markup, /2 ч 15 мин/);
 assert.match(markup, /18 %/);
+assert.match(markup, /data-entity="net.battery_capacity"[^>]*><span>Заряд<\/span><strong>100 %/);
+assert.match(markup, /data-entity="net.output_voltage"[^>]*><span>Выход<\/span><strong>229,6 В/);
+assert.match(markup, /data-entity="boiler.battery_capacity"[^>]*><span>Заряд<\/span><strong>—/);
+assert.match(markup, /data-entity="boiler.output_voltage"[^>]*><span>Выход<\/span><strong>—/);
+states["net.battery_capacity"].state = "unavailable";
+states["net.output_voltage"].state = "0";
+const partial = panel._renderOverviewV051();
+assert.match(partial, /Заряд<\/span><strong>—/);
+assert.match(partial, /Выход<\/span><strong>0 В/);
+assert.match(partial, /АКБ<\/span><strong>27,3 В/);
 assert.match(markup, /Неизвестно/);
 assert.doesNotMatch(markup, /199 В|25,1 В|82 %|1 ч 39 мин/);
 assert.equal((markup.match(/<details>/g) || []).length, 2);
