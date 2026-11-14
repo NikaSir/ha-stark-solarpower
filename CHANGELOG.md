@@ -4,6 +4,12 @@ All notable project changes are recorded here.
 
 ## [Unreleased]
 
+### Integration 1.9.11-beta007 / UI 0.9.11-beta004
+
+- Arrange power, load, battery voltage and charge, input and output voltage in six separate Overview tiles.
+- Move runtime under each UPS name and detailed cloud and freshness labels into «Подробнее».
+- Let two collapsed cards share the available viewport height above the fixed tabs.
+
 ### Integration 1.9.11-beta006 / UI 0.9.11-beta003
 
 - Restore the original five tabs, including dedicated UPS and Events views.
