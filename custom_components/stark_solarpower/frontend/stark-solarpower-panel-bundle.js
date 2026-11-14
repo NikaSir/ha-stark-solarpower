@@ -9278,13 +9278,11 @@ function metric(label, text, icon, entity, tone = "", extra = "") {
   </div>`;
 }
 
-function metricPair(icon, left, right) {
-  const field = ([label, value, entity]) =>
-    `<div${entity}><span>${label}</span><strong>${esc(value)}</strong></div>`;
-  return `<div class="ups-overview-metric ups-overview-metric-pair">
+function statusIcon(kind, { label, tone }, icon) {
+  const description = esc(`${kind}: ${label}`);
+  return `<span class="ups-status-icon ${esc(tone)}" role="img" aria-label="${description}" title="${description}">
     <ha-icon icon="${icon}" aria-hidden="true"></ha-icon>
-    ${field(left)}${field(right)}
-  </div>`;
+  </span>`;
 }
 
 function status(text, tone, icon) {
@@ -9318,28 +9316,34 @@ function overviewCard(panel, device) {
   return `<article class="ups-overview-card" aria-label="${esc(deviceTitle(device.name))}">
     <div class="ups-overview-hero">
       <div>
-        <h2>${esc(deviceTitle(device.name))}</h2>
-        ${status(channel.label, channel.tone, channelIcon[channel.tone])}
-        ${status(freshness.label, freshness.tone, freshnessIcon[freshness.tone])}
+        <div class="ups-overview-heading">
+          <h2>${esc(deviceTitle(device.name))}</h2>
+          <div class="ups-overview-icons">
+            ${statusIcon("Связь", channel, channelIcon[channel.tone])}
+            ${statusIcon("Свежесть", freshness, freshnessIcon[freshness.tone])}
+          </div>
+        </div>
+        <div class="ups-overview-runtime ${autonomy === "—" ? "unknown" : ""}"${entity("battery_remain_time")}>
+          <ha-icon icon="mdi:clock-outline" aria-hidden="true"></ha-icon>
+          <div><span>Автономность</span><strong>${esc(autonomy)}</strong></div>
+        </div>
       </div>
       <img src="${UPS_ARTWORK}" alt="" width="136" height="100" decoding="async">
     </div>
     <div class="ups-overview-grid">
       ${metric("Питание", powerTitle, powerIcon, entity("mode"), powerTone)}
       ${metric("Нагрузка", load === null ? "—" : `${Math.round(load)} %`, "mdi:signal", entity("output_load"), "", segments)}
-      ${metricPair("mdi:battery-outline",
-        ["АКБ", voltage("battery_voltage"), entity("battery_voltage")],
-        ["Заряд", charge === null ? "—" : `${Math.round(charge)} %`, entity("battery_capacity")])}
-      ${metricPair("mdi:sine-wave",
-        ["Вход", voltage("input_voltage"), entity("input_voltage")],
-        ["Выход", voltage("output_voltage"), entity("output_voltage")])}
-    </div>
-    <div class="ups-overview-runtime ${autonomy === "—" ? "unknown" : ""}"${entity("battery_remain_time")}>
-      <ha-icon icon="mdi:clock-outline" aria-hidden="true"></ha-icon>
-      <span>Автономность</span><strong>${esc(autonomy)}</strong>
+      ${metric("АКБ", voltage("battery_voltage"), "mdi:battery-outline", entity("battery_voltage"))}
+      ${metric("Заряд", charge === null ? "—" : `${Math.round(charge)} %`, "mdi:battery-charging-outline", entity("battery_capacity"))}
+      ${metric("Вход", voltage("input_voltage"), "mdi:sine-wave", entity("input_voltage"))}
+      ${metric("Выход", voltage("output_voltage"), "mdi:sine-wave", entity("output_voltage"))}
     </div>
     <details>
       <summary>Подробнее<ha-icon icon="mdi:chevron-down" aria-hidden="true"></ha-icon></summary>
+      <div class="ups-overview-telemetry">
+        ${status(channel.label, channel.tone, channelIcon[channel.tone])}
+        ${status(freshness.label, freshness.tone, freshnessIcon[freshness.tone])}
+      </div>
       <dl>
         <div${entity("data_timestamp")}><dt>Снимок</dt><dd>${esc(timestamp(panel, device, "data_timestamp"))}</dd></div>
         <div${entity("last_successful_update")}><dt>Обмен</dt><dd>${esc(timestamp(panel, device, "last_successful_update"))}</dd></div>
@@ -9349,7 +9353,7 @@ function overviewCard(panel, device) {
 }
 
 function overview(panel, devices, busy) {
-  return `<section class="ups-overview" aria-label="Обзор ИБП" aria-busy="${busy}">
+  return `<section class="ups-overview" data-ups-count="${devices.length}" aria-label="Обзор ИБП" aria-busy="${busy}">
     ${devices.map((device) => overviewCard(panel, device)).join("")}
   </section>`;
 }
@@ -9360,11 +9364,19 @@ const styles = `
     grid-template-rows:calc(60px + env(safe-area-inset-top,0px)) minmax(0,1fr) calc(64px + env(safe-area-inset-bottom,0px))!important;
   }
   .ups-overview-active > .global-device-context { display:none!important; }
-  .ups-overview { display:grid; gap:10px; max-width:820px; margin:0 auto; padding-bottom:16px; }
+  .ups-overview-active .zoom-viewport-v065 { container-type:size; }
+  .ups-overview-active .zoom-surface-v065 > .work-view-v080.nikas-shell__content {
+    padding-block:0!important;
+  }
+  .ups-overview { display:grid; gap:10px; max-width:820px; margin:0 auto; padding-block:12px 8px; }
+  .ups-overview[data-ups-count="2"] > .ups-overview-card {
+    min-height:calc((100cqh - 30px) / 2);
+  }
   .ups-overview-card {
     --ups-edge:color-mix(in srgb,var(--divider-color,#808080) 75%,transparent);
     --ups-tile:color-mix(in srgb,var(--primary-color,#03a9d9) 5%,var(--card-background-color,#222));
-    display:grid; gap:6px; padding:8px; min-width:0;
+    box-sizing:border-box; display:grid; grid-template-rows:auto minmax(min-content,1fr) auto;
+    gap:6px; padding:8px; min-width:0;
     border:1px solid var(--ups-edge); border-radius:18px;
     background:var(--card-background-color,#222); color:var(--primary-text-color,#fff);
   }
@@ -9374,7 +9386,10 @@ const styles = `
     background:radial-gradient(ellipse at 82% 52%,color-mix(in srgb,var(--primary-color,#03a9d9) 18%,transparent),transparent 58%);
   }
   .ups-overview-hero img { display:block; width:100%; height:103px; object-fit:contain; }
-  .ups-overview h2 { margin:0 0 5px; font-size:clamp(18px,5vw,24px); line-height:1.15; overflow-wrap:anywhere; }
+  .ups-overview-heading, .ups-overview-icons { display:flex; align-items:center; gap:6px; }
+  .ups-overview-heading { flex-wrap:wrap; }
+  .ups-status-icon { display:flex; }
+  .ups-overview h2 { margin:0; font-size:clamp(18px,5vw,24px); line-height:1.15; overflow-wrap:anywhere; }
   .ups-overview-status {
     display:flex; align-items:center; gap:5px; margin:2px 0; font-size:13px; line-height:1.2;
   }
@@ -9382,8 +9397,10 @@ const styles = `
   .ups-overview .warn ha-icon, .ups-overview-status.warn { color:var(--warning-color,#b36b00); }
   .ups-overview .bad ha-icon { color:var(--error-color,#d64545); }
   .ups-overview .unknown ha-icon, .ups-overview .current ha-icon { color:var(--secondary-text-color,#918f90); }
-  .ups-overview-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:5px; }
-  .ups-overview-metric, .ups-overview-runtime {
+  .ups-overview-grid {
+    display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); grid-auto-rows:minmax(min-content,1fr); gap:5px;
+  }
+  .ups-overview-metric {
     border:1px solid var(--ups-edge); border-radius:10px; background:var(--ups-tile);
     display:flex; align-items:center; gap:6px; min-width:0; padding:4px 7px;
   }
@@ -9392,18 +9409,10 @@ const styles = `
   .ups-overview-metric span, .ups-overview-metric strong { display:block; }
   .ups-overview-metric span, .ups-overview-runtime span { font-size:13px; line-height:1.15; }
   .ups-overview-metric strong, .ups-overview-runtime strong { font-size:16px; line-height:1.15; overflow-wrap:anywhere; }
-  .ups-overview-metric-pair { flex-wrap:nowrap; column-gap:5px; }
-  .ups-overview-metric-pair > div:last-child {
-    border-inline-start:1px solid var(--ups-edge); padding-inline-start:4px; text-align:end;
-  }
-  .ups-overview-metric-pair strong { font-variant-numeric:tabular-nums; }
-  @media (max-width:390px) {
-    .ups-overview-metric-pair { padding-inline:5px; column-gap:3px; }
-    .ups-overview-metric-pair ha-icon { --mdc-icon-size:16px; }
-    .ups-overview-metric-pair strong { font-size:14px; }
-  }
-  .ups-overview-runtime { min-height:33px; }
-  .ups-overview-runtime strong { margin-inline-start:auto; text-align:end; }
+  .ups-overview-runtime { display:flex; align-items:center; gap:6px; margin-block-start:9px; }
+  .ups-overview-runtime span, .ups-overview-runtime strong { display:block; }
+  .ups-overview-runtime strong { margin-block-start:3px; }
+  .ups-overview-telemetry { padding:3px 8px; background:var(--ups-tile); border-radius:6px; margin-bottom:3px; }
   .ups-overview-metric .ups-load-bar { display:flex; gap:2px; width:100%; }
   .ups-load-bar i { flex:1; height:3px; border-radius:2px; background:var(--divider-color,#777); }
   .ups-load-bar i.filled { background:var(--primary-color,#03a9d9); }

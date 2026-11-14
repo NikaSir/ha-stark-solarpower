@@ -51,7 +51,7 @@ Navigation contract:
 
 Views:
 
-- **Обзор** — one card per UPS with independent cloud and freshness states, power mode, a load scale, battery voltage and charge, input and output voltages, and the vendor's runtime estimate. Expand **Подробнее** for the snapshot time and last successful exchange.
+- **Обзор** — one card per UPS with cloud and freshness icons beside the title and the vendor's runtime estimate beneath it. Power/load, battery voltage/charge and input/output voltage each occupy a row of two separate tiles. Expand **Подробнее** for full status labels, snapshot time and the last successful exchange.
 - **ИБП** — selected UPS working parameters.
 - **События** — selected UPS recent events.
 - **История** — selected UPS measurements linked to native Home Assistant history.

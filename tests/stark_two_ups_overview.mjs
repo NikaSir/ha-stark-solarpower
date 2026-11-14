@@ -49,10 +49,24 @@ assert.match(markup, /ИБП Интернет/);
 assert.match(markup, /ИБП Котёл/);
 assert.match(markup, /2 ч 15 мин/);
 assert.match(markup, /18 %/);
-assert.match(markup, /data-entity="net.battery_capacity"[^>]*><span>Заряд<\/span><strong>100 %/);
-assert.match(markup, /data-entity="net.output_voltage"[^>]*><span>Выход<\/span><strong>229,6 В/);
-assert.match(markup, /data-entity="boiler.battery_capacity"[^>]*><span>Заряд<\/span><strong>—/);
-assert.match(markup, /data-entity="boiler.output_voltage"[^>]*><span>Выход<\/span><strong>—/);
+assert.match(markup, /class="ups-overview"[^>]*data-ups-count="2"/);
+for (const [, card] of markup.matchAll(/<article[^>]*>(.*?)<\/article>/gs)) {
+  const [collapsed, details] = card.split("<details>");
+  assert.deepEqual(
+    [...collapsed.split('class="ups-overview-grid"')[1].matchAll(/<div><span>([^<]+)<\/span><strong>/g)].map((match) => match[1]),
+    ["Питание", "Нагрузка", "АКБ", "Заряд", "Вход", "Выход"],
+  );
+  assert.match(collapsed, /ups-overview-hero[\s\S]*Автономность[\s\S]*ups-overview-grid/);
+  assert.doesNotMatch(collapsed, /<p class="ups-overview-status/);
+  assert.match(details, /ups-overview-status.*ups-overview-status.*Снимок.*Обмен/s);
+}
+assert.match(markup, /aria-label="Связь: Нет связи"/);
+assert.match(markup, /aria-label="Свежесть: Данные актуальны"/);
+assert.match(markup, /aria-label="Свежесть: Данные устарели"/);
+assert.match(markup, /data-entity="net.battery_capacity"[^>]*>[\s\S]*?<span>Заряд<\/span><strong>100 %/);
+assert.match(markup, /data-entity="net.output_voltage"[^>]*>[\s\S]*?<span>Выход<\/span><strong>229,6 В/);
+assert.match(markup, /data-entity="boiler.battery_capacity"[^>]*>[\s\S]*?<span>Заряд<\/span><strong>—/);
+assert.match(markup, /data-entity="boiler.output_voltage"[^>]*>[\s\S]*?<span>Выход<\/span><strong>—/);
 states["net.battery_capacity"].state = "unavailable";
 states["net.output_voltage"].state = "0";
 const partial = panel._renderOverviewV051();

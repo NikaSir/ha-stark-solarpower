@@ -46,7 +46,7 @@ class PanelMobileCompositionUiV081Tests(unittest.TestCase):
         self.assertIn("min-height:44px !important", self.source)
         self.assertIn("min-height:15px", self.source)
         self.assertEqual(
-            self.manifest["layout"]["overview_mobile_bottom_clearance_px"], 16
+            self.manifest["layout"]["overview_mobile_bottom_clearance_px"], 8
         )
         self.assertTrue(
             self.manifest["layout"]["content_clears_bottom_navigation"]

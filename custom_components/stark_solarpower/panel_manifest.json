@@ -196,7 +196,7 @@
     ],
     "details": {
       "initially_expanded": false,
-      "fields": ["data_timestamp", "last_successful_update"],
+      "fields": ["cloud_connected", "data_stale", "data_timestamp", "last_successful_update"],
       "timezone": "Europe/Moscow"
     },
     "battery_runtime": {
@@ -261,7 +261,9 @@
     "desktop_selected_device_card_max_width_px": 820,
     "overview_mobile_artwork_height_px": 103,
     "overview_tall_mobile_artwork_height_px": 107,
-    "overview_mobile_bottom_clearance_px": 16,
+    "overview_mobile_bottom_clearance_px": 8,
+    "overview_metric_rows": 3,
+    "overview_fill_work_view_when_device_count": 2,
     "content_clears_bottom_navigation": true
   },
   "quality": {

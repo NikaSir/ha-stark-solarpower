@@ -5,9 +5,13 @@ The Stark SolarPower integration owns a dedicated Home Assistant panel for day-t
 ## Overview beta 0.9.11-beta004
 
 The current Overview shows all UPS units as stacked cards. Each card starts collapsed
-and contains independent cloud/freshness states, power mode, a load indicator,
-battery voltage and charge, input/output voltages and the vendor runtime estimate. The native «Подробнее»
-disclosure contains the snapshot and successful exchange timestamps in Moscow time.
+with independent cloud and freshness icons beside its name and runtime below it.
+The six metric tiles use a three-row grid: power/load, battery voltage/charge,
+then input/output voltage. Two cards share the available Overview viewport
+height when space permits. On shorter screens or when details exceed the
+viewport, the work area scrolls above the fixed tabs. The native «Подробнее»
+disclosure contains both status labels and the separate snapshot and successful
+exchange timestamps in Moscow time.
 The exchange appears as a dash when the optional `last_successful_update` diagnostic
 entity is disabled or unavailable.
 Overview has its own saved zoom context. The selector is available on the other four tabs. Working parameters and recent
