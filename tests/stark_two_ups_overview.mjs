@@ -63,6 +63,28 @@ for (const [, card] of markup.matchAll(/<article[^>]*>(.*?)<\/article>/gs)) {
 assert.match(markup, /aria-label="Связь: Нет связи"/);
 assert.match(markup, /aria-label="Свежесть: Данные актуальны"/);
 assert.match(markup, /aria-label="Свежесть: Данные устарели"/);
+
+const compactIcons = (card) => [...card.matchAll(
+  /class="ups-status-icon (\w+)" role="img" aria-label="([^"]+)"[^>]*>\s*<ha-icon icon="([^"]+)"/g,
+)].map(([, tone, label, icon]) => [tone, label, icon]);
+const cards = (html) => [...html.matchAll(/<article[^>]*>(.*?)<\/article>/gs)].map(([, card]) => card);
+const currentCloud = ["good", "Связь: Облако", "mdi:cloud"];
+const staleClock = ["warn", "Свежесть: Данные устарели", "mdi:clock-alert-outline"];
+assert.deepEqual(cards(markup).map(compactIcons), [
+  [currentCloud, ["good", "Свежесть: Данные актуальны", "mdi:check-circle-outline"]],
+  [["warn", "Связь: Нет связи", "mdi:cloud-off-outline"], staleClock],
+]);
+states["net.data_stale"].state = "on";
+states["boiler.cloud_connected"].state = "unavailable";
+states["boiler.data_stale"].state = "unavailable";
+assert.deepEqual(cards(panel._renderOverviewV051()).map(compactIcons), [
+  [currentCloud, staleClock],
+  [["unknown", "Связь: Нет данных", "mdi:cloud-question-outline"],
+    ["unknown", "Свежесть: Нет данных", "mdi:clock-question-outline"]],
+]);
+states["net.data_stale"].state = "off";
+states["boiler.cloud_connected"].state = "off";
+states["boiler.data_stale"].state = "on";
 assert.match(markup, /data-entity="net.battery_capacity"[^>]*>[\s\S]*?<span>Заряд<\/span><strong>100 %/);
 assert.match(markup, /data-entity="net.output_voltage"[^>]*>[\s\S]*?<span>Выход<\/span><strong>229,6 В/);
 assert.match(markup, /data-entity="boiler.battery_capacity"[^>]*>[\s\S]*?<span>Заряд<\/span><strong>—/);

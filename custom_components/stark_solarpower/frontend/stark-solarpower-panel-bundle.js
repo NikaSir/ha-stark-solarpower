@@ -9186,7 +9186,7 @@ if (Panel && !Panel.prototype.__starkUiV098) {
 // BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v099.js
 (() => {
 const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.9.11-beta005";
+const UI_VERSION = "0.9.11-beta006";
 
 if (Panel) {
   Panel.prototype._headerVersionLabelV090 = function () {
@@ -9209,6 +9209,16 @@ const VOLTAGE = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 1 });
 const POWER_TONES = {
   line_mode: "good", battery_mode: "warn", bypass_mode: "warn",
   standby_mode: "warn", shutdown_mode: "warn", fault_mode: "bad",
+};
+const CHANNEL_INDICATORS = {
+  good: { icon: "mdi:cloud", tone: "good" },
+  bad: { icon: "mdi:cloud-off-outline", tone: "warn" },
+  unknown: { icon: "mdi:cloud-question-outline", tone: "unknown" },
+};
+const FRESHNESS_INDICATORS = {
+  current: { icon: "mdi:check-circle-outline", tone: "good" },
+  warn: { icon: "mdi:clock-alert-outline", tone: "warn" },
+  unknown: { icon: "mdi:clock-question-outline", tone: "unknown" },
 };
 const POWER_ICONS = {
   line_mode: "mdi:power-plug-outline", battery_mode: "mdi:battery-arrow-down-outline",
@@ -9251,14 +9261,14 @@ function metric(label, text, icon, entity, tone = "", extra = "") {
   </div>`;
 }
 
-function statusIcon(kind, { label, tone }, icon) {
+function statusIcon(kind, label, { icon, tone }) {
   const description = esc(`${kind}: ${label}`);
   return `<span class="ups-status-icon ${esc(tone)}" role="img" aria-label="${description}" title="${description}">
     <ha-icon icon="${icon}" aria-hidden="true"></ha-icon>
   </span>`;
 }
 
-function status(text, tone, icon) {
+function status(text, { icon, tone }) {
   return `<p class="ups-overview-status ${esc(tone)}"><ha-icon icon="${icon}" aria-hidden="true"></ha-icon>${esc(text)}</p>`;
 }
 
@@ -9282,8 +9292,8 @@ function overviewCard(panel, device) {
   const filled = Math.max(0, Math.min(10, Math.round((load ?? 0) / 10)));
   const segments = `<span class="ups-load-bar" aria-hidden="true">${Array.from({ length: 10 },
     (_, index) => `<i class="${index < filled ? "filled" : ""}"></i>`).join("")}</span>`;
-  const channelIcon = { good: "mdi:cloud-outline", bad: "mdi:cloud-off-outline", unknown: "mdi:cloud-question-outline" };
-  const freshnessIcon = { current: "mdi:check-circle-outline", warn: "mdi:clock-alert-outline", unknown: "mdi:clock-question-outline" };
+  const channelIndicator = CHANNEL_INDICATORS[channel.tone];
+  const freshnessIndicator = FRESHNESS_INDICATORS[freshness.tone];
   const autonomy = runtime(reading("battery_remain_time"));
   const entity = (key) => entityAttr(panel, device, key);
   return `<article class="ups-overview-card" aria-label="${esc(deviceTitle(device.name))}">
@@ -9292,8 +9302,8 @@ function overviewCard(panel, device) {
         <div class="ups-overview-heading">
           <h2>${esc(deviceTitle(device.name))}</h2>
           <div class="ups-overview-icons">
-            ${statusIcon("Связь", channel, channelIcon[channel.tone])}
-            ${statusIcon("Свежесть", freshness, freshnessIcon[freshness.tone])}
+            ${statusIcon("Связь", channel.label, channelIndicator)}
+            ${statusIcon("Свежесть", freshness.label, freshnessIndicator)}
           </div>
         </div>
         <div class="ups-overview-runtime ${autonomy === "—" ? "unknown" : ""}"${entity("battery_remain_time")}>
@@ -9314,8 +9324,8 @@ function overviewCard(panel, device) {
     <details>
       <summary>Подробнее<ha-icon icon="mdi:chevron-down" aria-hidden="true"></ha-icon></summary>
       <div class="ups-overview-telemetry">
-        ${status(channel.label, channel.tone, channelIcon[channel.tone])}
-        ${status(freshness.label, freshness.tone, freshnessIcon[freshness.tone])}
+        ${status(channel.label, channelIndicator)}
+        ${status(freshness.label, freshnessIndicator)}
       </div>
       <dl>
         <div${entity("data_timestamp")}><dt>Снимок</dt><dd>${esc(timestamp(panel, device, "data_timestamp"))}</dd></div>
@@ -9367,9 +9377,23 @@ const styles = `
     display:flex; align-items:center; gap:5px; margin:2px 0; font-size:13px; line-height:1.2;
   }
   .ups-overview ha-icon { --mdc-icon-size:20px; flex:none; color:var(--primary-color,#03a9d9); }
-  .ups-overview .warn ha-icon, .ups-overview-status.warn { color:var(--warning-color,#b36b00); }
+  .ups-overview .warn ha-icon { color:var(--warning-color,#b36b00); }
   .ups-overview .bad ha-icon { color:var(--error-color,#d64545); }
-  .ups-overview .unknown ha-icon, .ups-overview .current ha-icon { color:var(--secondary-text-color,#918f90); }
+  .ups-overview .unknown ha-icon { color:var(--secondary-text-color,#918f90); }
+  .ups-overview {
+    --ups-status-green:#237a37;
+    --ups-status-orange:#a84a00;
+    --ups-status-gray:#5f6368;
+  }
+  .app[data-stark-status-dark] .ups-overview {
+    --ups-status-green:#73d483;
+    --ups-status-orange:#ffae61;
+    --ups-status-gray:#a6abb1;
+  }
+  .ups-overview :is(.ups-status-icon,.ups-overview-status).good { color:var(--ups-status-green); }
+  .ups-overview :is(.ups-status-icon,.ups-overview-status).warn { color:var(--ups-status-orange); }
+  .ups-overview :is(.ups-status-icon,.ups-overview-status).unknown { color:var(--ups-status-gray); }
+  .ups-overview :is(.ups-status-icon,.ups-overview-status) ha-icon { color:inherit; }
   .ups-overview-grid {
     display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); grid-auto-rows:minmax(min-content,1fr); gap:5px;
   }
@@ -9448,6 +9472,8 @@ if (Panel) {
     const app = root?.querySelector("main.app");
     if (!app) return;
     app.classList.toggle("ups-overview-active", this._view === "overview");
+    const darkMode = this._hass?.themes?.darkMode ?? globalThis.matchMedia?.("(prefers-color-scheme: dark)").matches;
+    app.toggleAttribute("data-stark-status-dark", Boolean(darkMode));
     const title = root.querySelector(".title-return-name-v090");
     if (title && title.textContent !== "Stark SolarPower") title.textContent = "Stark SolarPower";
     if (!root.querySelector("style[data-stark-overview-v100]")) {
