@@ -51,9 +51,9 @@ class PanelOverviewHeaderUiV098Tests(unittest.TestCase):
             "custom_components/stark_solarpower/frontend/stark-solarpower-panel-v098.js",
             self.adoption["build_source_files"],
         )
-        self.assertEqual(self.adoption["ui_version"], "0.9.11-beta004")
-        self.assertEqual(self.panel_manifest["ui_version"], "0.9.11-beta004")
-        self.assertEqual(self.integration_manifest["version"], "1.9.11-beta007")
+        self.assertEqual(self.adoption["ui_version"], "0.9.11-beta005")
+        self.assertEqual(self.panel_manifest["ui_version"], "0.9.11-beta005")
+        self.assertEqual(self.integration_manifest["version"], "1.9.11-beta008")
 
 
 if __name__ == "__main__":

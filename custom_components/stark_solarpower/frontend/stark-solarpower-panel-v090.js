@@ -18,6 +18,10 @@ if (Panel && !Panel.prototype.__starkUiV090) {
   const previousRender = Panel.prototype._render;
   const previousSyncControls = Panel.prototype._syncShellControlsV080;
 
+  Panel.prototype._headerVersionLabelV090 = function () {
+    return `UI v${UI_VERSION} / —`;
+  };
+
   Panel.prototype._installHeaderReturnV090 = function () {
     const root = this.shadowRoot;
     const header = root?.querySelector(".app-header");
@@ -33,24 +37,22 @@ if (Panel && !Panel.prototype.__starkUiV090) {
       if (!legacyTitle) return;
       plaque = document.createElement("button");
       plaque.type = "button";
-      plaque.className = "title-wrap title-return-v090";
+      plaque.className = "title-return-v090";
       plaque.setAttribute("aria-label", "Вернуться на главную панель");
-      const content = document.createElement("span");
-      content.className = "title-return-copy-v090";
-      const title = document.createElement("span");
+      plaque.setAttribute("aria-describedby", "stark-header-versions");
+      const title = document.createElement("strong");
       title.className = "title-return-name-v090";
       title.textContent = "ИБП Stark";
-      const version = document.createElement("span");
-      version.className = "subtitle";
-      version.textContent = `UI v${UI_VERSION}`;
-      content.append(title, version);
-      plaque.append(content);
+      const version = document.createElement("small");
+      version.id = "stark-header-versions";
+      plaque.append(title, version);
       plaque.addEventListener("click", () => navigateToSourceV090(this.__starkReturnRouteV090));
       legacyTitle.replaceWith(plaque);
     }
 
-    const version = plaque.querySelector(".subtitle");
-    if (version?.textContent !== `UI v${UI_VERSION}`) version.textContent = `UI v${UI_VERSION}`;
+    const version = plaque.querySelector("#stark-header-versions");
+    const label = this._headerVersionLabelV090();
+    if (version && version.textContent !== label) version.textContent = label;
 
     if (!root.querySelector("style[data-stark-ui-v090]")) {
       const style = document.createElement("style");
@@ -65,16 +67,9 @@ if (Panel && !Panel.prototype.__starkUiV090) {
           min-height:44px!important;
           margin:0!important;
           padding:5px 14px!important;
-          display:block!important;
-          border:1px solid color-mix(in srgb,var(--primary-color,#03a9d9) 24%,var(--divider-color,#dfe3e8))!important;
-          border-radius:16px!important;
-          background:color-mix(in srgb,var(--primary-color,#03a9d9) 5%,var(--card-background-color,#fff))!important;
-          color:var(--primary-text-color)!important;
-          box-shadow:0 5px 16px rgba(23,45,76,.06)!important;
           appearance:none!important;
-          font:inherit!important;
-          text-align:center!important;
-          cursor:pointer!important;
+          font-family:inherit;
+          color:var(--primary-text-color,#17191c)!important;
           -webkit-tap-highlight-color:transparent;
         }
         .app-header .title-return-v090:focus-visible {
@@ -82,22 +77,6 @@ if (Panel && !Panel.prototype.__starkUiV090) {
           outline-offset:2px!important;
         }
         .app-header .title-return-v090:active { transform:scale(.985); background:color-mix(in srgb,var(--primary-color,#03a9d9) 13%,var(--card-background-color,#fff))!important; border-color:color-mix(in srgb,var(--primary-color,#03a9d9) 42%,var(--divider-color,#dfe3e8))!important; box-shadow:0 2px 7px rgba(23,45,76,.05)!important; }
-        .title-return-copy-v090 { display:flex; min-width:0; flex-direction:column; align-items:center; }
-        .title-return-name-v090 {
-          max-width:100%;
-          overflow:hidden;
-          text-overflow:ellipsis;
-          white-space:nowrap;
-          font-size:23px;
-          line-height:1.05;
-          font-weight:800;
-        }
-        .title-return-v090 .subtitle { margin-top:3px!important; font-size:14px!important; line-height:1.2; font-weight:560!important; letter-spacing:.01em; }
-        @media(max-width:390px) {
-          .app-header .title-return-v090 { min-width:0!important; width:100%!important; padding-inline:8px!important; }
-          .title-return-name-v090 { font-size:21px; }
-          .title-return-v090 .subtitle { font-size:13px!important; }
-        }
       `;
       root.append(style);
     }

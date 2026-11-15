@@ -102,7 +102,7 @@ if (Panel && !Panel.prototype.__starkUiV069) {
     syncChildren(current, template.content);
 
     const subtitle = root.querySelector(".subtitle");
-    if (subtitle?.textContent !== `UPS Control Center · UI v${UI_VERSION}`) {
+    if (subtitle && subtitle.textContent !== `UPS Control Center · UI v${UI_VERSION}`) {
       subtitle.textContent = `UPS Control Center · UI v${UI_VERSION}`;
     }
     return true;

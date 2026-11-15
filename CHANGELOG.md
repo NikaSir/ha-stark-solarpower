@@ -4,6 +4,11 @@ All notable project changes are recorded here.
 
 ## [Unreleased]
 
+### Integration 1.9.11-beta008 / UI 0.9.11-beta005
+
+- Adopt the restrained NikaS Header with full UI and installed integration versions on one line.
+- Match the refresh arrow and plaque to the active Home Assistant theme.
+
 ### Integration 1.9.11-beta007 / UI 0.9.11-beta004
 
 - Arrange power, load, battery voltage and charge, input and output voltage in six separate Overview tiles.

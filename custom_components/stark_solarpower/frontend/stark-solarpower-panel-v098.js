@@ -1,7 +1,6 @@
 import "./stark-solarpower-panel-v096.js";
 
 const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.9.10";
 
 if (Panel && !Panel.prototype.__starkUiV098) {
   Panel.prototype.__starkUiV098 = true;
@@ -66,7 +65,5 @@ if (Panel && !Panel.prototype.__starkUiV098) {
   Panel.prototype._render = function () {
     previousRender.call(this);
     this._installOverviewHeaderV098();
-    const version = this.shadowRoot?.querySelector(".title-return-v090 .subtitle");
-    if (version?.textContent !== `UI v${UI_VERSION}`) version.textContent = `UI v${UI_VERSION}`;
   };
 }

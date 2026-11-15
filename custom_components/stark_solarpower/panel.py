@@ -17,7 +17,7 @@ PANEL_URL_PATH = "dashboard-ups"
 PANEL_PARENT_ROUTE = "/home/overview"
 PANEL_ICON = "mdi:battery-charging"
 PANEL_WEB_COMPONENT = "stark-solarpower-panel"
-PANEL_UI_VERSION = "0.9.11-beta004"
+PANEL_UI_VERSION = "0.9.11-beta005"
 PANEL_INTEGRATION_VERSION = json.loads(
     (Path(__file__).parent / "manifest.json").read_text(encoding="utf-8")
 )["version"]
