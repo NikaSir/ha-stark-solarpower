@@ -1,5 +1,16 @@
 # NikaS specialized-panel compliance — Stark SolarPower
 
+## Header update — 2026-11-15
+
+Integration `1.9.11-beta008` / UI `0.9.11-beta005` use the variant B title
+plaque. The caption reads `UI v0.9.11-beta005 / 1.9.11-beta008` for this
+installation and uses an em dash when HA provides no integration version. The
+refresh plaque follows HA's theme: white with a black arrow in light mode and
+dark neutral with a white arrow in dark mode. Title navigation still leads to
+`/home/overview`. Production Home Assistant and iPhone acceptance are pending.
+
+## Previous audit
+
 **Audit date:** 2026-09-09
 **Standard:** NikaS Specialized Panel UI Standard v2.2 / Navigation Contract v1.2
 **Audited production path:** `panel.py` → `stark-solarpower-panel-bundle.js?v=0.9.6` → `stark-solarpower-panel`

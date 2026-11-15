@@ -29,10 +29,11 @@ class PanelNavigationUiV090Tests(unittest.TestCase):
         self.assertNotIn("localStorage", self.source)
         self.assertNotIn("document.referrer", self.source)
 
-    def test_title_is_persistent_semantic_version_only_button(self) -> None:
+    def test_title_is_persistent_semantic_button_with_version_description(self) -> None:
         self.assertIn('document.createElement("button")', self.source)
         self.assertIn('title-return-v090', self.source)
-        self.assertIn('version.textContent = `UI v${UI_VERSION}`', self.source)
+        self.assertIn('plaque.setAttribute("aria-describedby", "stark-header-versions")', self.source)
+        self.assertIn('if (version && version.textContent !== label) version.textContent = label', self.source)
         self.assertIn('.title-return-v090:focus-visible', self.source)
         self.assertIn('.title-return-v090:active', self.source)
         self.assertIn('title.textContent = "ИБП Stark"', self.source)
@@ -51,7 +52,7 @@ class PanelNavigationUiV090Tests(unittest.TestCase):
     def test_explicit_ha_navigation_and_delivery_versions(self) -> None:
         self.assertIn('window.history.pushState(null, "", SAFE_RETURN_ROUTE)', self.source)
         self.assertIn('new Event("location-changed")', self.source)
-        self.assertEqual(self.panel_manifest["ui_version"], "0.9.11-beta004")
+        self.assertEqual(self.panel_manifest["ui_version"], "0.9.11-beta005")
         self.assertEqual(self.panel_manifest["title"], "ИБП Stark")
         self.assertFalse(self.panel_manifest["shell"]["scroll_chaining"])
         self.assertTrue(self.panel_manifest["shell"]["ios_scroll_boundary_guard"])

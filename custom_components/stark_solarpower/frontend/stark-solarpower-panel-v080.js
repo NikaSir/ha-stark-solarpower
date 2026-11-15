@@ -185,7 +185,7 @@ if (Panel && !Panel.prototype.__starkUiV080) {
       }
     });
     const subtitle = shell.header?.querySelector(".subtitle");
-    if (subtitle?.textContent !== `UPS Control Center · UI v${UI_VERSION}`) {
+    if (subtitle && subtitle.textContent !== `UPS Control Center · UI v${UI_VERSION}`) {
       subtitle.textContent = `UPS Control Center · UI v${UI_VERSION}`;
     }
   };

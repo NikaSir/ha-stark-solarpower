@@ -1,6 +1,6 @@
 # Stark SolarPower for Home Assistant
 
-> Beta candidate: **1.9.11-beta007** / UI **0.9.11-beta004**. The Overview shows every discovered UPS in a list of taller cards, alongside the original five tabs. The device selector is available on all other tabs.
+> Beta candidate: **1.9.11-beta008** / UI **0.9.11-beta005**. The Header uses the restrained NikaS title plaque and displays the UI and installed integration versions on one line.
 
 ![Stark SolarPower integration icon](custom_components/stark_solarpower/brand/icon.png)
 
@@ -46,7 +46,7 @@ Navigation contract:
 - sidebar title: `ИБП Stark`;
 - icon: `mdi:battery-charging`;
 - preferred view: `overview`;
-- panel UI version: `0.9.11-beta004`;
+- panel UI version: `0.9.11-beta005`;
 - product artwork: `Stark Country 1000 ONLINE (16A)`.
 
 Views:

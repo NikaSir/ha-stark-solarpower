@@ -1,10 +1,16 @@
 # NikaS Header Contract v1.18
 
-**Status:** required for the six-panel unified-header beta set  
+**Status:** historical reference for the six-panel unified-header beta set
 **Applies to:** HO-SC-8W, S8 OMNI, NikaS Climate, LIDER, Keenetic Hero 4G+ and Stark SolarPower  
 **Reference geometry:** S8 OMNI / Keenetic approved header composition
 
-This contract is a narrow compatibility overlay for NikaS UI Standard v2.2 and
+For current Stark Header geometry, typography and combined version display, see
+[NikaS UI Standard v2.2](NIKAS_SPECIALIZED_PANEL_UI_STANDARD.md#2-header--canonical-geometry-with-s8-omni-surface).
+Stark follows the later light-theme decision for refresh: a white plaque and
+black idle/busy arrow in light mode, a dark neutral plaque and white arrow in
+dark mode.
+
+This contract described a narrow compatibility overlay for NikaS UI Standard v2.2 and
 Refresh Action Contract v1.1. Where those documents prescribe
 `var(--primary-color)` for the refresh glyph, this contract supersedes that
 single color rule. All unrelated v2.2 and Refresh v1.1 requirements remain in force.

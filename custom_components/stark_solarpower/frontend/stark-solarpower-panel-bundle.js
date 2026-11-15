@@ -72,18 +72,19 @@ function nikasShellV2Styles() {
       border-radius:16px;background:var(--card-background-color,#fff);box-shadow:0 7px 20px rgba(23,45,76,.08);
       display:grid;place-items:center;color:var(--primary-text-color,#17191c);cursor:pointer
     }
-    .nikas-shell__side-action--right{justify-self:end;color:var(--primary-text-color,#17191c)}
+    .nikas-shell__side-action--right{justify-self:end;color:var(--primary-color,#03a9d9)}
+    .nikas-shell__side-action--refresh{color:#fff;background:#1c1c1c;background:color-mix(in srgb,var(--card-background-color,#fff) 8%,#1c1c1c)}
     .nikas-shell__side-action:disabled{opacity:.55;cursor:wait}
     .nikas-shell__side-action ha-icon{--mdc-icon-size:25px}
     .nikas-shell__title{
       justify-self:center;inline-size:min(360px,100%);block-size:52px;padding:5px 14px;
-      border:1px solid color-mix(in srgb,var(--primary-color,#03a9d9) 24%,var(--divider-color,#dfe3e8));
-      border-radius:16px;background:color-mix(in srgb,var(--primary-color,#03a9d9) 5%,var(--card-background-color,#fff));
-      box-shadow:0 5px 16px rgba(23,45,76,.06);color:inherit;display:grid;place-content:center;
+      border:1px solid color-mix(in srgb,var(--primary-color,#03a9d9) 12%,var(--divider-color,#dfe3e8));
+      border-radius:16px;background:color-mix(in srgb,var(--primary-color,#03a9d9) 3%,var(--card-background-color,#fff));
+      box-shadow:0 5px 16px rgba(23,45,76,.06);color:inherit;display:grid;grid-template-columns:minmax(0,1fr);align-content:center;justify-items:center;
       text-align:center;cursor:pointer;line-height:1.08
     }
-    .nikas-shell__title strong{display:block;max-inline-size:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:23px;font-weight:800}
-    .nikas-shell__title small{display:block;font-size:14px;font-weight:560;color:var(--secondary-text-color,#68737d)}
+    .nikas-shell__title strong{display:block;max-inline-size:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:22px;font-weight:700}
+    .nikas-shell__title small{display:block;max-inline-size:100%;white-space:nowrap;font-size:clamp(11px,calc((100cqi - 150px) * .057),14px);font-weight:500;font-variant-numeric:tabular-nums;color:var(--secondary-text-color,#68737d)}
     .nikas-shell__title:active{
       transform:scale(.985);border-color:color-mix(in srgb,var(--primary-color,#03a9d9) 42%,var(--divider-color,#dfe3e8));
       background:color-mix(in srgb,var(--primary-color,#03a9d9) 13%,var(--card-background-color,#fff));
@@ -127,7 +128,7 @@ function nikasShellV2Styles() {
     @container nikas-panel (max-width:359px){
       .nikas-shell__header{grid-template-columns:48px minmax(0,1fr) 48px}
       .nikas-shell__title{inline-size:100%;padding-inline:8px}
-      .nikas-shell__title strong{font-size:21px}.nikas-shell__title small{font-size:13px}
+      .nikas-shell__title strong{font-size:20px}.nikas-shell__title small{font-size:clamp(11px,calc((100cqi - 135px) * .055),12px)}
     }
   `;
 }
@@ -7168,7 +7169,7 @@ if (Panel && !Panel.prototype.__starkUiV069) {
     syncChildren(current, template.content);
 
     const subtitle = root.querySelector(".subtitle");
-    if (subtitle?.textContent !== `UPS Control Center · UI v${UI_VERSION}`) {
+    if (subtitle && subtitle.textContent !== `UPS Control Center · UI v${UI_VERSION}`) {
       subtitle.textContent = `UPS Control Center · UI v${UI_VERSION}`;
     }
     return true;
@@ -7548,7 +7549,7 @@ if (Panel && !Panel.prototype.__starkUiV080) {
       }
     });
     const subtitle = shell.header?.querySelector(".subtitle");
-    if (subtitle?.textContent !== `UPS Control Center · UI v${UI_VERSION}`) {
+    if (subtitle && subtitle.textContent !== `UPS Control Center · UI v${UI_VERSION}`) {
       subtitle.textContent = `UPS Control Center · UI v${UI_VERSION}`;
     }
   };
@@ -8186,6 +8187,10 @@ if (Panel && !Panel.prototype.__starkUiV090) {
   const previousRender = Panel.prototype._render;
   const previousSyncControls = Panel.prototype._syncShellControlsV080;
 
+  Panel.prototype._headerVersionLabelV090 = function () {
+    return `UI v${UI_VERSION} / —`;
+  };
+
   Panel.prototype._installHeaderReturnV090 = function () {
     const root = this.shadowRoot;
     const header = root?.querySelector(".app-header");
@@ -8201,24 +8206,22 @@ if (Panel && !Panel.prototype.__starkUiV090) {
       if (!legacyTitle) return;
       plaque = document.createElement("button");
       plaque.type = "button";
-      plaque.className = "title-wrap title-return-v090";
+      plaque.className = "title-return-v090";
       plaque.setAttribute("aria-label", "Вернуться на главную панель");
-      const content = document.createElement("span");
-      content.className = "title-return-copy-v090";
-      const title = document.createElement("span");
+      plaque.setAttribute("aria-describedby", "stark-header-versions");
+      const title = document.createElement("strong");
       title.className = "title-return-name-v090";
       title.textContent = "ИБП Stark";
-      const version = document.createElement("span");
-      version.className = "subtitle";
-      version.textContent = `UI v${UI_VERSION}`;
-      content.append(title, version);
-      plaque.append(content);
+      const version = document.createElement("small");
+      version.id = "stark-header-versions";
+      plaque.append(title, version);
       plaque.addEventListener("click", () => navigateToSourceV090(this.__starkReturnRouteV090));
       legacyTitle.replaceWith(plaque);
     }
 
-    const version = plaque.querySelector(".subtitle");
-    if (version?.textContent !== `UI v${UI_VERSION}`) version.textContent = `UI v${UI_VERSION}`;
+    const version = plaque.querySelector("#stark-header-versions");
+    const label = this._headerVersionLabelV090();
+    if (version && version.textContent !== label) version.textContent = label;
 
     if (!root.querySelector("style[data-stark-ui-v090]")) {
       const style = document.createElement("style");
@@ -8233,16 +8236,9 @@ if (Panel && !Panel.prototype.__starkUiV090) {
           min-height:44px!important;
           margin:0!important;
           padding:5px 14px!important;
-          display:block!important;
-          border:1px solid color-mix(in srgb,var(--primary-color,#03a9d9) 24%,var(--divider-color,#dfe3e8))!important;
-          border-radius:16px!important;
-          background:color-mix(in srgb,var(--primary-color,#03a9d9) 5%,var(--card-background-color,#fff))!important;
-          color:var(--primary-text-color)!important;
-          box-shadow:0 5px 16px rgba(23,45,76,.06)!important;
           appearance:none!important;
-          font:inherit!important;
-          text-align:center!important;
-          cursor:pointer!important;
+          font-family:inherit;
+          color:var(--primary-text-color,#17191c)!important;
           -webkit-tap-highlight-color:transparent;
         }
         .app-header .title-return-v090:focus-visible {
@@ -8250,22 +8246,6 @@ if (Panel && !Panel.prototype.__starkUiV090) {
           outline-offset:2px!important;
         }
         .app-header .title-return-v090:active { transform:scale(.985); background:color-mix(in srgb,var(--primary-color,#03a9d9) 13%,var(--card-background-color,#fff))!important; border-color:color-mix(in srgb,var(--primary-color,#03a9d9) 42%,var(--divider-color,#dfe3e8))!important; box-shadow:0 2px 7px rgba(23,45,76,.05)!important; }
-        .title-return-copy-v090 { display:flex; min-width:0; flex-direction:column; align-items:center; }
-        .title-return-name-v090 {
-          max-width:100%;
-          overflow:hidden;
-          text-overflow:ellipsis;
-          white-space:nowrap;
-          font-size:23px;
-          line-height:1.05;
-          font-weight:800;
-        }
-        .title-return-v090 .subtitle { margin-top:3px!important; font-size:14px!important; line-height:1.2; font-weight:560!important; letter-spacing:.01em; }
-        @media(max-width:390px) {
-          .app-header .title-return-v090 { min-width:0!important; width:100%!important; padding-inline:8px!important; }
-          .title-return-name-v090 { font-size:21px; }
-          .title-return-v090 .subtitle { font-size:13px!important; }
-        }
       `;
       root.append(style);
     }
@@ -8620,7 +8600,6 @@ if (Panel && !Panel.prototype.__starkUiV095) {
 // BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v096.js
 (() => {
 const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.9.7";
 const REFRESH_MINIMUM_MS = 900;
 const REFRESH_RESULT_MS = 1400;
 
@@ -8809,10 +8788,19 @@ if (Panel && !Panel.prototype.__starkUiV096) {
     nav.querySelectorAll(".tab").forEach((tab) => tab.classList.add("nikas-shell__tab"));
 
     header.querySelector(".system-menu-v056")?.classList.add("nikas-shell__side-action");
-    header.querySelector(".refresh")?.classList.add(
-      "nikas-shell__side-action",
-      "nikas-shell__side-action--right",
-    );
+    const refresh = header.querySelector(".refresh");
+    if (refresh) {
+      refresh.classList.add(
+        "nikas-shell__side-action", "nikas-shell__side-action--right", "nikas-shell__side-action--refresh",
+      );
+      const darkMode = this._hass?.themes?.darkMode;
+      if (typeof darkMode === "boolean") {
+        const theme = darkMode ? "dark" : "light";
+        if (refresh.dataset.starkTheme !== theme) refresh.dataset.starkTheme = theme;
+      } else if (refresh.dataset.starkTheme) {
+        delete refresh.dataset.starkTheme;
+      }
+    }
     header.querySelector(".title-return-v090")?.classList.add("nikas-shell__title");
 
     if (!root.querySelector("style[data-stark-ui-v096]")) {
@@ -8872,11 +8860,24 @@ if (Panel && !Panel.prototype.__starkUiV096) {
           padding:0!important;
           border:1px solid color-mix(in srgb,var(--divider-color,#dfe3e8) 72%,transparent)!important;
           border-radius:16px!important;
-          background:var(--card-background-color,#fff)!important;
           box-shadow:0 7px 20px rgba(23,45,76,.08)!important;
         }
-        .app-header .refresh {
-          color:var(--primary-text-color,#17191c)!important;
+        .app-header .system-menu-v056 {
+          background:var(--card-background-color,#fff)!important;
+        }
+        .app-header .refresh.nikas-shell__side-action--refresh {
+          color:#fff!important;
+          background:color-mix(in srgb,var(--card-background-color,#fff) 8%,#1c1c1c)!important;
+        }
+        .app-header .refresh[data-stark-theme="light"] {
+          color:#000!important;
+          background:#fff!important;
+        }
+        @media(prefers-color-scheme:light) {
+          .app-header .refresh:not([data-stark-theme]) {
+            color:#000!important;
+            background:#fff!important;
+          }
         }
         .app-header .title-return-v090 {
           width:min(360px,100%)!important;
@@ -8963,7 +8964,7 @@ if (Panel && !Panel.prototype.__starkUiV096) {
         }
         .refresh.is-busy-v096 ha-icon {
           animation:stark-refresh-spin-v096 900ms linear infinite!important;
-          color:var(--primary-text-color,#17191c)!important;
+          color:inherit!important;
         }
         .refresh.is-success-v096 ha-icon { color:#43a047!important; }
         .refresh.is-error-v096 ha-icon { color:#e53935!important; }
@@ -9097,8 +9098,6 @@ if (Panel && !Panel.prototype.__starkUiV096) {
     previousRender.call(this);
     this._installShellV096();
     this._installRefreshV096();
-    const version = this.shadowRoot?.querySelector(".title-return-v090 .subtitle");
-    if (version?.textContent !== `UI v${UI_VERSION}`) version.textContent = `UI v${UI_VERSION}`;
   };
 
   Panel.prototype.disconnectedCallback = function () {
@@ -9115,7 +9114,6 @@ if (Panel && !Panel.prototype.__starkUiV096) {
 // BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v098.js
 (() => {
 const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.9.10";
 
 if (Panel && !Panel.prototype.__starkUiV098) {
   Panel.prototype.__starkUiV098 = true;
@@ -9180,8 +9178,6 @@ if (Panel && !Panel.prototype.__starkUiV098) {
   Panel.prototype._render = function () {
     previousRender.call(this);
     this._installOverviewHeaderV098();
-    const version = this.shadowRoot?.querySelector(".title-return-v090 .subtitle");
-    if (version?.textContent !== `UI v${UI_VERSION}`) version.textContent = `UI v${UI_VERSION}`;
   };
 }
 })();
@@ -9190,35 +9186,12 @@ if (Panel && !Panel.prototype.__starkUiV098) {
 // BEGIN custom_components/stark_solarpower/frontend/stark-solarpower-panel-v099.js
 (() => {
 const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.9.11-beta004";
+const UI_VERSION = "0.9.11-beta005";
 
-if (Panel && !Panel.prototype.__starkUiV099) {
-  Panel.prototype.__starkUiV099 = true;
-  const previousRender = Panel.prototype._render;
-
-  Panel.prototype._render = function () {
-    previousRender.call(this);
-    const subtitle = this.shadowRoot?.querySelector(".title-return-v090 .subtitle");
-    if (!subtitle) return;
-
-    const panelVersion = this._panel?.config?.ui_version || UI_VERSION;
+if (Panel) {
+  Panel.prototype._headerVersionLabelV090 = function () {
     const integrationVersion = this._panel?.config?.integration_version || "—";
-    const label = `UI v${panelVersion} · Интеграция v${integrationVersion}`;
-    if (subtitle.textContent !== label) subtitle.textContent = label;
-
-    if (!this.shadowRoot.querySelector("style[data-stark-ui-v099]")) {
-      const style = document.createElement("style");
-      style.dataset.starkUiV099 = "true";
-      style.textContent = `
-        .title-return-v090 .subtitle {
-          font-size:11px!important;
-          line-height:1.1!important;
-          white-space:normal!important;
-          overflow-wrap:normal!important;
-        }
-      `;
-      this.shadowRoot.append(style);
-    }
+    return `UI v${UI_VERSION} / ${integrationVersion}`;
   };
 }
 })();

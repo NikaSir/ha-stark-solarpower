@@ -110,6 +110,14 @@ async function flushMicrotasks() {
 vm.runInThisContext(source, { filename: bundlePath.pathname });
 const Panel = customElements.get("stark-solarpower-panel");
 assert.ok(Panel, "production bundle must register stark-solarpower-panel");
+const headerPanel = new Panel();
+headerPanel._panel = { config:{ ui_version:"0.0.0", integration_version:"1.9.11-beta008" } };
+assert.equal(headerPanel._headerVersionLabelV090(), "UI v0.9.11-beta005 / 1.9.11-beta008");
+headerPanel._panel = { config:{ integration_version:"0.9.11-beta005" } };
+assert.equal(headerPanel._headerVersionLabelV090(), "UI v0.9.11-beta005 / 0.9.11-beta005");
+headerPanel._panel = null;
+assert.equal(headerPanel._headerVersionLabelV090(), "UI v0.9.11-beta005 / —");
+
 
 function makePanel(callService) {
   const panel = new Panel();

@@ -98,7 +98,7 @@ def main() -> None:
         "Center title plaque — open the immediate parent",
         "history.pushState()",
         "history.back()",
-        "exact form `UI vX.Y.Z`",
+        "exact form `UI vX.Y.Z / A.B.C`",
         "focus state and pressed response",
         "Data truth and command safety",
         "Production bundle and version coherence",
@@ -329,7 +329,7 @@ def main() -> None:
 
     version_marker = markers["version_marker"]
     require("UI v" in version_marker, "header_return.version_marker must identify the exact UI version line")
-    require("·" not in version_marker, "header_return.version_marker must be version-only")
+    require(" / " in version_marker and "·" not in version_marker, "header_return.version_marker must combine both versions")
 
     for marker in config.get("forbidden_runtime_markers", []):
         require(marker not in sources, f"forbidden specialized-panel runtime marker present: {marker}")

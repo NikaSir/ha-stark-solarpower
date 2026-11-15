@@ -1,7 +1,6 @@
 import "./stark-solarpower-panel-v095.js";
 
 const Panel = customElements.get("stark-solarpower-panel");
-const UI_VERSION = "0.9.7";
 const REFRESH_MINIMUM_MS = 900;
 const REFRESH_RESULT_MS = 1400;
 
@@ -190,10 +189,19 @@ if (Panel && !Panel.prototype.__starkUiV096) {
     nav.querySelectorAll(".tab").forEach((tab) => tab.classList.add("nikas-shell__tab"));
 
     header.querySelector(".system-menu-v056")?.classList.add("nikas-shell__side-action");
-    header.querySelector(".refresh")?.classList.add(
-      "nikas-shell__side-action",
-      "nikas-shell__side-action--right",
-    );
+    const refresh = header.querySelector(".refresh");
+    if (refresh) {
+      refresh.classList.add(
+        "nikas-shell__side-action", "nikas-shell__side-action--right", "nikas-shell__side-action--refresh",
+      );
+      const darkMode = this._hass?.themes?.darkMode;
+      if (typeof darkMode === "boolean") {
+        const theme = darkMode ? "dark" : "light";
+        if (refresh.dataset.starkTheme !== theme) refresh.dataset.starkTheme = theme;
+      } else if (refresh.dataset.starkTheme) {
+        delete refresh.dataset.starkTheme;
+      }
+    }
     header.querySelector(".title-return-v090")?.classList.add("nikas-shell__title");
 
     if (!root.querySelector("style[data-stark-ui-v096]")) {
@@ -253,11 +261,24 @@ if (Panel && !Panel.prototype.__starkUiV096) {
           padding:0!important;
           border:1px solid color-mix(in srgb,var(--divider-color,#dfe3e8) 72%,transparent)!important;
           border-radius:16px!important;
-          background:var(--card-background-color,#fff)!important;
           box-shadow:0 7px 20px rgba(23,45,76,.08)!important;
         }
-        .app-header .refresh {
-          color:var(--primary-text-color,#17191c)!important;
+        .app-header .system-menu-v056 {
+          background:var(--card-background-color,#fff)!important;
+        }
+        .app-header .refresh.nikas-shell__side-action--refresh {
+          color:#fff!important;
+          background:color-mix(in srgb,var(--card-background-color,#fff) 8%,#1c1c1c)!important;
+        }
+        .app-header .refresh[data-stark-theme="light"] {
+          color:#000!important;
+          background:#fff!important;
+        }
+        @media(prefers-color-scheme:light) {
+          .app-header .refresh:not([data-stark-theme]) {
+            color:#000!important;
+            background:#fff!important;
+          }
         }
         .app-header .title-return-v090 {
           width:min(360px,100%)!important;
@@ -344,7 +365,7 @@ if (Panel && !Panel.prototype.__starkUiV096) {
         }
         .refresh.is-busy-v096 ha-icon {
           animation:stark-refresh-spin-v096 900ms linear infinite!important;
-          color:var(--primary-text-color,#17191c)!important;
+          color:inherit!important;
         }
         .refresh.is-success-v096 ha-icon { color:#43a047!important; }
         .refresh.is-error-v096 ha-icon { color:#e53935!important; }
@@ -478,8 +499,6 @@ if (Panel && !Panel.prototype.__starkUiV096) {
     previousRender.call(this);
     this._installShellV096();
     this._installRefreshV096();
-    const version = this.shadowRoot?.querySelector(".title-return-v090 .subtitle");
-    if (version?.textContent !== `UI v${UI_VERSION}`) version.textContent = `UI v${UI_VERSION}`;
   };
 
   Panel.prototype.disconnectedCallback = function () {
