@@ -9218,7 +9218,7 @@ const CHANNEL_INDICATORS = {
 const FRESHNESS_INDICATORS = {
   current: { icon: "mdi:check-circle-outline", tone: "good" },
   warn: { icon: "mdi:clock-alert-outline", tone: "warn" },
-  unknown: { icon: "mdi:clock-question-outline", tone: "unknown" },
+  unknown: { icon: "mdi:clock-outline", tone: "unknown", questionMark: true },
 };
 const POWER_ICONS = {
   line_mode: "mdi:power-plug-outline", battery_mode: "mdi:battery-arrow-down-outline",
@@ -9261,15 +9261,21 @@ function metric(label, text, icon, entity, tone = "", extra = "") {
   </div>`;
 }
 
-function statusIcon(kind, label, { icon, tone }) {
+function statusGlyph({ icon, questionMark }) {
+  // MDI has no clock with a question mark. Keep the same icon nodes for live patches.
+  const modifier = questionMark ? " ups-status-glyph--question" : "";
+  return `<span class="ups-status-glyph${modifier}" aria-hidden="true"><ha-icon icon="${icon}"></ha-icon></span>`;
+}
+
+function statusIcon(kind, label, indicator) {
   const description = esc(`${kind}: ${label}`);
-  return `<span class="ups-status-icon ${esc(tone)}" role="img" aria-label="${description}" title="${description}">
-    <ha-icon icon="${icon}" aria-hidden="true"></ha-icon>
+  return `<span class="ups-status-icon ${esc(indicator.tone)}" role="img" aria-label="${description}" title="${description}">
+    ${statusGlyph(indicator)}
   </span>`;
 }
 
-function status(text, { icon, tone }) {
-  return `<p class="ups-overview-status ${esc(tone)}"><ha-icon icon="${icon}" aria-hidden="true"></ha-icon>${esc(text)}</p>`;
+function status(text, indicator) {
+  return `<p class="ups-overview-status ${esc(indicator.tone)}">${statusGlyph(indicator)}${esc(text)}</p>`;
 }
 
 function overviewCard(panel, device) {
@@ -9372,6 +9378,12 @@ const styles = `
   .ups-overview-heading, .ups-overview-icons { display:flex; align-items:center; gap:6px; }
   .ups-overview-heading { flex-wrap:wrap; }
   .ups-status-icon { display:flex; }
+  .ups-status-glyph { display:grid; position:relative; flex:none; width:20px; height:20px; }
+  .ups-status-glyph--question::after {
+    content:"?"; position:absolute; inset-inline-end:0; inset-block-end:0;
+    display:grid; place-items:center; width:9px; height:10px; border-radius:3px;
+    background:var(--card-background-color,#fff); font:700 10px/1 sans-serif;
+  }
   .ups-overview h2 { margin:0; font-size:clamp(18px,5vw,24px); line-height:1.15; overflow-wrap:anywhere; }
   .ups-overview-status {
     display:flex; align-items:center; gap:5px; margin:2px 0; font-size:13px; line-height:1.2;

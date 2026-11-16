@@ -65,7 +65,7 @@ assert.match(markup, /aria-label="Свежесть: Данные актуаль�
 assert.match(markup, /aria-label="Свежесть: Данные устарели"/);
 
 const compactIcons = (card) => [...card.matchAll(
-  /class="ups-status-icon (\w+)" role="img" aria-label="([^"]+)"[^>]*>\s*<ha-icon icon="([^"]+)"/g,
+  /class="ups-status-icon (\w+)" role="img" aria-label="([^"]+)"[^>]*>\s*<span class="ups-status-glyph(?: ups-status-glyph--question)?" aria-hidden="true"><ha-icon icon="([^"]+)"/g,
 )].map(([, tone, label, icon]) => [tone, label, icon]);
 const cards = (html) => [...html.matchAll(/<article[^>]*>(.*?)<\/article>/gs)].map(([, card]) => card);
 const currentCloud = ["good", "Связь: Облако", "mdi:cloud"];
@@ -77,10 +77,12 @@ assert.deepEqual(cards(markup).map(compactIcons), [
 states["net.data_stale"].state = "on";
 states["boiler.cloud_connected"].state = "unavailable";
 states["boiler.data_stale"].state = "unavailable";
-assert.deepEqual(cards(panel._renderOverviewV051()).map(compactIcons), [
+const unavailableMarkup = panel._renderOverviewV051();
+assert.equal((unavailableMarkup.match(/class="ups-status-glyph ups-status-glyph--question"/g) || []).length, 2);
+assert.deepEqual(cards(unavailableMarkup).map(compactIcons), [
   [currentCloud, staleClock],
   [["unknown", "Связь: Нет данных", "mdi:cloud-question-outline"],
-    ["unknown", "Свежесть: Нет данных", "mdi:clock-question-outline"]],
+    ["unknown", "Свежесть: Нет данных", "mdi:clock-outline"]],
 ]);
 states["net.data_stale"].state = "off";
 states["boiler.cloud_connected"].state = "off";
