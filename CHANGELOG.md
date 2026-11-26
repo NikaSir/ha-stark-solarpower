@@ -4,6 +4,10 @@ All notable project changes are recorded here.
 
 ## [Unreleased]
 
+### Integration 1.9.11-beta010 / UI 0.9.11-beta007
+
+- Report unknown freshness when the stale flag cannot be tied to a valid snapshot timestamp.
+
 ### Integration 1.9.11-beta009 / UI 0.9.11-beta006
 
 - Use the NikaS connection and freshness icons and theme-aware colors in the two UPS cards and their details.

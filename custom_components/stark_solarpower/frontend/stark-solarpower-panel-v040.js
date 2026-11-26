@@ -19,7 +19,7 @@ if (Panel && !Panel.prototype.__starkUiV040) {
     const status = this._status(device);
     const mode = this._mode(device);
     const cloud = this._isOn(device, "cloud_connected");
-    const stale = this._isOn(device, "data_stale");
+    const stale = this._freshnessFlag(device);
 
     if (cloud === false) {
       return { title: "Нет телеметрии", detail: "SolarPower недоступен", tone: "bad" };
@@ -51,19 +51,19 @@ if (Panel && !Panel.prototype.__starkUiV040) {
 
   Panel.prototype._overviewOnlineBadge = function (device) {
     const cloud = this._isOn(device, "cloud_connected");
-    const stale = this._isOn(device, "data_stale");
+    const stale = this._freshnessFlag(device);
     const age = this._format(device, "data_age", "Неизвестно");
 
     if (cloud === false) return { label: "Нет облака", detail: "Нет свежих данных", tone: "bad", icon: "mdi:cloud-off-outline" };
     if (cloud === null) return { label: "Неизвестно", detail: "Источник не подтверждён", tone: "unknown", icon: "mdi:cloud-question-outline" };
     if (stale === true) return { label: "Устарело", detail: `Возраст ${age}`, tone: "warn", icon: "mdi:clock-alert-outline" };
-    if (stale === null) return { label: "Неизвестно", detail: "Свежесть не подтверждена", tone: "unknown", icon: "mdi:clock-question-outline" };
+    if (stale === null) return { label: "Неизвестно", detail: "Свежесть не подтверждена", tone: "unknown", icon: "mdi:clock-outline" };
     return { label: "Онлайн", detail: `Данные ${age} назад`, tone: "good", icon: "mdi:cloud-check-outline" };
   };
 
   Panel.prototype._overviewStateTile = function (device, kind) {
     const cloud = this._isOn(device, "cloud_connected");
-    const stale = this._isOn(device, "data_stale");
+    const stale = this._freshnessFlag(device);
     const mode = this._mode(device);
     const battery = this._numeric(device, "battery_capacity");
     const inputVoltage = this._numeric(device, "input_voltage");

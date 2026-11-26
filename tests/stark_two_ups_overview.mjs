@@ -75,6 +75,14 @@ assert.deepEqual(cards(markup).map(compactIcons), [
   [["warn", "Связь: Нет связи", "mdi:cloud-off-outline"], staleClock],
 ]);
 states["net.data_stale"].state = "on";
+const sampleTime = states["net.data_timestamp"].state;
+states["net.data_timestamp"].state = "unavailable";
+assert.deepEqual(compactIcons(cards(panel._renderOverviewV051())[0]), [
+  currentCloud,
+  ["unknown", "Свежесть: Нет данных", "mdi:clock-outline"],
+]);
+assert.match(cards(panel._renderOverviewV051())[0], /ups-status-glyph--question/);
+states["net.data_timestamp"].state = sampleTime;
 states["boiler.cloud_connected"].state = "unavailable";
 states["boiler.data_stale"].state = "unavailable";
 const unavailableMarkup = panel._renderOverviewV051();
