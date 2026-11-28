@@ -74,15 +74,44 @@ assert.deepEqual(cards(markup).map(compactIcons), [
   [currentCloud, ["good", "Свежесть: Данные актуальны", "mdi:check-circle-outline"]],
   [["warn", "Связь: Нет связи", "mdi:cloud-off-outline"], staleClock],
 ]);
+const invalidTimestamps = [
+  undefined,
+  "unavailable",
+  "invalid-timestamp",
+  new Date(Date.now() + 86_400_000).toISOString(),
+];
+for (const [index, device] of [internet, boiler].entries()) {
+  const cloud = states[device.entities.cloud_connected];
+  const stale = states[device.entities.data_stale];
+  const timestampId = device.entities.data_timestamp;
+  const timestamp = states[timestampId];
+  const previousCloud = cloud.state;
+  const previousStale = stale.state;
+  cloud.state = "on";
+  for (const flag of ["off", "on"]) {
+    stale.state = flag;
+    for (const invalidTimestamp of invalidTimestamps) {
+      if (invalidTimestamp === undefined) {
+        delete states[timestampId];
+      } else {
+        states[timestampId] = { state: invalidTimestamp };
+      }
+      const context = `${device.id}: data_stale=${flag}, timestamp=${invalidTimestamp}`;
+      const card = cards(panel._renderOverviewV051())[index];
+      assert.deepEqual(compactIcons(card), [
+        currentCloud,
+        ["unknown", "Свежесть: Нет данных", "mdi:clock-outline"],
+      ], context);
+      assert.match(card, /ups-status-glyph--question/, context);
+      assert.match(card, /<span>Заряд<\/span><strong>—<\/strong>/, context);
+      assert.match(card, /<span>Выход<\/span><strong>—<\/strong>/, context);
+    }
+  }
+  states[timestampId] = timestamp;
+  cloud.state = previousCloud;
+  stale.state = previousStale;
+}
 states["net.data_stale"].state = "on";
-const sampleTime = states["net.data_timestamp"].state;
-states["net.data_timestamp"].state = "unavailable";
-assert.deepEqual(compactIcons(cards(panel._renderOverviewV051())[0]), [
-  currentCloud,
-  ["unknown", "Свежесть: Нет данных", "mdi:clock-outline"],
-]);
-assert.match(cards(panel._renderOverviewV051())[0], /ups-status-glyph--question/);
-states["net.data_timestamp"].state = sampleTime;
 states["boiler.cloud_connected"].state = "unavailable";
 states["boiler.data_stale"].state = "unavailable";
 const unavailableMarkup = panel._renderOverviewV051();

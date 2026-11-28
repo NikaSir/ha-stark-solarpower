@@ -241,10 +241,9 @@ class StarkSolarPowerPanel extends HTMLElement {
   }
 
   _freshnessFlag(device) {
-    const stale = this._isOn(device, "data_stale");
-    if (stale !== true) return stale;
     const timestamp = Date.parse(this._state(device, "data_timestamp")?.state);
-    return Number.isFinite(timestamp) && timestamp <= Date.now() ? true : null;
+    if (!Number.isFinite(timestamp) || timestamp > Date.now()) return null;
+    return this._isOn(device, "data_stale");
   }
 
   _numeric(device, key) {
