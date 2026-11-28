@@ -15,7 +15,7 @@ if (Panel && !Panel.prototype.__starkUiV096) {
 
   Panel.prototype._status = function (device) {
     const cloud = this._isOn(device, "cloud_connected");
-    const stale = this._isOn(device, "data_stale");
+    const stale = this._freshnessFlag(device);
     const onBattery = this._isOn(device, "on_battery");
     const mode = this._mode(device);
 
@@ -29,7 +29,7 @@ if (Panel && !Panel.prototype.__starkUiV096) {
       return { label:"Данные устарели", tone:"warn", icon:"mdi:clock-alert-outline" };
     }
     if (stale === null) {
-      return { label:"Свежесть неизвестна", tone:"unknown", icon:"mdi:clock-question-outline" };
+      return { label:"Свежесть неизвестна", tone:"unknown", icon:"mdi:clock-outline" };
     }
     if (mode === "fault_mode") {
       return { label:"Авария", tone:"bad", icon:"mdi:alert-octagon-outline" };

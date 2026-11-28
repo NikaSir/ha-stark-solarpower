@@ -37,7 +37,7 @@ if (Panel && !Panel.prototype.__starkUiV050) {
 
   Panel.prototype._freshnessV050 = function (device) {
     const cloud = this._isOn(device, "cloud_connected");
-    const stale = this._isOn(device, "data_stale");
+    const stale = this._freshnessFlag(device);
     const age = this._format(device, "data_age", "Неизвестно");
 
     if (cloud === false) {
@@ -65,7 +65,7 @@ if (Panel && !Panel.prototype.__starkUiV050) {
       return {
         label: "Свежесть неизвестна",
         tone: "unknown",
-        icon: "mdi:clock-question-outline",
+        icon: "mdi:clock-outline",
       };
     }
     return {
@@ -214,7 +214,7 @@ if (Panel && !Panel.prototype.__starkUiV050) {
     const headline = this._heroCopyV050(device);
     const freshness = this._freshnessV050(device);
     const cloud = this._isOn(device, "cloud_connected");
-    const stale = this._isOn(device, "data_stale");
+    const stale = this._freshnessFlag(device);
     const trusted = cloud === true && stale === false;
     const mode = this._mode(device);
     const onBattery = mode === "battery_mode" || this._isOn(device, "on_battery") === true;

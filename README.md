@@ -1,6 +1,6 @@
 # Stark SolarPower for Home Assistant
 
-> Beta candidate: **1.9.11-beta009** / UI **0.9.11-beta006**. The Overview uses the NikaS connection and freshness icons on both UPS cards.
+> Beta candidate: **1.9.11-beta010** / UI **0.9.11-beta007**. The Overview uses the NikaS connection and freshness icons on both UPS cards.
 
 ![Stark SolarPower integration icon](custom_components/stark_solarpower/brand/icon.png)
 
@@ -46,7 +46,7 @@ Navigation contract:
 - sidebar title: `ИБП Stark`;
 - icon: `mdi:battery-charging`;
 - preferred view: `overview`;
-- panel UI version: `0.9.11-beta006`;
+- panel UI version: `0.9.11-beta007`;
 - product artwork: `Stark Country 1000 ONLINE (16A)`.
 
 Views:

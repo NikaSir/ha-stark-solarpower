@@ -19,7 +19,7 @@ if (Panel && !Panel.prototype.__starkUiV066) {
 
   Panel.prototype._connectionStatusV066 = function (device) {
     const cloud = this._isOn(device, "cloud_connected");
-    const stale = this._isOn(device, "data_stale");
+    const stale = this._freshnessFlag(device);
 
     const channel = cloud === true
       ? { label:"Облако", tone:"good" }

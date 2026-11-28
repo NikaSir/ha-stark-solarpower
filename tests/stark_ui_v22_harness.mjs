@@ -111,12 +111,12 @@ vm.runInThisContext(source, { filename: bundlePath.pathname });
 const Panel = customElements.get("stark-solarpower-panel");
 assert.ok(Panel, "production bundle must register stark-solarpower-panel");
 const headerPanel = new Panel();
-headerPanel._panel = { config:{ ui_version:"0.0.0", integration_version:"1.9.11-beta009" } };
-assert.equal(headerPanel._headerVersionLabelV090(), "UI v0.9.11-beta006 / 1.9.11-beta009");
-headerPanel._panel = { config:{ integration_version:"0.9.11-beta006" } };
-assert.equal(headerPanel._headerVersionLabelV090(), "UI v0.9.11-beta006 / 0.9.11-beta006");
+headerPanel._panel = { config:{ ui_version:"0.0.0", integration_version:"1.9.11-beta010" } };
+assert.equal(headerPanel._headerVersionLabelV090(), "UI v0.9.11-beta007 / 1.9.11-beta010");
+headerPanel._panel = { config:{ integration_version:"0.9.11-beta007" } };
+assert.equal(headerPanel._headerVersionLabelV090(), "UI v0.9.11-beta007 / 0.9.11-beta007");
 headerPanel._panel = null;
-assert.equal(headerPanel._headerVersionLabelV090(), "UI v0.9.11-beta006 / —");
+assert.equal(headerPanel._headerVersionLabelV090(), "UI v0.9.11-beta007 / —");
 
 
 function makePanel(callService) {

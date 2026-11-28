@@ -240,6 +240,12 @@ class StarkSolarPowerPanel extends HTMLElement {
     return this._available(stateObj) ? stateObj.state === "on" : null;
   }
 
+  _freshnessFlag(device) {
+    const timestamp = Date.parse(this._state(device, "data_timestamp")?.state);
+    if (!Number.isFinite(timestamp) || timestamp > Date.now()) return null;
+    return this._isOn(device, "data_stale");
+  }
+
   _numeric(device, key) {
     const stateObj = this._state(device, key);
     if (!this._available(stateObj)) return null;
@@ -259,7 +265,7 @@ class StarkSolarPowerPanel extends HTMLElement {
 
   _status(device) {
     const cloud = this._isOn(device, "cloud_connected");
-    const stale = this._isOn(device, "data_stale");
+    const stale = this._freshnessFlag(device);
     const onBattery = this._isOn(device, "on_battery");
     const mode = this._mode(device);
 
@@ -273,7 +279,7 @@ class StarkSolarPowerPanel extends HTMLElement {
       return { label: "Данные устарели", tone: "warn", icon: "mdi:clock-alert-outline" };
     }
     if (stale === null) {
-      return { label: "Свежесть неизвестна", tone: "bad", icon: "mdi:clock-question-outline" };
+      return { label: "Свежесть неизвестна", tone: "bad", icon: "mdi:clock-outline" };
     }
     if (mode === "fault_mode") {
       return { label: "Авария", tone: "bad", icon: "mdi:alert-octagon-outline" };
